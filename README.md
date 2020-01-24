@@ -1,1 +1,2 @@
-<Created automatically via Integro>
+# my-offers
+МКС: мои объявления для агента
