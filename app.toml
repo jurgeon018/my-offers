@@ -1,0 +1,9 @@
+name = "my-offers"
+team = "happiness"
+
+[runtime]
+name = "python"
+version = "3.8"
+
+[job.web]
+type = "web"

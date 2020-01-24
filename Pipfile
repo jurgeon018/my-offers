@@ -1,0 +1,30 @@
+[requires]
+python_version = "3.8"
+
+[[source]]
+url = "https://nexus.cian.tech/repository/cian/simple/"
+
+[packages]
+my-offers = {editable = true,path = "."}
+cian-core = "~=1.9"
+cian-entities = "~=1.7"
+cian-enum = "~=1.1"
+cian-http = "~=0.20"
+cian-schemas = "~=2.6"
+cian-web = "~=2.1"
+click = "~=7.0"
+simple-settings = "~=0.19"
+tornado = "~=6.0"
+
+[dev-packages]
+cian-lint = "*"
+cian-test-utils = "*"
+diff-cover = "*"
+isort = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-env = "*"
+pytest-mock = "*"
+pytest-tornado = "*"
+tox = "*"
+tox-pipenv-install = "*"

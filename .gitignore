@@ -1,0 +1,7 @@
+*.egg-info/
+.cache/
+.direnv/
+.envrc
+.mypy_cache/
+.tox/
+__pycache__/
