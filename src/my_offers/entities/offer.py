@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from my_offers import enums
+from typing import Dict, List
 
 
 @dataclass
@@ -15,7 +16,18 @@ class Offer:
     """Тип сделки"""
     offer_type: enums.OfferType
     """Тип объекта недвижимости"""
+    status: enums.OfferStatus
+    """Статус"""
     search_text: str
     """Текст для поиска"""
     row_version: int
     """Версия записи"""
+    services: List[enums.Service]
+    raw_data: Dict
+    """Модель объявления"""
+    is_manual: bool
+    """Подано в ручную"""
+    is_in_hidden_base: bool
+    """Объявление закрытой базы"""
+    has_photo: bool
+    """С фотографиями"""

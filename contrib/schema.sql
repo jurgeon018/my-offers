@@ -1,3 +1,9 @@
+drop table offers;
+drop type deal_type;
+drop type offer_type;
+drop type offer_status;
+drop type service;
+
 create type deal_type as enum (
     'rent',
     'sale'
@@ -11,13 +17,16 @@ create type offer_type as enum (
 );
 
 create type offer_status as enum (
-    'active',
-    'not_active',
-    'declined',
-    'archive'
+    'new',
+    'draft',
+    'check',
+    'published',
+    'deleted',
+    'withdrawn',
+    'expired'
 );
 
-create type publish_terms as enum (
+create type service as enum (
     'auction',
     'top3',
     'premium',
@@ -37,14 +46,14 @@ CREATE table offers(
     deal_type deal_type not null,
     offer_type offer_type not null,
     status offer_status not null,
-    publish_terms publish_terms[] not null,
+    services service[] not null,
 
     is_manual bool not null,
     is_in_hidden_base bool not null,
     has_photo bool not null,
 
 -- поля для поиска
-    search_text text,
+    search_text text not null,
 
 -- поля для сортировок
     price float,
@@ -58,6 +67,6 @@ CREATE table offers(
 -- системные поля
     raw_data jsonb not null,
     row_version bigint not null,
-    created_at timestamp not null,
-    updated_at timestamp not null
+    created_at timestamp with time zone not null,
+    updated_at timestamp with time zone not null
 );
