@@ -6,7 +6,7 @@ url = "https://nexus.cian.tech/repository/cian/simple/"
 
 [packages]
 my-offers = {editable = true,path = "."}
-cian-core = "~=1.9"
+cian-core = {version = "~=1.10", index = "cian", extras = ["rabbitmq_consumer_cli"]}
 cian-entities = "~=1.7"
 cian-enum = "~=1.1"
 cian-http = "~=0.20"
@@ -15,6 +15,8 @@ cian-web = "~=2.1"
 click = "~=7.0"
 simple-settings = "~=0.19"
 tornado = "~=6.0"
+cian-rabbitmq = {version = "~=3.1", index = "cian"}
+sqlalchemy = "~=1.3"
 
 [dev-packages]
 cian-lint = "*"
