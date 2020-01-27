@@ -72,9 +72,9 @@ async def process_announcement(announcement: Dict) -> None:
         search_text=_get_search_text(announcement),
         row_version=announcement.get('rowVersion', 0),
         raw_data=announcement,
-        services=_get_services(announcement['publishTerms']['terms']),
+        services=_get_services(announcement.get('publishTerms', {})['terms']),
         is_manual=announcement['source'] != 'upload',
-        is_in_hidden_base=announcement['isInHiddenBase'],
+        is_in_hidden_base=announcement.get('isInHiddenBase', False),
         has_photo=bool(announcement['photos']),
     )
 
