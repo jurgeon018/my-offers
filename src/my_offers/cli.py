@@ -24,7 +24,7 @@ def serve(debug: bool, host: str, port: int) -> None:
 
 
 register_consumer(
-    command=cli.command('process_announcement_published_consumer'),
+    command=cli.command('process_announcement_consumer'),
     queue=queues.process_announcements_queue,
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,

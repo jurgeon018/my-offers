@@ -8,6 +8,6 @@ version = "3.8"
 [job.web]
 type = "web"
 
-[job.process_announcement_published_consumer]
+[job.process_announcement_consumer]
 type = "consumer"
-command = "process_announcement_published_consumer"
+command = "process_announcement_consumer"
