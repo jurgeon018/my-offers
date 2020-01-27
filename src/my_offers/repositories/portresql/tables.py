@@ -1,22 +1,24 @@
-from enum import Enum
+from enum import Enum, EnumMeta
+from typing import List
 
 import sqlalchemy as sa
-from my_offers import enums
 from sqlalchemy.dialects.postgresql import ENUM
-from typing import List
+
+from my_offers import enums
+
 
 _metadata = sa.MetaData()
 
 
-def get_names(enum: Enum) -> List[str]:
+def get_names(enum: EnumMeta) -> List[str]:
     result = []
-    for value in enum:
+    for value in enum:  # type: Enum
         result.append(value.name)
 
     return result
 
 
-_deal_type = ENUM(*get_names(enums.DealType), name='deal_type', )
+_deal_type = ENUM(*get_names(enums.DealType), name='deal_type')
 _offer_type = ENUM(*get_names(enums.OfferType), name='offer_type',)
 _offer_status = ENUM(*get_names(enums.OfferStatus), name='offer_type',)
 _service = ENUM(*get_names(enums.Service), name='service',)

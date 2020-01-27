@@ -5,7 +5,7 @@ from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
 
 from my_offers import setup
-from my_offers.queue import schemas, consumers, queues
+from my_offers.queue import consumers, queues, schemas
 from my_offers.web.urls import urlpatterns
 
 

@@ -1,6 +1,8 @@
+from typing import Dict, List
+
 from my_offers import entities, enums
 from my_offers.repositories import portresql
-from typing import Dict, List
+
 
 CATEGORY_OFFER_TYPE_DEAL_TYPE = {
     enums.Category.flat_sale: (enums.OfferType.flat, enums.DealType.sale),

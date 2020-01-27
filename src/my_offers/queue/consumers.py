@@ -1,10 +1,11 @@
 import logging
+from typing import List
 
 from cian_core.context import new_operation_id
+from cian_core.rabbitmq.consumer import Message
+
 from my_offers.queue.entities import AnnouncementMessage
 from my_offers.services.announcement.process_announcement import process_announcement
-from typing import List
-from cian_core.rabbitmq.consumer import Message
 
 
 logger = logging.getLogger(__name__)

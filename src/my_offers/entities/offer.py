@@ -1,7 +1,7 @@
 from dataclasses import dataclass
+from typing import Dict, List
 
 from my_offers import enums
-from typing import Dict, List
 
 
 @dataclass

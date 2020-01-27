@@ -3,9 +3,10 @@ from datetime import datetime
 
 import asyncpgsa
 import pytz
+from sqlalchemy.dialects.postgresql import insert
+
 from my_offers import entities, pg
 from my_offers.repositories.portresql import tables
-from sqlalchemy.dialects.postgresql import insert
 
 
 async def save_offer(offer: entities.Offer) -> None:

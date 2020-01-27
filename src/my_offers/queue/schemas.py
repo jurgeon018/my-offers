@@ -1,4 +1,5 @@
 from cian_schemas import EntitySchema
+
 from my_offers.queue import entities
 
 
