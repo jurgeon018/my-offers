@@ -17,13 +17,16 @@ create type offer_type as enum (
 );
 
 create type offer_status as enum (
-    'new',
     'draft',
-    'check',
     'published',
+    'deactivated',
+    'refused',
     'deleted',
-    'withdrawn',
-    'expired'
+    'sold',
+    'moderate',
+    'moderate',
+    'removed_by_moderator',
+    'blocked'
 );
 
 create type service as enum (
