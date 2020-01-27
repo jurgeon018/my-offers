@@ -70,3 +70,6 @@ CREATE table offers(
     created_at timestamp with time zone not null,
     updated_at timestamp with time zone not null
 );
+
+CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));
+create index on offers(user_id, status);
