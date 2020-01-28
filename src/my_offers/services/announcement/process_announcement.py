@@ -82,16 +82,17 @@ async def process_announcement(announcement: Dict) -> None:
 
 
 def _get_search_text(announcement: Dict) -> str:
-    result = [
-        str(announcement['id']),
-        announcement.get('title', ''),
-        announcement['description'],
-    ]
+    result = [str(announcement['id'])]
+    if announcement.get('title'):
+        result.append(announcement['title'])
+
+    result.append(announcement['description'])
 
     for phone in announcement['phones']:
-        result.append(phone.get('countryCode') + phone.get('number'))
+        if phone.get('countryCode') and phone.get('number'):
+            result.append(phone['countryCode'] + phone['number'])
 
-    return ' | '.join(result)
+    return ' '.join(result)
 
 
 def _get_services(terms: Dict) -> List[enums.Service]:
