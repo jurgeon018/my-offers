@@ -1,3 +1,5 @@
+SET ROLE my_offers_admin;
+
 drop table offers;
 drop type deal_type;
 drop type offer_type;
@@ -16,17 +18,8 @@ create type offer_type as enum (
     'newobject'
 );
 
-create type offer_status as enum (
-    'draft',
-    'published',
-    'deactivated',
-    'refused',
-    'deleted',
-    'sold',
-    'moderate',
-    'moderate',
-    'removed_by_moderator',
-    'blocked'
+create type offer_status_tab as enum (
+
 );
 
 create type service as enum (
@@ -48,7 +41,7 @@ CREATE table offers(
     user_id bigint not null,
     deal_type deal_type not null,
     offer_type offer_type not null,
-    status offer_status not null,
+    status_tab offer_status_tab not null,
     services service[] not null,
 
     is_manual bool not null,
@@ -75,4 +68,4 @@ CREATE table offers(
 );
 
 CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));
-create index on offers(master_user_id, status);
+create index on offers(master_user_id, status_tab);

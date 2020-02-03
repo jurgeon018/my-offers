@@ -16,13 +16,14 @@ class Offer:
     """Тип сделки"""
     offer_type: enums.OfferType
     """Тип объекта недвижимости"""
-    status: enums.OfferStatus
-    """Статус"""
+    status_tab: enums.OfferStatusTab
+    """Статус (Вкладка)"""
     search_text: str
     """Текст для поиска"""
     row_version: int
     """Версия записи"""
-    services: List[enums.Service]
+    services: List[enums.Services]
+    """Список размещений"""
     raw_data: Dict
     """Модель объявления"""
     is_manual: bool
