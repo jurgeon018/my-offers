@@ -5,7 +5,7 @@ from simple_settings import settings
 
 def _get_branch_suffix():
     branch_suffix = os.getenv('BRANCH_NAME', '')
-    if 'master' not in branch_suffix:
+    if branch_suffix and 'master' not in branch_suffix:
         return '.' + branch_suffix
     return ''
 

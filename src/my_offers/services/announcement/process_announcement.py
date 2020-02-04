@@ -87,9 +87,9 @@ async def process_announcement(announcement: Dict) -> None:
         search_text=_get_search_text(announcement),
         row_version=announcement.get('rowVersion', 0),
         raw_data=announcement,
-        services=_get_services(announcement['publishTerms']['terms']),
+        services=_get_services(announcement.get('publishTerms', {}).get('terms', [])),
         is_manual=announcement['source'] != 'upload',
-        is_in_hidden_base=announcement['isInHiddenBase'],
+        is_in_hidden_base=announcement.get('isInHiddenBase', False),
         has_photo=bool(announcement['photos']),
     )
 
@@ -121,14 +121,15 @@ def _get_status_tab(is_archived: bool, offer_status: str) -> enums.OfferStatusTa
 
 
 def _get_search_text(announcement: Dict) -> str:
-    result = [
-        str(announcement['id']),
-        announcement.get('title', ''),
-        announcement['description'],
-    ]
+    result = [str(announcement['id'])]
+    if announcement.get('title'):
+        result.append(announcement['title'])
+
+    result.append(announcement['description'])
 
     for phone in announcement['phones']:
-        result.append(phone.get('countryCode') + phone.get('number'))
+        if phone.get('countryCode') and phone.get('number'):
+            result.append(phone['countryCode'] + phone['number'])
         if source_phone := phone.get('sourcePhone'):
             result.append(source_phone.get('countryCode') + source_phone.get('number'))
 
