@@ -7,7 +7,7 @@ from my_offers.repositories.monolith_cian_announcementapi import entities as ann
 
 @dataclass
 class GetOffersRequest:
-    master_user_id: int
+    user_id: int
     status_tab: enums.GetOfferStatusTab
     """Статус (Вкладка)"""
     deal_type: Optional[enums.DealType] = None
@@ -29,6 +29,16 @@ class PageInfo:
 
 
 @dataclass
+class Statistics:
+    offer_show: int
+    """просмотров объявления"""
+    search_results_show: int
+    """увидели в поиске"""
+    favorites: int
+    """добавили в избранное"""
+
+
+@dataclass
 class GetOffer:
     offer_id: int
     """Id объявления"""
@@ -38,7 +48,7 @@ class GetOffer:
     """Id агента"""
     bargain_terms: announcementapi_entities.BargainTerms
     """Условия сделки"""
-    main_photo: Optional[announcementapi_entities.Photo] = None
+    main_photo_url: Optional[str] = None
     """Основаная фотография объекта"""
     geo: Optional[announcementapi_entities.Geo] = None
     """Gets or Sets Geo"""
@@ -46,6 +56,7 @@ class GetOffer:
     """Информация о здании"""
     floor_number: Optional[int] = None
     """Этаж"""
+    statistics: Optional[Statistics] = None
 
 
 @dataclass
