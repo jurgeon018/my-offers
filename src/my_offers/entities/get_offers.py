@@ -12,7 +12,7 @@ class GetOffersRequest:
     """Статус (Вкладка)"""
     deal_type: Optional[enums.DealType] = None
     offer_type: Optional[enums.GetOfferType] = None
-    user_ids: Optional[List[int]] = None
+    sub_agent_ids: Optional[List[int]] = None
     has_photo: Optional[bool] = None
     is_manual: Optional[bool] = None
     is_in_hidden_base: Optional[bool] = None
