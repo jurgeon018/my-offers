@@ -19,7 +19,11 @@ create type offer_type as enum (
 );
 
 create type offer_status_tab as enum (
-
+    'active',
+    'not_active',
+    'declined',
+    'archived',
+    'deleted'
 );
 
 create type service as enum (

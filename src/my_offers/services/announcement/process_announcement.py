@@ -71,7 +71,7 @@ STATUS_TO_TAB_MAP = {
     enums.OfferStatus.removed_by_moderator: enums.OfferStatusTab.declined,
     enums.OfferStatus.blocked: enums.OfferStatusTab.declined,
 
-    enums.OfferStatus.deleted: enums.OfferStatusTab.archived,
+    enums.OfferStatus.deleted: enums.OfferStatusTab.deleted,
 }
 
 
@@ -98,7 +98,6 @@ async def process_announcement(announcement: Dict) -> None:
 
 def _get_status_tab(is_archived: bool, offer_status: str) -> enums.OfferStatusTab:
     # Логика работы вкладок
-    # архивные флаг из isArchived
     # -- вкладка активные
     # 'published',
     # -- вкладка неактивные
@@ -111,6 +110,8 @@ def _get_status_tab(is_archived: bool, offer_status: str) -> enums.OfferStatusTa
     # 'removed_by_moderator',
     # 'blocked',
     # -- вкладка архивные
+    # флаг из isArchived
+    # -- Удаленные
     # 'deleted'
     if is_archived:
         return enums.OfferStatusTab.archived
