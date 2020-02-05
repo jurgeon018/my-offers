@@ -73,3 +73,4 @@ CREATE table offers(
 
 CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));
 create index on offers(master_user_id, status_tab);
+create index on offers(updated_at);

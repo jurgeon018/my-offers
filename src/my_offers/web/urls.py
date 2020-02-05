@@ -4,7 +4,6 @@ from cian_web import get_handler
 from tornado.web import url
 
 from my_offers import entities
-from my_offers.entities.get_object_models import GetObjectModelsResponse
 from my_offers.services import offers
 
 
@@ -20,13 +19,12 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
     url(
-        r'/v1/get-object-models/$',
+        r'/v1/update-offer/',
         get_handler(
-            service=offers.get_object_models,
-            method='POST',  # pragma: no mutate
-            request_schema=entities.GetOffersRequest,
-            response_schema=GetObjectModelsResponse,
+            service=offers.update_offer,
+            method='GET',  # pragma: no mutate
+            request_schema=entities.UpdateOfferRequest,
             base_handler_cls=RequestContextHandler,
         )
-    ),
+    )
 ]

@@ -85,7 +85,7 @@ async def process_announcement(announcement: Dict) -> None:
         offer_type=offer_type,
         status_tab=_get_status_tab(announcement.get('flags', {}).get('isArchived', False), announcement['status']),
         search_text=_get_search_text(announcement),
-        row_version=announcement.get('rowVersion', 0),
+        row_version=announcement['rowVersion'],
         raw_data=announcement,
         services=_get_services(announcement.get('publishTerms', {}).get('terms', [])),
         is_manual=announcement['source'] != 'upload',
