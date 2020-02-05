@@ -9,12 +9,15 @@ from my_offers import entities, pg
 from my_offers.repositories.portresql import tables
 
 
+ENUM_FIELDS = ('deal_type', 'offer_type', 'status_tab')
+
+
 async def save_offer(offer: entities.Offer) -> None:
     now = datetime.now(tz=pytz.UTC)
     values = asdict(offer)
-    values['deal_type'] = offer.deal_type.name
-    values['offer_type'] = offer.offer_type.name
-    values['status'] = offer.status.name
+    for field in ENUM_FIELDS:
+        values[field] = values[field].name
+
     values['services'] = [service.name for service in offer.services]
     values['created_at'] = now
     values['updated_at'] = now

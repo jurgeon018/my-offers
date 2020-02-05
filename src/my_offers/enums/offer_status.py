@@ -1,15 +1,49 @@
-from cian_enum import Enum, Value
+from cian_enum import NoFormat, StrEnum
 
 
-class OfferStatus(Enum):
-    """Статус объекта"""
-    # todo: переделать на StrEnums
-    draft = Value(1, help=u'Черновик')
-    published = Value(2, help=u'Опубликовано')
-    deactivated = Value(3, help=u'Деактивировано')
-    refused = Value(4, help=u'Отклонено')
-    deleted = Value(5, help=u'Удалено')
-    sold = Value(6, help=u'Продано')
-    moderate = Value(7, help=u'Промодерировано')
-    removed_by_moderator = Value(8, help=u'Удалено модератором')
-    blocked = Value(9, help=u'Заблокировано')
+class OfferStatus(StrEnum):
+    __value_format__ = NoFormat
+    draft = 'Draft'
+    """11 - Черновик"""
+    published = 'Published'
+    """12 - Опубликовано"""
+    deactivated = 'Deactivated'
+    """14 - Деактивировано (ранее было скрыто Hidden)"""
+    refused = 'Refused'
+    """15 - Отклонено модератором"""
+    deleted = 'Deleted'
+    """16 - Удалён"""
+    sold = 'Sold'
+    """17 - Продано/Сдано"""
+    moderate = 'Moderate'
+    '18 - Требует модерации\r\nДанный статус исчез - оставим для совместимости'
+    removed_by_moderator = 'RemovedByModerator'
+    """19 - Удалено модератором"""
+    blocked = 'Blocked'
+    """20 - объявление снято с публикации по причине применения санкции "приостановки публикации\""""
+
+
+class GetOfferStatusTab(StrEnum):
+    """На какую вкладку поместить объявление"""
+    active = 'active'
+    """Активные"""
+    not_active = 'not_active'
+    """Неактивные"""
+    declined = 'declined'
+    """Отклоненные"""
+    archived = 'archived'
+    """Архив"""
+
+
+class OfferStatusTab(StrEnum):
+    """На какую вкладку поместить объявление"""
+    active = 'active'
+    """Активные"""
+    not_active = 'not_active'
+    """Неактивные"""
+    declined = 'declined'
+    """Отклоненные"""
+    archived = 'archived'
+    """Архив"""
+    deleted = 'deleted'
+    """Удалено"""

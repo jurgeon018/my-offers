@@ -1,14 +1,12 @@
-from cian_enum import Enum, Value
+from cian_enum import NoFormat, StrEnum
 
 
-class Service(Enum):
-    # todo: переделать на StrEnums
-    free = Value(1, help='Бесплатная публикация')
-    paid = Value(2, help='Платная публикация')
-    premium = Value(3, help='Премиум-публикация')
-    top3 = Value(4, help='Tоп-публикация')
-    highlight = Value(5, help='Выделение цветом')
-    calltracking = Value(6, help='Колтрекинг')
-    auction = Value(7, help='Аукцион')
-    demand = Value(8, help='Спрос')
-    demand_package = Value(9, help='Пакет заявок')
+class Services(StrEnum):
+    __value_format__ = NoFormat
+    free = 'free'
+    highlight = 'highlight'
+    paid = 'paid'
+    premium = 'premium'
+    top3 = 'top3'
+    calltracking = 'calltracking'
+    auction = 'auction'

@@ -20,8 +20,8 @@ def get_names(enum: EnumMeta) -> List[str]:
 
 _deal_type = ENUM(*get_names(enums.DealType), name='deal_type')
 _offer_type = ENUM(*get_names(enums.OfferType), name='offer_type',)
-_offer_status = ENUM(*get_names(enums.OfferStatus), name='offer_type',)
-_service = ENUM(*get_names(enums.Service), name='service',)
+_offer_status_tab = ENUM(*get_names(enums.OfferStatusTab), name='offer_type',)
+_service = ENUM(*get_names(enums.Services), name='service',)
 
 
 offers = sa.Table(
@@ -32,7 +32,7 @@ offers = sa.Table(
     sa.Column('user_id', sa.BIGINT, nullable=False),
     sa.Column('deal_type', _deal_type, nullable=False),
     sa.Column('offer_type', _offer_type, nullable=False),
-    sa.Column('status', _offer_status, nullable=False),
+    sa.Column('status_tab', _offer_status_tab, nullable=False),
     sa.Column('services', sa.ARRAY(_service), nullable=False),
     sa.Column('search_text', sa.TEXT, nullable=False),
     sa.Column('is_manual', sa.BOOLEAN, nullable=False),
