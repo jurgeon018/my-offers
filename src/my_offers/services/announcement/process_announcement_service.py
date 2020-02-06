@@ -184,11 +184,17 @@ def _get_prices(*, bargain_terms: Dict, total_area: Optional[int] = None) -> Tup
         price = bargain_terms['price']
         if total_area and price:
             price_per_meter = price / total_area
-    elif price_type == 'squareMeter':
-        price_per_meter = bargain_terms['price']
+    else:
+        if price_type == 'sotka':
+            kf = 100
+        elif price_type == 'hectare':
+            kf = 10000
+        else:
+            kf = 1
+
+        price_per_meter = bargain_terms['price'] / kf
         if total_area and price:
             price = price_per_meter * total_area
-    # todo: цена за сотку и гектар
 
     return price, price_per_meter
 
