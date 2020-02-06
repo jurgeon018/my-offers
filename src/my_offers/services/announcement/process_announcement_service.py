@@ -1,4 +1,7 @@
-from typing import Dict, List
+from datetime import datetime
+
+from my_offers.mappers.date_time import date_time_mapper
+from typing import Dict, List, Tuple, Optional
 
 from my_offers import entities, enums
 from my_offers.repositories import portresql
@@ -77,13 +80,23 @@ STATUS_TO_TAB_MAP = {
 
 async def process_announcement(announcement: Dict) -> None:
     offer_type, deal_type = CATEGORY_OFFER_TYPE_DEAL_TYPE[enums.Category(announcement['category'])]
+    status_tab = _get_status_tab(
+        is_archived=announcement.get('flags', {}).get('isArchived', False),
+        offer_status=announcement['status'],
+    )
+
+    price, price_per_meter = _get_prices(
+        bargain_terms=announcement['bargainTerms'],
+        total_area=announcement.get('totalArea'),
+    )
+
     offer = entities.Offer(
         offer_id=announcement['id'],
         master_user_id=announcement['userId'],  # TODO: определить мастераккаунт
         user_id=announcement['publishedUserId'],
         deal_type=deal_type,
         offer_type=offer_type,
-        status_tab=_get_status_tab(announcement.get('flags', {}).get('isArchived', False), announcement['status']),
+        status_tab=status_tab,
         search_text=_get_search_text(announcement),
         row_version=announcement['rowVersion'],
         raw_data=announcement,
@@ -91,12 +104,19 @@ async def process_announcement(announcement: Dict) -> None:
         is_manual=announcement['source'] != 'upload',
         is_in_hidden_base=announcement.get('isInHiddenBase', False),
         has_photo=bool(announcement['photos']),
+        is_test=_get_is_test(announcement),
+        price=price,
+        price_per_meter=price_per_meter,
+        total_area=announcement.get('totalArea'),
+        walking_time=_get_walking_time(announcement.get('geo')),
+        street_name=_get_street_name(announcement.get('geo', {}).get('address')),
+        sort_date=_get_sort_date(announcement=announcement, status_tab=status_tab),
     )
 
     await portresql.save_offer(offer)
 
 
-def _get_status_tab(is_archived: bool, offer_status: str) -> enums.OfferStatusTab:
+def _get_status_tab(*, is_archived: bool, offer_status: str) -> enums.OfferStatusTab:
     # Логика работы вкладок
     # -- вкладка активные
     # 'published',
@@ -134,6 +154,9 @@ def _get_search_text(announcement: Dict) -> str:
         if source_phone := phone.get('sourcePhone'):
             result.append(source_phone.get('countryCode') + source_phone.get('number'))
 
+    # todo: добавить адрес
+    # todo: добавить метро
+
     return ' '.join(result)
 
 
@@ -142,5 +165,99 @@ def _get_services(terms: Dict) -> List[enums.Services]:
     for term in terms:
         for service in term['services']:
             result.append(enums.Services(service))
+
+    return result
+
+
+def _get_is_test(announcement: Dict) -> bool:
+    return announcement.get('platform', {}).get('type') == 'qaAutotests'
+
+
+def _get_prices(*, bargain_terms: Dict, total_area: Optional[int] = None) -> Tuple[Optional[float], Optional[float]]:
+    price = price_per_meter = None
+    price_type = bargain_terms['priceType']
+
+    if price_type == 'all':
+        price = bargain_terms['price']
+        if total_area and price:
+            price_per_meter = price / total_area
+    elif price_type == 'squareMeter':
+        price_per_meter = bargain_terms['price']
+        if total_area and price:
+            price = price_per_meter * total_area
+    # todo: цена за сотку и гектар
+
+    return price, price_per_meter
+
+
+def _get_walking_time(geo: Optional[Dict]) -> Optional[float]:
+    walking_time = None
+
+    if not geo:
+        return walking_time
+
+    walking_time = _get_walking_time_from_calculated_undergrounds(geo.get('calculatedUndergrounds'))
+    if not walking_time:
+        walking_time = _get_walking_time_from_undergrounds(geo.get('undergrounds'))
+
+    return walking_time
+
+
+def _get_walking_time_from_calculated_undergrounds(calculated_undergrounds: Optional[List]) -> Optional[float]:
+    walking_time = None
+    if not calculated_undergrounds:
+        return walking_time
+
+    for underground in calculated_undergrounds:
+        if underground['transportType'] != 'walk':
+            continue
+        if not walking_time or underground['time'] < walking_time:
+            walking_time = underground['time']
+
+    return walking_time
+
+
+def _get_walking_time_from_undergrounds(undergrounds: Optional[List]) -> Optional[float]:
+    walking_time = None
+    if not undergrounds:
+        return walking_time
+
+    min_transport_time = None
+
+    for underground in undergrounds:
+        if underground['transportType'] == 'walk':
+            if not walking_time or underground['time'] < walking_time:
+                walking_time = underground['time']
+        elif underground['transportType'] == 'transport':
+            if not min_transport_time or underground['time'] < min_transport_time:
+                min_transport_time = underground['time']
+
+    if not walking_time and min_transport_time:
+        # здесь умножаем на 10, потому что если человек идет
+        # со срденей скоростью 4 км/ч, то автомобиль со скоростью 40 км/ч(в шарпе такие константы)
+        # что в 10 раз больше
+        # 2015 год python-monolith
+        walking_time = min_transport_time * 10
+
+    return walking_time
+
+
+def _get_street_name(address: Optional[List]) -> Optional[str]:
+    street_name = None
+    if not address:
+        return street_name
+
+    for item in address:
+        if item.get('type') == 'street' and item.get('name'):
+            street_name = item['name']
+            break
+
+    return street_name
+
+
+def _get_sort_date(*, announcement: Dict, status_tab: enums.OfferStatusTab) -> Optional[datetime]:
+    field = 'archivedDate' if status_tab.is_archived else 'editDate'
+    if result := announcement.get(field):
+        result = date_time_mapper.map_from(result)
 
     return result

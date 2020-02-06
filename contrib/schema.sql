@@ -61,12 +61,12 @@ CREATE table offers(
     total_area float,
     street_name text,
     walking_time float,
-    publish_date timestamp,
-    moderation_date timestamp,
+    sort_date timestamp with time zone,
 
 -- системные поля
     raw_data jsonb not null,
     row_version bigint not null,
+    is_test boolean,
     created_at timestamp with time zone not null,
     updated_at timestamp with time zone not null
 );
