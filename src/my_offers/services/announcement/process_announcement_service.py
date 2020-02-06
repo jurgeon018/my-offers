@@ -1,9 +1,8 @@
 from datetime import datetime
-
-from my_offers.mappers.date_time import date_time_mapper
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional, Tuple
 
 from my_offers import entities, enums
+from my_offers.mappers.date_time import date_time_mapper
 from my_offers.repositories import portresql
 
 
@@ -154,8 +153,12 @@ def _get_search_text(announcement: Dict) -> str:
         if source_phone := phone.get('sourcePhone'):
             result.append(source_phone.get('countryCode') + source_phone.get('number'))
 
-    # todo: добавить адрес
-    # todo: добавить метро
+    if address := announcement.get('geo', {}).get('userInput'):
+        result.append(address)
+
+    if undergrounds := announcement.get('geo', {}).get('undergrounds'):
+        for underground in undergrounds:
+            result.append(underground['name'])
 
     return ' '.join(result)
 
