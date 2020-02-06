@@ -26,5 +26,5 @@ urlpatterns = base_urls.urlpatterns + [
             request_schema=entities.UpdateOfferRequest,
             base_handler_cls=RequestContextHandler,
         )
-    )
+    ),
 ]
