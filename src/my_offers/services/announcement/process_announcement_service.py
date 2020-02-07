@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 from my_offers import entities, enums
-from my_offers.mappers.date_time import date_time_mapper
+from my_offers.mappers.date_time import date_time_time_zone_mapper
 from my_offers.repositories import portresql
 
 
@@ -193,7 +193,7 @@ def _get_prices(*, bargain_terms: Dict, total_area: Optional[int] = None) -> Tup
             kf = 1
 
         price_per_meter = bargain_terms['price'] / kf
-        if total_area and price:
+        if total_area and price_per_meter:
             price = price_per_meter * total_area
 
     return price, price_per_meter
@@ -234,6 +234,9 @@ def _get_walking_time_from_undergrounds(undergrounds: Optional[List]) -> Optiona
     min_transport_time = None
 
     for underground in undergrounds:
+        if 'time' not in underground:
+            continue
+
         if underground['transportType'] == 'walk':
             if not walking_time or underground['time'] < walking_time:
                 walking_time = underground['time']
@@ -267,6 +270,6 @@ def _get_street_name(address: Optional[List]) -> Optional[str]:
 def _get_sort_date(*, announcement: Dict, status_tab: enums.OfferStatusTab) -> Optional[datetime]:
     field = 'archivedDate' if status_tab.is_archived else 'editDate'
     if result := announcement.get(field):
-        result = date_time_mapper.map_from(result)
+        result = date_time_time_zone_mapper.map_from(result)
 
     return result

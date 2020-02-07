@@ -30,9 +30,9 @@ async def save_offer(offer: entities.Offer) -> None:
         .values([values])
         .on_conflict_do_update(
             index_elements=[tables.offers.c.offer_id],
-            where=(tables.offers.c.row_version < offer.row_version),
+            where=tables.offers.c.row_version < offer.row_version,
             set_=update
         )
     )
 
-    await pg.get().fetch(query, *params)
+    await pg.get().execute(query, *params)

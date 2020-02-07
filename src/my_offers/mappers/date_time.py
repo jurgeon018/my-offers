@@ -11,4 +11,4 @@ class DateTimeTimeZoneMapper(DateTimeMapper):
         return result
 
 
-date_time_mapper = DateTimeTimeZoneMapper()
+date_time_time_zone_mapper = DateTimeTimeZoneMapper()
