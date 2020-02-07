@@ -177,13 +177,14 @@ def _get_is_test(announcement: Dict) -> bool:
 
 
 def _get_prices(*, bargain_terms: Dict, total_area: Optional[int] = None) -> Tuple[Optional[float], Optional[float]]:
-    price = price_per_meter = None
+    price: Optional[float] = None
+    price_per_meter: Optional[float] = None
     price_type = bargain_terms['priceType']
 
     if price_type == 'all':
         price = bargain_terms['price']
         if total_area and price:
-            price_per_meter = price / total_area
+            price_per_meter = round(price / total_area, 2)
     else:
         if price_type == 'sotka':
             kf = 100
@@ -192,7 +193,7 @@ def _get_prices(*, bargain_terms: Dict, total_area: Optional[int] = None) -> Tup
         else:
             kf = 1
 
-        price_per_meter = bargain_terms['price'] / kf
+        price_per_meter = round(bargain_terms['price'] / kf, 2)
         if total_area and price_per_meter:
             price = price_per_meter * total_area
 
