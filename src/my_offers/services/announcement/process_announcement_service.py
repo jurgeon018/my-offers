@@ -84,9 +84,13 @@ async def process_announcement(announcement: Dict) -> None:
         offer_status=announcement['status'],
     )
 
+    total_area = _get_total_area(
+        total_area=announcement.get('totalArea'),
+        land=announcement.get('land'),
+    )
     price, price_per_meter = _get_prices(
         bargain_terms=announcement['bargainTerms'],
-        total_area=announcement.get('totalArea'),
+        total_area=total_area,
     )
 
     offer = entities.Offer(
@@ -106,7 +110,7 @@ async def process_announcement(announcement: Dict) -> None:
         is_test=_get_is_test(announcement),
         price=price,
         price_per_meter=price_per_meter,
-        total_area=announcement.get('totalArea'),
+        total_area=total_area,
         walking_time=_get_walking_time(announcement.get('geo')),
         street_name=_get_street_name(announcement.get('geo', {}).get('address')),
         sort_date=_get_sort_date(announcement=announcement, status_tab=status_tab),
@@ -176,7 +180,7 @@ def _get_is_test(announcement: Dict) -> bool:
     return announcement.get('platform', {}).get('type') == 'qaAutotests'
 
 
-def _get_prices(*, bargain_terms: Dict, total_area: Optional[int] = None) -> Tuple[Optional[float], Optional[float]]:
+def _get_prices(*, bargain_terms: Dict, total_area: Optional[float] = None) -> Tuple[Optional[float], Optional[float]]:
     price: Optional[float] = None
     price_per_meter: Optional[float] = None
     price_type = bargain_terms['priceType']
@@ -186,18 +190,40 @@ def _get_prices(*, bargain_terms: Dict, total_area: Optional[int] = None) -> Tup
         if total_area and price:
             price_per_meter = round(price / total_area, 2)
     else:
-        if price_type == 'sotka':
-            kf = 100
-        elif price_type == 'hectare':
-            kf = 10000
-        else:
-            kf = 1
+        kf = _area_to_meters_kf(price_type)
 
         price_per_meter = round(bargain_terms['price'] / kf, 2)
         if total_area and price_per_meter:
             price = price_per_meter * total_area
 
     return price, price_per_meter
+
+
+def _area_to_meters_kf(unit_type: str) -> int:
+    if unit_type == 'sotka':
+        kf = 100
+    elif unit_type == 'hectare':
+        kf = 10000
+    else:
+        kf = 1
+
+    return kf
+
+
+def _get_total_area(*, total_area: Optional[float], land: Optional[Dict]) -> Optional[float]:
+    if total_area:
+        return total_area
+
+    if not land:
+        return None
+
+    result = None
+    area = land.get('area')
+    unit_type = land.get('areaUnitType')
+    if area and unit_type:
+        result = area * _area_to_meters_kf(unit_type)
+
+    return result
 
 
 def _get_walking_time(geo: Optional[Dict]) -> Optional[float]:
