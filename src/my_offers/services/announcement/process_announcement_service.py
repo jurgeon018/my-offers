@@ -261,15 +261,16 @@ def _get_walking_time_from_undergrounds(undergrounds: Optional[List]) -> Optiona
     min_transport_time = None
 
     for underground in undergrounds:
-        if 'time' not in underground:
+        time = underground.get('time')
+        if not time:
             continue
 
         if underground['transportType'] == 'walk':
-            if not walking_time or underground['time'] < walking_time:
-                walking_time = underground['time']
+            if not walking_time or time < walking_time:
+                walking_time = time
         elif underground['transportType'] == 'transport':
-            if not min_transport_time or underground['time'] < min_transport_time:
-                min_transport_time = underground['time']
+            if not min_transport_time or time < min_transport_time:
+                min_transport_time = time
 
     if not walking_time and min_transport_time:
         # здесь умножаем на 10, потому что если человек идет
