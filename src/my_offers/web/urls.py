@@ -22,7 +22,7 @@ urlpatterns = base_urls.urlpatterns + [
         r'/v1/update-offer/',
         get_handler(
             service=offers.update_offer,
-            method='GET',  # pragma: no mutate
+            method='POST',  # pragma: no mutate
             request_schema=entities.UpdateOfferRequest,
             base_handler_cls=RequestContextHandler,
         )

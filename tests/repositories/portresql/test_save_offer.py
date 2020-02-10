@@ -4,7 +4,7 @@ import pytest
 
 from my_offers import enums, pg
 from my_offers.entities import Offer
-from my_offers.repositories.portresql import save_offer
+from my_offers.repositories.postgresql import save_offer
 
 
 @pytest.mark.gen_test

@@ -1,5 +1,4 @@
 import copy
-from dataclasses import asdict
 from datetime import datetime
 
 import asyncpgsa
@@ -8,10 +7,7 @@ from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, pg
 from my_offers.mappers.offer_mapper import offer_mapper
-from my_offers.repositories.portresql import tables
-
-
-ENUM_FIELDS = ('deal_type', 'offer_type', 'status_tab')
+from my_offers.repositories.postgresql import tables
 
 
 async def save_offer(offer: entities.Offer) -> None:

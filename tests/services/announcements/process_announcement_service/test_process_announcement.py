@@ -18,7 +18,7 @@ def announcement_fixture():
 async def test_process_announcement(mocker, announcement):
     # arrange
     save_offer_mock = mocker.patch(
-        'my_offers.services.announcement.process_announcement_service.portresql.save_offer',
+        'my_offers.services.announcement.process_announcement_service.postgresql.save_offer',
         return_value=future(),
     )
     offer = entities.Offer(

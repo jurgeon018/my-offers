@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Tuple
 
 from my_offers import entities, enums
 from my_offers.mappers.date_time import date_time_time_zone_mapper
-from my_offers.repositories import portresql
+from my_offers.repositories import postgresql
 
 
 CATEGORY_OFFER_TYPE_DEAL_TYPE = {
@@ -116,7 +116,7 @@ async def process_announcement(announcement: Dict) -> None:
         sort_date=_get_sort_date(announcement=announcement, status_tab=status_tab),
     )
 
-    await portresql.save_offer(offer)
+    await postgresql.save_offer(offer)
 
 
 def _get_status_tab(*, is_archived: bool, offer_status: str) -> enums.OfferStatusTab:
