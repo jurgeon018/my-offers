@@ -1,0 +1,127 @@
+{
+	"id": 138496,
+	"gas": {},
+	"geo": {
+		"address": [{
+			"id": 1,
+			"name": "Москва",
+			"type": "location",
+			"fullName": "Москва",
+			"shortName": "Москва",
+			"locationTypeId": 1,
+			"isFormingAddress": true
+		}, {
+			"id": 3160,
+			"name": "Братиславская",
+			"type": "street",
+			"fullName": "Братиславская улица",
+			"shortName": "Братиславская ул.",
+			"isFormingAddress": true
+		}],
+		"district": [],
+		"highways": [],
+		"railways": [],
+		"countryId": 138,
+		"userInput": "Россия, Москва, Братиславская улица",
+		"coordinates": {
+			"lat": 55.66393448095346,
+			"lng": 37.753143310546875
+		},
+		"locationPath": {
+			"countryId": 138,
+			"childToParent": [1]
+		},
+		"undergrounds": [{
+			"id": 22,
+			"name": "Братиславская",
+			"time": 3,
+			"lineId": 8,
+			"isDefault": true,
+			"lineColor": "8AD02A",
+			"transportType": "walk"
+		}],
+		"calculatedUndergrounds": []
+	},
+	"land": {},
+	"flags": {
+		"isArchived": true
+	},
+	"water": {},
+	"cianId": 48152210,
+	"garage": {},
+	"phones": [],
+	"photos": [{
+		"id": 75223333,
+		"fullUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223333-1.jpg",
+		"miniUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223333-3.jpg",
+		"isDefault": false,
+		"thumbnailUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223333-2.jpg",
+		"thumbnail2Url": "https://cdn-p.cian.site/images/332/257/novostroyka-moskva-bratislavskaya-ulica-75223333-4.jpg"
+	}, {
+		"id": 75223334,
+		"fullUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223334-1.jpg",
+		"miniUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223334-3.jpg",
+		"isDefault": false,
+		"thumbnailUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223334-2.jpg",
+		"thumbnail2Url": "https://cdn-p.cian.site/images/332/257/novostroyka-moskva-bratislavskaya-ulica-75223334-4.jpg"
+	}, {
+		"id": 75223335,
+		"fullUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223335-1.jpg",
+		"miniUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223335-3.jpg",
+		"isDefault": false,
+		"thumbnailUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223335-2.jpg",
+		"thumbnail2Url": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223335-4.jpg"
+	}, {
+		"id": 75223336,
+		"fullUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223336-1.jpg",
+		"miniUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223336-3.jpg",
+		"isDefault": false,
+		"thumbnailUrl": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223336-2.jpg",
+		"thumbnail2Url": "https://www.cian.ru/image-temp/332/257/novostroyka-moskva-bratislavskaya-ulica-75223336-4.jpg"
+	}],
+	"source": "website",
+	"status": "Deleted",
+	"userId": 27012,
+	"videos": [],
+	"hasLift": true,
+	"version": 2,
+	"building": {
+		"parking": {},
+		"deadline": {},
+		"liftTypes": [],
+		"floorsCount": 22,
+		"cranageTypes": [],
+		"materialType": "monolith",
+		"openingHours": {},
+		"infrastructure": {},
+		"hasGarbageChute": false,
+		"extinguishingSystemTypes": []
+	},
+	"category": "newBuildingFlatSale",
+	"drainage": {},
+	"editDate": "2010-02-19T13:43:43.853",
+	"flatType": "rooms",
+	"specialty": {
+		"types": [],
+		"additionalTypes": []
+	},
+	"totalArea": 90.7,
+	"cianUserId": 13636,
+	"livingArea": 53.0,
+	"objectGuid": "cbdb96c6-7fe5-4707-8498-fe8388568770",
+	"roomsCount": 3,
+	"description": "Офисно  деловой центр с торговыми помещениями и апартаментами,         2-сан.узла. подземный паркинг 900000р. машиноместо.",
+	"electricity": {},
+	"floorNumber": 22,
+	"kitchenArea": 17.0,
+	"archivedDate": "2016-11-25T14:15:32.6400908",
+	"bargainTerms": {
+		"price": 9070000.0,
+		"currency": "rur",
+		"priceType": "all",
+		"includedOptions": []
+	},
+	"creationDate": "2009-05-20T14:18:39.05",
+	"isRentByParts": false,
+	"publishedUserId": 27012
+}

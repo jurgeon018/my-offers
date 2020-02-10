@@ -18,4 +18,13 @@ urlpatterns = base_urls.urlpatterns + [
             base_handler_cls=RequestContextHandler,
         )
     ),
+    url(
+        r'/v1/update-offer/',
+        get_handler(
+            service=offers.update_offer,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.UpdateOfferRequest,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
 ]
