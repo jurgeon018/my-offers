@@ -6,12 +6,12 @@ from cian_test_utils import future
 
 from my_offers import entities, enums
 from my_offers.services.announcement import process_announcement
-from tests.utils import load_data
+from tests.utils import load_json_data
 
 
 @pytest.fixture(name='announcement')
 def announcement_fixture():
-    return load_data(__file__, 'announcement.json')
+    return load_json_data(__file__, 'announcement.json')
 
 
 @pytest.mark.gen_test
