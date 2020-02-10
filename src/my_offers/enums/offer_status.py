@@ -36,6 +36,7 @@ class GetOfferStatusTab(StrEnum):
 
 
 class OfferStatusTab(StrEnum):
+    __value_format__ = NoFormat
     """На какую вкладку поместить объявление"""
     active = 'active'
     """Активные"""

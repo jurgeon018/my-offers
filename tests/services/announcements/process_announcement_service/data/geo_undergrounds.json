@@ -1,0 +1,83 @@
+{
+	"address": [{
+		"id": 1,
+		"name": "Москва",
+		"type": "location",
+		"fullName": "Москва",
+		"shortName": "Москва",
+		"locationTypeId": 1,
+		"isFormingAddress": true
+	}, {
+		"id": 1229,
+		"name": "Коненкова",
+		"type": "street",
+		"fullName": "улица Коненкова",
+		"shortName": "ул. Коненкова",
+		"isFormingAddress": true
+	}, {
+		"id": 1711033,
+		"name": "15",
+		"type": "house",
+		"fullName": "15",
+		"shortName": "15",
+		"isFormingAddress": true
+	}],
+	"district": [],
+	"highways": [],
+	"railways": [{
+		"id": 713,
+		"name": "Окружная",
+		"time": 80,
+		"distance": 6.0,
+		"travelType": "byFoot",
+		"directionIds": [19]
+	}, {
+		"id": 703,
+		"name": "Тимирязевская",
+		"time": 113,
+		"distance": 9.0,
+		"travelType": "byFoot",
+		"directionIds": [19]
+	}, {
+		"id": 703,
+		"name": "Тимирязевская",
+		"time": 13,
+		"distance": 9.0,
+		"travelType": "byCar",
+		"directionIds": [19]
+	}, {
+		"id": 712,
+		"name": "Яуза",
+		"time": 120,
+		"distance": 9.0,
+		"travelType": "byFoot",
+		"directionIds": [20]
+	}],
+	"countryId": 138,
+	"userInput": "Россия, Москва, улица Конёнкова, 15",
+	"coordinates": {
+		"lat": 55.891638,
+		"lng": 37.60823
+	},
+	"locationPath": {
+		"countryId": 138,
+		"childToParent": [1]
+	},
+	"undergrounds": [{
+		"id": 17,
+		"name": "Бибирево",
+		"time": 13,
+		"lineId": 9,
+		"isDefault": true,
+		"lineColor": "A2A5B5",
+		"transportType": "walk"
+	}, {
+		"id": 6,
+		"name": "Алтуфьево",
+		"time": 24,
+		"lineId": 9,
+		"lineColor": "A2A5B5",
+		"transportType": "walk"
+	}],
+	"calculatedUndergrounds": []
+}

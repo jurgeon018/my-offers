@@ -8,7 +8,7 @@ process_announcements_queue = Queue(
     bindings=[
         QueueBinding(
             exchange=Exchange('announcements'),
-            routing_key='announcement_reporting.*',
+            routing_key='announcement_reporting.#',
         ),
     ],
 )
