@@ -13,7 +13,7 @@ async def test_get_offers_by_status(mocker):
     limit = 20
 
     # act
-    await postgresql.get_offers_by_status(
+    await postgresql.get_object_models(
         status_tab=status_tab,
         user_id=user_id,
         limit=limit

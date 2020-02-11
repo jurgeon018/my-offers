@@ -2,12 +2,6 @@ from cian_enum import NoFormat, StrEnum
 
 
 class GetOffersSortType(StrEnum):
-    __value_format__ = NoFormat
-
-    by_default = 'by_default'
-    """ По-умолчанию.
-        Для разных статусов объявления - разная.
-    """
     by_price_min = 'by_price_min'
     """По цене: убывающая"""
     by_price_max = 'by_price_max'

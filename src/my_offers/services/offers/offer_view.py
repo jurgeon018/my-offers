@@ -19,7 +19,7 @@ def build_offer_view(raw_offer: ObjectModel) -> GetOffer:
         underground=_get_underground(raw_offer)
     )
     subagent = (
-        Subagent(id=raw_offer.published_user_id, name='')
+        Subagent(id=raw_offer.published_user_id, name='')  # TODO: https://jira.cian.tech/browse/CD-73807
         if raw_offer.published_user_id
         else None
     )
@@ -38,12 +38,13 @@ def build_offer_view(raw_offer: ObjectModel) -> GetOffer:
         publish_features=_get_publish_features(raw_offer),
         vas=_get_vas(raw_offer),
         is_from_package=_is_from_package(raw_offer),
-        is_from_import=source,
+        is_manual=source,
         is_publication_time_ends=_is_publication_time_ends(raw_offer),
     )
 
 
 def _is_publication_time_ends(raw_offer: ObjectModel) -> bool:
+    # TODO: https://jira.cian.tech/browse/CD-73814
     return False
 
 
@@ -76,6 +77,7 @@ def _get_price(raw_offer: ObjectModel) -> PriceInfo:
     is_rent = deal_type.is_rent
     price = int(raw_offer.bargain_terms.price)
 
+    # TODO: https://jira.cian.tech/browse/CD-73814
     if is_rent:
         exact_price = f'{price} ₽/мес.'
     else:
@@ -139,7 +141,7 @@ def _get_underground(raw_offer: ObjectModel) -> Optional[Underground]:
 
     if undergrounds and address:
         return Underground(
-            url='',
+            search_url='',
             region_id=address[0].id,
             line_color=undergrounds[0].line_color,
             name=undergrounds[0].name
@@ -152,7 +154,7 @@ def _get_newbuilding(raw_offer: ObjectModel) -> Optional[Newbuilding]:
     if not raw_offer.geo or not raw_offer.geo.jk:
         return None
 
-    return Newbuilding(url='', name=raw_offer.geo.jk.name)
+    return Newbuilding(search_url='', name=raw_offer.geo.jk.name)
 
 
 def _get_address(raw_offer: ObjectModel) -> Optional[Address]:
@@ -179,7 +181,7 @@ def _get_address(raw_offer: ObjectModel) -> Optional[Address]:
 
     address_name = ', '.join(filter(None, [town, district, street, house]))
 
-    return Address(url='', name=address_name)
+    return Address(search_url='', name=address_name)
 
 
 def _get_deal_type(raw_offer: ObjectModel):

@@ -43,7 +43,7 @@ async def test_build_offer_view():
         publish_features=None,
         vas=None,
         is_from_package=False,
-        is_from_import=False,
+        is_manual=False,
         is_publication_time_ends=False,
         created_at=None,
         id=None,
@@ -79,12 +79,12 @@ async def test_build_offer_view__subagent():
 
 
 @pytest.mark.gen_test
-@pytest.mark.parametrize('source, is_from_import', [
+@pytest.mark.parametrize('source, is_manual', [
     (Source.upload, True),
     (Source.website, False),
     (Source.mobile_app, False),
 ])
-async def test_build_offer_view__is__from_import(source, is_from_import):
+async def test_build_offer_view__is__from_import(source, is_manual):
     # arrange
     raw_offer = ObjectModel(
         source=source,
@@ -99,7 +99,7 @@ async def test_build_offer_view__is__from_import(source, is_from_import):
     result = build_offer_view(raw_offer=raw_offer)
 
     # assert
-    assert result.is_from_import is is_from_import
+    assert result.is_manual is is_manual
 
 
 @pytest.mark.gen_test
@@ -263,7 +263,7 @@ async def test_build_offer_view__is_publication_time_ends():
             undergrounds=[UndergroundInfo(line_color='#12321', name='Сокольники', is_default=True)],
             address=[AddressInfo(id=1, type=AddressType.location)]
         ),
-        Underground(url='', region_id=1, line_color='#12321', name='Сокольники')
+        Underground(search_url='', region_id=1, line_color='#12321', name='Сокольники')
     )
 ])
 async def test_build_offer_view__geo_underground(geo, expected):
@@ -285,7 +285,7 @@ async def test_build_offer_view__geo_underground(geo, expected):
 @pytest.mark.gen_test
 @pytest.mark.parametrize('geo, expected', [
     (None, None),
-    (Geo(jk=Jk(name='Lol kek')), Newbuilding(url='', name='Lol kek'))
+    (Geo(jk=Jk(name='Lol kek')), Newbuilding(search_url='', name='Lol kek'))
 ])
 async def test_build_offer_view__newbuilding(geo, expected):
     # arrange
@@ -307,7 +307,7 @@ async def test_build_offer_view__newbuilding(geo, expected):
 @pytest.mark.parametrize('geo, expected', [
     (None, None),
     (Geo(address=[]), None),
-    (Geo(address=[AddressInfo(id=1, type=AddressType.location)]), Address(url='', name='')),
+    (Geo(address=[AddressInfo(id=1, type=AddressType.location)]), Address(search_url='', name='')),
     (
         Geo(address=[
             AddressInfo(id=1, type=AddressType.location, full_name='Москва'),
@@ -315,7 +315,7 @@ async def test_build_offer_view__newbuilding(geo, expected):
             AddressInfo(id=1, type=AddressType.street, full_name='улица Пушкина'),
             AddressInfo(id=1, type=AddressType.house, full_name='13к2'),
         ]),
-        Address(url='', name='Москва, район Краснопресненский, улица Пушкина, 13к2')
+        Address(search_url='', name='Москва, район Краснопресненский, улица Пушкина, 13к2')
     ),
 ])
 async def test_build_offer_view__geo_address(geo, expected):

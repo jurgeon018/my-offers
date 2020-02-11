@@ -40,7 +40,7 @@ async def save_offer(offer: entities.Offer) -> None:
     await pg.get().execute(query, *params)
 
 
-async def get_offers_by_status(
+async def get_object_models(
         *,
         status_tab: GetOfferStatusTab,
         user_id: int,

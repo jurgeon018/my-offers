@@ -36,7 +36,7 @@ async def test_get_offer(mocker):
             publish_features=None,
             vas=None,
             is_from_package=False,
-            is_from_import=False,
+            is_manual=False,
             is_publication_time_ends=False,
             created_at=None,
             id=None,
@@ -46,7 +46,7 @@ async def test_get_offer(mocker):
         counters=OfferCounters(active=1, not_active=0, declined=0, archived=0))
 
     get_offers_by_status_mock = mocker.patch(
-        'my_offers.services.offers.get_offers_service.postgresql.get_offers_by_status',
+        'my_offers.services.offers.get_offers_service.postgresql.get_object_models',
         return_value=future([object_model]),
     )
 
@@ -62,22 +62,3 @@ async def test_get_offer(mocker):
         status_tab=GetOfferStatusTab.active,
         user_id=user_id
     )
-
-
-@pytest.mark.gen_test
-async def test_get_offer__realty_user_id_is_none(mocker):
-    # arrange
-    user_id = None
-    request = GetOffersRequest(
-        status_tab=GetOfferStatusTab.active
-    )
-
-    # act
-    with pytest.raises(Exception) as e:
-        await offers.get_offers(
-            request=request,
-            realty_user_id=user_id
-        )
-
-    # assert
-    assert e.value.args[0] == 'Не указан X-Real-UserId'

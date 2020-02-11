@@ -23,7 +23,7 @@ class Subagent:
 class Newbuilding:
     name: str
     """Название ЖК"""
-    url: str
+    search_url: str
     """Поисковый запрос по ЖК"""
 
 
@@ -35,7 +35,7 @@ class Underground:
     """Цвет линии метро"""
     name: str
     """Название метро"""
-    url: str
+    search_url: str
     """Поисковый запрос по метро"""
 
 
@@ -43,7 +43,7 @@ class Underground:
 class Address:
     name: str
     """Полный адрес"""
-    url: str
+    search_url: str
     """Поисковый запрос по адресу"""
 
 
@@ -80,13 +80,13 @@ class OfferViewModel:
     is_from_package: bool
     """ Флаг 'из пакета'
     """
-    is_from_import: bool
+    is_manual: bool
     """ Флаг 'из импорта'
     """
     is_publication_time_ends: bool
     """ Флаг 'меньше суток до конца публикации'
     """
-    created_at: Optional[datetime]
+    created_at: datetime
     """Дата подачи объявления"""
-    id: Optional[int]
+    id: int
     """ID объявления"""
