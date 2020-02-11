@@ -620,6 +620,13 @@
             ],
             "version": "==1.2.3"
         },
+        "appdirs": {
+            "hashes": [
+                "sha256:9e5896d1372858f8dd3344faf4e5014d21849c756c8d5701f78f8a103b372d92",
+                "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"
+            ],
+            "version": "==1.4.3"
+        },
         "astroid": {
             "hashes": [
                 "sha256:71ea07f44df9568a75d0f354c49143a4575d90645e9fead6dfb52c26a85ed13a",
@@ -1060,6 +1067,7 @@
         "mypy": {
             "hashes": [
                 "sha256:0a9a45157e532da06fe56adcfef8a74629566b607fa2c1ac0122d1ff995c748a",
+                "sha256:0d500d45de7e0aecab01311a4ea84533944571c99c3ddb2329cef76c27f0959d",
                 "sha256:2c35cae79ceb20d47facfad51f952df16c2ae9f45db6cb38405a3da1cf8fc0a7",
                 "sha256:4b9365ade157794cef9685791032521233729cb00ce76b0ddc78749abea463d2",
                 "sha256:53ea810ae3f83f9c9b452582261ea859828a9ed666f2e1ca840300b69322c474",
@@ -1068,7 +1076,6 @@
                 "sha256:7eadc91af8270455e0d73565b8964da1642fe226665dd5c9560067cd64d56749",
                 "sha256:7f672d02fffcbace4db2b05369142e0506cdcde20cea0e07c7c2171c4fd11dd6",
                 "sha256:85baab8d74ec601e86134afe2bcccd87820f79d2f8d5798c889507d1088287bf",
-                "sha256:87c556fb85d709dacd4b4cb6167eecc5bbb4f0a9864b69136a0d4640fdc76a36",
                 "sha256:a6bd44efee4dc8c3324c13785a9dc3519b3ee3a92cada42d2b57762b7053b49b",
                 "sha256:c6d27bd20c3ba60d5b02f20bd28e20091d6286a699174dfad515636cb09b5a72",
                 "sha256:e2bb577d10d09a2d8822a042a23b8d62bc3b269667c9eb8e60a6edfa000211b1",
@@ -1435,10 +1442,10 @@
         },
         "virtualenv": {
             "hashes": [
-                "sha256:0d62c70883c0342d59c11d0ddac0d954d0431321a41ab20851facf2b222598f3",
-                "sha256:55059a7a676e4e19498f1aad09b8313a38fcc0cdbe4fdddc0e9b06946d21b4bb"
+                "sha256:09740201a02918564a84eea071708c46ac26f3bd9b688b48fc6a86f331c536b7",
+                "sha256:ef3fd938ef165956e51bba0d0623508de920ca9f3ccd30c6e9f74381677e0cbb"
             ],
-            "version": "==16.7.9"
+            "version": "==20.0.1"
         },
         "wcwidth": {
             "hashes": [
