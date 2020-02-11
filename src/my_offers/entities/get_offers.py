@@ -10,6 +10,8 @@ from my_offers.enums.sort_types import GetOffersSortType
 class GetOffersRequest:
     status_tab: enums.GetOfferStatusTab
     """Вкладка"""
+    user_id: Optional[int] = None
+    """ID пользователя для приватной апи"""
     sort_type: Optional[GetOffersSortType] = None
     """Тип сортировки"""
     deal_type: Optional[enums.DealType] = None

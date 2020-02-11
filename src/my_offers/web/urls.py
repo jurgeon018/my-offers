@@ -18,7 +18,15 @@ urlpatterns = base_urls.urlpatterns + [
             response_schema=entities.GetOffersResponse,
             base_handler_cls=PublicHandler,
         )),
-
+    url(
+        r'/v1/get-offers/$',
+        get_handler(
+            service=offers.get_offers,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersRequest,
+            response_schema=entities.GetOffersResponse,
+            base_handler_cls=RequestContextHandler,
+        )),
     url(
         r'/v1/update-offer/',
         get_handler(
