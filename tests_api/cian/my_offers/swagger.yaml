@@ -1,0 +1,396 @@
+definitions:
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items:
+          title: errors
+          type: object
+        title: errors
+        type: array
+      message:
+        title: message
+        type: string
+    type: object
+  my_offers.entities.get_offers.AuctionSchema:
+    properties:
+      bet:
+        description: Текущая ставка аукциона
+        format: int64
+        title: bet
+        type: integer
+      districtPlace:
+        description: Позиция конкуренции по району
+        format: int64
+        title: district_place
+        type: integer
+      homePlace:
+        description: Позиция конкуренции по дому
+        format: int64
+        title: home_place
+        type: integer
+    type: object
+  my_offers.entities.get_offers.GetOfferSchema:
+    properties:
+      auction:
+        $ref: '#/definitions/my_offers.entities.get_offers.AuctionSchema'
+        description: Данные об аукционе по объявлению
+      createdAt:
+        description: Дата подачи объявления
+        format: date-time
+        title: created_at
+        type: string
+      features:
+        description: 'Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека'
+        items:
+          title: features
+          type: string
+        title: features
+        type: array
+      geo:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.OfferGeoSchema'
+        description: Гео
+      id:
+        description: ID объявления
+        format: int64
+        title: id
+        type: integer
+      isFromImport:
+        description: " Флаг 'из импорта'\n    "
+        title: is_from_import
+        type: boolean
+      isFromPackage:
+        description: " Флаг 'из пакета'\n    "
+        title: is_from_package
+        type: boolean
+      isPublicationTimeEnds:
+        description: " Флаг 'меньше суток до конца публикации'\n    "
+        title: is_publication_time_ends
+        type: boolean
+      mainPhotoUrl:
+        description: Основаная фотография объекта
+        title: main_photo_url
+        type: string
+      priceInfo:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.PriceInfoSchema'
+        description: Инофрмация о цене
+      publishFeatures:
+        description: 'Параметры публикации: сколько осталось, автопродление'
+        items:
+          title: publish_features
+          type: string
+        title: publish_features
+        type: array
+      statistics:
+        $ref: '#/definitions/my_offers.entities.get_offers.StatisticsSchema'
+        description: Статистика по объявлению
+      subagent:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.SubagentSchema'
+        description: Сабагент
+      title:
+        description: Заголовок объявления
+        title: title
+        type: string
+      url:
+        description: URL объявления
+        title: url
+        type: string
+      vas:
+        description: Список VAS'ов
+        items:
+          enum:
+          - auction
+          - calltracking
+          - free
+          - highlight
+          - paid
+          - premium
+          - top3
+          type: string
+          x-auction: ''
+          x-calltracking: ''
+          x-free: ''
+          x-highlight: ''
+          x-paid: ''
+          x-premium: ''
+          x-top3: ''
+        title: vas
+        type: array
+    required:
+    - features
+    - isFromImport
+    - isFromPackage
+    - isPublicationTimeEnds
+    - priceInfo
+    type: object
+  my_offers.entities.get_offers.GetOffersRequestSchema:
+    properties:
+      dealType:
+        description: Тип сделки
+        enum:
+        - rent
+        - sale
+        type: string
+        x-rent: Аренда
+        x-sale: Продажа
+      hasPhoto:
+        description: Только с фото
+        title: has_photo
+        type: boolean
+      isInHiddenBase:
+        description: Только видимые агентам
+        title: is_in_hidden_base
+        type: boolean
+      isManual:
+        description: Только ручные
+        title: is_manual
+        type: boolean
+      offerType:
+        description: Тип объявления
+        enum:
+        - commercial
+        - flat
+        - newobject
+        - suburban
+        type: string
+        x-commercial: Коммерческая
+        x-flat: Жилая
+        x-newobject: Новостройки
+        x-suburban: Загородная
+      searchText:
+        description: Полнотекстовый поиск по объявлению
+        title: search_text
+        type: string
+      services:
+        description: Тип размещения
+        items:
+          enum:
+          - auction
+          - calltracking
+          - free
+          - highlight
+          - paid
+          - premium
+          - top3
+          type: string
+          x-auction: ''
+          x-calltracking: ''
+          x-free: ''
+          x-highlight: ''
+          x-paid: ''
+          x-premium: ''
+          x-top3: ''
+        title: services
+        type: array
+      sortType:
+        description: Тип сортировки
+        enum:
+        - by_area_max
+        - by_area_min
+        - by_default
+        - by_offer_id
+        - by_price_for_meter
+        - by_price_max
+        - by_price_min
+        - by_street
+        - by_walk_time
+        type: string
+        x-by_area_max: 'По площади: возрастающая'
+        x-by_area_min: 'По площади: убывающая'
+        x-by_default: " По-умолчанию.\n        Для разных статусов объявления - разная.\n\
+          \    "
+        x-by_offer_id: По ID объявления
+        x-by_price_for_meter: По цене за метр
+        x-by_price_max: 'По цене: возрастающая'
+        x-by_price_min: 'По цене: убывающая'
+        x-by_street: По улице
+        x-by_walk_time: По времени до метро
+      statusTab:
+        description: Вкладка
+        enum:
+        - active
+        - archived
+        - declined
+        - notActive
+        type: string
+        x-active: Активные
+        x-archived: Архив
+        x-declined: Отклоненные
+        x-notActive: Неактивные
+      subAgentIds:
+        description: Список сотрудников (только для мастрер аккаунтов)
+        items:
+          format: int64
+          title: sub_agent_ids
+          type: integer
+        title: sub_agent_ids
+        type: array
+    required:
+    - statusTab
+    type: object
+  my_offers.entities.get_offers.GetOffersResponseSchema:
+    properties:
+      counters:
+        $ref: '#/definitions/my_offers.entities.get_offers.OfferCountersSchema'
+      offers:
+        items:
+          $ref: '#/definitions/my_offers.entities.get_offers.GetOfferSchema'
+        type: array
+    required:
+    - counters
+    - offers
+    type: object
+  my_offers.entities.get_offers.OfferCountersSchema:
+    properties:
+      active:
+        format: int64
+        title: active
+        type: integer
+      archived:
+        format: int64
+        title: archived
+        type: integer
+      declined:
+        format: int64
+        title: declined
+        type: integer
+      notActive:
+        format: int64
+        title: not_active
+        type: integer
+    required:
+    - active
+    - archived
+    - declined
+    - notActive
+    type: object
+  my_offers.entities.get_offers.StatisticsSchema:
+    properties:
+      favorites:
+        description: Количество добавлений в избранное
+        format: int64
+        title: favorites
+        type: integer
+      shows:
+        description: Количество показов в поиске
+        format: int64
+        title: shows
+        type: integer
+      views:
+        description: Количество просмотров карточки
+        format: int64
+        title: views
+        type: integer
+    type: object
+  my_offers.entities.offer_view_model.AddressSchema:
+    properties:
+      name:
+        description: Полный адрес
+        title: name
+        type: string
+      url:
+        description: Поисковый запрос по адресу
+        title: url
+        type: string
+    required:
+    - name
+    - url
+    type: object
+  my_offers.entities.offer_view_model.NewbuildingSchema:
+    properties:
+      name:
+        description: Название ЖК
+        title: name
+        type: string
+      url:
+        description: Поисковый запрос по ЖК
+        title: url
+        type: string
+    required:
+    - name
+    - url
+    type: object
+  my_offers.entities.offer_view_model.OfferGeoSchema:
+    properties:
+      address:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.AddressSchema'
+        description: Адрес
+      newbuilding:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.NewbuildingSchema'
+        description: Новостройки
+      underground:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.UndergroundSchema'
+        description: Метро
+    type: object
+  my_offers.entities.offer_view_model.PriceInfoSchema:
+    properties:
+      exactPrice:
+        description: Цена
+        title: exact_price
+        type: string
+    required:
+    - exactPrice
+    type: object
+  my_offers.entities.offer_view_model.SubagentSchema:
+    properties:
+      id:
+        description: ID агента
+        format: int64
+        title: id
+        type: integer
+      name:
+        description: Полное имя агнета
+        title: name
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  my_offers.entities.offer_view_model.UndergroundSchema:
+    properties:
+      lineColor:
+        description: Цвет линии метро
+        title: line_color
+        type: string
+      name:
+        description: Название метро
+        title: name
+        type: string
+      regionId:
+        description: ID региона
+        format: int64
+        title: region_id
+        type: integer
+      url:
+        description: Поисковый запрос по метро
+        title: url
+        type: string
+    required:
+    - lineColor
+    - name
+    - regionId
+    - url
+    type: object
+info:
+  description: 'МКС: мои объявления для агента'
+  title: my-offers
+  version: 1.0.0
+paths:
+  /public/v1/get-offers/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/my_offers.entities.get_offers.GetOffersRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/my_offers.entities.get_offers.GetOffersResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+      summary: Получить получить объявления для пользователя. Для м/а с учетом иерархии.
+swagger: '2.0'
