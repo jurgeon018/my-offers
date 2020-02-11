@@ -10,50 +10,30 @@ from my_offers.enums.sort_types import GetOffersSortType
 class GetOffersRequest:
     status_tab: enums.GetOfferStatusTab
     """Вкладка"""
-    sort_type: Optional[GetOffersSortType] = None
+    sort_type: Optional[GetOffersSortType]
     """Тип сортировки"""
-    deal_type: Optional[enums.DealType] = None
+    deal_type: Optional[enums.DealType]
     """Тип сделки"""
-    offer_type: Optional[enums.OfferType] = None
+    offer_type: Optional[enums.OfferType]
     """Тип объявления"""
-    services: Optional[List[enums.Services]] = None
+    services: Optional[List[enums.Services]]
     """Тип размещения"""
-    sub_agent_ids: Optional[List[int]] = None
+    sub_agent_ids: Optional[List[int]]
     """Список сотрудников (только для мастрер аккаунтов)"""
-    has_photo: Optional[bool] = None
+    has_photo: Optional[bool]
     """Только с фото"""
-    is_manual: Optional[bool] = None
+    is_manual: Optional[bool]
     """Только ручные"""
-    is_in_hidden_base: Optional[bool] = None
+    is_in_hidden_base: Optional[bool]
     """Только видимые агентам"""
-    search_text: Optional[str] = None
+    search_text: Optional[str]
     """Полнотекстовый поиск по объявлению"""
 
 
 @dataclass
-class GetOffersPrivateRequest:
-    status_tab: enums.GetOfferStatusTab
-    """Вкладка"""
+class GetOffersPrivateRequest(GetOffersRequest):
     user_id: int
-    """ID пользователя для приватной апи"""
-    sort_type: Optional[GetOffersSortType] = None
-    """Тип сортировки"""
-    deal_type: Optional[enums.DealType] = None
-    """Тип сделки"""
-    offer_type: Optional[enums.OfferType] = None
-    """Тип объявления"""
-    services: Optional[List[enums.Services]] = None
-    """Тип размещения"""
-    sub_agent_ids: Optional[List[int]] = None
-    """Список сотрудников (только для мастрер аккаунтов)"""
-    has_photo: Optional[bool] = None
-    """Только с фото"""
-    is_manual: Optional[bool] = None
-    """Только ручные"""
-    is_in_hidden_base: Optional[bool] = None
-    """Только видимые агентам"""
-    search_text: Optional[str] = None
-    """Полнотекстовый поиск по объявлению"""
+    """ID пользователя"""
 
 
 @dataclass

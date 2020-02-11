@@ -78,14 +78,11 @@ class OfferViewModel:
     vas: Optional[List[enums.Services]]
     """Список VAS'ов"""
     is_from_package: bool
-    """ Флаг 'из пакета'
-    """
+    """ Флаг 'из пакета'"""
     is_manual: bool
-    """ Флаг 'из импорта'
-    """
+    """ Флаг 'из импорта'"""
     is_publication_time_ends: bool
-    """ Флаг 'меньше суток до конца публикации'
-    """
+    """ Флаг 'меньше суток до конца публикации'"""
     created_at: datetime
     """Дата подачи объявления"""
     id: int

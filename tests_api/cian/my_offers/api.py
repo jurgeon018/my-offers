@@ -9,7 +9,6 @@ new-codegen version: 4.0.0
 
 """
 from cian_automation.context import LazyImport
-
 from .clients.public_v1_get_offers import PublicV1GetOffers
 
 

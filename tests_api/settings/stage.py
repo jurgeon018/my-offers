@@ -1,5 +1,4 @@
 from cian_automation.enums import Environment
-
 from .base import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
 

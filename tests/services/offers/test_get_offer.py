@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from cian_test_utils import future
 
@@ -16,13 +18,24 @@ async def test_get_offer(mocker):
     expected_user = 666
     request = GetOffersRequest(
         status_tab=GetOfferStatusTab.active,
+        sort_type=None,
+        deal_type=None,
+        offer_type=None,
+        services=None,
+        sub_agent_ids=None,
+        has_photo=None,
+        is_manual=None,
+        is_in_hidden_base=None,
+        search_text=None,
     )
     object_model = ObjectModel(
         bargain_terms=BargainTerms(price=123),
         category=Category.building_rent,
         phones=[
             Phone(country_code='1', number='12312')
-        ]
+        ],
+        creation_date=datetime(2020, 2, 11, 17, 00),
+        id=111,
     )
     expected_result = GetOffersResponse(offers=[
         GetOffer(
@@ -38,8 +51,8 @@ async def test_get_offer(mocker):
             is_from_package=False,
             is_manual=False,
             is_publication_time_ends=False,
-            created_at=None,
-            id=None,
+            created_at=datetime(2020, 2, 11, 17, 00),
+            id=111,
             statistics=None,
             auction=None
         )],
@@ -53,7 +66,7 @@ async def test_get_offer(mocker):
     # act
     result = await offers.get_offers_public(
         request=request,
-        realty_user_id=expected_user
+        user_id=expected_user
     )
 
     # assert
