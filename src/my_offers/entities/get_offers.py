@@ -69,6 +69,15 @@ class OfferCounters:
 
 
 @dataclass
+class PageInfo:
+    count: int
+    """Количество  объектов"""
+    can_load_more: bool
+    """Это не последняя страница"""
+
+
+@dataclass
 class GetOffersResponse:
     offers: List[GetOffer]
     counters: OfferCounters
+    page: Optional[PageInfo] = None

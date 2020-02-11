@@ -1,4 +1,4 @@
-from cian_enum import NoFormat, StrEnum
+from cian_enum import StrEnum
 
 
 class GetOffersSortType(StrEnum):
