@@ -549,7 +549,7 @@ class ObjectModel:
     gas_type: Optional[GasType] = None
     """Тип газоснабжения"""
     geo: Optional[Geo] = None
-    """Gets or Sets OfferGeo"""
+    """Gets or Sets Geo"""
     has_bathhouse: Optional[bool] = None
     """Есть баня"""
     has_bathtub: Optional[bool] = None
