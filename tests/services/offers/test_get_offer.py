@@ -11,17 +11,11 @@ from my_offers.services import offers
 
 
 @pytest.mark.gen_test
-@pytest.mark.gen_test
-@pytest.mark.parametrize('realty_user_id, user_id', [
-    (666, None),
-    (None, 666)
-])
-async def test_get_offer(mocker, realty_user_id, user_id):
+async def test_get_offer(mocker):
     # arrange
-    expected_user = realty_user_id or user_id
+    expected_user = 666
     request = GetOffersRequest(
         status_tab=GetOfferStatusTab.active,
-        user_id=user_id
     )
     object_model = ObjectModel(
         bargain_terms=BargainTerms(price=123),
@@ -57,9 +51,9 @@ async def test_get_offer(mocker, realty_user_id, user_id):
     )
 
     # act
-    result = await offers.get_offers(
+    result = await offers.get_offers_public(
         request=request,
-        realty_user_id=realty_user_id
+        realty_user_id=expected_user
     )
 
     # assert
@@ -68,26 +62,3 @@ async def test_get_offer(mocker, realty_user_id, user_id):
         status_tab=GetOfferStatusTab.active,
         user_id=expected_user
     )
-
-
-@pytest.mark.gen_test
-@pytest.mark.parametrize('realty_user_id, user_id', [
-    (None, None)
-])
-async def test_get_offer__user_id_is_none(mocker, realty_user_id, user_id):
-    # arrange
-    user_id = None
-    request = GetOffersRequest(
-        status_tab=GetOfferStatusTab.active,
-        user_id=user_id
-    )
-
-    # act
-    with pytest.raises(Exception) as res:
-        await offers.get_offers(
-            request=request,
-            realty_user_id=realty_user_id
-        )
-
-    # assert
-    assert res.value.args[0] == 'Не указан user_id'

@@ -10,7 +10,31 @@ from my_offers.enums.sort_types import GetOffersSortType
 class GetOffersRequest:
     status_tab: enums.GetOfferStatusTab
     """Вкладка"""
-    user_id: Optional[int] = None
+    sort_type: Optional[GetOffersSortType] = None
+    """Тип сортировки"""
+    deal_type: Optional[enums.DealType] = None
+    """Тип сделки"""
+    offer_type: Optional[enums.OfferType] = None
+    """Тип объявления"""
+    services: Optional[List[enums.Services]] = None
+    """Тип размещения"""
+    sub_agent_ids: Optional[List[int]] = None
+    """Список сотрудников (только для мастрер аккаунтов)"""
+    has_photo: Optional[bool] = None
+    """Только с фото"""
+    is_manual: Optional[bool] = None
+    """Только ручные"""
+    is_in_hidden_base: Optional[bool] = None
+    """Только видимые агентам"""
+    search_text: Optional[str] = None
+    """Полнотекстовый поиск по объявлению"""
+
+
+@dataclass
+class GetOffersPrivateRequest:
+    status_tab: enums.GetOfferStatusTab
+    """Вкладка"""
+    user_id: int
     """ID пользователя для приватной апи"""
     sort_type: Optional[GetOffersSortType] = None
     """Тип сортировки"""

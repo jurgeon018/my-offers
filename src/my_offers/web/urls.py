@@ -12,7 +12,7 @@ urlpatterns = base_urls.urlpatterns + [
     url(
         r'/public/v1/get-offers/$',
         get_handler(
-            service=offers.get_offers,
+            service=offers.get_offers_public,
             method='POST',  # pragma: no mutate
             request_schema=entities.GetOffersRequest,
             response_schema=entities.GetOffersResponse,
@@ -21,7 +21,7 @@ urlpatterns = base_urls.urlpatterns + [
     url(
         r'/v1/get-offers/$',
         get_handler(
-            service=offers.get_offers,
+            service=offers.get_offers_private,
             method='POST',  # pragma: no mutate
             request_schema=entities.GetOffersRequest,
             response_schema=entities.GetOffersResponse,
