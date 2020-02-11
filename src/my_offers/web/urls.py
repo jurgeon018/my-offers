@@ -5,19 +5,28 @@ from tornado.web import url
 
 from my_offers import entities
 from my_offers.services import offers
+from my_offers.web.handlers import PublicHandler
 
 
 urlpatterns = base_urls.urlpatterns + [
     url(
+        r'/public/v1/get-offers/$',
+        get_handler(
+            service=offers.get_offers_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersRequest,
+            response_schema=entities.GetOffersResponse,
+            base_handler_cls=PublicHandler,
+        )),
+    url(
         r'/v1/get-offers/$',
         get_handler(
-            service=offers.get_offers,
+            service=offers.get_offers_private,
             method='POST',  # pragma: no mutate
             request_schema=entities.GetOffersRequest,
             response_schema=entities.GetOffersResponse,
             base_handler_cls=RequestContextHandler,
-        )
-    ),
+        )),
     url(
         r'/v1/update-offer/',
         get_handler(

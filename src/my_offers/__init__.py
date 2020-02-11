@@ -1,8 +1,14 @@
+import typing
+
 import cian_core
 from cian_core.registry import postgres_connections
 
 
-pg = postgres_connections('my_offers')
+if typing.TYPE_CHECKING:
+    from cian_core.postgres import PostgresConnection
+    from cian_core.registry.base import Value
+
+pg: 'Value[PostgresConnection]' = postgres_connections('my_offers')
 
 
 def setup() -> None:
