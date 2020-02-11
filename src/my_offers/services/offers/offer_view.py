@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from my_offers.entities.get_offers import GetOffer
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Subagent, Underground
-from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms, BargainTerms, Geo
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo, ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement.process_announcement_service import CATEGORY_OFFER_TYPE_DEAL_TYPE
