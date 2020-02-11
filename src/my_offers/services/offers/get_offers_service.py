@@ -1,11 +1,11 @@
 from my_offers import entities
+from my_offers.mappers.get_offers_request import get_offers_request_mapper
 from my_offers.repositories import postgresql
 from my_offers.services.offers.offer_view import build_offer_view
 
 
 async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entities.GetOffersResponse:
-    """ Приватная апи получения моих объявлений. Требует явной передачи пользователя.
-    """
+    """ Приватная апи получения моих объявлений. Требует явной передачи пользователя. """
     return await get_offers_public(
         request=request,
         user_id=request.user_id
@@ -13,11 +13,10 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
 
 
 async def get_offers_public(request: entities.GetOffersRequest, user_id: int) -> entities.GetOffersResponse:
-    """ Получить получить объявления для пользователя. Для м/а с учетом иерархии.
-    """
+    """ Получить получить объявления для пользователя. Для м/а с учетом иерархии. """
     object_models = await postgresql.get_object_models(
-        status_tab=request.status_tab,
-        user_id=user_id
+        filters=get_offers_request_mapper.map_to(request),
+        master_user_id=user_id  # todo определение мастрер аккаунта
     )
     offers_views = [
         build_offer_view(raw_offer=object_model)

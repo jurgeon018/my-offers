@@ -1,19 +1,30 @@
 import copy
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Any
 
 import asyncpgsa
 import pytz
 from cian_json import json
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, func
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, pg
-from my_offers.enums import GetOfferStatusTab
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.mappers.offer_mapper import offer_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import tables
+
+
+OFFER_TABLE = tables.offers.c
+
+FILTERS_MAP = {
+    'status_tab': OFFER_TABLE.status_tab,
+    'deal_type': OFFER_TABLE.deal_type,
+    'offer_type': OFFER_TABLE.offer_type,
+    'has_photo': OFFER_TABLE.has_photo,
+    'is_manual': OFFER_TABLE.is_manual,
+    'is_in_hidden_base': OFFER_TABLE.is_in_hidden_base,
+}
 
 
 async def save_offer(offer: entities.Offer) -> None:
@@ -42,18 +53,32 @@ async def save_offer(offer: entities.Offer) -> None:
 
 async def get_object_models(
         *,
-        status_tab: GetOfferStatusTab,
-        user_id: int,
+        filters: Dict[str, Any],
+        master_user_id: int,
         limit: int = 20
 ) -> List[ObjectModel]:
+    # todo: незабыть про newobjects
+    conditions = [OFFER_TABLE.master_user_id == master_user_id]
+    if services := filters['services']:
+        conditions.append(OFFER_TABLE.services.any_(services).all_())
+    if sub_agent_ids := filters['sub_agent_ids']:
+        conditions.append(OFFER_TABLE.sub_agent_ids.any_(sub_agent_ids).all_())
+    if search_text := filters['search_text']:
+        conditions.append(
+            func.to_tsvector('russian', OFFER_TABLE.search_text).match(search_text, postgresql_regconfig='russian')
+        )
+
+    for key, value in filters.items():
+        if key not in FILTERS_MAP:
+            continue
+        if value is None:
+            continue
+        conditions.append(FILTERS_MAP[key] == value)
+
     sql = (
-        select([
-            tables.offers.c.raw_data,
-        ])
-        .where(and_(
-            tables.offers.c.status_tab == status_tab.value,
-            tables.offers.c.master_user_id == user_id
-        ))
+        select([OFFER_TABLE.raw_data])
+        .where(and_(*conditions))
+        .order_by(OFFER_TABLE.sort_date.desc().nullslast(), OFFER_TABLE.offer_id)
         .limit(limit)
     )
 
