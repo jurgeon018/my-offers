@@ -48,8 +48,8 @@ class Address:
 
 
 @dataclass
-class Geo:
-    address: Address
+class OfferGeo:
+    address: Optional[Address] = None
     """Адрес"""
     newbuilding: Optional[Newbuilding] = None
     """Новостройки"""
@@ -61,11 +61,11 @@ class Geo:
 class OfferViewModel:
     main_photo_url: Optional[str]
     """Основаная фотография объекта"""
-    title: str
+    title: Optional[str]
     """Заголовок объявления"""
-    url: str
+    url: Optional[str]
     """URL объявления"""
-    geo: Optional[Geo]
+    geo: Optional[OfferGeo]
     """Гео"""
     subagent: Optional[Subagent]
     """Сабагент"""
@@ -73,9 +73,9 @@ class OfferViewModel:
     """Инофрмация о цене"""
     features: List[str]
     """Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека"""
-    publish_features: List[str]
+    publish_features: Optional[List[str]]
     """Параметры публикации: сколько осталось, автопродление"""
-    vas: List[enums.Services]
+    vas: Optional[List[enums.Services]]
     """Список VAS'ов"""
     is_from_package: bool
     """ Флаг 'из пакета'
@@ -86,7 +86,7 @@ class OfferViewModel:
     is_publication_time_ends: bool
     """ Флаг 'меньше суток до конца публикации'
     """
-    created_at: datetime
+    created_at: Optional[datetime]
     """Дата подачи объявления"""
-    id: int
+    id: Optional[int]
     """ID объявления"""

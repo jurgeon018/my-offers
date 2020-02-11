@@ -4,7 +4,6 @@ from typing import Dict, List, Optional, Tuple
 from my_offers import entities, enums
 from my_offers.mappers.date_time import date_time_time_zone_mapper
 from my_offers.repositories import postgresql
-from my_offers.repositories import portresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 
 
@@ -80,7 +79,7 @@ STATUS_TO_TAB_MAP = {
 
 
 async def process_announcement(announcement: Dict) -> None:
-    offer_type, deal_type = CATEGORY_OFFER_TYPE_DEAL_TYPE[enums.Category(announcement['category'])]
+    offer_type, deal_type = CATEGORY_OFFER_TYPE_DEAL_TYPE[Category(announcement['category'])]
     status_tab = _get_status_tab(
         is_archived=announcement.get('flags', {}).get('isArchived', False),
         offer_status=announcement['status'],

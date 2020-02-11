@@ -1769,7 +1769,7 @@ definitions:
         x-main: Магистральное
       geo:
         $ref: '#/definitions/RealtyApi.Models.Announcements.Swagger.GeoSchema'
-        description: Gets or Sets Geo
+        description: Gets or Sets OfferGeo
       hasBathhouse:
         description: Есть баня
         type: boolean
