@@ -31,7 +31,7 @@ async def _get_offers(*, status_tab: GetOfferStatusTab, user_id: int) -> GetOffe
         user_id=user_id
     )
     offers_views = [
-        build_offer_view(raw_offer=object_model)
+        build_offer_view(object_model=object_model)
         for object_model in object_models
     ]
 

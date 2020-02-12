@@ -2,7 +2,7 @@ import pytest
 from cian_test_utils import future
 
 from my_offers.entities import GetOffersRequest
-from my_offers.entities.get_offers import GetOffer, GetOffersResponse, OfferCounters
+from my_offers.entities.get_offers import GetOffer, GetOffersResponse, OfferCounters, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.enums import GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
@@ -40,7 +40,7 @@ async def test_get_offer(mocker):
             is_publication_time_ends=False,
             created_at=None,
             id=None,
-            statistics=None,
+            statistics=Statistics(),
             auction=None
         )],
         counters=OfferCounters(active=1, not_active=0, declined=0, archived=0))
