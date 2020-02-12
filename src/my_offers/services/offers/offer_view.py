@@ -8,39 +8,39 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term 
 from my_offers.services.announcement.process_announcement_service import CATEGORY_OFFER_TYPE_DEAL_TYPE
 
 
-def build_offer_view(raw_offer: ObjectModel) -> GetOffer:
+def build_offer_view(object_model: ObjectModel) -> GetOffer:
     """ Собирает из шарповой модели компактное представление объявления для выдачи.
     """
-    main_photo_url = raw_offer.photos[0].mini_url if raw_offer.photos else None
+    main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
     url_to_offer = None  # TODO: https://jira.cian.tech/browse/CD-73814
 
     geo = OfferGeo(
-        address=_get_address(raw_offer.geo),
-        newbuilding=_get_newbuilding(raw_offer.geo),
-        underground=_get_underground(raw_offer.geo)
+        address=_get_address(object_model.geo),
+        newbuilding=_get_newbuilding(object_model.geo),
+        underground=_get_underground(object_model.geo)
     )
     subagent = (
-        Subagent(id=raw_offer.published_user_id, name='')  # TODO: https://jira.cian.tech/browse/CD-73807
-        if raw_offer.published_user_id
+        Subagent(id=object_model.published_user_id, name='')  # TODO: https://jira.cian.tech/browse/CD-73807
+        if object_model.published_user_id
         else None
     )
-    source = bool(raw_offer.source and raw_offer.source.is_upload)
+    source = bool(object_model.source and object_model.source.is_upload)
 
     return GetOffer(
-        id=raw_offer.id,
-        created_at=raw_offer.creation_date,
-        title=raw_offer.title,
+        id=object_model.id,
+        created_at=object_model.creation_date,
+        title=object_model.title,
         main_photo_url=main_photo_url,
         url=url_to_offer,
         geo=geo,
         subagent=subagent,
-        price_info=_get_price(raw_offer.bargain_terms, raw_offer.category),
-        features=_get_features(raw_offer.bargain_terms, raw_offer.category),
-        publish_features=_get_publish_features(raw_offer.publish_terms),
-        vas=_get_vas(raw_offer.publish_terms),
-        is_from_package=_is_from_package(raw_offer.publish_terms),
+        price_info=_get_price(object_model.bargain_terms, object_model.category),
+        features=_get_features(object_model.bargain_terms, object_model.category),
+        publish_features=_get_publish_features(object_model.publish_terms),
+        vas=_get_vas(object_model.publish_terms),
+        is_from_package=_is_from_package(object_model.publish_terms),
         is_manual=source,
-        is_publication_time_ends=_is_publication_time_ends(raw_offer),
+        is_publication_time_ends=_is_publication_time_ends(object_model),
         statistics=Statistics()
     )
 

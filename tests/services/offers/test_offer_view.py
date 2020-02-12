@@ -52,7 +52,7 @@ async def test_build_offer_view():
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result == expected_result
@@ -72,7 +72,7 @@ async def test_build_offer_view__subagent():
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.subagent == Subagent(id=published_user_id, name='')
@@ -96,7 +96,7 @@ async def test_build_offer_view__is__from_import(source, is_manual):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.is_manual is is_manual
@@ -118,7 +118,7 @@ async def test_build_offer_view__price_info(deal_type, expected):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.price_info == PriceInfo(exact_price=expected)
@@ -150,7 +150,7 @@ async def test_build_offer_view__features(deal_type, prepared, expected):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.features == expected
@@ -171,7 +171,7 @@ async def test_build_offer_view__publish_features(publish_terms, expected):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.publish_features == expected
@@ -198,7 +198,7 @@ async def test_build_offer_view__vas(terms, expected):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.vas == expected
@@ -232,7 +232,7 @@ async def test_build_offer_view__is_from_package(publish_terms, expected):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.is_from_package is expected
@@ -248,7 +248,7 @@ async def test_build_offer_view__is_publication_time_ends():
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.is_publication_time_ends is False
@@ -276,7 +276,7 @@ async def test_build_offer_view__geo_underground(geo, expected):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.geo.underground == expected
@@ -297,7 +297,7 @@ async def test_build_offer_view__newbuilding(geo, expected):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.geo.newbuilding == expected
@@ -328,7 +328,7 @@ async def test_build_offer_view__geo_address(geo, expected):
     )
 
     # act
-    result = build_offer_view(raw_offer=raw_offer)
+    result = build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.geo.address == expected
