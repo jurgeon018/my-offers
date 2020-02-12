@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from my_offers.entities.get_offers import GetOffer
+from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Subagent, Underground
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo, ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
@@ -41,6 +41,7 @@ def build_offer_view(raw_offer: ObjectModel) -> GetOffer:
         is_from_package=_is_from_package(raw_offer.publish_terms),
         is_manual=source,
         is_publication_time_ends=_is_publication_time_ends(raw_offer),
+        statistics=Statistics()
     )
 
 

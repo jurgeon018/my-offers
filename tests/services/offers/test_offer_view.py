@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.entities.get_offers import GetOffer
+from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Subagent, Underground
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     AddressInfo,
@@ -47,8 +47,8 @@ async def test_build_offer_view():
         is_publication_time_ends=False,
         created_at=None,
         id=None,
-        statistics=None,
-        auction=None
+        statistics=Statistics(),
+        auction=None,
     )
 
     # act
