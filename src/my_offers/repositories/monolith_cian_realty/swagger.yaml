@@ -1,0 +1,80 @@
+definitions:
+  Geo.GeoApi.Models.BoundedBy:
+    description: "Согласно общепринятым названиям https://tech.yandex.ru/maps/doc/ymapsml/1.x/ref/reference/gml-boundedBy-docpage/\r\
+      \nОбласть показа для большинства геообъектов - это минимальный прямоугольник,\
+      \ который можно описать вокруг объекта. \r\nОбласть задается двумя геоточками,\
+      \ координаты которых содержатся в тегах lowerCorner и upperCorner."
+    properties:
+      lowerCorner:
+        $ref: '#/definitions/Geo.GeoApi.Models.BoundedByCorner'
+      upperCorner:
+        $ref: '#/definitions/Geo.GeoApi.Models.BoundedByCorner'
+    type: object
+  Geo.GeoApi.Models.BoundedByCorner:
+    properties:
+      lat:
+        format: double
+        type: number
+      lng:
+        format: double
+        type: number
+    type: object
+  RealtyDmir.App.Geo.Models.GetRegionsResponse:
+    properties:
+      boundedBy:
+        $ref: '#/definitions/Geo.GeoApi.Models.BoundedBy'
+        description: "Bounding-box региона\r\nЕсли у нас в БД у региона нет контуров,\
+          \ то boundedBy будет null"
+      displayName:
+        type: string
+      fullName:
+        type: string
+      hasDistricts:
+        type: boolean
+      hasHighway:
+        type: boolean
+      hasMetro:
+        type: boolean
+      id:
+        format: int32
+        type: integer
+      lat:
+        format: double
+        type: number
+      lng:
+        format: double
+        type: number
+      mainTownId:
+        format: int32
+        type: integer
+      name:
+        type: string
+      timeZone:
+        description: TimeZone региона.
+        format: int32
+        type: integer
+    type: object
+host: master.monolith-cian-realty.dev3.cian.ru
+info:
+  title: monolith-cian-realty
+  version: v1
+paths:
+  /api/geo/get-regions/:
+    get:
+      consumes: []
+      operationId: GeoCoderWebApi_GetRegions
+      produces:
+      - application/json
+      - text/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/RealtyDmir.App.Geo.Models.GetRegionsResponse'
+            type: array
+      tags:
+      - GeoCoderWebApi
+schemes:
+- http
+swagger: '2.0'
