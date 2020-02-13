@@ -31,7 +31,7 @@ async def test_get_offer(mocker):
             url=None,
             geo=OfferGeo(address=None, newbuilding=None, underground=None),
             subagent=None,
-            price_info=PriceInfo(exact_price='123 ₽/мес.'),
+            price_info=PriceInfo(exact='123 ₽/мес.'),
             features=[],
             publish_features=None,
             vas=None,
