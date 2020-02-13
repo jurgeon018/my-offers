@@ -12,6 +12,7 @@ from typing import Callable
 
 from cian_automation.context import LazyImport
 from cian_automation.web import DecoratedBaseClient
+
 from .. import entities
 
 

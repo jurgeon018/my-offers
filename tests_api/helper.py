@@ -7,9 +7,8 @@ cian-testcodegen version: 3.0.0
 """
 from typing import List
 
-from pytest import mark
-
 from automation_helpers.base import BaseTest
+from pytest import mark
 
 
 @mark.my_offers

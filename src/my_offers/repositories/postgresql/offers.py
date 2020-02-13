@@ -1,11 +1,12 @@
 import copy
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 import asyncpgsa
 import pytz
+import sqlalchemy as sa
 from cian_json import json
-from sqlalchemy import and_, select, func
+from sqlalchemy import and_, any_, cast, func, select
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, pg
@@ -59,11 +60,11 @@ async def get_object_models(
 ) -> List[ObjectModel]:
     # todo: незабыть про newobjects
     conditions = [OFFER_TABLE.master_user_id == master_user_id]
-    if services := filters['services']:
-        conditions.append(OFFER_TABLE.services.any_(services).all_())
-    if sub_agent_ids := filters['sub_agent_ids']:
-        conditions.append(OFFER_TABLE.sub_agent_ids.any_(sub_agent_ids).all_())
-    if search_text := filters['search_text']:
+    if services := filters.get('services'):
+        conditions.append(OFFER_TABLE.services.contains(services))
+    if sub_agent_ids := filters.get('sub_agent_ids'):
+        conditions.append(OFFER_TABLE.user_id == any_(cast(sub_agent_ids, sa.ARRAY(sa.INT))))
+    if search_text := filters.get('search_text'):
         conditions.append(
             func.to_tsvector('russian', OFFER_TABLE.search_text).match(search_text, postgresql_regconfig='russian')
         )
