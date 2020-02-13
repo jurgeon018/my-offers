@@ -1,0 +1,1 @@
+from my_offers.services.offer_view.offer_view import build_offer_view

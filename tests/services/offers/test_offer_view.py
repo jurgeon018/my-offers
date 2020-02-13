@@ -21,7 +21,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.monolith_cian_announcementapi.entities.tariff_identificator import TariffGridType
-from my_offers.services.offers.offer_view import build_offer_view
+from my_offers.services.offer_view.offer_view import build_offer_view
 
 
 @pytest.mark.gen_test

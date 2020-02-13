@@ -1,4 +1,6 @@
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type as GeoType
+
+
 FIELDS_FOR_EXCLUDE = (
     'id_suburbian',
     'id_flat',
