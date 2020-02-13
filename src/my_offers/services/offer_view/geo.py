@@ -3,62 +3,101 @@ from typing import List, Optional
 from my_offers import enums
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, Underground
 from my_offers.enums.offer_address import AddressType
-from my_offers.repositories.monolith_cian_announcementapi.entities import Geo
+from my_offers.repositories.monolith_cian_announcementapi.entities import Geo, AddressInfo, UndergroundInfo
+from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
+from my_offers.services.seo_urls import get_query_strings_for_address
 
 
-async def prepare_geo(*, geo: Geo, deal_type: enums.DealType, offer_type: enums.OfferType) -> OfferGeo:
+ADDRESS_TYPES_MAP = {
+    Type.location: AddressType.location,
+    Type.district: AddressType.district,
+    Type.street: AddressType.street,
+    Type.house: AddressType.house,
+}
+
+
+async def prepare_geo(*, geo: Optional[Geo], deal_type: enums.DealType, offer_type: enums.OfferType) -> OfferGeo:
+    if not geo:
+        return OfferGeo()
+
     geo = OfferGeo(
-        address=_get_address(geo),
-        newbuilding=_get_newbuilding(geo),
-        underground=_get_underground(geo)
+        address=await _get_address(address_info=geo.address, deal_type=deal_type, offer_type=offer_type),
+        newbuilding=await _get_newbuilding(geo=geo, deal_type=deal_type, offer_type=offer_type),
+        underground=await _get_underground(
+            undergrounds_info=geo.undergrounds,
+            address_info=geo.address,
+            deal_type=deal_type,
+            offer_type=offer_type,
+        ),
     )
 
     return geo
 
 
-def _get_underground(geo: Geo) -> Optional[Underground]:
-    if not geo or not geo.undergrounds or not geo.address:
+async def _get_underground(
+        *,
+        undergrounds_info: Optional[List[UndergroundInfo]],
+        address_info: Optional[List[AddressInfo]],
+        deal_type: enums.DealType,
+        offer_type: enums.OfferType,
+) -> Optional[Underground]:
+    if not undergrounds_info or not address_info:
         return None
 
     # получаем основное метро
-    undergrounds = list(filter(lambda x: x.is_default, geo.undergrounds))
+    undergrounds = list(filter(lambda x: x.is_default, undergrounds_info))
+    if not undergrounds:
+        return None
     # определяем местоположение
-    address = list(filter(lambda x: x.type.is_location, geo.address))
+    address = list(filter(lambda x: x.type.is_location, address_info))
+    if not address:
+        return None
 
-    if undergrounds and address:
-        return Underground(
-            search_url='',
-            region_id=address[0].id,
-            line_color=undergrounds[0].line_color,
-            name=undergrounds[0].name
-        )
+    underground = undergrounds[0]
+    return Underground(
+        search_url=(await get_query_strings_for_address(
+            address_elements=[AddressInfo(id=underground.id, type=Type.underground)],
+            deal_type=deal_type,
+            offer_type=offer_type,
+        ))[0],
+        region_id=address[0].id,
+        line_color=underground.line_color,
+        name=underground.name
+    )
 
-    return None
 
-
-def _get_newbuilding(geo: Geo) -> Optional[Newbuilding]:
+async def _get_newbuilding(
+        *,
+        geo: Geo,
+        deal_type: enums.DealType,
+        offer_type: enums.OfferType,
+) -> Optional[Newbuilding]:
     if not geo or not geo.jk:
         return None
 
     return Newbuilding(search_url='', name=geo.jk.name)
 
 
-def _get_address(geo: Geo) -> Optional[List[Address]]:
-    if not geo or not geo.address:
+async def _get_address(
+        *,
+        address_info: Optional[List[AddressInfo]],
+        deal_type: enums.DealType,
+        offer_type: enums.OfferType,
+) -> Optional[List[Address]]:
+    if not address_info:
         return None
 
-    addresses = []
+    urls = await get_query_strings_for_address(
+        address_elements=address_info,
+        deal_type=deal_type,
+        offer_type=offer_type,
+    )
 
-    # TODO: Урдлы переходов в поиск (https://jira.cian.tech/browse/CD-74034)
-    for address in geo.address:
-        if address.type and address.full_name:
-            if address.type.is_location:
-                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.location))
-            elif address.type.is_district:
-                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.district))
-            elif address.type.is_street:
-                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.street))
-            elif address.type.is_house:
-                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.house))
+    addresses = []
+    i = 0
+    for address in address_info:
+        if address.type and address.full_name and address.type in ADDRESS_TYPES_MAP:
+            addresses.append(Address(search_url=urls[i], name=address.full_name, type=ADDRESS_TYPES_MAP[address.type]))
+            i += 1
 
     return addresses

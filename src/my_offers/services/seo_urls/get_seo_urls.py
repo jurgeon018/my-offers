@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Any, Dict, List, Set
 
 from my_offers import enums
@@ -16,7 +15,7 @@ async def get_query_strings_for_address(
         address_elements: List[AddressInfo],
         deal_type: enums.DealType,
         offer_type: enums.OfferType
-) -> Dict[str, str]:
+) -> List[str]:
     query_params = {
        'offer_type': offer_type.value,
        'deal_type': deal_type.value,
@@ -43,23 +42,16 @@ async def get_query_strings_for_address(
     query_strings = await internal_api_serialize_query_params(
         SerializeToQueryStringsRequest(query_params=address_query_params),
     )
-    query_strings = query_strings.data.query_strings
 
-    address_element_ids = [
-        _get_address_element_key(elem) for elem in address_elements
-    ]
-
-    print(dict(zip(address_element_ids, query_strings)))
-
-    return dict(zip(address_element_ids, query_strings))
+    return query_strings.data.query_strings
 
 
 def _get_geo_type_for_address_element(address_element: AddressInfo) -> GeoType:
-    return GeoType(address_element.get('type') or 'underground')
+    return GeoType(address_element.type.value)
 
 
 def _get_address_element_key(address_element: AddressInfo) -> str:
-    return f'{_get_geo_type_for_address_element(address_element).value}-{address_element["id"]}'
+    return f'{_get_geo_type_for_address_element(address_element).value}-{address_element.id}'
 
 
 def _make_query_params(
@@ -73,12 +65,12 @@ def _make_query_params(
     if geo_type.is_underground and not skip_foot:
         params.update({'foot_min': 25, 'only_foot': '2'})
 
-    if geo_type.is_location and address_element['id'] in region_ids:
+    if geo_type.is_location and address_element.id in region_ids:
         params_key = 'region'
     else:
         params_key = 'locations'
     geo_key = GEO_KEYS_MAP[geo_type]
-    params[params_key] = [{geo_key: address_element['id']}]
+    params[params_key] = [{geo_key: address_element.id}]
     params['engine_version'] = 2
 
     return params
