@@ -161,6 +161,7 @@ def _get_address(geo: Geo) -> Optional[List[Address]]:
 
     addresses = []
 
+    # TODO: Урдлы переходов в поиск (https://jira.cian.tech/browse/CD-74034)
     for address in geo.address:
         if address.type and address.full_name:
             if address.type.is_location:

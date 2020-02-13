@@ -14,5 +14,3 @@ class AddressType(StrEnum):
     """Шоссе"""
     street = 'street'
     """Улица"""
-    underground = 'underground'
-    """Метро"""
