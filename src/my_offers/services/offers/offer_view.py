@@ -1,7 +1,8 @@
 from typing import List, Optional
 
 from my_offers.entities.get_offers import GetOffer, Statistics
-from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Subagent, Underground
+from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Underground
+from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo, ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
@@ -19,11 +20,8 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         newbuilding=_get_newbuilding(object_model.geo),
         underground=_get_underground(object_model.geo)
     )
-    subagent = (
-        Subagent(id=object_model.published_user_id, name='')  # TODO: https://jira.cian.tech/browse/CD-73807
-        if object_model.published_user_id
-        else None
-    )
+
+    subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
     source = bool(object_model.source and object_model.source.is_upload)
 
     return GetOffer(
@@ -81,11 +79,11 @@ def _get_price(bargain_terms: BargainTerms, category: Category) -> PriceInfo:
 
     # TODO: https://jira.cian.tech/browse/CD-73814
     if is_rent:
-        exact_price = f'{price} ₽/мес.'
+        exact = f'{price} ₽/мес.'
     else:
-        exact_price = f'{price} ₽'
+        exact = f'{price} ₽'
 
-    return PriceInfo(exact_price=exact_price)
+    return PriceInfo(exact=exact)
 
 
 def _get_publish_features(publish_terms: PublishTerms) -> Optional[List[str]]:
@@ -157,31 +155,24 @@ def _get_newbuilding(geo: Geo) -> Optional[Newbuilding]:
     return Newbuilding(search_url='', name=geo.jk.name)
 
 
-def _get_address(geo: Geo) -> Optional[Address]:
+def _get_address(geo: Geo) -> Optional[List[Address]]:
     if not geo or not geo.address:
         return None
 
-    addresses = geo.address
+    addresses = []
 
-    town = None
-    district = None
-    street = None
-    house = None
-
-    for address in addresses:
-        if address.type:
+    for address in geo.address:
+        if address.type and address.full_name:
             if address.type.is_location:
-                town = address.full_name
+                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.location))
             elif address.type.is_district:
-                district = address.full_name
+                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.district))
             elif address.type.is_street:
-                street = address.full_name
+                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.street))
             elif address.type.is_house:
-                house = address.full_name
+                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.house))
 
-    address_name = ', '.join(filter(None, [town, district, street, house]))
-
-    return Address(search_url='', name=address_name)
+    return addresses
 
 
 def _get_deal_type(category: Category) -> Category:
