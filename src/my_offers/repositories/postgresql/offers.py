@@ -25,6 +25,8 @@ FILTERS_MAP = {
     'has_photo': OFFER_TABLE.has_photo,
     'is_manual': OFFER_TABLE.is_manual,
     'is_in_hidden_base': OFFER_TABLE.is_in_hidden_base,
+    'master_user_id': OFFER_TABLE.master_user_id,
+    'sub_agent_ids': OFFER_TABLE.user_id,
 }
 
 
@@ -55,32 +57,17 @@ async def save_offer(offer: entities.Offer) -> None:
 async def get_object_models(
         *,
         filters: Dict[str, Any],
-        master_user_id: int,
         limit: int = 20
 ) -> List[ObjectModel]:
-    # todo: незабыть про newobjects
-    conditions = [OFFER_TABLE.master_user_id == master_user_id]
-    if services := filters.get('services'):
-        conditions.append(OFFER_TABLE.services.contains(services))
-    if sub_agent_ids := filters.get('sub_agent_ids'):
-        conditions.append(OFFER_TABLE.user_id == any_(cast(sub_agent_ids, sa.ARRAY(sa.INT))))
-    if search_text := filters.get('search_text'):
-        conditions.append(
-            func.to_tsvector('russian', OFFER_TABLE.search_text).match(search_text, postgresql_regconfig='russian')
-        )
-
-    for key, value in filters.items():
-        if key not in FILTERS_MAP:
-            continue
-        if value is None:
-            continue
-        conditions.append(FILTERS_MAP[key] == value)
+    conditions = _prepare_conditions(filters)
 
     sql = (
         select([OFFER_TABLE.raw_data])
         .where(and_(*conditions))
-        .order_by(OFFER_TABLE.sort_date.desc().nullslast(), OFFER_TABLE.offer_id)
-        .limit(limit)
+        .order_by(
+            OFFER_TABLE.sort_date.desc().nullslast(),
+            OFFER_TABLE.offer_id,
+        ).limit(limit)
     )
 
     query, params = asyncpgsa.compile_query(sql)
@@ -90,3 +77,26 @@ async def get_object_models(
         object_model_mapper.map_from(json.loads(r['raw_data']))
         for r in result
     ]
+
+
+def _prepare_conditions(filters: Dict[str, Any],):
+    conditions = []
+    for key, value in filters.items():
+        if key not in FILTERS_MAP:
+            continue
+        if value is None:
+            continue
+        field = FILTERS_MAP[key]
+        if type(value) is list:
+            conditions.append(field == any_(cast(value, sa.ARRAY(field.type))))
+        else:
+            conditions.append(field == value)
+
+    if services := filters.get('services'):
+        conditions.append(OFFER_TABLE.services.contains(services))
+    if search_text := filters.get('search_text'):
+        conditions.append(
+            func.to_tsvector('russian', OFFER_TABLE.search_text).match(search_text, postgresql_regconfig='russian')
+        )
+
+    return conditions

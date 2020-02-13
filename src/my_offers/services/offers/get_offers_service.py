@@ -14,10 +14,10 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
 
 async def get_offers_public(request: entities.GetOffersRequest, user_id: int) -> entities.GetOffersResponse:
     """ Получить получить объявления для пользователя. Для м/а с учетом иерархии. """
-    object_models = await postgresql.get_object_models(
-        filters=get_offers_request_mapper.map_to(request),
-        master_user_id=user_id  # todo определение мастрер аккаунта
-    )
+    filters = get_offers_request_mapper.map_to(request)
+    filters['master_user_id'] = user_id  # todo определение мастрер аккаунта
+
+    object_models = await postgresql.get_object_models(filters=filters)
     offers_views = [
         build_offer_view(raw_offer=object_model)
         for object_model in object_models
