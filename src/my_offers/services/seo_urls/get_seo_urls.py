@@ -17,9 +17,9 @@ async def get_query_strings_for_address(
         offer_type: enums.OfferType
 ) -> List[str]:
     query_params = {
-       'offer_type': offer_type.value,
-       'deal_type': deal_type.value,
-       'object_type': '2',
+        'offer_type': offer_type.value,
+        'deal_type': deal_type.value,
+        'object_type': '2',
     }
 
     for field in FIELDS_FOR_EXCLUDE:

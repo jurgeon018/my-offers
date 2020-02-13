@@ -29,4 +29,4 @@ def get_subdomain_data_by_location_ids(
         if result is not None:
             return result
 
-    return geo_subdomain_map.get(str(settings.DEFAULT_LOCATION_ID))
+    return geo_subdomain_map[str(settings.DEFAULT_LOCATION_ID)]

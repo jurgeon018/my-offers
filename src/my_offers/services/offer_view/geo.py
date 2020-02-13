@@ -3,7 +3,7 @@ from typing import List, Optional
 from my_offers import enums
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, Underground
 from my_offers.enums.offer_address import AddressType
-from my_offers.repositories.monolith_cian_announcementapi.entities import Geo, AddressInfo, UndergroundInfo
+from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo, UndergroundInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
 from my_offers.services.seo_urls import get_query_strings_for_address
 
