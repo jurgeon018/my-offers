@@ -50,7 +50,7 @@ async def _get_underground(
     if not undergrounds:
         return None
     # определяем местоположение
-    address = list(filter(lambda x: x.type.is_location, address_info))
+    address = list(filter(lambda x: x.type and x.type.is_location, address_info))
     if not address:
         return None
 
@@ -63,7 +63,7 @@ async def _get_underground(
         ))[0],
         region_id=address[0].id,
         line_color=underground.line_color,
-        name=underground.name
+        name=underground.name,
     )
 
 
