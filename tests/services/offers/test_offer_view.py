@@ -318,9 +318,9 @@ async def test_build_offer_view__price_info__can_parts(category, currency, expec
 async def test_build_offer_view__features(category, prepared, expected):
     # arrange
     raw_offer = ObjectModel(
-        bargain_terms=BargainTerms(price=123.0, **prepared),
+        bargain_terms=BargainTerms(price=123.0, **prepared, currency=Currency.rur),
         category=category,
-        phones=[Phone(country_code='1', number='12312')]
+        phones=[Phone(country_code='1', number='12312')],
     )
 
     # act

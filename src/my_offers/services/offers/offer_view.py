@@ -110,7 +110,7 @@ def _get_title(*, object_model: ObjectModel, category: Category) -> str:
 
         if rooms_count:
             flat_type = 'апарт.' if object_model.is_apartments else 'кв.'
-            name = f'{rooms_count}-комн. {flat_type}' if 1 <= rooms_count < 7 else f'многокомн. {flat_type}'
+            name = f'{rooms_count}-комн. {flat_type}' if 1 <= rooms_count < 5 else f'многокомн. {flat_type}'
 
         if total_area:
             area = f'{total_area} м²'
@@ -253,7 +253,7 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
             features.append(f'Клиенту: {bargain_terms.client_fee}%')
 
         if bargain_terms.deposit:
-            features.append(f'Залог: {bargain_terms.deposit} ₽')
+            features.append(f'Залог: {bargain_terms.deposit} {currency}')
 
         if is_commercial:
             if is_square_meter and currency:
