@@ -95,6 +95,15 @@ async def test_build_offer_view():
     ),
     (Category.garage_sale, dict(total_area=60.0), None, f'Машиноместо, 60 м²'),
     (Category.garage_rent, dict(total_area=60.0), None, f'Машиноместо, 60 м²'),
+    (
+        Category.room_rent,
+        dict(total_area=60.0, floor_number=3), Building(floors_count=19),
+        f'Комната, 60 м², 3/19 этаж'),
+    (
+        Category.daily_room_rent,
+        dict(total_area=60.0, floor_number=3), Building(floors_count=19),
+        f'Комната, 60 м², 3/19 этаж'
+    ),
 ])
 async def test_build_offer_view__tittle(category, prepared, building, expected):
     # arrange
