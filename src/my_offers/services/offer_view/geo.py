@@ -67,8 +67,7 @@ async def _get_underground(
     )
 
 
-async def _get_newbuilding(jk: Optional[Jk],
-) -> Optional[Newbuilding]:
+async def _get_newbuilding(jk: Optional[Jk]) -> Optional[Newbuilding]:
     if not jk:
         return None
 

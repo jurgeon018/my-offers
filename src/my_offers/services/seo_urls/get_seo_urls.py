@@ -50,10 +50,6 @@ def _get_geo_type_for_address_element(address_element: AddressInfo) -> GeoType:
     return GeoType(address_element.type.value)
 
 
-def _get_address_element_key(address_element: AddressInfo) -> str:
-    return f'{_get_geo_type_for_address_element(address_element).value}-{address_element.id}'
-
-
 def _make_query_params(
         *,
         address_element: AddressInfo,
