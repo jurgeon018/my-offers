@@ -271,7 +271,7 @@ def _get_underground(geo: Geo) -> Optional[Underground]:
         return Underground(
             search_url='',
             region_id=address[0].id,
-            line_color=undergrounds[0].line_color,
+            line_color=f'#{undergrounds[0].line_color}',
             name=undergrounds[0].name
         )
 

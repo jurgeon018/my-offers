@@ -447,7 +447,7 @@ async def test_build_offer_view__is_publication_time_ends():
     (Geo(undergrounds=[], address=[]), None),
     (
         Geo(
-            undergrounds=[UndergroundInfo(line_color='#12321', name='Сокольники', is_default=True)],
+            undergrounds=[UndergroundInfo(line_color='12321', name='Сокольники', is_default=True)],
             address=[AddressInfo(id=1, type=AddressType.location)]
         ),
         Underground(search_url='', region_id=1, line_color='#12321', name='Сокольники')
