@@ -80,6 +80,11 @@ async def test_build_offer_view():
     ),
     (
         Category.building_rent,
+        dict(rooms_count=3, total_area=60.0, floor_number=3, is_apartments=True), Building(floors_count=19),
+        '3-комн. апарт., 60 м2, 3/19 этаж'
+    ),
+    (
+        Category.building_rent,
         dict(rooms_count=8, total_area=60.0, floor_number=3), Building(floors_count=19),
         'многокомн. кв., 60 м2, 3/19 этаж'
     ),
