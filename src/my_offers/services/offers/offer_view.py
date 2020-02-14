@@ -26,6 +26,10 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         offer_id=object_model.id,
         category=object_model.category
     )
+    tittle = _get_title(
+        object_model=object_model,
+        category=object_model.category
+    )
     geo = OfferGeo(
         address=_get_address(object_model.geo),
         newbuilding=_get_newbuilding(object_model.geo),
@@ -48,7 +52,7 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
     return GetOffer(
         id=object_model.id,
         created_at=object_model.creation_date,
-        title=_get_title(object_model, object_model.category),
+        title=tittle,
         main_photo_url=main_photo_url,
         url=url_to_offer,
         geo=geo,
@@ -64,7 +68,7 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
     )
 
 
-def _get_offer_url(offer_id: int, category: Category) -> Optional[str]:
+def _get_offer_url(*, offer_id: int, category: Category) -> Optional[str]:
     offer_type, deal_type = _get_deal_type(category)
 
     if offer_id and category:
@@ -73,15 +77,15 @@ def _get_offer_url(offer_id: int, category: Category) -> Optional[str]:
     return None
 
 
-def _get_title(raw_offer: ObjectModel, category: Category) -> str:
+def _get_title(*, object_model: ObjectModel, category: Category) -> str:
     offer_type, _ = _get_deal_type(category)
-    min_area = raw_offer.min_area and int(raw_offer.min_area)
-    total_area = raw_offer.total_area and int(raw_offer.total_area)
-    rooms_count = raw_offer.rooms_count
-    floor_number = raw_offer.floor_number
-    floors_count = raw_offer.building and raw_offer.building.floors_count
-    land = raw_offer.land
-    can_parts = raw_offer.can_parts
+    min_area = object_model.min_area and int(object_model.min_area)
+    total_area = object_model.total_area and int(object_model.total_area)
+    rooms_count = object_model.rooms_count
+    floor_number = object_model.floor_number
+    floors_count = object_model.building and object_model.building.floors_count
+    land = object_model.land
+    can_parts = object_model.can_parts
     is_commercial = offer_type.is_commercial
 
     name = None
@@ -98,7 +102,7 @@ def _get_title(raw_offer: ObjectModel, category: Category) -> str:
         floors = None
 
         if rooms_count:
-            flat_type = 'апарт.' if raw_offer.is_apartments else 'кв.'
+            flat_type = 'апарт.' if object_model.is_apartments else 'кв.'
             name = f'{rooms_count}-комн. {flat_type}' if 1 <= rooms_count < 7 else f'многокомн. {flat_type}'
 
         if total_area:
@@ -202,7 +206,7 @@ def _get_publish_features(publish_terms: PublishTerms) -> Optional[List[str]]:
     return features
 
 
-def _get_features(bargain_terms: BargainTerms, category: Category) -> List[str]:
+def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[str]:
     offer_type, deal_type = _get_deal_type(category)
     is_sale = deal_type.is_sale
     is_rent = deal_type.is_rent
