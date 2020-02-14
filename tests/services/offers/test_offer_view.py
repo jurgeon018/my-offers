@@ -9,6 +9,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
     Building,
     Geo,
     Jk,
+    Land,
     ObjectModel,
     Phone,
     Photo,
@@ -24,6 +25,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms
     PriceType,
     SaleType,
 )
+from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.monolith_cian_announcementapi.entities.tariff_identificator import TariffGridType
@@ -97,6 +99,36 @@ async def test_build_offer_view__tittle(category, prepared, building, expected):
         phones=[Phone(country_code='1', number='12312')],
         building=building,
         **prepared
+    )
+
+    # act
+    result = build_offer_view(object_model=raw_offer)
+
+    # assert
+    assert result.title == expected
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize('category, land, expected', [
+    (
+        Category.land_sale,
+        Land(area=16.57, area_unit_type=AreaUnitType.sotka),
+        'участок 16.57 сот.'
+    ),
+    (
+        Category.land_sale,
+        Land(area=16.57, area_unit_type=AreaUnitType.hectare),
+        'участок 16.57 га.'
+    ),
+
+])
+async def test_build_offer_view__tittle__land(category, land, expected):
+    # arrange
+    raw_offer = ObjectModel(
+        bargain_terms=BargainTerms(price=123),
+        category=category,
+        phones=[Phone(country_code='1', number='12312')],
+        land=land
     )
 
     # act

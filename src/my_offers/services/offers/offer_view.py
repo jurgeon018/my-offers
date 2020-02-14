@@ -75,26 +75,28 @@ def _get_offer_url(offer_id: int, category: Category) -> Optional[str]:
 
 def _get_title(raw_offer: ObjectModel, category: Category) -> str:
     offer_type, _ = _get_deal_type(category)
-    #     Гектары: "участок 14.67 га" (Пример)
-    #     Сотки: "участок 8.54 сот." (Пример)
-
-    rooms_count = raw_offer.rooms_count
     min_area = raw_offer.min_area and int(raw_offer.min_area)
     total_area = raw_offer.total_area and int(raw_offer.total_area)
+    rooms_count = raw_offer.rooms_count
     floor_number = raw_offer.floor_number
     floors_count = raw_offer.building and raw_offer.building.floors_count
-
+    land = raw_offer.land
     can_parts = raw_offer.can_parts
     is_commercial = offer_type.is_commercial
 
     name = None
-    area = None
-    floors = None
 
     if is_commercial and can_parts and total_area and min_area:
         name = f'Свободное назначение, от {min_area} до {total_area} м²'
 
+    elif land and land.area:
+        unit_type = 'сот.' if land.area_unit_type.is_sotka else 'га.'
+        name = f'участок {land.area} {unit_type}'
+
     else:
+        area = None
+        floors = None
+
         if rooms_count:
             flat_type = 'апарт.' if raw_offer.is_apartments else 'кв.'
             name = f'{rooms_count}-комн. {flat_type}' if 1 <= rooms_count < 7 else f'многокомн. {flat_type}'
@@ -102,10 +104,12 @@ def _get_title(raw_offer: ObjectModel, category: Category) -> str:
         if total_area:
             area = f'{total_area} м2'
 
-        if floor_number and raw_offer.building and floors_count:
+        if floor_number and floors_count:
             floors = f'{floor_number}/{floors_count} этаж'
 
-    return ', '.join(filter(None, [name, area, floors]))
+        name = ', '.join(filter(None, [name, area, floors]))
+
+    return name
 
 
 def _is_publication_time_ends(raw_offer: ObjectModel) -> bool:
