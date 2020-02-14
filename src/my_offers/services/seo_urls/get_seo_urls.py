@@ -43,7 +43,7 @@ async def get_query_strings_for_address(
         SerializeToQueryStringsRequest(query_params=address_query_params),
     )
 
-    return query_strings.data.query_strings
+    return ['/cat.php?{}'.format(url) for url in query_strings.data.query_strings]
 
 
 def _get_geo_type_for_address_element(address_element: AddressInfo) -> GeoType:

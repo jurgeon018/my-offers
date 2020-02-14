@@ -17,7 +17,6 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
     TariffIdentificator,
     UndergroundInfo,
 )
-from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type as RealtyAddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import SaleType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
@@ -311,24 +310,3 @@ async def test_build_offer_view__geo_underground(mocker, geo, expected):
 
     # assert
     prepare_geo_mock.assert_called_once()
-
-
-@pytest.mark.gen_test
-@pytest.mark.parametrize('geo, expected', [
-    (None, None),
-    (Geo(jk=Jk(name='Lol kek')), Newbuilding(search_url='', name='Lol kek'))
-])
-async def test_build_offer_view__newbuilding(geo, expected):
-    # arrange
-    raw_offer = ObjectModel(
-        bargain_terms=BargainTerms(price=123.0),
-        category=Category.bed_rent,
-        phones=[Phone(country_code='1', number='12312')],
-        geo=geo
-    )
-
-    # act
-    result = await build_offer_view(object_model=raw_offer)
-
-    # assert
-    assert result.geo.newbuilding == expected

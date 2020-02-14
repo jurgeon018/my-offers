@@ -3,8 +3,9 @@ from typing import List, Optional
 from my_offers import enums
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, Underground
 from my_offers.enums.offer_address import AddressType
-from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo, UndergroundInfo
+from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo, Jk, UndergroundInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
+from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_url_cached
 from my_offers.services.seo_urls import get_query_strings_for_address
 
 
@@ -22,7 +23,7 @@ async def prepare_geo(*, geo: Optional[Geo], deal_type: enums.DealType, offer_ty
 
     geo = OfferGeo(
         address=await _get_address(address_info=geo.address, deal_type=deal_type, offer_type=offer_type),
-        newbuilding=await _get_newbuilding(geo=geo, deal_type=deal_type, offer_type=offer_type),
+        newbuilding=await _get_newbuilding(geo.jk),
         underground=await _get_underground(
             undergrounds_info=geo.undergrounds,
             address_info=geo.address,
@@ -66,16 +67,15 @@ async def _get_underground(
     )
 
 
-async def _get_newbuilding(
-        *,
-        geo: Geo,
-        deal_type: enums.DealType,
-        offer_type: enums.OfferType,
+async def _get_newbuilding(jk: Optional[Jk],
 ) -> Optional[Newbuilding]:
-    if not geo or not geo.jk:
+    if not jk:
         return None
 
-    return Newbuilding(search_url='', name=geo.jk.name)
+    return Newbuilding(
+        search_url=await get_newbuilding_url_cached(jk.id),
+        name=jk.name,
+    )
 
 
 async def _get_address(
