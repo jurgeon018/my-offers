@@ -87,7 +87,7 @@ def _prepare_conditions(filters: Dict[str, Any],):
         if value is None:
             continue
         field = FILTERS_MAP[key]
-        if type(value) is list:
+        if isinstance(value, list):
             conditions.append(field == any_(cast(value, sa.ARRAY(field.type))))
         else:
             conditions.append(field == value)

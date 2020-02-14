@@ -15,7 +15,7 @@ from my_offers.services import offers
 @pytest.mark.gen_test
 async def test_get_offer(mocker):
     # arrange
-    expected_user = 666
+    expected_user = 777
     request = GetOffersRequest(
         status_tab=GetOfferStatusTab.active,
         sort_type=None,
@@ -71,7 +71,4 @@ async def test_get_offer(mocker):
 
     # assert
     assert result == expected_result
-    get_offers_by_status_mock.assert_called_once_with(
-        status_tab=GetOfferStatusTab.active,
-        user_id=expected_user
-    )
+    get_offers_by_status_mock.assert_called_once_with(filters={'status_tab': 'active', 'master_user_id': 777})
