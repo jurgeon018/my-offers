@@ -1,0 +1,116 @@
+definitions:
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items:
+          title: errors
+          type: object
+        title: errors
+        type: array
+      message:
+        title: message
+        type: string
+    type: object
+  newbuilding_search.entities.web.get_newbuildings_by_ids.GetNewbuildingByIdsGeoItemSchema:
+    properties:
+      id:
+        description: Id гео-объекта
+        format: int64
+        title: id
+        type: integer
+      type:
+        description: Тип гео-объекта
+        enum:
+        - country
+        - district
+        - house
+        - location
+        - road
+        - street
+        - underground
+        type: string
+        x-country: Страна
+        x-district: Район
+        x-house: Дом
+        x-location: Местоположение
+        x-road: Шоссе
+        x-street: Улица
+        x-underground: Метро
+    type: object
+  newbuilding_search.entities.web.get_newbuildings_by_ids.GetNewbuildingByIdsGeoSchema:
+    properties:
+      details:
+        description: Гео объект
+        items:
+          $ref: '#/definitions/newbuilding_search.entities.web.get_newbuildings_by_ids.GetNewbuildingByIdsGeoItemSchema'
+        type: array
+    type: object
+  newbuilding_search.entities.web.get_newbuildings_by_ids.GetNewbuildingByIdsItemSchema:
+    properties:
+      fullAddress:
+        description: Полный адрес ЖК в виде строки
+        title: full_address
+        type: string
+      geo:
+        $ref: '#/definitions/newbuilding_search.entities.web.get_newbuildings_by_ids.GetNewbuildingByIdsGeoSchema'
+        description: Информация для гео ЖК
+      id:
+        description: Id ЖК
+        format: int64
+        title: id
+        type: integer
+      name:
+        description: Название ЖК
+        title: name
+        type: string
+      url:
+        description: Относительный url ЖК
+        title: url
+        type: string
+    type: object
+  newbuilding_search.web.schemas.GetNewBuildingsByIdsRequestSchema:
+    properties:
+      ids:
+        description: Список Ids ЖК
+        items:
+          format: int64
+          title: ids
+          type: integer
+        title: ids
+        type: array
+    required:
+    - ids
+    type: object
+  newbuilding_search.web.schemas.GetNewBuildingsByIdsResponseSchema:
+    properties:
+      items:
+        description: Объект ЖК
+        items:
+          $ref: '#/definitions/newbuilding_search.entities.web.get_newbuildings_by_ids.GetNewbuildingByIdsItemSchema'
+        type: array
+    required:
+    - items
+    type: object
+info:
+  description: NewBuilding Search
+  title: newbuilding-search
+  version: 1.0.0
+paths:
+  /v1/get-newbuildings-by-ids/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/newbuilding_search.web.schemas.GetNewBuildingsByIdsRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/newbuilding_search.web.schemas.GetNewBuildingsByIdsResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+swagger: '2.0'
