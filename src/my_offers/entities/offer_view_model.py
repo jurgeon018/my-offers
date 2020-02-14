@@ -3,12 +3,15 @@ from datetime import datetime
 from typing import List, Optional
 
 from my_offers import enums
+from my_offers.enums.offer_address import AddressType
 
 
 @dataclass
 class PriceInfo:
-    exact_price: str
+    exact: Optional[str] = None
     """Цена"""
+    range: Optional[List[str]] = None
+    """Диапазон цен"""
 
 
 @dataclass
@@ -45,11 +48,12 @@ class Address:
     """Полный адрес"""
     search_url: str
     """Поисковый запрос по адресу"""
+    type: AddressType
 
 
 @dataclass
 class OfferGeo:
-    address: Optional[Address] = None
+    address: Optional[List[Address]] = None
     """Адрес"""
     newbuilding: Optional[Newbuilding] = None
     """Новостройки"""

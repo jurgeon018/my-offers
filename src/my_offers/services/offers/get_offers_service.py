@@ -19,7 +19,7 @@ async def get_offers_public(request: entities.GetOffersRequest, user_id: int) ->
 
     object_models = await postgresql.get_object_models(filters=filters)
     offers_views = [
-        build_offer_view(raw_offer=object_model)
+        build_offer_view(object_model=object_model)
         for object_model in object_models
     ]
 

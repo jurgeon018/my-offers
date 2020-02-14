@@ -58,7 +58,7 @@ class Auction:
 
 @dataclass
 class GetOffer(OfferViewModel):
-    statistics: Optional[Statistics] = None
+    statistics: Optional[Statistics]
     """Статистика по объявлению"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""

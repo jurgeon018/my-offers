@@ -1,46 +1,45 @@
 from typing import List, Optional
 
-from my_offers.entities.get_offers import GetOffer
-from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Subagent, Underground
+from my_offers.entities.get_offers import GetOffer, Statistics
+from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Underground
+from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo, ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement.process_announcement_service import CATEGORY_OFFER_TYPE_DEAL_TYPE
 
 
-def build_offer_view(raw_offer: ObjectModel) -> GetOffer:
+def build_offer_view(object_model: ObjectModel) -> GetOffer:
     """ Собирает из шарповой модели компактное представление объявления для выдачи.
     """
-    main_photo_url = raw_offer.photos[0].mini_url if raw_offer.photos else None
+    main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
     url_to_offer = None  # TODO: https://jira.cian.tech/browse/CD-73814
 
     geo = OfferGeo(
-        address=_get_address(raw_offer.geo),
-        newbuilding=_get_newbuilding(raw_offer.geo),
-        underground=_get_underground(raw_offer.geo)
+        address=_get_address(object_model.geo),
+        newbuilding=_get_newbuilding(object_model.geo),
+        underground=_get_underground(object_model.geo)
     )
-    subagent = (
-        Subagent(id=raw_offer.published_user_id, name='')  # TODO: https://jira.cian.tech/browse/CD-73807
-        if raw_offer.published_user_id
-        else None
-    )
-    source = bool(raw_offer.source and raw_offer.source.is_upload)
+
+    subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
+    source = bool(object_model.source and object_model.source.is_upload)
 
     return GetOffer(
-        id=raw_offer.id,
-        created_at=raw_offer.creation_date,
-        title=raw_offer.title,
+        id=object_model.id,
+        created_at=object_model.creation_date,
+        title=object_model.title,
         main_photo_url=main_photo_url,
         url=url_to_offer,
         geo=geo,
         subagent=subagent,
-        price_info=_get_price(raw_offer.bargain_terms, raw_offer.category),
-        features=_get_features(raw_offer.bargain_terms, raw_offer.category),
-        publish_features=_get_publish_features(raw_offer.publish_terms),
-        vas=_get_vas(raw_offer.publish_terms),
-        is_from_package=_is_from_package(raw_offer.publish_terms),
+        price_info=_get_price(object_model.bargain_terms, object_model.category),
+        features=_get_features(object_model.bargain_terms, object_model.category),
+        publish_features=_get_publish_features(object_model.publish_terms),
+        vas=_get_vas(object_model.publish_terms),
+        is_from_package=_is_from_package(object_model.publish_terms),
         is_manual=source,
-        is_publication_time_ends=_is_publication_time_ends(raw_offer),
+        is_publication_time_ends=_is_publication_time_ends(object_model),
+        statistics=Statistics()
     )
 
 
@@ -80,11 +79,11 @@ def _get_price(bargain_terms: BargainTerms, category: Category) -> PriceInfo:
 
     # TODO: https://jira.cian.tech/browse/CD-73814
     if is_rent:
-        exact_price = f'{price} ₽/мес.'
+        exact = f'{price} ₽/мес.'
     else:
-        exact_price = f'{price} ₽'
+        exact = f'{price} ₽'
 
-    return PriceInfo(exact_price=exact_price)
+    return PriceInfo(exact=exact)
 
 
 def _get_publish_features(publish_terms: PublishTerms) -> Optional[List[str]]:
@@ -156,31 +155,25 @@ def _get_newbuilding(geo: Geo) -> Optional[Newbuilding]:
     return Newbuilding(search_url='', name=geo.jk.name)
 
 
-def _get_address(geo: Geo) -> Optional[Address]:
+def _get_address(geo: Geo) -> Optional[List[Address]]:
     if not geo or not geo.address:
         return None
 
-    addresses = geo.address
+    addresses = []
 
-    town = None
-    district = None
-    street = None
-    house = None
-
-    for address in addresses:
-        if address.type:
+    # TODO: Урдлы переходов в поиск (https://jira.cian.tech/browse/CD-74034)
+    for address in geo.address:
+        if address.type and address.full_name:
             if address.type.is_location:
-                town = address.full_name
+                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.location))
             elif address.type.is_district:
-                district = address.full_name
+                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.district))
             elif address.type.is_street:
-                street = address.full_name
+                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.street))
             elif address.type.is_house:
-                house = address.full_name
+                addresses.append(Address(search_url='', name=address.full_name, type=AddressType.house))
 
-    address_name = ', '.join(filter(None, [town, district, street, house]))
-
-    return Address(search_url='', name=address_name)
+    return addresses
 
 
 def _get_deal_type(category: Category) -> Category:
