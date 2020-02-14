@@ -6,6 +6,7 @@ from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     AddressInfo,
     BargainTerms,
+    Building,
     Geo,
     Jk,
     ObjectModel,
@@ -17,7 +18,12 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
     UndergroundInfo,
 )
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type as RealtyAddressType
-from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import SaleType
+from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import (
+    Currency,
+    LeaseType,
+    PriceType,
+    SaleType,
+)
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.monolith_cian_announcementapi.entities.tariff_identificator import TariffGridType
@@ -36,11 +42,11 @@ async def test_build_offer_view():
     )
     expected_result = GetOffer(
         main_photo_url=None,
-        title=None,
+        title='',
         url=None,
         geo=OfferGeo(address=None, newbuilding=None, underground=None),
         subagent=None,
-        price_info=PriceInfo(exact='123 ₽/мес.'),
+        price_info=PriceInfo(exact=None, range=None),
         features=[],
         publish_features=None,
         vas=None,
@@ -58,6 +64,46 @@ async def test_build_offer_view():
 
     # assert
     assert result == expected_result
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize('category, prepared, building, expected', [
+    (
+        Category.building_rent,
+        dict(rooms_count=1, total_area=60.0, floor_number=3), Building(floors_count=19),
+        '1-комн. кв., 60 м2, 3/19 этаж'
+    ),
+    (
+        Category.building_rent,
+        dict(rooms_count=1, total_area=60.0, floor_number=3, is_apartments=True), Building(floors_count=19),
+        '1-комн. апарт., 60 м2, 3/19 этаж'
+    ),
+    (
+        Category.building_rent,
+        dict(rooms_count=8, total_area=60.0, floor_number=3), Building(floors_count=19),
+        'многокомн. кв., 60 м2, 3/19 этаж'
+    ),
+    (
+        Category.office_rent,
+        dict(total_area=60.0, min_area=10.0, can_parts=True), None,
+        'Свободное назначение, от 10 до 60 м²'
+    ),
+])
+async def test_build_offer_view__tittle(category, prepared, building, expected):
+    # arrange
+    raw_offer = ObjectModel(
+        bargain_terms=BargainTerms(price=123),
+        category=category,
+        phones=[Phone(country_code='1', number='12312')],
+        building=building,
+        **prepared
+    )
+
+    # act
+    result = build_offer_view(object_model=raw_offer)
+
+    # assert
+    assert result.title == expected
 
 
 @pytest.mark.gen_test
@@ -83,6 +129,29 @@ async def test_build_offer_view__main_photo_url(photos, expected):
 
     # assert
     assert result.main_photo_url == expected
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize('category, expected', [
+    (Category.room_rent, f'http://cian.ru/rent/flat/123'),
+    (Category.office_rent, f'http://cian.ru/rent/commercial/123'),
+    (Category.house_rent, f'http://cian.ru/rent/suburban/123'),
+    (Category.new_building_flat_sale, f'http://cian.ru/sale/flat/123'),
+])
+async def test_build_offer_view__offer_url(category, expected):
+    # arrange
+    raw_offer = ObjectModel(
+        id=123,
+        bargain_terms=BargainTerms(price=123),
+        category=category,
+        phones=[Phone(country_code='1', number='12312')],
+    )
+
+    # act
+    result = build_offer_view(object_model=raw_offer)
+
+    # assert
+    assert result.url == expected
 
 
 @pytest.mark.gen_test
@@ -128,29 +197,64 @@ async def test_build_offer_view__is__from_import(source, is_manual):
 
 
 @pytest.mark.gen_test
-@pytest.mark.parametrize('deal_type, expected', [
-    (Category.bed_rent, '123 ₽/мес.'),
-    (Category.building_sale, '123 ₽'),
+@pytest.mark.parametrize('category, currency, expected', [
+    (Category.bed_rent, Currency.rur, '123 ₽/мес.'),
+    (Category.bed_rent, Currency.usd, '123 $/мес.'),
+    (Category.bed_rent, Currency.eur, '123 €/мес.'),
+    (Category.building_sale, Currency.rur, '123 ₽'),
+    (Category.building_sale, Currency.usd, '123 $'),
+    (Category.building_sale, Currency.eur, '123 €'),
+    (Category.daily_bed_rent, Currency.rur, '123 ₽/сут.'),
+    (Category.daily_bed_rent, Currency.usd, '123 $/сут.'),
+    (Category.daily_bed_rent, Currency.eur, '123 €/сут.'),
+    (Category.daily_bed_rent, None, None),
 ])
-async def test_build_offer_view__price_info(deal_type, expected):
+async def test_build_offer_view__price_info(category, currency, expected):
     # arrange
     raw_offer = ObjectModel(
-        bargain_terms=BargainTerms(price=123.0),
-        category=deal_type,
-        phones=[
-            Phone(country_code='1', number='12312')
-        ]
+        bargain_terms=BargainTerms(price=123.0, currency=currency),
+        category=category,
+        phones=[Phone(country_code='1', number='12312')],
     )
 
     # act
     result = build_offer_view(object_model=raw_offer)
 
     # assert
-    assert result.price_info == PriceInfo(exact=expected)
+    assert result.price_info.exact == expected
 
 
 @pytest.mark.gen_test
-@pytest.mark.parametrize('deal_type, prepared, expected', [
+@pytest.mark.parametrize('category, currency, expected', [
+    (Category.office_rent, Currency.rur, [f'от 500', f'до 833 ₽/мес']),
+    (Category.office_rent, Currency.usd, [f'от 500', f'до 833 $/мес']),
+    (Category.office_rent, Currency.eur, [f'от 500', f'до 833 €/мес']),
+    (Category.flat_sale, None, None),
+])
+async def test_build_offer_view__price_info__can_parts(category, currency, expected):
+    # arrange
+    raw_offer = ObjectModel(
+        bargain_terms=BargainTerms(
+            price=100.0,
+            price_type=PriceType.square_meter,
+            currency=currency
+        ),
+        category=category,
+        phones=[Phone(country_code='1', number='12312')],
+        min_area=60.0,
+        max_area=100.0,
+        can_parts=True
+    )
+
+    # act
+    result = build_offer_view(object_model=raw_offer)
+
+    # assert
+    assert result.price_info.range == expected
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize('category, prepared, expected', [
     (Category.flat_sale, dict(mortgage_allowed=True), ['Возможна ипотека']),
     (
         Category.flat_sale,
@@ -165,13 +269,43 @@ async def test_build_offer_view__price_info(deal_type, expected):
         dict(agent_fee=50, client_fee=10, deposit=1000),
         ['Агенту: 50%', 'Клиенту: 10%', 'Залог: 1000 ₽']
     ),
+    (Category.office_rent, dict(lease_type=LeaseType.sublease), ['Субаренда']),
+    (Category.office_rent, dict(lease_type=LeaseType.direct), ['Прямая']),
+
+    (Category.flat_sale, dict(sale_type=SaleType.dupt), ['Переуступка']),
+    (Category.new_building_flat_sale, dict(sale_type=SaleType.dupt), ['Переуступка']),
 ])
-async def test_build_offer_view__features(deal_type, prepared, expected):
+async def test_build_offer_view__features(category, prepared, expected):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123.0, **prepared),
-        category=deal_type,
+        category=category,
         phones=[Phone(country_code='1', number='12312')]
+    )
+
+    # act
+    result = build_offer_view(object_model=raw_offer)
+
+    # assert
+    assert result.features == expected
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize('category, expected', [
+    (Category.office_sale, ['123 ₽ м²']),
+    (Category.new_building_flat_sale, ['123 ₽ м²']),
+    (Category.office_rent, [f'123 ₽ за м² в год']),
+])
+async def test_build_offer_view__features__price(category, expected):
+    # arrange
+    raw_offer = ObjectModel(
+        bargain_terms=BargainTerms(
+            price=123.0,
+            price_type=PriceType.square_meter,
+            currency=Currency.rur
+        ),
+        category=category,
+        phones=[Phone(country_code='1', number='12312')],
     )
 
     # act
@@ -184,7 +318,6 @@ async def test_build_offer_view__features(deal_type, prepared, expected):
 @pytest.mark.gen_test
 @pytest.mark.parametrize('publish_terms, expected', [
     (PublishTerms(autoprolong=True), ['автопродление']),
-    (PublishTerms(autoprolong=True, terms=[PublishTerm(days=10)]), ['автопродление', 'осталось 10 д.']),
 ])
 async def test_build_offer_view__publish_features(publish_terms, expected):
     # arrange

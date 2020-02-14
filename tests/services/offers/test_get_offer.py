@@ -27,11 +27,11 @@ async def test_get_offer(mocker):
     expected_result = GetOffersResponse(offers=[
         GetOffer(
             main_photo_url=None,
-            title=None,
+            title='',
             url=None,
             geo=OfferGeo(address=None, newbuilding=None, underground=None),
             subagent=None,
-            price_info=PriceInfo(exact='123 ₽/мес.'),
+            price_info=PriceInfo(exact=None, range=None),
             features=[],
             publish_features=None,
             vas=None,
