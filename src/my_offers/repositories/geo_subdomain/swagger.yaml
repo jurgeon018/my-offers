@@ -1,0 +1,40 @@
+definitions:
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items:
+          title: errors
+          type: object
+        title: errors
+        type: array
+      message:
+        title: message
+        type: string
+    type: object
+  geo_subdomain.web.schemas.GetSubdomainsResponseSchema:
+    properties:
+      subdomains:
+        description: Список поддоменов
+        items:
+          title: subdomains
+          type: object
+        title: subdomains
+        type: array
+    type: object
+info:
+  description: Microservice for geo subdomains
+  title: geo-subdomain
+  version: 1.0.0
+paths:
+  /v1/get-subdomains/:
+    get:
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/geo_subdomain.web.schemas.GetSubdomainsResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+swagger: '2.0'

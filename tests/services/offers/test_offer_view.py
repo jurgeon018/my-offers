@@ -1,4 +1,5 @@
 import pytest
+from cian_test_utils import future
 
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Underground
@@ -16,12 +17,11 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
     TariffIdentificator,
     UndergroundInfo,
 )
-from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type as RealtyAddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import SaleType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.monolith_cian_announcementapi.entities.tariff_identificator import TariffGridType
-from my_offers.services.offers.offer_view import build_offer_view
+from my_offers.services.offer_view.offer_view import build_offer_view
 
 
 @pytest.mark.gen_test
@@ -54,7 +54,7 @@ async def test_build_offer_view():
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result == expected_result
@@ -79,7 +79,7 @@ async def test_build_offer_view__main_photo_url(photos, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.main_photo_url == expected
@@ -97,7 +97,7 @@ async def test_build_offer_view__subagent():
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.subagent is None
@@ -121,7 +121,7 @@ async def test_build_offer_view__is__from_import(source, is_manual):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.is_manual is is_manual
@@ -143,7 +143,7 @@ async def test_build_offer_view__price_info(deal_type, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.price_info == PriceInfo(exact=expected)
@@ -175,7 +175,7 @@ async def test_build_offer_view__features(deal_type, prepared, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.features == expected
@@ -196,7 +196,7 @@ async def test_build_offer_view__publish_features(publish_terms, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.publish_features == expected
@@ -223,7 +223,7 @@ async def test_build_offer_view__vas(terms, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.vas == expected
@@ -257,7 +257,7 @@ async def test_build_offer_view__is_from_package(publish_terms, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.is_from_package is expected
@@ -273,7 +273,7 @@ async def test_build_offer_view__is_publication_time_ends():
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.is_publication_time_ends is False
@@ -291,74 +291,22 @@ async def test_build_offer_view__is_publication_time_ends():
         Underground(search_url='', region_id=1, line_color='#12321', name='Сокольники')
     )
 ])
-async def test_build_offer_view__geo_underground(geo, expected):
+async def test_build_offer_view__geo_underground(mocker, geo, expected):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123.0),
         category=Category.bed_rent,
         phones=[Phone(country_code='1', number='12312')],
-        geo=geo
+        geo=geo,
+    )
+
+    prepare_geo_mock = mocker.patch(
+        'my_offers.services.offer_view.offer_view.prepare_geo',
+        return_value=future(OfferGeo())
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    await build_offer_view(object_model=raw_offer)
 
     # assert
-    assert result.geo.underground == expected
-
-
-@pytest.mark.gen_test
-@pytest.mark.parametrize('geo, expected', [
-    (None, None),
-    (Geo(jk=Jk(name='Lol kek')), Newbuilding(search_url='', name='Lol kek'))
-])
-async def test_build_offer_view__newbuilding(geo, expected):
-    # arrange
-    raw_offer = ObjectModel(
-        bargain_terms=BargainTerms(price=123.0),
-        category=Category.bed_rent,
-        phones=[Phone(country_code='1', number='12312')],
-        geo=geo
-    )
-
-    # act
-    result = build_offer_view(object_model=raw_offer)
-
-    # assert
-    assert result.geo.newbuilding == expected
-
-
-@pytest.mark.gen_test
-@pytest.mark.parametrize('geo, expected', [
-    (None, None),
-    (Geo(address=[]), None),
-    (Geo(address=[AddressInfo(id=1, type=RealtyAddressType.location)]), []),
-    (
-        Geo(address=[
-            AddressInfo(id=1, type=RealtyAddressType.location, full_name='Москва'),
-            AddressInfo(id=1, type=RealtyAddressType.district, full_name='район Краснопресненский'),
-            AddressInfo(id=1, type=RealtyAddressType.street, full_name='улица Пушкина'),
-            AddressInfo(id=1, type=RealtyAddressType.house, full_name='13к2'),
-        ]),
-        [
-            Address(name='Москва', search_url='', type=AddressType.location),
-            Address(name='район Краснопресненский', search_url='', type=AddressType.district),
-            Address(name='улица Пушкина', search_url='', type=AddressType.street),
-            Address(name='13к2', search_url='', type=AddressType.house)
-        ]
-    ),
-])
-async def test_build_offer_view__geo_address(geo, expected):
-    # arrange
-    raw_offer = ObjectModel(
-        bargain_terms=BargainTerms(price=123.0),
-        category=Category.bed_rent,
-        phones=[Phone(country_code='1', number='12312')],
-        geo=geo
-    )
-
-    # act
-    result = build_offer_view(object_model=raw_offer)
-
-    # assert
-    assert result.geo.address == expected
+    prepare_geo_mock.assert_called_once()

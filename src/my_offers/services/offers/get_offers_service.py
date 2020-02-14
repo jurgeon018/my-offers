@@ -1,7 +1,9 @@
+import asyncio
+
 from my_offers import entities
 from my_offers.mappers.get_offers_request import get_offers_request_mapper
 from my_offers.repositories import postgresql
-from my_offers.services.offers.offer_view import build_offer_view
+from my_offers.services.offer_view import build_offer_view
 
 
 async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entities.GetOffersResponse:
@@ -18,10 +20,12 @@ async def get_offers_public(request: entities.GetOffersRequest, user_id: int) ->
     filters['master_user_id'] = user_id  # todo определение мастрер аккаунта
 
     object_models = await postgresql.get_object_models(filters=filters)
-    offers_views = [
+
+    futures = [
         build_offer_view(object_model=object_model)
         for object_model in object_models
     ]
+    offers_views = await asyncio.gather(*futures)
 
     return entities.GetOffersResponse(
         offers=offers_views,
