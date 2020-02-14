@@ -38,9 +38,7 @@ async def test_build_offer_view():
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
         category=Category.building_rent,
-        phones=[
-            Phone(country_code='1', number='12312')
-        ]
+        phones=[Phone(country_code='1', number='12312')]
     )
     expected_result = GetOffer(
         main_photo_url=None,
@@ -150,9 +148,7 @@ async def test_build_offer_view__main_photo_url(photos, expected):
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
         category=Category.building_rent,
-        phones=[
-            Phone(country_code='1', number='12312')
-        ],
+        phones=[Phone(country_code='1', number='12312')],
         photos=photos
     )
 
@@ -192,9 +188,7 @@ async def test_build_offer_view__subagent():
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
         category=Category.building_rent,
-        phones=[
-            Phone(country_code='1', number='12312')
-        ]
+        phones=[Phone(country_code='1', number='12312')]
     )
 
     # act
@@ -216,9 +210,7 @@ async def test_build_offer_view__is__from_import(source, is_manual):
         source=source,
         bargain_terms=BargainTerms(price=123),
         category=Category.building_rent,
-        phones=[
-            Phone(country_code='1', number='12312')
-        ]
+        phones=[Phone(country_code='1', number='12312')]
     )
 
     # act

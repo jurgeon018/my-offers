@@ -20,9 +20,7 @@ async def test_get_offer(mocker):
     object_model = ObjectModel(
         bargain_terms=BargainTerms(price=123),
         category=Category.building_rent,
-        phones=[
-            Phone(country_code='1', number='12312')
-        ]
+        phones=[Phone(country_code='1', number='12312')]
     )
     expected_result = GetOffersResponse(offers=[
         GetOffer(
