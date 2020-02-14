@@ -71,28 +71,30 @@ async def test_build_offer_view():
     (
         Category.building_rent,
         dict(rooms_count=1, total_area=60.0, floor_number=3), Building(floors_count=19),
-        '1-комн. кв., 60 м2, 3/19 этаж'
+        '1-комн. кв., 60 м², 3/19 этаж'
     ),
     (
         Category.building_rent,
         dict(rooms_count=1, total_area=60.0, floor_number=3, is_apartments=True), Building(floors_count=19),
-        '1-комн. апарт., 60 м2, 3/19 этаж'
+        '1-комн. апарт., 60 м², 3/19 этаж'
     ),
     (
         Category.building_rent,
         dict(rooms_count=3, total_area=60.0, floor_number=3, is_apartments=True), Building(floors_count=19),
-        '3-комн. апарт., 60 м2, 3/19 этаж'
+        '3-комн. апарт., 60 м², 3/19 этаж'
     ),
     (
         Category.building_rent,
         dict(rooms_count=8, total_area=60.0, floor_number=3), Building(floors_count=19),
-        'многокомн. кв., 60 м2, 3/19 этаж'
+        'многокомн. кв., 60 м², 3/19 этаж'
     ),
     (
         Category.office_rent,
         dict(total_area=60.0, min_area=10.0, can_parts=True), None,
         'Свободное назначение, от 10 до 60 м²'
     ),
+    (Category.garage_sale, dict(total_area=60.0), None, f'Машиноместо, 60 м²'),
+    (Category.garage_rent, dict(total_area=60.0), None, f'Машиноместо, 60 м²'),
 ])
 async def test_build_offer_view__tittle(category, prepared, building, expected):
     # arrange
@@ -116,12 +118,12 @@ async def test_build_offer_view__tittle(category, prepared, building, expected):
     (
         Category.land_sale,
         Land(area=16.57, area_unit_type=AreaUnitType.sotka),
-        'участок 16.57 сот.'
+        'Участок 16.57 сот.'
     ),
     (
         Category.land_sale,
         Land(area=16.57, area_unit_type=AreaUnitType.hectare),
-        'участок 16.57 га.'
+        'Участок 16.57 га.'
     ),
 
 ])

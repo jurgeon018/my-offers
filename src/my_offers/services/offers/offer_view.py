@@ -86,7 +86,9 @@ def _get_title(*, object_model: ObjectModel, category: Category) -> str:
     floors_count = object_model.building and object_model.building.floors_count
     land = object_model.land
     can_parts = object_model.can_parts
+
     is_commercial = offer_type.is_commercial
+    is_garage = [Category.garage_rent, Category.garage_sale]
 
     name = None
 
@@ -95,7 +97,10 @@ def _get_title(*, object_model: ObjectModel, category: Category) -> str:
 
     elif land and land.area:
         unit_type = 'сот.' if land.area_unit_type.is_sotka else 'га.'
-        name = f'участок {land.area} {unit_type}'
+        name = f'Участок {land.area} {unit_type}'
+
+    elif category in is_garage:
+        name = f'Машиноместо, {total_area} м²'
 
     else:
         area = None
@@ -106,7 +111,7 @@ def _get_title(*, object_model: ObjectModel, category: Category) -> str:
             name = f'{rooms_count}-комн. {flat_type}' if 1 <= rooms_count < 7 else f'многокомн. {flat_type}'
 
         if total_area:
-            area = f'{total_area} м2'
+            area = f'{total_area} м²'
 
         if floor_number and floors_count:
             floors = f'{floor_number}/{floors_count} этаж'
