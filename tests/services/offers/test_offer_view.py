@@ -369,23 +369,24 @@ async def test_build_offer_view__is__from_import(source, is_manual):
 
 
 @pytest.mark.gen_test
-@pytest.mark.parametrize('category, currency, expected', [
-    (Category.bed_rent, Currency.rur, '10 000 ₽/мес.'),
-    (Category.bed_rent, Currency.usd, '10 000 $/мес.'),
-    (Category.bed_rent, Currency.eur, '10 000 €/мес.'),
-    (Category.building_sale, Currency.rur, '10 000 ₽'),
-    (Category.building_sale, Currency.usd, '10 000 $'),
-    (Category.building_sale, Currency.eur, '10 000 €'),
-    (Category.daily_bed_rent, Currency.rur, '10 000 ₽/сут.'),
-    (Category.daily_bed_rent, Currency.usd, '10 000 $/сут.'),
-    (Category.daily_bed_rent, Currency.eur, '10 000 €/сут.'),
-    (Category.daily_bed_rent, None, None),
+@pytest.mark.parametrize('category, currency, price_type, expected', [
+    (Category.office_rent, Currency.rur, PriceType.square_meter, '100 000 ₽/мес.'),
+    (Category.bed_rent, Currency.usd, None, '10 000 $/мес.'),
+    (Category.bed_rent, Currency.eur, None, '10 000 €/мес.'),
+    (Category.building_sale, Currency.rur, None, '10 000 ₽'),
+    (Category.building_sale, Currency.usd, None, '10 000 $'),
+    (Category.building_sale, Currency.eur, None, '10 000 €'),
+    (Category.daily_bed_rent, Currency.rur, None, '10 000 ₽/сут.'),
+    (Category.daily_bed_rent, Currency.usd, None, '10 000 $/сут.'),
+    (Category.daily_bed_rent, Currency.eur, None, '10 000 €/сут.'),
+    (Category.daily_bed_rent, None, None, None),
 ])
-async def test_build_offer_view__price_info(category, currency, expected):
+async def test_build_offer_view__price_info(category, currency, price_type, expected):
     # arrange
     raw_offer = ObjectModel(
-        bargain_terms=BargainTerms(price=10000.0, currency=currency),
+        bargain_terms=BargainTerms(price=10000.0, currency=currency, price_type=price_type),
         category=category,
+        total_area=10.0,
         phones=[Phone(country_code='1', number='12312')],
     )
 

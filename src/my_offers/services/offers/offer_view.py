@@ -113,6 +113,7 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         can_parts=bool(object_model.can_parts),
         min_area=object_model.min_area,
         max_area=object_model.max_area,
+        total_area=object_model.total_area
     )
     features = _get_features(
         bargain_terms=object_model.bargain_terms,
@@ -226,7 +227,8 @@ def _get_price_info(
     category: Category,
     can_parts: bool,
     min_area: Optional[float],
-    max_area: Optional[float]
+    max_area: Optional[float],
+    total_area: Optional[float]
 ) -> PriceInfo:
     offer_type, deal_type = _get_deal_type(category)
 
@@ -259,7 +261,7 @@ def _get_price_info(
                 max_price = get_pretty_number(number=int(price / months_count * max_area))
                 price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']
             else:
-                price = int(price * max_area) if is_square_meter and max_area else price
+                price = int(price * total_area) if is_square_meter and total_area else price
                 pretty_price = get_pretty_number(number=price)
                 price_exact = f'{pretty_price} {currency}/мес.'
 
