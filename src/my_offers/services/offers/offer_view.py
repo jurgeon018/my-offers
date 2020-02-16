@@ -63,6 +63,7 @@ OFFER_TITLES = {
     Category.land_sale: 'Земельный участок',
 
     # flat
+    # для flat_sale, flat_rent генерируется название из кол-ва комнат
     Category.daily_room_rent: 'Комната',
     Category.room_rent: 'Комната',
     Category.room_sale: 'Комната',
@@ -293,7 +294,7 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
     is_sale = deal_type.is_sale
     is_rent = deal_type.is_rent
     is_commercial = offer_type.is_commercial
-    is_newobject = Category.is_new_building_flat_sale
+    is_newobject = category.is_new_building_flat_sale
 
     pretty_price = get_pretty_number(number=int(bargain_terms.price))
     currency = CURRENCY.get(bargain_terms.currency)
