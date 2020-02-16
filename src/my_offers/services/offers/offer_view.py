@@ -117,7 +117,8 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
     )
     features = _get_features(
         bargain_terms=object_model.bargain_terms,
-        category=object_model.category
+        category=object_model.category,
+        total_area=object_model.total_area
     )
     publish_features = _get_publish_features(
         publish_terms=object_model.publish_terms,
@@ -290,7 +291,7 @@ def _get_publish_features(publish_terms: PublishTerms, category: Category) -> Op
     return features
 
 
-def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[str]:
+def _get_features(*, bargain_terms: BargainTerms, category: Category, total_area: Optional[float]) -> List[str]:
     offer_type, deal_type = _get_deal_type(category)
     is_sale = deal_type.is_sale
     is_rent = deal_type.is_rent
@@ -323,8 +324,8 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
         if not offer_type.is_commercial and sale_type and sale_type.is_dupt:
             features.append('Переуступка')
 
-        if is_all and currency:
-            pretty_price = get_pretty_number(number=int(bargain_terms.price))
+        if is_all and currency and total_area:
+            pretty_price = get_pretty_number(number=int(bargain_terms.price / total_area))
             features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
 
     if is_rent:
