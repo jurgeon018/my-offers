@@ -1,20 +1,89 @@
 from typing import List, Optional, Tuple
 
+from simple_settings import settings
+
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Underground
 from my_offers.enums import DealType, OfferType
 from my_offers.enums.offer_address import AddressType
+from my_offers.helpers.numbers import get_pretty_number
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo, ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
+from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement.process_announcement_service import CATEGORY_OFFER_TYPE_DEAL_TYPE
 
+
+SQUARE_METER_SYMBOL = 'м²'
 
 CURRENCY = {
     Currency.rur: '₽',
     Currency.usd: '$',
     Currency.eur: '€',
+}
+
+OFFER_TITLES = {
+    # commercial
+    Category.office_sale: 'Офис',
+    Category.office_rent: 'Офис',
+    Category.shopping_area_rent: 'Торговая площадь',
+    Category.shopping_area_sale: 'Торговая площадь',
+    Category.warehouse_rent: 'Склад',
+    Category.warehouse_sale: 'Склад',
+    Category.free_appointment_object_rent: 'ПСН',
+    Category.free_appointment_object_sale: 'ПСН',
+    Category.public_catering_rent: 'Общепит',
+    Category.public_catering_sale: 'Общепит',
+    Category.garage_rent: 'Гараж',
+    Category.garage_sale: 'Гараж',
+    Category.industry_rent: 'Производство',
+    Category.industry_sale: 'Производство',
+    Category.car_service_rent: 'Автосервис',
+    Category.car_service_sale: 'Автосервис',
+    Category.business_rent: 'Готовый бизнес',
+    Category.business_sale: 'Готовый бизнес',
+    Category.building_sale: 'Здание',
+    Category.building_rent: 'Здание',
+    Category.domestic_services_rent: 'Бытовые услуги',
+    Category.domestic_services_sale: 'Бытовые услуги',
+    Category.commercial_land_rent: 'Коммерческая земля',
+    Category.commercial_land_sale: 'Коммерческая земля',
+
+    # suburban
+    Category.house_sale: 'Дом',
+    Category.house_rent: 'Дом',
+    Category.daily_house_rent: 'Дом',
+    Category.house_share_rent: 'Часть дома',
+    Category.house_share_sale: 'Часть дома',
+    Category.cottage_rent: 'Коттедж',
+    Category.cottage_sale: 'Коттедж',
+    Category.townhouse_sale: 'Таунхаус',
+    Category.townhouse_rent: 'Таунхаус',
+    Category.land_sale: 'Земельный участок',
+
+    # flat
+    Category.daily_room_rent: 'Комната',
+    Category.room_rent: 'Комната',
+    Category.room_sale: 'Комната',
+    Category.bed_rent: 'Койко-место',
+    Category.daily_bed_rent: 'Койко-место',
+    Category.flat_share_sale: 'Доля в квартире',
+}
+
+FLAT_TITLE = {
+    FlatType.studio: 'Квартира-студия',
+    FlatType.open_plan: 'Квартира со свободной планир.',
+}
+
+BASEMENT_FLOOR = {
+    -1: 'полуподвал',
+    -2: 'подвал',
+}
+
+UNIT_TYPE = {
+    AreaUnitType.sotka: 'сот.',
+    AreaUnitType.hectare: 'га.',
 }
 
 
@@ -26,7 +95,7 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         offer_id=object_model.id,
         category=object_model.category
     )
-    tittle = _get_title(
+    title = _get_title(
         object_model=object_model,
         category=object_model.category
     )
@@ -48,18 +117,22 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         bargain_terms=object_model.bargain_terms,
         category=object_model.category
     )
+    publish_features = _get_publish_features(
+        publish_terms=object_model.publish_terms,
+        category=object_model.category
+    )
 
     return GetOffer(
         id=object_model.id,
         created_at=object_model.creation_date,
-        title=tittle,
+        title=title,
         main_photo_url=main_photo_url,
         url=url_to_offer,
         geo=geo,
         subagent=subagent,
         price_info=price_info,
         features=features,
-        publish_features=_get_publish_features(publish_terms=object_model.publish_terms),
+        publish_features=publish_features,
         vas=_get_vas(publish_terms=object_model.publish_terms),
         is_from_package=_is_from_package(publish_terms=object_model.publish_terms),
         is_manual=is_manual,
@@ -72,7 +145,7 @@ def _get_offer_url(*, offer_id: int, category: Category) -> Optional[str]:
     offer_type, deal_type = _get_deal_type(category)
 
     if offer_id and category:
-        return f'http://cian.ru/{deal_type.value}/{offer_type.value}/{offer_id}'
+        return f'{settings.CiAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{offer_id}'
 
     return None
 
@@ -81,49 +154,40 @@ def _get_title(*, object_model: ObjectModel, category: Category) -> str:
     offer_type, _ = _get_deal_type(category)
     min_area = object_model.min_area and int(object_model.min_area)
     total_area = object_model.total_area and int(object_model.total_area)
-    rooms_count = object_model.rooms_count
     floor_number = object_model.floor_number
     floors_count = object_model.building and object_model.building.floors_count
-    land = object_model.land
-    can_parts = object_model.can_parts
+    is_land = all([
+        object_model.land and object_model.land.area and object_model.land.area_unit_type,
+        category in [Category.land_sale, Category.commercial_land_rent, Category.commercial_land_sale]
+    ])
 
-    is_commercial = offer_type.is_commercial
-    is_garage = category in [Category.garage_rent, Category.garage_sale]
-    is_room = category in [Category.room_rent, Category.room_sale, Category.daily_room_rent]
+    area = None
 
-    name = None
+    if title := OFFER_TITLES.get(category):
+        if object_model.can_parts and total_area and min_area:
+            area = f'от {min_area} до {total_area} {SQUARE_METER_SYMBOL}'
 
-    if is_commercial and can_parts and total_area and min_area:
-        name = f'Свободное назначение, от {min_area} до {total_area} м²'
-
-    elif land and land.area:
-        unit_type = 'сот.' if land.area_unit_type.is_sotka else 'га.'
-        name = f'Участок {land.area} {unit_type}'
-
-    elif is_garage:
-        name = f'Машиноместо, {total_area} м²'
+        elif is_land:
+            unit_type = UNIT_TYPE[object_model.land.area_unit_type]
+            area = f'{object_model.land.area} {unit_type}'
+        else:
+            area = f'{total_area} {SQUARE_METER_SYMBOL}'
 
     else:
-
-        area = None
-        floors = None
+        flat_type = object_model.flat_type
+        rooms_count = object_model.rooms_count
+        area = f'{total_area} {SQUARE_METER_SYMBOL}' if total_area else None
 
         if rooms_count:
-            flat_type = 'апарт.' if object_model.is_apartments else 'кв.'
-            name = f'{rooms_count}-комн. {flat_type}' if 1 <= rooms_count < 5 else f'многокомн. {flat_type}'
+            title = f'{rooms_count}-комн. кв.' if 1 <= rooms_count <= 5 else f'Многокомн. кв.'
 
-        if total_area:
-            area = f'{total_area} м²'
+        if flat_type and (flat_type.is_studio or flat_type.is_open_plan):
+            title = FLAT_TITLE[flat_type]
 
-        if floor_number and floors_count:
-            floors = f'{floor_number}/{floors_count} этаж'
+    floors = _get_floors(floor_number=floor_number, floors_count=floors_count)
+    title = ', '.join(filter(None, [title, area, floors]))
 
-        if is_room:
-            name = f'Комната'
-
-        name = ', '.join(filter(None, [name, area, floors]))
-
-    return name
+    return title
 
 
 def _is_publication_time_ends(raw_offer: ObjectModel) -> bool:
@@ -156,12 +220,12 @@ def _get_vas(publish_terms: PublishTerms) -> Optional[List[Services]]:
 
 
 def _get_price_info(
-        *,
-        bargain_terms: BargainTerms,
-        category: Category,
-        can_parts: bool,
-        min_area: Optional[float],
-        max_area: Optional[float]
+    *,
+    bargain_terms: BargainTerms,
+    category: Category,
+    can_parts: bool,
+    min_area: Optional[float],
+    max_area: Optional[float]
 ) -> PriceInfo:
     offer_type, deal_type = _get_deal_type(category)
 
@@ -170,7 +234,7 @@ def _get_price_info(
         Category.daily_flat_rent,
         Category.daily_room_rent,
         Category.daily_bed_rent,
-        Category.daily_house_rent
+        Category.daily_house_rent,
     ]
     can_calc_parts = all([
         bargain_terms.price_type and bargain_terms.price_type.is_square_meter,
@@ -184,33 +248,41 @@ def _get_price_info(
     price_range = None
 
     if currency:
+        pretty_price = get_pretty_number(number=price)
+
         if is_daily_rent:
-            price_exact = f'{price} {currency}/сут.'
+            price_exact = f'{pretty_price} {currency}/сут.'
 
         elif is_rent:
             # mypy не понимает вычисления в all([..., max_area, min_area])
             if can_calc_parts and max_area and min_area:
                 months_count = 12
-                min_price = int(price / months_count * min_area)
-                max_price = int(price / months_count * max_area)
+                min_price = get_pretty_number(number=int(price / months_count * min_area))
+                max_price = get_pretty_number(number=int(price / months_count * max_area))
                 price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']
             else:
-                price_exact = f'{price} {currency}/мес.'
+                price_exact = f'{pretty_price} {currency}/мес.'
 
         else:
-            price_exact = f'{price} {currency}'
+            price_exact = f'{pretty_price} {currency}'
 
     return PriceInfo(exact=price_exact, range=price_range)
 
 
-def _get_publish_features(publish_terms: PublishTerms) -> Optional[List[str]]:
+def _get_publish_features(publish_terms: PublishTerms, category: Category) -> Optional[List[str]]:
     # TODO: https://jira.cian.tech/browse/CD-74186
     if not publish_terms:
         return None
 
-    features = []
+    is_daily_rent = category in [
+        Category.daily_flat_rent,
+        Category.daily_room_rent,
+        Category.daily_bed_rent,
+        Category.daily_house_rent,
+    ]
 
-    if publish_terms.autoprolong:
+    features = []
+    if publish_terms.autoprolong and not is_daily_rent:
         features.append('автопродление')
 
     return features
@@ -223,7 +295,7 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
     is_commercial = offer_type.is_commercial
     is_newobject = Category.is_new_building_flat_sale
 
-    price = int(bargain_terms.price)
+    pretty_price = get_pretty_number(number=int(bargain_terms.price))
     currency = CURRENCY.get(bargain_terms.currency)
     is_square_meter = bargain_terms.price_type and bargain_terms.price_type.is_square_meter
     sale_type = bargain_terms.sale_type
@@ -239,8 +311,11 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
         if sale_type and sale_type.is_free:
             features.append('Свободная продажа')
 
+        if sale_type and sale_type.is_alternative:
+            features.append('Альтернативная продажа')
+
         if is_commercial or is_newobject and is_square_meter and currency:
-            features.append(f'{price} {currency} м²')
+            features.append(f'{pretty_price} {currency} {SQUARE_METER_SYMBOL}')
 
         if not offer_type.is_commercial and sale_type and sale_type.is_dupt:
             features.append('Переуступка')
@@ -257,13 +332,13 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
 
         if is_commercial:
             if is_square_meter and currency:
-                features.append(f'{price} {currency} за м² в год')
+                features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL} в год')
 
             if lease_type and lease_type.is_sublease:
                 features.append('Субаренда')
 
             if lease_type and lease_type.is_direct:
-                features.append('Прямая')
+                features.append('Прямая аренда')
 
     return features
 
@@ -319,3 +394,17 @@ def _get_address(geo: Geo) -> Optional[List[Address]]:
 def _get_deal_type(category: Category) -> Tuple[OfferType, DealType]:
     offer_type, deal_type = CATEGORY_OFFER_TYPE_DEAL_TYPE[category]
     return offer_type, deal_type
+
+
+def _get_floors(floor_number: Optional[int], floors_count: Optional[int]) -> Optional[str]:
+    floors_name = None
+    if floor_number:
+        if floor_number in BASEMENT_FLOOR:
+            floors_name = BASEMENT_FLOOR[floor_number]
+        else:
+            if floors_count:
+                floors_name = f'{floor_number}/{floors_count} этаж'
+            else:
+                floors_name = f'{floor_number} этаж'
+
+    return floors_name

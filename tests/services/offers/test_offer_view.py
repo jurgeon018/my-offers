@@ -26,7 +26,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms
     SaleType,
 )
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType, Source
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.monolith_cian_announcementapi.entities.tariff_identificator import TariffGridType
 from my_offers.services.offers.offer_view import build_offer_view
@@ -42,7 +42,7 @@ async def test_build_offer_view():
     )
     expected_result = GetOffer(
         main_photo_url=None,
-        title='',
+        title='Здание, None м²',
         url=None,
         geo=OfferGeo(address=None, newbuilding=None, underground=None),
         subagent=None,
@@ -67,34 +67,131 @@ async def test_build_offer_view():
 
 
 @pytest.mark.gen_test
+@pytest.mark.parametrize('category, prepared, building, expected', (
+    (
+        Category.office_sale,
+        dict(total_area=60.0, floor_number=3), Building(floors_count=19),
+        'Офис, 60 м², 3/19 этаж'
+    ),
+    (
+        Category.office_sale,
+        dict(total_area=60.0, floor_number=3), None,
+        'Офис, 60 м², 3 этаж'
+    ),
+    (
+        Category.office_sale,
+        dict(total_area=60.0, floor_number=-1), None,
+        'Офис, 60 м², полуподвал'
+    ),
+    (
+        Category.office_sale,
+        dict(total_area=60.0, floor_number=-2), None,
+        'Офис, 60 м², подвал'
+    ),
+    (
+        Category.office_sale,
+        dict(total_area=60.0, min_area=10.0, can_parts=True), None,
+        'Офис, от 10 до 60 м²'
+    ),
+    (
+        Category.office_sale,
+        dict(total_area=60.0), None,
+        'Офис, 60 м²'
+    ),
+    (Category.shopping_area_sale, dict(total_area=60.0), None, 'Торговая площадь, 60 м²'),
+    (Category.shopping_area_rent, dict(total_area=60.0), None, 'Торговая площадь, 60 м²'),
+    (Category.warehouse_sale, dict(total_area=60.0), None, 'Склад, 60 м²'),
+    (Category.warehouse_rent, dict(total_area=60.0), None, 'Склад, 60 м²'),
+    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'ПСН, 60 м²'),
+    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'ПСН, 60 м²'),
+    (Category.public_catering_rent, dict(total_area=60.0), None, 'Общепит, 60 м²'),
+    (Category.public_catering_sale, dict(total_area=60.0), None, 'Общепит, 60 м²'),
+    (Category.garage_sale, dict(total_area=60.0), None, 'Гараж, 60 м²'),
+    (Category.garage_rent, dict(total_area=60.0), None, 'Гараж, 60 м²'),
+    (Category.industry_sale, dict(total_area=60.0), None, 'Производство, 60 м²'),
+    (Category.industry_rent, dict(total_area=60.0), None, 'Производство, 60 м²'),
+    (Category.car_service_sale, dict(total_area=60.0), None, 'Автосервис, 60 м²'),
+    (Category.car_service_rent, dict(total_area=60.0), None, 'Автосервис, 60 м²'),
+    (Category.business_rent, dict(total_area=60.0), None, 'Готовый бизнес, 60 м²'),
+    (Category.business_sale, dict(total_area=60.0), None, 'Готовый бизнес, 60 м²'),
+    (Category.building_sale, dict(total_area=60.0), None, 'Здание, 60 м²'),
+    (Category.building_rent, dict(total_area=60.0), None, 'Здание, 60 м²'),
+    (Category.domestic_services_rent, dict(total_area=60.0), None, 'Бытовые услуги, 60 м²'),
+    (Category.domestic_services_rent, dict(total_area=60.0), None, 'Бытовые услуги, 60 м²'),
+))
+async def test_build_offer_view__tittle_commercial(category, prepared, building, expected):
+    # arrange
+    raw_offer = ObjectModel(
+        bargain_terms=BargainTerms(price=123),
+        category=category,
+        phones=[Phone(country_code='1', number='12312')],
+        building=building,
+        **prepared
+    )
+
+    # act
+    result = build_offer_view(object_model=raw_offer)
+
+    # assert
+    assert result.title == expected
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize('category, prepared, building, expected', [
+    (Category.house_sale, dict(total_area=60.0), None, 'Дом, 60 м²'),
+    (Category.house_rent, dict(total_area=60.0), None, 'Дом, 60 м²'),
+    (Category.daily_house_rent, dict(total_area=60.0), None, 'Дом, 60 м²'),
+    (Category.house_share_sale, dict(total_area=60.0), None, 'Часть дома, 60 м²'),
+    (Category.house_share_rent, dict(total_area=60.0), None, 'Часть дома, 60 м²'),
+    (Category.cottage_rent, dict(total_area=60.0), None, 'Коттедж, 60 м²'),
+    (Category.cottage_sale, dict(total_area=60.0), None, 'Коттедж, 60 м²'),
+    (Category.townhouse_rent, dict(total_area=60.0), None, 'Таунхаус, 60 м²'),
+    (Category.townhouse_sale, dict(total_area=60.0), None, 'Таунхаус, 60 м²'),
+])
+async def test_build_offer_view__tittle_suburban(category, prepared, building, expected):
+    # arrange
+    raw_offer = ObjectModel(
+        bargain_terms=BargainTerms(price=123),
+        category=category,
+        phones=[Phone(country_code='1', number='12312')],
+        building=building,
+        **prepared
+    )
+
+    # act
+    result = build_offer_view(object_model=raw_offer)
+
+    # assert
+    assert result.title == expected
+
+
+@pytest.mark.gen_test
 @pytest.mark.parametrize('category, prepared, building, expected', [
     (
-        Category.building_rent,
+        Category.daily_flat_rent,
         dict(rooms_count=1, total_area=60.0, floor_number=3), Building(floors_count=19),
         '1-комн. кв., 60 м², 3/19 этаж'
     ),
     (
-        Category.building_rent,
+        Category.flat_sale,
+        dict(rooms_count=1, total_area=60.0, floor_number=3), None,
+        '1-комн. кв., 60 м², 3 этаж'
+    ),
+    (
+        Category.flat_rent,
         dict(rooms_count=1, total_area=60.0, floor_number=3, is_apartments=True), Building(floors_count=19),
-        '1-комн. апарт., 60 м², 3/19 этаж'
+        '1-комн. кв., 60 м², 3/19 этаж'
     ),
     (
-        Category.building_rent,
-        dict(rooms_count=3, total_area=60.0, floor_number=3, is_apartments=True), Building(floors_count=19),
-        '3-комн. апарт., 60 м², 3/19 этаж'
+        Category.flat_rent,
+        dict(rooms_count=5, total_area=60.0, floor_number=3, is_apartments=True), Building(floors_count=19),
+        '5-комн. кв., 60 м², 3/19 этаж'
     ),
     (
-        Category.building_rent,
+        Category.flat_rent,
         dict(rooms_count=8, total_area=60.0, floor_number=3), Building(floors_count=19),
-        'многокомн. кв., 60 м², 3/19 этаж'
+        'Многокомн. кв., 60 м², 3/19 этаж'
     ),
-    (
-        Category.office_rent,
-        dict(total_area=60.0, min_area=10.0, can_parts=True), None,
-        'Свободное назначение, от 10 до 60 м²'
-    ),
-    (Category.garage_sale, dict(total_area=60.0), None, f'Машиноместо, 60 м²'),
-    (Category.garage_rent, dict(total_area=60.0), None, f'Машиноместо, 60 м²'),
     (
         Category.room_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
@@ -104,8 +201,33 @@ async def test_build_offer_view():
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
         f'Комната, 60 м², 3/19 этаж'
     ),
+    (
+        Category.bed_rent,
+        dict(total_area=60.0, floor_number=3), Building(floors_count=19),
+        f'Койко-место, 60 м², 3/19 этаж'
+    ),
+    (
+        Category.daily_bed_rent,
+        dict(total_area=60.0, floor_number=3), Building(floors_count=19),
+        f'Койко-место, 60 м², 3/19 этаж'
+    ),
+    (
+        Category.flat_share_sale,
+        dict(total_area=60.0, floor_number=3), Building(floors_count=19),
+        f'Доля в квартире, 60 м², 3/19 этаж'
+    ),
+    (
+        Category.flat_rent,
+        dict(total_area=60.0, floor_number=3, flat_type=FlatType.studio), Building(floors_count=19),
+        f'Квартира-студия, 60 м², 3/19 этаж'
+    ),
+    (
+        Category.flat_rent,
+        dict(total_area=60.0, floor_number=3, flat_type=FlatType.open_plan), Building(floors_count=19),
+        f'Квартира со свободной планир., 60 м², 3/19 этаж'
+    ),
 ])
-async def test_build_offer_view__tittle(category, prepared, building, expected):
+async def test_build_offer_view__tittle_flat(category, prepared, building, expected):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
@@ -127,12 +249,22 @@ async def test_build_offer_view__tittle(category, prepared, building, expected):
     (
         Category.land_sale,
         Land(area=16.57, area_unit_type=AreaUnitType.sotka),
-        'Участок 16.57 сот.'
+        'Земельный участок, 16.57 сот.'
     ),
     (
         Category.land_sale,
         Land(area=16.57, area_unit_type=AreaUnitType.hectare),
-        'Участок 16.57 га.'
+        'Земельный участок, 16.57 га.'
+    ),
+    (
+        Category.commercial_land_rent,
+        Land(area=16.57, area_unit_type=AreaUnitType.hectare),
+        'Коммерческая земля, 16.57 га.'
+    ),
+    (
+        Category.commercial_land_rent,
+        Land(area=16.57, area_unit_type=AreaUnitType.sotka),
+        'Коммерческая земля, 16.57 сот.'
     ),
 
 ])
@@ -238,21 +370,21 @@ async def test_build_offer_view__is__from_import(source, is_manual):
 
 @pytest.mark.gen_test
 @pytest.mark.parametrize('category, currency, expected', [
-    (Category.bed_rent, Currency.rur, '123 ₽/мес.'),
-    (Category.bed_rent, Currency.usd, '123 $/мес.'),
-    (Category.bed_rent, Currency.eur, '123 €/мес.'),
-    (Category.building_sale, Currency.rur, '123 ₽'),
-    (Category.building_sale, Currency.usd, '123 $'),
-    (Category.building_sale, Currency.eur, '123 €'),
-    (Category.daily_bed_rent, Currency.rur, '123 ₽/сут.'),
-    (Category.daily_bed_rent, Currency.usd, '123 $/сут.'),
-    (Category.daily_bed_rent, Currency.eur, '123 €/сут.'),
+    (Category.bed_rent, Currency.rur, '10 000 ₽/мес.'),
+    (Category.bed_rent, Currency.usd, '10 000 $/мес.'),
+    (Category.bed_rent, Currency.eur, '10 000 €/мес.'),
+    (Category.building_sale, Currency.rur, '10 000 ₽'),
+    (Category.building_sale, Currency.usd, '10 000 $'),
+    (Category.building_sale, Currency.eur, '10 000 €'),
+    (Category.daily_bed_rent, Currency.rur, '10 000 ₽/сут.'),
+    (Category.daily_bed_rent, Currency.usd, '10 000 $/сут.'),
+    (Category.daily_bed_rent, Currency.eur, '10 000 €/сут.'),
     (Category.daily_bed_rent, None, None),
 ])
 async def test_build_offer_view__price_info(category, currency, expected):
     # arrange
     raw_offer = ObjectModel(
-        bargain_terms=BargainTerms(price=123.0, currency=currency),
+        bargain_terms=BargainTerms(price=10000.0, currency=currency),
         category=category,
         phones=[Phone(country_code='1', number='12312')],
     )
@@ -266,16 +398,16 @@ async def test_build_offer_view__price_info(category, currency, expected):
 
 @pytest.mark.gen_test
 @pytest.mark.parametrize('category, currency, expected', [
-    (Category.office_rent, Currency.rur, [f'от 500', f'до 833 ₽/мес']),
-    (Category.office_rent, Currency.usd, [f'от 500', f'до 833 $/мес']),
-    (Category.office_rent, Currency.eur, [f'от 500', f'до 833 €/мес']),
+    (Category.office_rent, Currency.rur, [f'от 50 000', f'до 83 333 ₽/мес']),
+    (Category.office_rent, Currency.usd, [f'от 50 000', f'до 83 333 $/мес']),
+    (Category.office_rent, Currency.eur, [f'от 50 000', f'до 83 333 €/мес']),
     (Category.flat_sale, None, None),
 ])
 async def test_build_offer_view__price_info__can_parts(category, currency, expected):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(
-            price=100.0,
+            price=10000.0,
             price_type=PriceType.square_meter,
             currency=currency
         ),
@@ -296,6 +428,7 @@ async def test_build_offer_view__price_info__can_parts(category, currency, expec
 @pytest.mark.gen_test
 @pytest.mark.parametrize('category, prepared, expected', [
     (Category.flat_sale, dict(mortgage_allowed=True), ['Возможна ипотека']),
+    (Category.flat_sale, dict(sale_type=SaleType.alternative), ['Альтернативная продажа']),
     (
         Category.flat_sale,
         dict(mortgage_allowed=True, sale_type=SaleType.free),
@@ -310,7 +443,7 @@ async def test_build_offer_view__price_info__can_parts(category, currency, expec
         ['Агенту: 50%', 'Клиенту: 10%', 'Залог: 1000 ₽']
     ),
     (Category.office_rent, dict(lease_type=LeaseType.sublease), ['Субаренда']),
-    (Category.office_rent, dict(lease_type=LeaseType.direct), ['Прямая']),
+    (Category.office_rent, dict(lease_type=LeaseType.direct), ['Прямая аренда']),
 
     (Category.flat_sale, dict(sale_type=SaleType.dupt), ['Переуступка']),
     (Category.new_building_flat_sale, dict(sale_type=SaleType.dupt), ['Переуступка']),
@@ -332,15 +465,15 @@ async def test_build_offer_view__features(category, prepared, expected):
 
 @pytest.mark.gen_test
 @pytest.mark.parametrize('category, expected', [
-    (Category.office_sale, ['123 ₽ м²']),
-    (Category.new_building_flat_sale, ['123 ₽ м²']),
-    (Category.office_rent, [f'123 ₽ за м² в год']),
+    (Category.office_sale, ['123 000 ₽ м²']),
+    (Category.new_building_flat_sale, ['123 000 ₽ м²']),
+    (Category.office_rent, [f'123 000 ₽ за м² в год']),
 ])
 async def test_build_offer_view__features__price(category, expected):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(
-            price=123.0,
+            price=123000.0,
             price_type=PriceType.square_meter,
             currency=Currency.rur
         ),

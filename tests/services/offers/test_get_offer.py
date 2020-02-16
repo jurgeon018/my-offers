@@ -25,7 +25,7 @@ async def test_get_offer(mocker):
     expected_result = GetOffersResponse(offers=[
         GetOffer(
             main_photo_url=None,
-            title='',
+            title='Здание, None м²',
             url=None,
             geo=OfferGeo(address=None, newbuilding=None, underground=None),
             subagent=None,
