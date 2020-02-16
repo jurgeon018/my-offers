@@ -323,6 +323,10 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
         if not offer_type.is_commercial and sale_type and sale_type.is_dupt:
             features.append('Переуступка')
 
+        if is_all and currency:
+            pretty_price = get_pretty_number(number=int(bargain_terms.price))
+            features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
+
     if is_rent:
         if bargain_terms.agent_fee:
             features.append(f'Агенту: {bargain_terms.agent_fee}%')
@@ -334,9 +338,6 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
             features.append(f'Залог: {bargain_terms.deposit} {currency}')
 
         if is_commercial:
-            if is_all and currency:
-                pretty_price = get_pretty_number(number=int(bargain_terms.price))
-                features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
 
             if is_square_meter and currency:
                 months = 12

@@ -469,7 +469,7 @@ async def test_build_offer_view__features(category, prepared, expected):
     (Category.office_sale, PriceType.square_meter, ['123 000 ₽ м²']),
     (Category.new_building_flat_sale, PriceType.square_meter, ['123 000 ₽ м²']),
     (Category.office_rent, PriceType.square_meter, [f'1 476 000 ₽ за м² в год']),
-    (Category.office_rent, PriceType.all, [f'123 000 ₽ за м²']),
+    (Category.office_sale, PriceType.all, [f'123 000 ₽ за м²']),
 ])
 async def test_build_offer_view__features__price(category, price_type, expected):
     # arrange
