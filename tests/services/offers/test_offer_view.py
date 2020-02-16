@@ -102,8 +102,8 @@ async def test_build_offer_view():
     (Category.shopping_area_rent, dict(total_area=60.0), None, 'Торговая площадь, 60 м²'),
     (Category.warehouse_sale, dict(total_area=60.0), None, 'Склад, 60 м²'),
     (Category.warehouse_rent, dict(total_area=60.0), None, 'Склад, 60 м²'),
-    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'ПСН, 60 м²'),
-    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'ПСН, 60 м²'),
+    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'Свободное назначение, 60 м²'),
+    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'Свободное назначение, 60 м²'),
     (Category.public_catering_rent, dict(total_area=60.0), None, 'Общепит, 60 м²'),
     (Category.public_catering_sale, dict(total_area=60.0), None, 'Общепит, 60 м²'),
     (Category.garage_sale, dict(total_area=60.0), None, 'Гараж, 60 м²'),
@@ -467,7 +467,7 @@ async def test_build_offer_view__features(category, prepared, expected):
 @pytest.mark.parametrize('category, expected', [
     (Category.office_sale, ['123 000 ₽ м²']),
     (Category.new_building_flat_sale, ['123 000 ₽ м²']),
-    (Category.office_rent, [f'123 000 ₽ за м² в год']),
+    (Category.office_rent, [f'1 476 000 ₽ за м² в год']),
 ])
 async def test_build_offer_view__features__price(category, expected):
     # arrange

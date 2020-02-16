@@ -31,8 +31,8 @@ OFFER_TITLES = {
     Category.shopping_area_sale: 'Торговая площадь',
     Category.warehouse_rent: 'Склад',
     Category.warehouse_sale: 'Склад',
-    Category.free_appointment_object_rent: 'ПСН',
-    Category.free_appointment_object_sale: 'ПСН',
+    Category.free_appointment_object_rent: 'Свободное назначение',
+    Category.free_appointment_object_sale: 'Свободное назначение',
     Category.public_catering_rent: 'Общепит',
     Category.public_catering_sale: 'Общепит',
     Category.garage_rent: 'Гараж',
@@ -237,11 +237,8 @@ def _get_price_info(
         Category.daily_bed_rent,
         Category.daily_house_rent,
     ]
-    can_calc_parts = all([
-        bargain_terms.price_type and bargain_terms.price_type.is_square_meter,
-        offer_type.is_commercial,
-        can_parts
-    ])
+    is_square_meter = bargain_terms.price_type and bargain_terms.price_type.is_square_meter
+    can_calc_parts = all([is_square_meter, offer_type.is_commercial, can_parts])
 
     currency = CURRENCY.get(bargain_terms.currency)
     price = int(bargain_terms.price)
@@ -262,6 +259,8 @@ def _get_price_info(
                 max_price = get_pretty_number(number=int(price / months_count * max_area))
                 price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']
             else:
+                price = int(price * max_area) if is_square_meter and max_area else price
+                pretty_price = get_pretty_number(number=price)
                 price_exact = f'{pretty_price} {currency}/мес.'
 
         else:
@@ -296,7 +295,6 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
     is_commercial = offer_type.is_commercial
     is_newobject = category.is_new_building_flat_sale
 
-    pretty_price = get_pretty_number(number=int(bargain_terms.price))
     currency = CURRENCY.get(bargain_terms.currency)
     is_square_meter = bargain_terms.price_type and bargain_terms.price_type.is_square_meter
     sale_type = bargain_terms.sale_type
@@ -315,7 +313,8 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
         if sale_type and sale_type.is_alternative:
             features.append('Альтернативная продажа')
 
-        if is_commercial or is_newobject and is_square_meter and currency:
+        if (is_commercial or is_newobject) and is_square_meter and currency:
+            pretty_price = get_pretty_number(number=int(bargain_terms.price))
             features.append(f'{pretty_price} {currency} {SQUARE_METER_SYMBOL}')
 
         if not offer_type.is_commercial and sale_type and sale_type.is_dupt:
@@ -333,6 +332,8 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
 
         if is_commercial:
             if is_square_meter and currency:
+                months = 12
+                pretty_price = get_pretty_number(number=int(bargain_terms.price * months))
                 features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL} в год')
 
             if lease_type and lease_type.is_sublease:
