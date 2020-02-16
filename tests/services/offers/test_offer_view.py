@@ -465,17 +465,18 @@ async def test_build_offer_view__features(category, prepared, expected):
 
 
 @pytest.mark.gen_test
-@pytest.mark.parametrize('category, expected', [
-    (Category.office_sale, ['123 000 ₽ м²']),
-    (Category.new_building_flat_sale, ['123 000 ₽ м²']),
-    (Category.office_rent, [f'1 476 000 ₽ за м² в год']),
+@pytest.mark.parametrize('category, price_type, expected', [
+    (Category.office_sale, PriceType.square_meter, ['123 000 ₽ м²']),
+    (Category.new_building_flat_sale, PriceType.square_meter, ['123 000 ₽ м²']),
+    (Category.office_rent, PriceType.square_meter, [f'1 476 000 ₽ за м² в год']),
+    (Category.office_rent, PriceType.all, [f'123 000 ₽ за м²']),
 ])
-async def test_build_offer_view__features__price(category, expected):
+async def test_build_offer_view__features__price(category, price_type, expected):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(
             price=123000.0,
-            price_type=PriceType.square_meter,
+            price_type=price_type,
             currency=Currency.rur
         ),
         category=category,

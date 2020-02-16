@@ -299,6 +299,7 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
 
     currency = CURRENCY.get(bargain_terms.currency)
     is_square_meter = bargain_terms.price_type and bargain_terms.price_type.is_square_meter
+    is_all = bargain_terms.price_type and bargain_terms.price_type.is_all
     sale_type = bargain_terms.sale_type
     lease_type = bargain_terms.lease_type
 
@@ -329,10 +330,14 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category) -> List[st
         if bargain_terms.client_fee:
             features.append(f'Клиенту: {bargain_terms.client_fee}%')
 
-        if bargain_terms.deposit:
+        if bargain_terms.deposit and currency:
             features.append(f'Залог: {bargain_terms.deposit} {currency}')
 
         if is_commercial:
+            if is_all and currency:
+                pretty_price = get_pretty_number(number=int(bargain_terms.price))
+                features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
+
             if is_square_meter and currency:
                 months = 12
                 pretty_price = get_pretty_number(number=int(bargain_terms.price * months))
