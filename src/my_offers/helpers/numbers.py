@@ -1,4 +1,4 @@
-def get_pretty_number(*, number: int, template: str = '%.0f') -> str:
+def get_pretty_number(*, number: int) -> str:
     """ Получить число в "красивом" представлении.
 
         100 -> '100'
@@ -7,18 +7,11 @@ def get_pretty_number(*, number: int, template: str = '%.0f') -> str:
         100000 -> '100 000'
         1000000 -> '1 000 000'
     """
-    number_str = str(template % number)
-
-    if '.' in number_str:
-        integral = number_str.strip('0')
-    else:
-        integral = number_str
+    number_str = str('%.0f' % number)
 
     result = []
-    for _ in range(len(integral) // 3 + 1):
-        result.append(integral[-3:])
-        integral = integral[:-3]
+    for _ in range(len(number_str) // 3 + 1):
+        result.append(number_str[-3:])
+        number_str = number_str[:-3]
 
-    integral = ' '.join(reversed(list(filter(None, result))))
-
-    return integral
+    return ' '.join(reversed(list(filter(None, result))))
