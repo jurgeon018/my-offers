@@ -13,7 +13,6 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.land import A
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement import category
-from my_offers.services.announcement.category import get_types
 from my_offers.services.offer_view.geo import prepare_geo
 
 
@@ -92,7 +91,7 @@ UNIT_TYPE = {
 
 async def build_offer_view(object_model: ObjectModel) -> GetOffer:
     """ Собирает из шарповой модели компактное представление объявления для выдачи."""
-    offer_type, deal_type = get_types(object_model.category)
+    offer_type, deal_type = category.get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
     url_to_offer = _get_offer_url(
         offer_id=object_model.id,
@@ -129,8 +128,6 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
         publish_terms=object_model.publish_terms,
         category=object_model.category
     )
-
-    offer_type, deal_type = category.get_types(object_model.category)
 
     return GetOffer(
         id=object_model.id,
@@ -302,7 +299,6 @@ def _get_features(
         offer_type: enums.OfferType,
         deal_type: enums.DealType
 ) -> List[str]:
-    is_rent = deal_type.is_rent
     is_commercial = offer_type.is_commercial
     is_newobject = category.is_new_building_flat_sale
 
@@ -336,7 +332,6 @@ def _get_features(
             pretty_price = get_pretty_number(number=int(bargain_terms.price / total_area))
             features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
 
-    if is_rent:
         if bargain_terms.agent_fee:
             features.append(f'Агенту: {bargain_terms.agent_fee}%')
 
