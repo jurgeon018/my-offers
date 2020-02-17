@@ -10,7 +10,7 @@ from my_offers.entities.get_offers import (
     GetOffersResponse,
     OfferCounters,
     Statistics,
-)
+    Filter, PageInfo)
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.enums import GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
@@ -24,16 +24,20 @@ async def test_get_offer(mocker):
     # arrange
     expected_user = 777
     request = GetOffersRequest(
-        status_tab=GetOfferStatusTab.active,
-        sort_type=None,
-        deal_type=None,
-        offer_type=None,
-        services=None,
-        sub_agent_ids=None,
-        has_photo=None,
-        is_manual=None,
-        is_in_hidden_base=None,
-        search_text=None,
+        filters=Filter(
+            status_tab=GetOfferStatusTab.active,
+            sort_type=None,
+            deal_type=None,
+            offer_type=None,
+            services=None,
+            sub_agent_ids=None,
+            has_photo=None,
+            is_manual=None,
+            is_in_hidden_base=None,
+            search_text=None,
+        ),
+        pagination=None,
+        sort=None,
     )
     object_model = ObjectModel(
         id=111,
@@ -61,11 +65,13 @@ async def test_get_offer(mocker):
             statistics=Statistics(),
             auction=None
         )],
-        counters=OfferCounters(active=1, not_active=0, declined=0, archived=0))
+        counters=OfferCounters(active=1, not_active=0, declined=0, archived=0),
+        page=PageInfo(count=1, page_count=1, can_load_more=False),
+    )
 
     get_offers_by_status_mock = mocker.patch(
         'my_offers.services.offers.get_offers_service.postgresql.get_object_models',
-        return_value=future([object_model]),
+        return_value=future(([object_model], 1)),
     )
 
     # act
@@ -76,7 +82,11 @@ async def test_get_offer(mocker):
 
     # assert
     assert result == expected_result
-    get_offers_by_status_mock.assert_called_once_with(filters={'status_tab': 'active', 'master_user_id': 777})
+    get_offers_by_status_mock.assert_called_once_with(
+        filters={'status_tab': 'active', 'master_user_id': 777},
+        limit=20,
+        offset=0,
+    )
 
 
 @pytest.mark.gen_test
@@ -84,16 +94,20 @@ async def test_get_offers_private(mocker):
     # arrange
     request = GetOffersPrivateRequest(
         user_id=111,
-        status_tab=GetOfferStatusTab.active,
-        sort_type=None,
-        deal_type=None,
-        offer_type=None,
-        services=None,
-        sub_agent_ids=None,
-        has_photo=None,
-        is_manual=None,
-        is_in_hidden_base=None,
-        search_text=None,
+        filters=Filter(
+            status_tab=GetOfferStatusTab.active,
+            sort_type=None,
+            deal_type=None,
+            offer_type=None,
+            services=None,
+            sub_agent_ids=None,
+            has_photo=None,
+            is_manual=None,
+            is_in_hidden_base=None,
+            search_text=None,
+        ),
+        pagination=None,
+        sort=None,
     )
 
     response = mocker.sentinel.response

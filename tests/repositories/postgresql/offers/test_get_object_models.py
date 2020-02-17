@@ -13,15 +13,15 @@ async def test_get_object_models__empty_filter__result(mocker):
 
     pg.get().fetch.return_value = future([])
     query = load_data(__file__, 'get_object_models_empty_filter.sql').strip()
-    expected = []
+    expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters)
+    result = await get_object_models(filters=filters, limit=20, offset=0)
 
     # assert
     assert result == expected
 
-    pg.get().fetch.assert_called_once_with(query, 20)
+    pg.get().fetch.assert_called_once_with(query, 20, 0)
 
 
 @pytest.mark.gen_test
@@ -43,10 +43,10 @@ async def test_get_object_models__full_filter__result(mocker):
     pg.get().fetch.return_value = future([])
     query = load_data(__file__, 'get_object_models_full_filter.sql').strip()
 
-    expected = []
+    expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40)
+    result = await get_object_models(filters=filters, limit=40, offset=0)
 
     # assert
     assert result == expected
@@ -58,6 +58,7 @@ async def test_get_object_models__full_filter__result(mocker):
         'suburban',
         [46610424],
         40,
+        0,
         ['paid'],
         'active',
         'russian',
@@ -84,10 +85,10 @@ async def test_get_object_models__full_filter_none__result(mocker):
     pg.get().fetch.return_value = future([])
     query = load_data(__file__, 'get_object_models_full_filter_none.sql').strip()
 
-    expected = []
+    expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40)
+    result = await get_object_models(filters=filters, limit=40, offset=0)
 
     # assert
     assert result == expected
@@ -98,6 +99,7 @@ async def test_get_object_models__full_filter_none__result(mocker):
         12478339,
         [46610424],
         40,
+        0,
         ['paid'],
         'active',
         'russian',

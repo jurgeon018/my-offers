@@ -42,7 +42,7 @@ class Pagination:
 
 @dataclass
 class GetOffersRequest:
-    filters: Optional[Filter]
+    filters: Filter
     """Параметры фильтрации"""
     pagination: Optional[Pagination]
     """Параметры страницы"""
