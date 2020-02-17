@@ -1,6 +1,5 @@
 import asyncio
 import math
-
 from typing import Any, Dict, Optional, Tuple
 
 from simple_settings import settings

@@ -5,12 +5,14 @@ from cian_test_utils import future
 
 from my_offers.entities import GetOffersRequest
 from my_offers.entities.get_offers import (
+    Filter,
     GetOffer,
     GetOffersPrivateRequest,
     GetOffersResponse,
     OfferCounters,
+    PageInfo,
     Statistics,
-    Filter, PageInfo)
+)
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.enums import GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
@@ -46,25 +48,27 @@ async def test_get_offer(mocker):
         phones=[Phone(country_code='1', number='12312')],
         creation_date=datetime(2020, 2, 11, 17, 00),
     )
-    expected_result = GetOffersResponse(offers=[
-        GetOffer(
-            main_photo_url=None,
-            title='',
-            url='https://cian.ru/rent/flat/111',
-            geo=OfferGeo(address=None, newbuilding=None, underground=None),
-            subagent=None,
-            price_info=PriceInfo(exact=None, range=None),
-            features=[],
-            publish_features=None,
-            vas=[],
-            is_from_package=False,
-            is_manual=False,
-            is_publication_time_ends=False,
-            created_at=datetime(2020, 2, 11, 17, 00),
-            id=111,
-            statistics=Statistics(),
-            auction=None
-        )],
+    expected_result = GetOffersResponse(
+        offers=[
+            GetOffer(
+                main_photo_url=None,
+                title='',
+                url='https://cian.ru/rent/flat/111',
+                geo=OfferGeo(address=None, newbuilding=None, underground=None),
+                subagent=None,
+                price_info=PriceInfo(exact=None, range=None),
+                features=[],
+                publish_features=None,
+                vas=[],
+                is_from_package=False,
+                is_manual=False,
+                is_publication_time_ends=False,
+                created_at=datetime(2020, 2, 11, 17, 00),
+                id=111,
+                statistics=Statistics(),
+                auction=None
+            )
+        ],
         counters=OfferCounters(active=1, not_active=0, declined=0, archived=0),
         page=PageInfo(count=1, page_count=1, can_load_more=False),
     )
