@@ -5,14 +5,13 @@ from simple_settings import settings
 from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.entities.offer_view_model import PriceInfo
-from my_offers.enums import DealType, OfferType
 from my_offers.helpers.numbers import get_pretty_number
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
-from my_offers.services.announcement import category
+from my_offers.services.announcement.category import get_types
 from my_offers.services.offer_view.geo import prepare_geo
 
 
@@ -91,18 +90,16 @@ UNIT_TYPE = {
 
 async def build_offer_view(object_model: ObjectModel) -> GetOffer:
     """ Собирает из шарповой модели компактное представление объявления для выдачи."""
-    offer_type, deal_type = category.get_types(object_model.category)
+    offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
     url_to_offer = _get_offer_url(
         offer_id=object_model.id,
-        category=object_model.category,
         offer_type=offer_type,
         deal_type=deal_type
     )
     title = _get_title(
         object_model=object_model,
         category=object_model.category,
-        offer_type=offer_type,
     )
 
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
@@ -148,14 +145,16 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
     )
 
 
-def _get_offer_url(*, offer_id: int, category: Category, offer_type: OfferType, deal_type: DealType) -> Optional[str]:
-    if offer_id and category:
-        return f'{settings.CiAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{offer_id}'
+def _get_offer_url(
+        *,
+        offer_id: int,
+        offer_type: enums.OfferType,
+        deal_type: enums.DealType
+) -> Optional[str]:
+    return f'{settings.CiAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{offer_id}'
 
-    return None
 
-
-def _get_title(*, object_model: ObjectModel, category: Category, offer_type: OfferType) -> str:
+def _get_title(*, object_model: ObjectModel, category: Category) -> str:
     min_area = object_model.min_area and int(object_model.min_area)
     total_area = object_model.total_area and int(object_model.total_area)
     floor_number = object_model.floor_number
@@ -165,17 +164,14 @@ def _get_title(*, object_model: ObjectModel, category: Category, offer_type: Off
         category in [Category.land_sale, Category.commercial_land_rent, Category.commercial_land_sale]
     ])
 
-    area = None
-
     if title := OFFER_TITLES.get(category):
         if object_model.can_parts and total_area and min_area:
-            area = f'от {min_area} до {total_area} {SQUARE_METER_SYMBOL}'
+            area: Optional[str] = f'от {min_area} до {total_area} {SQUARE_METER_SYMBOL}'
         elif is_land:
             unit_type = UNIT_TYPE[object_model.land.area_unit_type]
             area = f'{object_model.land.area} {unit_type}'
         else:
             area = f'{total_area} {SQUARE_METER_SYMBOL}'
-
     else:
         flat_type = object_model.flat_type
         rooms_count = object_model.rooms_count
