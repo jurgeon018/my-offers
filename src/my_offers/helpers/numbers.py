@@ -10,7 +10,7 @@ def get_pretty_number(*, number: int, template: str = '%.0f') -> str:
     number_str = str(template % number)
 
     if '.' in number_str:
-        integral = number_str.split('.')
+        integral = number_str.strip('0')
     else:
         integral = number_str
 
