@@ -1,4 +1,5 @@
 import uuid
+
 from cian_automation.settings.base import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
 

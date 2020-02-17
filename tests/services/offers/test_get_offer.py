@@ -19,19 +19,17 @@ async def test_get_offer(mocker):
     )
     object_model = ObjectModel(
         bargain_terms=BargainTerms(price=123),
-        category=Category.building_rent,
-        phones=[
-            Phone(country_code='1', number='12312')
-        ]
+        category=Category.flat_rent,
+        phones=[Phone(country_code='1', number='12312')]
     )
     expected_result = GetOffersResponse(offers=[
         GetOffer(
             main_photo_url=None,
-            title=None,
+            title='',
             url=None,
             geo=OfferGeo(address=None, newbuilding=None, underground=None),
             subagent=None,
-            price_info=PriceInfo(exact='123 ₽/мес.'),
+            price_info=PriceInfo(exact=None, range=None),
             features=[],
             publish_features=None,
             vas=None,
