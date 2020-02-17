@@ -2,6 +2,7 @@ import pytest
 from cian_test_utils import future
 
 from my_offers import pg
+from my_offers.enums import GetOffersSortType
 from my_offers.repositories.postgresql import get_object_models
 from tests.utils import load_data
 
@@ -21,7 +22,7 @@ async def test_get_object_models__empty_filter__result(mocker):
     expected = ([object_model], 1)
 
     # act
-    result = await get_object_models(filters=filters, limit=20, offset=0)
+    result = await get_object_models(filters=filters, limit=20, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == expected
@@ -51,7 +52,7 @@ async def test_get_object_models__full_filter__result(mocker):
     expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40, offset=0)
+    result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == expected
@@ -93,7 +94,7 @@ async def test_get_object_models__full_filter_none__result(mocker):
     expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40, offset=0)
+    result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == expected

@@ -15,7 +15,7 @@ from my_offers.entities.get_offers import (
     Statistics,
 )
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
-from my_offers.enums import GetOfferStatusTab
+from my_offers.enums import GetOffersSortType, GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.services import offers
@@ -92,6 +92,7 @@ async def test_get_offer(mocker):
         filters={'status_tab': 'active', 'master_user_id': 777},
         limit=20,
         offset=0,
+        sort_type=GetOffersSortType.by_default,
     )
 
 
