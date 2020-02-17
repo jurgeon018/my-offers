@@ -1,0 +1,54 @@
+definitions:
+  cian.internal_api.schemas.SerializeToQueryStringsRequestSchema:
+    properties:
+      queryParams:
+        description: Список параметров поисковых запросов
+        items:
+          title: query_params
+          type: object
+        title: query_params
+        type: array
+    type: object
+  cian.internal_api.schemas.SerializeToQueryStringsResponseSchema:
+    properties:
+      queryStrings:
+        description: Список QueryString поисковых запросов
+        items:
+          title: query_strings
+          type: string
+        title: query_strings
+        type: array
+    type: object
+  cian.internal_api.schemas.SerializeToQueryStringsResponseSchema584:
+    properties:
+      data:
+        $ref: '#/definitions/cian.internal_api.schemas.SerializeToQueryStringsResponseSchema'
+      status:
+        enum:
+        - ok
+        type: string
+    required:
+    - data
+    - status
+    type: object
+info:
+  description: monolith-python swagger
+  title: monolith-python
+  version: 1.0.0
+paths:
+  /internal_api/serialize-query-params/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cian.internal_api.schemas.SerializeToQueryStringsRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/cian.internal_api.schemas.SerializeToQueryStringsResponseSchema584'
+      tags: []
+swagger: '2.0'

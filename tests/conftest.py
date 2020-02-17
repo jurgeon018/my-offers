@@ -1,4 +1,5 @@
 import pytest
+from cian_cache import cached
 from cian_core.postgres import PostgresConnection
 from cian_test_utils import future
 from tornado import web
@@ -23,3 +24,12 @@ def pg_connection(mocker):
     mocker.patch.object(pg, 'get', return_value=connection)
 
     return connection
+
+
+async def cache_decorator(instance, f, options, *args, **kwargs):  # pylint: disable=unused-argument
+    return await f(*args, **kwargs)
+
+
+@pytest.fixture(autouse=True)
+def cached_mock(mocker):
+    return mocker.patch.object(cached, 'decorator', side_effect=cache_decorator)

@@ -9,4 +9,6 @@ APPLICATION_PACKAGE_NAME = 'my_offers'
 
 CHECK_SERVICES: List[str] = []
 
+DEFAULT_LOCATION_ID: int = 1
+
 CiAN_BASE_URL = 'https://cian.ru'
