@@ -59,7 +59,7 @@ def _get_filters(*, user_id: int, filters: Optional[get_offers.Filter]) -> Dict[
     return result
 
 
-def _get_pagination(pagination: get_offers.Pagination) -> Tuple[int, int]:
+def _get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, int]:
     limit = settings.OFFER_LIST_LIMIT
     offset = 0
 

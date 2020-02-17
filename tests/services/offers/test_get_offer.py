@@ -11,6 +11,7 @@ from my_offers.entities.get_offers import (
     GetOffersResponse,
     OfferCounters,
     PageInfo,
+    Pagination,
     Statistics,
 )
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
@@ -19,6 +20,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Bargai
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.services import offers
 from my_offers.services.offers import get_offers_private
+from my_offers.services.offers.get_offers_service import _get_pagination
 
 
 @pytest.mark.gen_test
@@ -130,3 +132,23 @@ async def test_get_offers_private(mocker):
         request=request,
         user_id=111,
     )
+
+
+@pytest.mark.parametrize(
+    ('pagination', 'expected'),
+    (
+        (None, (20, 0)),
+        (Pagination(limit=40, page=None, offset=None), (40, 0)),
+        (Pagination(limit=40, page=None, offset=20), (40, 20)),
+        (Pagination(limit=40, page=2, offset=None), (40, 40)),
+        (Pagination(limit=40, page=3, offset=55), (40, 55)),
+    )
+)
+def test__get_pagination(pagination, expected):
+    # arrange
+
+    # act
+    result = _get_pagination(pagination)
+
+    # assert
+    assert result == expected

@@ -10,10 +10,15 @@ from tests.utils import load_data
 async def test_get_object_models__empty_filter__result(mocker):
     # arrange
     filters = {}
+    object_model = mocker.sentinel.object_model
 
-    pg.get().fetch.return_value = future([])
+    pg.get().fetch.return_value = future([{'raw_data': '{"id": 12}', 'total_count': 1}])
     query = load_data(__file__, 'get_object_models_empty_filter.sql').strip()
-    expected = ([], 0)
+    mocker.patch(
+        'my_offers.repositories.postgresql.object_models.object_model_mapper.map_from',
+        return_value=object_model,
+    )
+    expected = ([object_model], 1)
 
     # act
     result = await get_object_models(filters=filters, limit=20, offset=0)
