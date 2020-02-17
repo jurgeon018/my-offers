@@ -10,9 +10,9 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Bargai
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
-from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement.category import get_types
-from my_offers.services.offer_view.geo import prepare_geo
+from my_offers.services.offer_view.fields.geo import prepare_geo
+from my_offers.services.offer_view.fields.vas import get_vas
 
 
 SQUARE_METER_SYMBOL = 'м²'
@@ -121,8 +121,9 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
         offer_type=offer_type,
         deal_type=deal_type
     )
+    publish_terms = object_model.publish_terms
     publish_features = _get_publish_features(
-        publish_terms=object_model.publish_terms,
+        publish_terms=publish_terms,
         category=object_model.category
     )
 
@@ -137,8 +138,8 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
         price_info=price_info,
         features=features,
         publish_features=publish_features,
-        vas=_get_vas(publish_terms=object_model.publish_terms),
-        is_from_package=_is_from_package(publish_terms=object_model.publish_terms),
+        vas=get_vas(terms=publish_terms.terms if publish_terms else []),
+        is_from_package=_is_from_package(publish_terms=publish_terms),
         is_manual=is_manual,
         is_publication_time_ends=_is_publication_time_ends(object_model),
         statistics=Statistics()
@@ -150,7 +151,7 @@ def _get_offer_url(
         offer_id: int,
         offer_type: enums.OfferType,
         deal_type: enums.DealType
-) -> Optional[str]:
+) -> str:
     return f'{settings.CiAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{offer_id}'
 
 
@@ -204,18 +205,6 @@ def _is_from_package(publish_terms: PublishTerms) -> bool:
         for term in publish_terms.terms
         if term.tariff_identificator and term.tariff_identificator.tariff_grid_type
     )
-
-
-def _get_vas(publish_terms: PublishTerms) -> Optional[List[Services]]:
-    if not publish_terms or not publish_terms.terms:
-        return None
-
-    services: List[Services] = []
-    for t in publish_terms.terms:
-        if t.services:
-            services.extend(t.services)
-
-    return services
 
 
 def _get_price_info(
