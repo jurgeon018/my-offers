@@ -1,6 +1,7 @@
 import pytest
 from cian_test_utils import future
 
+from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Underground
 from my_offers.enums.offer_address import AddressType
@@ -50,7 +51,7 @@ async def test_build_offer_view():
         price_info=PriceInfo(exact=None, range=None),
         features=[],
         publish_features=None,
-        vas=None,
+        vas=[],
         is_from_package=False,
         is_manual=False,
         is_publication_time_ends=False,
@@ -516,11 +517,11 @@ async def test_build_offer_view__publish_features(publish_terms, expected):
 @pytest.mark.parametrize('terms, expected', [
     (
         [PublishTerm(services=[Services.calltracking, Services.paid])],
-        [Services.calltracking, Services.paid]
+        [enums.OfferVas.payed]
     ),
     (
         [PublishTerm(services=[Services.calltracking, Services.paid]), PublishTerm(services=[Services.top3])],
-        [Services.calltracking, Services.paid, Services.top3]
+        [enums.OfferVas.payed, enums.OfferVas.top3]
     ),
 ])
 async def test_build_offer_view__vas(terms, expected):

@@ -33,7 +33,7 @@ async def test_get_offer(mocker):
             price_info=PriceInfo(exact=None, range=None),
             features=[],
             publish_features=None,
-            vas=None,
+            vas=[],
             is_from_package=False,
             is_manual=False,
             is_publication_time_ends=False,
