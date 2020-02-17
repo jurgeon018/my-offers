@@ -13,11 +13,12 @@ from my_offers.services import offers
 @pytest.mark.gen_test
 async def test_get_offer(mocker):
     # arrange
-    expected_user = 666
+    expected_user = 777
     request = GetOffersRequest(
         status_tab=GetOfferStatusTab.active,
     )
     object_model = ObjectModel(
+        id=111,
         bargain_terms=BargainTerms(price=123),
         category=Category.flat_rent,
         phones=[Phone(country_code='1', number='12312')]
@@ -26,7 +27,7 @@ async def test_get_offer(mocker):
         GetOffer(
             main_photo_url=None,
             title='',
-            url=None,
+            url='https://cian.ru/rent/flat/111',
             geo=OfferGeo(address=None, newbuilding=None, underground=None),
             subagent=None,
             price_info=PriceInfo(exact=None, range=None),
@@ -37,7 +38,7 @@ async def test_get_offer(mocker):
             is_manual=False,
             is_publication_time_ends=False,
             created_at=None,
-            id=None,
+            id=111,
             statistics=Statistics(),
             auction=None
         )],
