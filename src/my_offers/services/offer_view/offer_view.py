@@ -1,26 +1,22 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from simple_settings import settings
 
 from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.entities.offer_view_model import PriceInfo
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, PublishTerms
-from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Underground
 from my_offers.enums import DealType, OfferType
-from my_offers.enums.offer_address import AddressType
 from my_offers.helpers.numbers import get_pretty_number
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo, ObjectModel, PublishTerms
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement import category
+from my_offers.services.announcement.category import get_types
 from my_offers.services.offer_view.geo import prepare_geo
 
 
-async def build_offer_view(object_model: ObjectModel) -> GetOffer:
-    """ Собирает из шарповой модели компактное представление объявления для выдачи."""
 SQUARE_METER_SYMBOL = 'м²'
 
 CURRENCY = {
@@ -94,10 +90,9 @@ UNIT_TYPE = {
 }
 
 
-def build_offer_view(object_model: ObjectModel) -> GetOffer:
-    """ Собирает из шарповой модели компактное представление объявления для выдачи.
-    """
-    offer_type, deal_type = _get_deal_type(object_model.category)
+async def build_offer_view(object_model: ObjectModel) -> GetOffer:
+    """ Собирает из шарповой модели компактное представление объявления для выдачи."""
+    offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
     url_to_offer = _get_offer_url(
         offer_id=object_model.id,
@@ -110,11 +105,7 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         category=object_model.category,
         offer_type=offer_type,
     )
-    geo = OfferGeo(
-        address=_get_address(object_model.geo),
-        newbuilding=_get_newbuilding(object_model.geo),
-        underground=_get_underground(object_model.geo)
-    )
+
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
     is_manual = bool(object_model.source and object_model.source.is_upload)
     price_info = _get_price_info(
@@ -311,7 +302,6 @@ def _get_features(
         offer_type: enums.OfferType,
         deal_type: enums.DealType
 ) -> List[str]:
-    is_sale = deal_type.is_sale
     is_rent = deal_type.is_rent
     is_commercial = offer_type.is_commercial
     is_newobject = category.is_new_building_flat_sale
@@ -332,7 +322,6 @@ def _get_features(
         if sale_type and sale_type.is_free:
             features.append('Свободная продажа')
     else:
-
         if sale_type and sale_type.is_alternative:
             features.append('Альтернативная продажа')
 

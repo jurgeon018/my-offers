@@ -130,7 +130,7 @@ async def test_build_offer_view__tittle_commercial(category, prepared, building,
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.title == expected
@@ -159,7 +159,7 @@ async def test_build_offer_view__tittle_suburban(category, prepared, building, e
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.title == expected
@@ -238,7 +238,7 @@ async def test_build_offer_view__tittle_flat(category, prepared, building, expec
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.title == expected
@@ -278,7 +278,7 @@ async def test_build_offer_view__tittle__land(category, land, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.title == expected
@@ -324,7 +324,7 @@ async def test_build_offer_view__offer_url(category, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.url == expected
@@ -420,7 +420,7 @@ async def test_build_offer_view__price_info__can_parts(category, currency, expec
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.price_info.range == expected
@@ -458,7 +458,7 @@ async def test_build_offer_view__features(category, prepared, expected):
     )
 
     # act
-    result = build_offer_view(object_model=raw_offer)
+    result = await build_offer_view(object_model=raw_offer)
 
     # assert
     assert result.features == expected
