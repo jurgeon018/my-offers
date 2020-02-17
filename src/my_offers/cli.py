@@ -3,7 +3,6 @@ from datetime import timedelta
 import click
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
-from simple_settings import settings
 
 from my_offers import setup
 from my_offers.queue import consumers, queues, schemas
@@ -31,5 +30,4 @@ register_consumer(
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
     dead_queue_enabled=True,
     dead_queue_ttl=timedelta(seconds=60),
-    default_prefetch_count=settings.PROCESS_ANNOUNCEMENT_CONSUMER_PREFETCH_COUNT,
 )
