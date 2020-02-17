@@ -4,12 +4,19 @@ import pytest
 from cian_test_utils import future
 
 from my_offers.entities import GetOffersRequest
-from my_offers.entities.get_offers import GetOffer, GetOffersResponse, OfferCounters, Statistics
+from my_offers.entities.get_offers import (
+    GetOffer,
+    GetOffersPrivateRequest,
+    GetOffersResponse,
+    OfferCounters,
+    Statistics,
+)
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.enums import GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.services import offers
+from my_offers.services.offers import get_offers_private
 
 
 @pytest.mark.gen_test
@@ -70,3 +77,38 @@ async def test_get_offer(mocker):
     # assert
     assert result == expected_result
     get_offers_by_status_mock.assert_called_once_with(filters={'status_tab': 'active', 'master_user_id': 777})
+
+
+@pytest.mark.gen_test
+async def test_get_offers_private(mocker):
+    # arrange
+    request = GetOffersPrivateRequest(
+        user_id=111,
+        status_tab=GetOfferStatusTab.active,
+        sort_type=None,
+        deal_type=None,
+        offer_type=None,
+        services=None,
+        sub_agent_ids=None,
+        has_photo=None,
+        is_manual=None,
+        is_in_hidden_base=None,
+        search_text=None,
+    )
+
+    response = mocker.sentinel.response
+
+    get_offers_public_mock = mocker.patch(
+        'my_offers.services.offers.get_offers_service.get_offers_public',
+        return_value=future(response),
+    )
+
+    # act
+    result = await get_offers_private(request)
+
+    # assert
+    assert result == response
+    get_offers_public_mock.assert_called_once_with(
+        request=request,
+        user_id=111,
+    )
