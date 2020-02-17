@@ -83,7 +83,7 @@ async def test_get_offer(mocker):
     # act
     result = await offers.get_offers_public(
         request=request,
-        user_id=expected_user
+        realty_user_id=expected_user
     )
 
     # assert
@@ -130,7 +130,7 @@ async def test_get_offers_private(mocker):
     assert result == response
     get_offers_public_mock.assert_called_once_with(
         request=request,
-        user_id=111,
+        realty_user_id=111,
     )
 
 

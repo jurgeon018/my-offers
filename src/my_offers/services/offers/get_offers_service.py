@@ -15,13 +15,13 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
     """ Приватная апи получения моих объявлений. Требует явной передачи пользователя. """
     return await get_offers_public(
         request=request,
-        user_id=request.user_id
+        realty_user_id=request.user_id
     )
 
 
-async def get_offers_public(request: entities.GetOffersRequest, user_id: int) -> entities.GetOffersResponse:
+async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: int) -> entities.GetOffersResponse:
     """ Получить получить объявления для пользователя. Для м/а с учетом иерархии. """
-    filters = _get_filters(filters=request.filters, user_id=user_id)
+    filters = _get_filters(filters=request.filters, user_id=realty_user_id)
     limit, offset = _get_pagination(request.pagination)
 
     object_models, total = await postgresql.get_object_models(
