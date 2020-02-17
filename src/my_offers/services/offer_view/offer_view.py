@@ -138,7 +138,7 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
         price_info=price_info,
         features=features,
         publish_features=publish_features,
-        vas=get_vas(terms=publish_terms.terms if publish_terms else []),
+        vas=get_vas(terms=publish_terms.terms if publish_terms else None),
         is_from_package=_is_from_package(publish_terms=publish_terms),
         is_manual=is_manual,
         is_publication_time_ends=_is_publication_time_ends(object_model),

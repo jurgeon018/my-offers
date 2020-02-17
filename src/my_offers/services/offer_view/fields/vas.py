@@ -14,7 +14,11 @@ SERVICE_VAS_MAP = {
 
 
 def get_vas(terms: List[PublishTerm]) -> List[enums.OfferVas]:
-    result = []
+    result: List[enums.OfferVas] = []
+
+    if not terms:
+        return result
+
     for term in terms:
         if not term.services:
             continue
