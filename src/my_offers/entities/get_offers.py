@@ -35,14 +35,19 @@ class Pagination:
     page: Optional[int]
     """Номер страницы начиная с 1"""
     limit: Optional[int]
+    """Количество объявлений на страницу"""
     offset: Optional[int]
+    """Отступ от начала"""
 
 
 @dataclass
 class GetOffersRequest:
     filters: Optional[Filter]
+    """Параметры фильтрации"""
     pagination: Optional[Pagination]
+    """Параметры страницы"""
     sort: Optional[enums.GetOffersSortType]
+    """Сортировка"""
 
 
 @dataclass

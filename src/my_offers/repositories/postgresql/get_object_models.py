@@ -1,9 +1,9 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import asyncpgsa
 import sqlalchemy as sa
 from cian_json import json
-from sqlalchemy import and_, any_, cast, func, select
+from sqlalchemy import and_, any_, cast, func, over, select
 
 from my_offers import pg
 from my_offers.mappers.object_model import object_model_mapper
@@ -30,12 +30,12 @@ async def get_object_models(
         filters: Dict[str, Any],
         limit: int,
         offset: int,
-) -> List[ObjectModel]:
+) -> Tuple[List[ObjectModel], int]:
     conditions = _prepare_conditions(filters)
     sort = [OFFER_TABLE.sort_date.desc().nullslast(), OFFER_TABLE.offer_id]
 
     sql = (
-        select([OFFER_TABLE.raw_data])
+        select([OFFER_TABLE.raw_data, over(func.count()).label('total_count')])
         .where(and_(*conditions))
         .order_by(*sort)
         .limit(limit)
@@ -45,10 +45,13 @@ async def get_object_models(
     query, params = asyncpgsa.compile_query(sql)
     result = await pg.get().fetch(query, *params)
 
-    return [
-        object_model_mapper.map_from(json.loads(r['raw_data']))
-        for r in result
-    ]
+    if not result:
+        return [], 0
+
+    models = [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in result]
+    total = result[0]['total_count']
+
+    return models, total
 
 
 def _prepare_conditions(filters: Dict[str, Any],):
