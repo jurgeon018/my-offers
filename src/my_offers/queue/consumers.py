@@ -24,4 +24,12 @@ async def process_announcement_callback(messages: List[Message]) -> None:
             )
             continue
         with new_operation_id(announcement_message.operation_id):
-            await process_announcement(raw_offer)
+            try:
+                await process_announcement(raw_offer)
+            except:
+                logger.exception(
+                    'Announcement process error: %s key: %s',
+                    raw_offer.get('id'),
+                    message.envelope.routing_key,
+                )
+                raise

@@ -8,3 +8,6 @@ APPLICATION_DESCRIPTION = 'МКС: мои объявления для агент
 APPLICATION_PACKAGE_NAME = 'my_offers'
 
 CHECK_SERVICES: List[str] = []
+
+
+PROCESS_ANNOUNCEMENT_CONSUMER_PREFETCH_COUNT: int = 1
