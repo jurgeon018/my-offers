@@ -317,7 +317,7 @@ def _get_features(
 
         if sale_type and sale_type.is_free:
             features.append('Свободная продажа')
-    else:
+
         if sale_type and sale_type.is_alternative:
             features.append('Альтернативная продажа')
 
@@ -331,7 +331,7 @@ def _get_features(
         if is_all and currency and total_area:
             pretty_price = get_pretty_number(number=int(bargain_terms.price / total_area))
             features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
-
+    else:
         if bargain_terms.agent_fee:
             features.append(f'Агенту: {bargain_terms.agent_fee}%')
 
