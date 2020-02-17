@@ -7,7 +7,7 @@ from my_offers.enums.sort_types import GetOffersSortType
 
 
 @dataclass
-class GetOffersRequest:
+class Filter:
     status_tab: enums.GetOfferStatusTab
     """Вкладка"""
     sort_type: Optional[GetOffersSortType]
@@ -28,6 +28,21 @@ class GetOffersRequest:
     """Только видимые агентам"""
     search_text: Optional[str]
     """Полнотекстовый поиск по объявлению"""
+
+
+@dataclass
+class Pagination:
+    page: Optional[int]
+    """Номер страницы начиная с 1"""
+    limit: Optional[int]
+    offset: Optional[int]
+
+
+@dataclass
+class GetOffersRequest:
+    filters: Optional[Filter]
+    pagination: Optional[Pagination]
+    sort: Optional[enums.GetOffersSortType]
 
 
 @dataclass
@@ -78,10 +93,12 @@ class PageInfo:
     """Количество  объектов"""
     can_load_more: bool
     """Это не последняя страница"""
+    page_count: int
+    """Количество страниц"""
 
 
 @dataclass
 class GetOffersResponse:
     offers: List[GetOffer]
     counters: OfferCounters
-    page: Optional[PageInfo] = None
+    page: PageInfo

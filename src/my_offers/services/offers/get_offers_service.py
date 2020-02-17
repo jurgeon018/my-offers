@@ -1,5 +1,7 @@
 import asyncio
 
+from simple_settings import settings
+
 from my_offers import entities
 from my_offers.mappers.get_offers_request import get_offers_request_mapper
 from my_offers.repositories import postgresql
@@ -19,7 +21,14 @@ async def get_offers_public(request: entities.GetOffersRequest, user_id: int) ->
     filters = get_offers_request_mapper.map_to(request)
     filters['master_user_id'] = user_id  # todo определение мастрер аккаунта https://jira.cian.tech/browse/CD-73807
 
-    object_models = await postgresql.get_object_models(filters=filters)
+    limit = settings.OFFER_LIST_LIMIT
+    offset = limit * (request.page - 1) if request.page else 0
+
+    object_models = await postgresql.get_object_models(
+        filters=filters,
+        limit=limit,
+        offset=offset,
+    )
 
     futures = [
         build_offer_view(object_model=object_model)

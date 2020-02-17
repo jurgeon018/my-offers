@@ -28,17 +28,18 @@ FILTERS_MAP = {
 async def get_object_models(
         *,
         filters: Dict[str, Any],
-        limit: int = 20
+        limit: int,
+        offset: int,
 ) -> List[ObjectModel]:
     conditions = _prepare_conditions(filters)
+    sort = [OFFER_TABLE.sort_date.desc().nullslast(), OFFER_TABLE.offer_id]
 
     sql = (
         select([OFFER_TABLE.raw_data])
         .where(and_(*conditions))
-        .order_by(
-            OFFER_TABLE.sort_date.desc().nullslast(),
-            OFFER_TABLE.offer_id,
-        ).limit(limit)
+        .order_by(*sort)
+        .limit(limit)
+        .offset(offset)
     )
 
     query, params = asyncpgsa.compile_query(sql)
