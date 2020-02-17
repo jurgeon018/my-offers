@@ -10,10 +10,29 @@ new-codegen version: 4.0.0
 """
 from dataclasses import dataclass
 
+from cian_enum import NoFormat, StrEnum
+
+
+class Type(StrEnum):
+    __value_format__ = NoFormat
+    country = 'country'
+    """Страна"""
+    district = 'district'
+    """Район"""
+    house = 'house'
+    """Дом"""
+    location = 'location'
+    """Местоположение"""
+    road = 'road'
+    """Шоссе"""
+    street = 'street'
+    """Улица"""
+
 
 @dataclass
 class Address:
     name: str
     """Полный адрес"""
-    url: str
+    searchUrl: str
     """Поисковый запрос по адресу"""
+    type: Type

@@ -24,37 +24,36 @@ from .subagent import Subagent
 class Vas(StrEnum):
     __value_format__ = NoFormat
     auction = 'auction'
-    calltracking = 'calltracking'
-    free = 'free'
-    highlight = 'highlight'
-    paid = 'paid'
+    colorized = 'colorized'
+    payed = 'payed'
     premium = 'premium'
     top3 = 'top3'
 
 
 @dataclass
 class GetOffer:
+    createdAt: datetime
+    """Дата подачи объявления"""
     features: List[str]
     """Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека"""
-    isFromImport: bool
-    """ Флаг 'из импорта'
-    """
+    geo: OfferGeo
+    """Гео"""
+    id: int
+    """ID объявления"""
     isFromPackage: bool
-    """ Флаг 'из пакета'
-    """
+    """ Флаг 'из пакета'"""
+    isManual: bool
+    """ Флаг 'из импорта'"""
     isPublicationTimeEnds: bool
-    """ Флаг 'меньше суток до конца публикации'
-    """
+    """ Флаг 'меньше суток до конца публикации'"""
     priceInfo: PriceInfo
     """Инофрмация о цене"""
+    url: str
+    """URL объявления"""
+    vas: List[Vas]
+    """Список VAS'ов"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
-    createdAt: Optional[datetime] = None
-    """Дата подачи объявления"""
-    geo: Optional[OfferGeo] = None
-    """Гео"""
-    id: Optional[int] = None
-    """ID объявления"""
     mainPhotoUrl: Optional[str] = None
     """Основаная фотография объекта"""
     publishFeatures: Optional[List[str]] = None
@@ -65,7 +64,3 @@ class GetOffer:
     """Сабагент"""
     title: Optional[str] = None
     """Заголовок объявления"""
-    url: Optional[str] = None
-    """URL объявления"""
-    vas: Optional[List[Vas]] = None
-    """Список VAS'ов"""
