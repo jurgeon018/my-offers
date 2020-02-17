@@ -37,12 +37,12 @@ async def test_build_offer_view():
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
-        category=Category.building_rent,
+        category=Category.flat_rent,
         phones=[Phone(country_code='1', number='12312')]
     )
     expected_result = GetOffer(
         main_photo_url=None,
-        title='Здание, None м²',
+        title='',
         url=None,
         geo=OfferGeo(address=None, newbuilding=None, underground=None),
         subagent=None,
@@ -102,8 +102,8 @@ async def test_build_offer_view():
     (Category.shopping_area_rent, dict(total_area=60.0), None, 'Торговая площадь, 60 м²'),
     (Category.warehouse_sale, dict(total_area=60.0), None, 'Склад, 60 м²'),
     (Category.warehouse_rent, dict(total_area=60.0), None, 'Склад, 60 м²'),
-    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'Свободное назначение, 60 м²'),
-    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'Свободное назначение, 60 м²'),
+    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'Помещение свободного назначения, 60 м²'),
+    (Category.free_appointment_object_sale, dict(total_area=60.0), None, 'Помещение свободного назначения, 60 м²'),
     (Category.public_catering_rent, dict(total_area=60.0), None, 'Общепит, 60 м²'),
     (Category.public_catering_sale, dict(total_area=60.0), None, 'Общепит, 60 м²'),
     (Category.garage_sale, dict(total_area=60.0), None, 'Гараж, 60 м²'),
@@ -309,10 +309,10 @@ async def test_build_offer_view__main_photo_url(photos, expected):
 
 @pytest.mark.gen_test
 @pytest.mark.parametrize('category, expected', [
-    (Category.room_rent, f'http://cian.ru/rent/flat/123'),
-    (Category.office_rent, f'http://cian.ru/rent/commercial/123'),
-    (Category.house_rent, f'http://cian.ru/rent/suburban/123'),
-    (Category.new_building_flat_sale, f'http://cian.ru/sale/flat/123'),
+    (Category.room_rent, 'https://cian.ru/rent/flat/123'),
+    (Category.office_rent, 'https://cian.ru/rent/commercial/123'),
+    (Category.house_rent, 'https://cian.ru/rent/suburban/123'),
+    (Category.new_building_flat_sale, 'https://cian.ru/sale/flat/123'),
 ])
 async def test_build_offer_view__offer_url(category, expected):
     # arrange

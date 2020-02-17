@@ -7,7 +7,7 @@ def get_pretty_number(*, number: int, template: str = '%.0f') -> str:
         100000 -> '100 000'
         1000000 -> '1 000 000'
     """
-    number_str = str(template % (number or 0))
+    number_str = str(template % number)
 
     if '.' in number_str:
         integral, fractional = number_str.split('.', 1)

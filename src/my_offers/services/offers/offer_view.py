@@ -31,8 +31,8 @@ OFFER_TITLES = {
     Category.shopping_area_sale: 'Торговая площадь',
     Category.warehouse_rent: 'Склад',
     Category.warehouse_sale: 'Склад',
-    Category.free_appointment_object_rent: 'Свободное назначение',
-    Category.free_appointment_object_sale: 'Свободное назначение',
+    Category.free_appointment_object_rent: 'Помещение свободного назначения',
+    Category.free_appointment_object_sale: 'Помещение свободного назначения',
     Category.public_catering_rent: 'Общепит',
     Category.public_catering_sale: 'Общепит',
     Category.garage_rent: 'Гараж',
@@ -91,14 +91,18 @@ UNIT_TYPE = {
 def build_offer_view(object_model: ObjectModel) -> GetOffer:
     """ Собирает из шарповой модели компактное представление объявления для выдачи.
     """
+    offer_type, deal_type = _get_deal_type(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
     url_to_offer = _get_offer_url(
         offer_id=object_model.id,
-        category=object_model.category
+        category=object_model.category,
+        offer_type=offer_type,
+        deal_type=deal_type
     )
     title = _get_title(
         object_model=object_model,
-        category=object_model.category
+        category=object_model.category,
+        offer_type=offer_type,
     )
     geo = OfferGeo(
         address=_get_address(object_model.geo),
@@ -113,12 +117,16 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         can_parts=bool(object_model.can_parts),
         min_area=object_model.min_area,
         max_area=object_model.max_area,
-        total_area=object_model.total_area
+        total_area=object_model.total_area,
+        offer_type=offer_type,
+        deal_type=deal_type
     )
     features = _get_features(
         bargain_terms=object_model.bargain_terms,
         category=object_model.category,
-        total_area=object_model.total_area
+        total_area=object_model.total_area,
+        offer_type=offer_type,
+        deal_type=deal_type
     )
     publish_features = _get_publish_features(
         publish_terms=object_model.publish_terms,
@@ -144,17 +152,14 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
     )
 
 
-def _get_offer_url(*, offer_id: int, category: Category) -> Optional[str]:
-    offer_type, deal_type = _get_deal_type(category)
-
+def _get_offer_url(*, offer_id: int, category: Category, offer_type: OfferType, deal_type: DealType) -> Optional[str]:
     if offer_id and category:
         return f'{settings.CiAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{offer_id}'
 
     return None
 
 
-def _get_title(*, object_model: ObjectModel, category: Category) -> str:
-    offer_type, _ = _get_deal_type(category)
+def _get_title(*, object_model: ObjectModel, category: Category, offer_type: OfferType) -> str:
     min_area = object_model.min_area and int(object_model.min_area)
     total_area = object_model.total_area and int(object_model.total_area)
     floor_number = object_model.floor_number
@@ -169,7 +174,6 @@ def _get_title(*, object_model: ObjectModel, category: Category) -> str:
     if title := OFFER_TITLES.get(category):
         if object_model.can_parts and total_area and min_area:
             area = f'от {min_area} до {total_area} {SQUARE_METER_SYMBOL}'
-
         elif is_land:
             unit_type = UNIT_TYPE[object_model.land.area_unit_type]
             area = f'{object_model.land.area} {unit_type}'
@@ -223,16 +227,16 @@ def _get_vas(publish_terms: PublishTerms) -> Optional[List[Services]]:
 
 
 def _get_price_info(
-    *,
-    bargain_terms: BargainTerms,
-    category: Category,
-    can_parts: bool,
-    min_area: Optional[float],
-    max_area: Optional[float],
-    total_area: Optional[float]
+        *,
+        bargain_terms: BargainTerms,
+        category: Category,
+        can_parts: bool,
+        min_area: Optional[float],
+        max_area: Optional[float],
+        total_area: Optional[float],
+        offer_type: OfferType,
+        deal_type: DealType
 ) -> PriceInfo:
-    offer_type, deal_type = _get_deal_type(category)
-
     is_rent = deal_type.is_rent
     is_daily_rent = category in [
         Category.daily_flat_rent,
@@ -291,8 +295,14 @@ def _get_publish_features(publish_terms: PublishTerms, category: Category) -> Op
     return features
 
 
-def _get_features(*, bargain_terms: BargainTerms, category: Category, total_area: Optional[float]) -> List[str]:
-    offer_type, deal_type = _get_deal_type(category)
+def _get_features(
+        *,
+        bargain_terms: BargainTerms,
+        category: Category,
+        total_area: Optional[float],
+        offer_type: OfferType,
+        deal_type: DealType
+) -> List[str]:
     is_sale = deal_type.is_sale
     is_rent = deal_type.is_rent
     is_commercial = offer_type.is_commercial
@@ -321,7 +331,7 @@ def _get_features(*, bargain_terms: BargainTerms, category: Category, total_area
             pretty_price = get_pretty_number(number=int(bargain_terms.price))
             features.append(f'{pretty_price} {currency} {SQUARE_METER_SYMBOL}')
 
-        if not offer_type.is_commercial and sale_type and sale_type.is_dupt:
+        if not is_commercial and sale_type and sale_type.is_dupt:
             features.append('Переуступка')
 
         if is_all and currency and total_area:

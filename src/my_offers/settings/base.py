@@ -9,4 +9,4 @@ APPLICATION_PACKAGE_NAME = 'my_offers'
 
 CHECK_SERVICES: List[str] = []
 
-CiAN_BASE_URL = 'http://cian.ru'
+CiAN_BASE_URL = 'https://cian.ru'
