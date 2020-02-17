@@ -37,7 +37,7 @@ GEO_KEYS_MAP = {
     GeoType.underground: 'metro',
     GeoType.house: 'house',
 
-    # todp: разобраться с этим
+    # todo: CD-74381 разобраться с этим
     # GeoType.mikroraion: 'district',
     # GeoType.poselenie: 'district',
     # GeoType.okrug: 'district',
