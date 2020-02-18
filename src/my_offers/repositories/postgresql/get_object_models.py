@@ -50,7 +50,7 @@ async def get_object_models(
     ]
 
 
-def _prepare_conditions(filters: Dict[str, Any],):
+def _prepare_conditions(filters: Dict[str, Any]) -> List:
     conditions = []
     for key, value in filters.items():
         if key not in FILTERS_MAP:
