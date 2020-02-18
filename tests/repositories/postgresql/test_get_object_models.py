@@ -89,8 +89,10 @@ async def test_get_object_models__filter_none__result(mocker):
     assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data \nFROM offers ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1',
-        40
+        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers '
+        'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
+        40,
+        0,
     )
 
 
@@ -104,15 +106,17 @@ async def test_get_object_models___wrong_filter__result(mocker):
 
     pg.get().fetch.return_value = future([])
 
-    expected = []
+    expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40)
+    result = await get_object_models(filters=filters, limit=40, offset=0)
 
     # assert
     assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data \nFROM offers ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1',
-        40
+        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers '
+        'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
+        40,
+        0
     )
