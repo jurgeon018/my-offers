@@ -67,9 +67,9 @@ class OfferViewModel:
     """Основаная фотография объекта"""
     title: Optional[str]
     """Заголовок объявления"""
-    url: Optional[str]
+    url: str
     """URL объявления"""
-    geo: Optional[OfferGeo]
+    geo: OfferGeo
     """Гео"""
     subagent: Optional[Subagent]
     """Сабагент"""
@@ -79,7 +79,7 @@ class OfferViewModel:
     """Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека"""
     publish_features: Optional[List[str]]
     """Параметры публикации: сколько осталось, автопродление"""
-    vas: Optional[List[enums.Services]]
+    vas: List[enums.OfferVas]
     """Список VAS'ов"""
     is_from_package: bool
     """ Флаг 'из пакета'"""

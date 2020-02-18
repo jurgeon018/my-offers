@@ -6,10 +6,10 @@ from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, 
 from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo, Jk, UndergroundInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
-from my_offers.services.offer_view.geo import _get_address, _get_newbuilding, _get_underground, prepare_geo
+from my_offers.services.offer_view.fields.geo import _get_address, _get_newbuilding, _get_underground, prepare_geo
 
 
-PATH = 'my_offers.services.offer_view.geo.'
+PATH = 'my_offers.services.offer_view.fields.geo.'
 
 
 @pytest.mark.gen_test
