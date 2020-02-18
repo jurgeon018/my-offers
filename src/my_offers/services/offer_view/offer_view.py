@@ -88,7 +88,7 @@ UNIT_TYPE = {
 }
 
 
-async def build_offer_view(object_model: ObjectModel) -> GetOffer:
+def build_offer_view(object_model: ObjectModel) -> GetOffer:
     """ Собирает из шарповой модели компактное представление объявления для выдачи."""
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None

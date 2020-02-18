@@ -1,6 +1,6 @@
 import asyncio
 import math
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, List
 
 from simple_settings import settings
 
@@ -8,6 +8,7 @@ from my_offers import entities
 from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view import build_offer_view
 
 
@@ -21,21 +22,30 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
 
 async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: int) -> entities.GetOffersResponse:
     """ Получить получить объявления для пользователя. Для м/а с учетом иерархии. """
+    # шаг 1 - подготовка параметров запроса
     filters = _get_filters(filters=request.filters, user_id=realty_user_id)
     limit, offset = _get_pagination(request.pagination)
 
+    # шаг 2 - получение object models
     object_models, total = await postgresql.get_object_models(
         filters=filters,
         limit=limit,
         offset=offset,
     )
 
-    futures = [
-        build_offer_view(object_model=object_model)
+    # шаг 3 - подготовка параметров для обогащения
+    enrich_params = prepare_enrich_params(object_models)
+
+    # шаг 4 - получение данных для обогащения
+    enrich_data = _load_enrich_data(enrich_params)
+
+    # шаг 5 - подготовка моделей для ответа
+    offers_views = [
+        build_offer_view(object_model=object_model, enrich_data=enrich_data)
         for object_model in object_models
     ]
-    offers_views = await asyncio.gather(*futures)
 
+    # шаг 6 - формирование обвета
     return entities.GetOffersResponse(
         offers=offers_views,
         counters=get_offers.OfferCounters(
