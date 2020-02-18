@@ -1,6 +1,5 @@
-import asyncio
 import math
-from typing import Any, Dict, Optional, Tuple, List
+from typing import Any, Dict, Optional, Tuple
 
 from simple_settings import settings
 
@@ -8,8 +7,9 @@ from my_offers import entities
 from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
-from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view import build_offer_view
+from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
+from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
 
 
 async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entities.GetOffersResponse:
@@ -37,7 +37,7 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
     enrich_params = prepare_enrich_params(object_models)
 
     # шаг 4 - получение данных для обогащения
-    enrich_data = _load_enrich_data(enrich_params)
+    enrich_data = await load_enrich_data(enrich_params)
 
     # шаг 5 - подготовка моделей для ответа
     offers_views = [

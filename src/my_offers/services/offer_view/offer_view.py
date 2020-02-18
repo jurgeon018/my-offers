@@ -13,7 +13,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 from my_offers.services.announcement.category import get_types
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.vas import get_vas
-
+from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 SQUARE_METER_SYMBOL = 'м²'
 
@@ -88,7 +88,7 @@ UNIT_TYPE = {
 }
 
 
-def build_offer_view(object_model: ObjectModel) -> GetOffer:
+def build_offer_view(object_model: ObjectModel, enrich_data: EnrichData) -> GetOffer:
     """ Собирает из шарповой модели компактное представление объявления для выдачи."""
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
@@ -133,7 +133,7 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         title=title,
         main_photo_url=main_photo_url,
         url=url_to_offer,
-        geo=await prepare_geo(geo=object_model.geo, deal_type=deal_type, offer_type=offer_type),
+        geo=prepare_geo(geo=object_model.geo, geo_urls={}, jk_urls=enrich_data.jk_urls),
         subagent=subagent,
         price_info=price_info,
         features=features,
@@ -142,7 +142,7 @@ def build_offer_view(object_model: ObjectModel) -> GetOffer:
         is_from_package=_is_from_package(publish_terms=publish_terms),
         is_manual=is_manual,
         is_publication_time_ends=_is_publication_time_ends(object_model),
-        statistics=Statistics()
+        statistics=Statistics(),
     )
 
 
