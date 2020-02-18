@@ -127,13 +127,14 @@ def build_offer_view(object_model: ObjectModel, enrich_data: EnrichData) -> GetO
         category=object_model.category
     )
 
+    geo_urls = enrich_data.get_urls_by_types(deal_type=deal_type, offer_type=offer_type)
     return GetOffer(
         id=object_model.id,
         created_at=object_model.creation_date,
         title=title,
         main_photo_url=main_photo_url,
         url=url_to_offer,
-        geo=prepare_geo(geo=object_model.geo, geo_urls={}, jk_urls=enrich_data.jk_urls),
+        geo=prepare_geo(geo=object_model.geo, geo_urls=geo_urls, jk_urls=enrich_data.jk_urls),
         subagent=subagent,
         price_info=price_info,
         features=features,

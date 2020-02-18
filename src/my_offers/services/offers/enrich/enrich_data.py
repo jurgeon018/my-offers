@@ -1,7 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass
 
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Optional
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
@@ -67,3 +67,26 @@ class EnrichData:
     auctions: Dict[id, Any]
     jk_urls: Dict[id, str]
     geo_urls: Dict[set, str]
+
+    def get_urls_by_types(
+            self,
+            *,
+            deal_type: enums.DealType,
+            offer_type: enums.OfferType
+    ) -> Dict[address_info.Type, Dict[int, str]]:
+        return self.geo_urls.get((deal_type, offer_type), {})
+
+
+class AddressUrls:
+    def __init__(self) -> None:
+        self._storage = defaultdict(dict)
+        super().__init__()
+
+    def add_url(self, *, address: address_info.AddressInfo, url: str) -> None:
+        self._storage[address.type][address.id] = url
+
+    def get_url(self, address: address_info.AddressInfo) -> Optional[str]:
+        if address.type not in self._storage:
+            return None
+
+        return self._storage[address.type].get(address.id)

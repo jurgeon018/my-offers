@@ -1,9 +1,10 @@
 import asyncio
+
 from typing import Dict, List
 
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_cached
-from my_offers.services.offers.enrich.enrich_data import EnrichParams, EnrichData
+from my_offers.services.offers.enrich.enrich_data import EnrichParams, EnrichData, AddressUrls
 from my_offers.services.seo_urls import get_query_strings_for_address
 
 
@@ -41,8 +42,8 @@ async def _load_jk_urls(js_ids: List[int]) -> Dict[int, str]:
     return await get_newbuilding_urls_cached(js_ids)
 
 
-async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict:
-    result = {}
+async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[tuple, AddressUrls]:
+    result: Dict[tuple, AddressUrls] = {}
     for param in params:
         urls = await get_query_strings_for_address(
             address_elements=param.address_info,
@@ -51,6 +52,9 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict:
         )
 
         for i, address in enumerate(param.address_info):
-            result[(param.deal_type, param.offer_type, address.type, address.id)] = urls[i]
+            key = (param.deal_type, param.offer_type)
+            if key not in result:
+                result[key] = AddressUrls()
+            result[key].add_url(address=address, url=urls[i])
 
     return result
