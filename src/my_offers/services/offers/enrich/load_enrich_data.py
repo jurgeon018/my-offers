@@ -11,10 +11,10 @@ from my_offers.services.seo_urls import get_query_strings_for_address
 async def load_enrich_data(params: EnrichParams) -> EnrichData:
     offer_ids = params.get_offer_ids()
     data = await asyncio.gather(
-        _load_statistic(offer_ids),
-        _load_auctions(offer_ids),
-        _load_jk_urls(params.get_jk_ids()),
-        _load_geo_urls(params.get_geo_url_params()),
+        _load_statistic(offer_ids),  # 0
+        _load_auctions(offer_ids),   # 1
+        _load_jk_urls(params.get_jk_ids()),  # 2
+        _load_geo_urls(params.get_geo_url_params()),  # 3
     )
 
     return EnrichData(
