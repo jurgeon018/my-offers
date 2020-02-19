@@ -9,9 +9,12 @@ new-codegen version: 4.0.0
 
 """
 from dataclasses import dataclass
+from typing import List, Optional
 
 
 @dataclass
 class PriceInfo:
-    exactPrice: str
+    exact: Optional[str] = None
     """Цена"""
+    range: Optional[List[str]] = None
+    """Диапазон цен"""

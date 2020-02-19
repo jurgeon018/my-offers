@@ -9,7 +9,7 @@ new-codegen version: 4.0.0
 
 """
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 
 from .address import Address
 from .newbuilding import Newbuilding
@@ -18,7 +18,7 @@ from .underground import Underground
 
 @dataclass
 class OfferGeo:
-    address: Optional[Address] = None
+    address: Optional[List[Address]] = None
     """Адрес"""
     newbuilding: Optional[Newbuilding] = None
     """Новостройки"""

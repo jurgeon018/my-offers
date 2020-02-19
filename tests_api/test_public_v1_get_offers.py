@@ -10,8 +10,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from .cian.my_offers.entities import GetOffersRequest
-from .cian.my_offers.entities.get_offers_request import StatusTab
+from .cian.my_offers.entities import Filter, GetOffersRequest
+from .cian.my_offers.entities.filter import StatusTab
 from .helper import MyOffersHelper
 
 
@@ -35,16 +35,18 @@ class TestPublicV1GetOffers(MyOffersHelper):
         with context.x_real_user(user_id=user.userId):
             response = sl.my_offers.public_v1_get_offers.request_post(
                 data=GetOffersRequest(
-                    dealType=None,
-                    hasPhoto=None,
-                    isInHiddenBase=None,
-                    isManual=None,
-                    offerType=None,
-                    searchText=None,
-                    services=None,
-                    sortType=None,
-                    statusTab=StatusTab.active,
-                    subAgentIds=None,
+                    filters=Filter(
+                        dealType=None,
+                        hasPhoto=None,
+                        isInHiddenBase=None,
+                        isManual=None,
+                        offerType=None,
+                        searchText=None,
+                        services=None,
+                        sortType=None,
+                        statusTab=StatusTab.active,
+                        subAgentIds=None,
+                    )
                 )
             )
 

@@ -3,3 +3,4 @@ from my_offers.enums.offer_services import Services
 from my_offers.enums.offer_status import GetOfferStatusTab, OfferStatus, OfferStatusTab
 from my_offers.enums.offer_type import OfferType
 from my_offers.enums.offer_vas import OfferVas
+from my_offers.enums.sort_types import GetOffersSortType

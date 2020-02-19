@@ -13,9 +13,11 @@ from typing import List
 
 from .get_offer import GetOffer
 from .offer_counters import OfferCounters
+from .page_info import PageInfo
 
 
 @dataclass
 class GetOffersResponse:
     counters: OfferCounters
     offers: List[GetOffer]
+    page: PageInfo

@@ -15,5 +15,5 @@ from dataclasses import dataclass
 class Newbuilding:
     name: str
     """Название ЖК"""
-    url: str
+    searchUrl: str
     """Поисковый запрос по ЖК"""

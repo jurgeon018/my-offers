@@ -19,5 +19,5 @@ class Underground:
     """Название метро"""
     regionId: int
     """ID региона"""
-    url: str
+    searchUrl: str
     """Поисковый запрос по метро"""
