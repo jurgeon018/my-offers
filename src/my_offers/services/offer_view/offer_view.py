@@ -12,6 +12,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.land import A
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
 from my_offers.services.announcement.category import get_types
 from my_offers.services.offer_view.fields.geo import prepare_geo
+from my_offers.services.offer_view.fields.is_from_package import is_from_package
 from my_offers.services.offer_view.fields.vas import get_vas
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
@@ -122,6 +123,7 @@ def build_offer_view(object_model: ObjectModel, enrich_data: EnrichData) -> GetO
         deal_type=deal_type
     )
     publish_terms = object_model.publish_terms
+    terms = publish_terms.terms if publish_terms else None
     publish_features = _get_publish_features(
         publish_terms=publish_terms,
         category=object_model.category
@@ -139,8 +141,8 @@ def build_offer_view(object_model: ObjectModel, enrich_data: EnrichData) -> GetO
         price_info=price_info,
         features=features,
         publish_features=publish_features,
-        vas=get_vas(terms=publish_terms.terms if publish_terms else None),
-        is_from_package=_is_from_package(publish_terms=publish_terms),
+        vas=get_vas(terms),
+        is_from_package=is_from_package(terms),
         is_manual=is_manual,
         is_publication_time_ends=_is_publication_time_ends(object_model),
         statistics=Statistics(),
@@ -194,18 +196,6 @@ def _get_title(*, object_model: ObjectModel, category: Category) -> str:
 def _is_publication_time_ends(raw_offer: ObjectModel) -> bool:
     # TODO: https://jira.cian.tech/browse/CD-74186
     return False
-
-
-def _is_from_package(publish_terms: PublishTerms) -> bool:
-    if not publish_terms or not publish_terms.terms:
-        return False
-
-    # publish_terms только для опубликованных
-    return any(
-        term.tariff_identificator.tariff_grid_type.is_service_package
-        for term in publish_terms.terms
-        if term.tariff_identificator and term.tariff_identificator.tariff_grid_type
-    )
 
 
 def _get_price_info(

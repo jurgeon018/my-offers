@@ -544,7 +544,6 @@ async def test_build_offer_view__vas(terms, expected):
 @pytest.mark.parametrize('publish_terms, expected', [
     (None, False),
     (PublishTerms(terms=[]), False),
-    (PublishTerms(terms=[]), False),
     (PublishTerms(terms=[PublishTerm(tariff_identificator=None)]), False),
     (PublishTerms(terms=[PublishTerm(tariff_identificator=TariffIdentificator())]), False),
     (
@@ -554,7 +553,7 @@ async def test_build_offer_view__vas(terms, expected):
     ),
     (
         PublishTerms(terms=[PublishTerm(tariff_identificator=TariffIdentificator(
-            tariff_grid_type=TariffGridType.service_package))]),
+            tariff_grid_type=TariffGridType.service_package_group))]),
         True
     )
 ])
