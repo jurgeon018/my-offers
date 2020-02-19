@@ -21,7 +21,6 @@ async def get_query_strings_for_address(
     query_params = {
         'offer_type': offer_type.value,
         'deal_type': deal_type.value,
-        'object_type': '2',
     }
 
     for field in FIELDS_FOR_EXCLUDE:

@@ -51,13 +51,13 @@ async def test_get_query_strings_for_address(mocker):
     get_query_params_for_address_element_mock.assert_has_calls([
         mocker.call(
             address_element=AddressInfo(id=1),
-            query_params={'offer_type': 'flat', 'deal_type': 'sale', 'object_type': '2'},
+            query_params={'offer_type': 'flat', 'deal_type': 'sale'},
             region_ids=[1, 2, 3],
             deal_type=DealType.sale,
         ),
         mocker.call(
             address_element=AddressInfo(id=2),
-            query_params={'offer_type': 'flat', 'deal_type': 'sale', 'object_type': '2'},
+            query_params={'offer_type': 'flat', 'deal_type': 'sale'},
             region_ids=[1, 2, 3],
             deal_type=DealType.sale,
         ),
