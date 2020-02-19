@@ -22,7 +22,7 @@ async def get_newbuilding_urls(jks_id: List[int]) -> Dict[int, str]:
     return result
 
 get_newbuilding_urls_degradation_handler = get_degradation_handler(
-    func=get_newbuilding_urls,
-    key='get_newbuilding_urls',
+    func=get_newbuilding_urls_cached,
+    key='get_newbuilding_urls_cached',
     default={},
 )
