@@ -59,23 +59,6 @@ class EnrichParams:
 
         return result
 
-
-@dataclass
-class EnrichData:
-    statistics: Dict[int, Any]
-    auctions: Dict[int, Any]
-    jk_urls: Dict[int, str]
-    geo_urls: Dict[tuple, Dict]
-
-    def get_urls_by_types(
-            self,
-            *,
-            deal_type: enums.DealType,
-            offer_type: enums.OfferType
-    ) -> Dict[address_info.Type, Dict[int, str]]:
-        return self.geo_urls.get((deal_type, offer_type), {})
-
-
 class AddressUrls:
     def __init__(self) -> None:
         self._storage: Dict[address_info.Type, Dict] = defaultdict(dict)
@@ -89,3 +72,19 @@ class AddressUrls:
             return None
 
         return self._storage[address.type].get(address.id)
+
+
+@dataclass
+class EnrichData:
+    statistics: Dict[int, Any]
+    auctions: Dict[int, Any]
+    jk_urls: Dict[int, str]
+    geo_urls: Dict[tuple, AddressUrls]
+
+    def get_urls_by_types(
+            self,
+            *,
+            deal_type: enums.DealType,
+            offer_type: enums.OfferType
+    ) -> AddressUrls:
+        return self.geo_urls.get((deal_type, offer_type), AddressUrls())

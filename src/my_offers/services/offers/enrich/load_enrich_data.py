@@ -2,9 +2,9 @@ import asyncio
 from typing import Dict, List
 
 from my_offers.entities.enrich import AddressUrlParams
-from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_cached
+from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams
-from my_offers.services.seo_urls import get_query_strings_for_address
+from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
 async def load_enrich_data(params: EnrichParams) -> EnrichData:
@@ -38,22 +38,27 @@ async def _load_jk_urls(js_ids: List[int]) -> Dict[int, str]:
     if not js_ids:
         return {}
 
-    return await get_newbuilding_urls_cached(js_ids)
+    result = await get_newbuilding_urls_degradation_handler(js_ids)
+
+    return result.value
 
 
 async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[tuple, AddressUrls]:
     result: Dict[tuple, AddressUrls] = {}
     for param in params:
-        urls = await get_query_strings_for_address(
+        data = await get_query_strings_for_address_degradation_handler(
             address_elements=param.address_info,
             deal_type=param.deal_type,
             offer_type=param.offer_type,
         )
 
+        if data.degraded:
+            continue
+
         for i, address in enumerate(param.address_info):
             key = (param.deal_type, param.offer_type)
             if key not in result:
                 result[key] = AddressUrls()
-            result[key].add_url(address=address, url=urls[i])
+            result[key].add_url(address=address, url=data.value[i])
 
     return result

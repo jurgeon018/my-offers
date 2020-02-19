@@ -1,5 +1,7 @@
 from typing import Any, Dict, List, Set
 
+from cian_core.degradation import get_degradation_handler
+
 from my_offers import enums
 from my_offers.enums import DealType
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo
@@ -44,6 +46,13 @@ async def get_query_strings_for_address(
     )
 
     return ['/cat.php?{}'.format(url) for url in query_strings.data.query_strings]
+
+
+get_query_strings_for_address_degradation_handler = get_degradation_handler(
+    func=get_query_strings_for_address,
+    key='get_query_strings_for_address',
+    default=[],
+)
 
 
 def _get_geo_type_for_address_element(address_element: AddressInfo) -> GeoType:
