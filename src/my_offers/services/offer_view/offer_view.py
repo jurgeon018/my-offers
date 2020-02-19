@@ -6,13 +6,14 @@ from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.entities.offer_view_model import PriceInfo
 from my_offers.helpers.numbers import get_pretty_number
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, PublishTerms
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
 from my_offers.services.announcement.category import get_types
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
+from my_offers.services.offer_view.fields.publish_features import get_publish_features
 from my_offers.services.offer_view.fields.vas import get_vas
 
 
@@ -124,10 +125,6 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
     )
     publish_terms = object_model.publish_terms
     terms = publish_terms.terms if publish_terms else None
-    publish_features = _get_publish_features(
-        publish_terms=publish_terms,
-        category=object_model.category
-    )
 
     return GetOffer(
         id=object_model.id,
@@ -139,7 +136,7 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
         subagent=subagent,
         price_info=price_info,
         features=features,
-        publish_features=publish_features,
+        publish_features=get_publish_features(publish_terms),
         vas=get_vas(terms),
         is_from_package=is_from_package(terms),
         is_manual=is_manual,
@@ -245,25 +242,6 @@ def _get_price_info(
             price_exact = f'{pretty_price} {currency}'
 
     return PriceInfo(exact=price_exact, range=price_range)
-
-
-def _get_publish_features(publish_terms: PublishTerms, category: Category) -> Optional[List[str]]:
-    # TODO: https://jira.cian.tech/browse/CD-74186
-    if not publish_terms:
-        return None
-
-    is_daily_rent = category in [
-        Category.daily_flat_rent,
-        Category.daily_room_rent,
-        Category.daily_bed_rent,
-        Category.daily_house_rent,
-    ]
-
-    features = []
-    if publish_terms.autoprolong and not is_daily_rent:
-        features.append('автопродление')
-
-    return features
 
 
 def _get_features(
