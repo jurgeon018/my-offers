@@ -20,7 +20,7 @@ async def test__load_jk_urls(mocker):
     )
 
     # act
-    result = await _load_jk_urls(js_ids=[1, 2, 3])
+    result = await _load_jk_urls(jk_ids=[1, 2, 3])
 
     # assert
     assert result == {1: 'zz', 2: 'yy'}

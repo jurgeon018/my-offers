@@ -34,11 +34,11 @@ async def _load_auctions(offer_ids: List[int]) -> Dict:
     return {}
 
 
-async def _load_jk_urls(js_ids: List[int]) -> Dict[int, str]:
-    if not js_ids:
+async def _load_jk_urls(jk_ids: List[int]) -> Dict[int, str]:
+    if not jk_ids:
         return {}
 
-    result = await get_newbuilding_urls_degradation_handler(js_ids)
+    result = await get_newbuilding_urls_degradation_handler(jk_ids)
 
     return result.value
 

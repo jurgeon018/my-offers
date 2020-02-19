@@ -6,7 +6,7 @@ from my_offers.repositories.newbuilding_search.entities import (
     GetNewBuildingsByIdsRequest,
     GetNewBuildingsByIdsResponse,
 )
-from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_cached
+from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls
 
 
 PATH = 'my_offers.services.newbuilding.newbuilding_url.'
@@ -22,7 +22,7 @@ async def test_get_newbuilding_url_cached(mocker):
     )
 
     # act
-    result = await get_newbuilding_urls_cached(jk_ids=[11])
+    result = await get_newbuilding_urls(jk_ids=[11])
 
     # assert
     assert result == expected
@@ -39,7 +39,7 @@ async def test_get_newbuilding_url_cached__not_found__none(mocker):
     )
 
     # act
-    result = await get_newbuilding_urls_cached(jk_ids=[11])
+    result = await get_newbuilding_urls(jk_ids=[11])
 
     # assert
     assert result == {}
