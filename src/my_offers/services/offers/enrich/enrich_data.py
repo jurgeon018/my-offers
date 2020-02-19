@@ -59,6 +59,7 @@ class EnrichParams:
 
         return result
 
+
 class AddressUrls:
     def __init__(self) -> None:
         self._storage: Dict[address_info.Type, Dict] = defaultdict(dict)

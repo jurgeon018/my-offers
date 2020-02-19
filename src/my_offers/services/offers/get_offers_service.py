@@ -45,7 +45,7 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
         for object_model in object_models
     ]
 
-    # шаг 6 - формирование обвета
+    # шаг 6 - формирование ответа
     return entities.GetOffersResponse(
         offers=offers_views,
         counters=get_offers.OfferCounters(
