@@ -1,10 +1,10 @@
-from my_offers.services.offers.enrich.enrich_data import AddressUrls
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, Underground
 from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo, Jk, UndergroundInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
+from my_offers.services.offers.enrich.enrich_data import AddressUrls
 
 
 ADDRESS_TYPES_MAP = {

@@ -33,8 +33,8 @@ from my_offers.services.offer_view.offer_view import build_offer_view
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
-@pytest.fixture()
-def enrich_data_mock():
+@pytest.fixture(name='enrich_data_mock')
+def enrich_data_fixture():
     return EnrichData(statistics={}, auctions={}, jk_urls={}, geo_urls={})
 
 

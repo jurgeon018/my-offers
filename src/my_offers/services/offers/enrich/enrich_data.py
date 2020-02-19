@@ -1,7 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-
-from typing import List, Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
@@ -10,9 +9,9 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import addres
 
 class EnrichParams:
     def __init__(self) -> None:
-        self._offer_ids = {}
-        self._jk_ids = {}
-        self._geo_url_params = defaultdict(dict)
+        self._offer_ids: Dict[int, int] = {}
+        self._jk_ids: Dict[int, int] = {}
+        self._geo_url_params: Dict[tuple, Dict] = defaultdict(dict)
 
         super().__init__()
 
@@ -63,10 +62,10 @@ class EnrichParams:
 
 @dataclass
 class EnrichData:
-    statistics: Dict[id, Any]
-    auctions: Dict[id, Any]
-    jk_urls: Dict[id, str]
-    geo_urls: Dict[set, str]
+    statistics: Dict[int, Any]
+    auctions: Dict[int, Any]
+    jk_urls: Dict[int, str]
+    geo_urls: Dict[tuple, Dict]
 
     def get_urls_by_types(
             self,
@@ -79,7 +78,7 @@ class EnrichData:
 
 class AddressUrls:
     def __init__(self) -> None:
-        self._storage = defaultdict(dict)
+        self._storage: Dict[address_info.Type, Dict] = defaultdict(dict)
         super().__init__()
 
     def add_url(self, *, address: address_info.AddressInfo, url: str) -> None:

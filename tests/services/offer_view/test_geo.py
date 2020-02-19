@@ -1,5 +1,4 @@
 import pytest
-from cian_test_utils import future
 
 from my_offers import enums
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, Underground
@@ -7,19 +6,18 @@ from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo, Jk, UndergroundInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
 from my_offers.services.offer_view.fields.geo import _get_address, _get_newbuilding, _get_underground, prepare_geo
+from my_offers.services.offers.enrich.enrich_data import AddressUrls
 
 
 PATH = 'my_offers.services.offer_view.fields.geo.'
 
 
-@pytest.mark.gen_test
-async def test_prepare_geo(mocker):
+def test_prepare_geo(mocker):
     # arrange
+    urls = AddressUrls()
     address_info = AddressInfo()
     underground_info = UndergroundInfo()
     jk = Jk()
-    deal_type = enums.DealType.sale
-    offer_type = enums.OfferType.flat
 
     newbuilding = Newbuilding(name='zz', search_url='yy')
     address = Address(name='aa', search_url='bb', type=AddressType.location)
@@ -37,35 +35,33 @@ async def test_prepare_geo(mocker):
 
     )
 
-    get_address_mock = mocker.patch(f'{PATH}_get_address', return_value=future([address]))
-    get_newbuilding_mock = mocker.patch(f'{PATH}_get_newbuilding', return_value=future(newbuilding))
-    get_underground_mock = mocker.patch(f'{PATH}_get_underground', return_value=future(underground))
+    get_address_mock = mocker.patch(f'{PATH}_get_address', return_value=[address])
+    get_newbuilding_mock = mocker.patch(f'{PATH}_get_newbuilding', return_value=newbuilding)
+    get_underground_mock = mocker.patch(f'{PATH}_get_underground', return_value=underground)
 
     # act
-    result = await prepare_geo(
+
+    result = prepare_geo(
         geo=Geo(address=[address_info], undergrounds=[underground_info], jk=jk),
-        deal_type=deal_type,
-        offer_type=offer_type,
+        geo_urls=urls,
+        jk_urls={},
     )
 
     # assert
     assert result == expected
 
-    get_address_mock.assert_called_once_with(address_info=[address_info], deal_type=deal_type, offer_type=offer_type)
-    get_newbuilding_mock.assert_called_once_with(jk)
+    get_address_mock.assert_called_once_with(address_info=[address_info], urls=urls)
+    get_newbuilding_mock.assert_called_once_with(jk=jk, urls={})
     get_underground_mock.assert_called_once_with(
         undergrounds_info=[underground_info],
         address_info=[address_info],
-        deal_type=deal_type,
-        offer_type=offer_type,
+        urls=urls,
     )
 
 
-@pytest.mark.gen_test
-async def test_prepare_geo__not_geo__empty(mocker):
+def test_prepare_geo__not_geo__empty(mocker):
     # arrange
-    deal_type = enums.DealType.sale
-    offer_type = enums.OfferType.flat
+    urls = AddressUrls()
 
     newbuilding = Newbuilding(name='zz', search_url='yy')
     address = Address(name='aa', search_url='bb', type=AddressType.location)
@@ -78,15 +74,15 @@ async def test_prepare_geo__not_geo__empty(mocker):
 
     expected = OfferGeo()
 
-    get_address_mock = mocker.patch(f'{PATH}_get_address', return_value=future([address]))
-    get_newbuilding_mock = mocker.patch(f'{PATH}_get_newbuilding', return_value=future(newbuilding))
-    get_underground_mock = mocker.patch(f'{PATH}_get_underground', return_value=future(underground))
+    get_address_mock = mocker.patch(f'{PATH}_get_address', return_value=[address])
+    get_newbuilding_mock = mocker.patch(f'{PATH}_get_newbuilding', return_value=newbuilding)
+    get_underground_mock = mocker.patch(f'{PATH}_get_underground', return_value=underground)
 
     # act
-    result = await prepare_geo(
+    result = prepare_geo(
         geo=None,
-        deal_type=deal_type,
-        offer_type=offer_type,
+        geo_urls=urls,
+        jk_urls={},
     )
 
     # assert
@@ -97,52 +93,32 @@ async def test_prepare_geo__not_geo__empty(mocker):
     get_underground_mock.assert_not_called()
 
 
-@pytest.mark.gen_test
-async def test__get_address(mocker):
+def test__get_address(mocker):
     # arrange
     address_info = [AddressInfo(full_name='aa', type=Type.location)]
-    deal_type = enums.DealType.sale
-    offer_type = enums.OfferType.flat
-
     expected = [Address(name='aa', search_url='bb', type=AddressType.location)]
-    get_query_strings_for_address_mock = mocker.patch(
-        f'{PATH}get_query_strings_for_address',
-        return_value=future(['bb'])
-    )
+    address_urls = AddressUrls()
+    address_urls.add_url(address=address_info[0], url='bb')
 
     # act
-    result = await _get_address(address_info=address_info, deal_type=deal_type, offer_type=offer_type)
+    result = _get_address(address_info=address_info, urls=address_urls)
 
     # assert
     assert result == expected
-    get_query_strings_for_address_mock.assert_called_once_with(
-        address_elements=address_info,
-        deal_type=deal_type,
-        offer_type=offer_type,
-    )
 
 
-@pytest.mark.gen_test
-async def test__get_address__no_adress__none(mocker):
+def test__get_address__no_adress__none(mocker):
     # arrange
     address_info = None
-    deal_type = enums.DealType.sale
-    offer_type = enums.OfferType.flat
-
-    get_query_strings_for_address_mock = mocker.patch(
-        f'{PATH}get_query_strings_for_address',
-        return_value=future(['bb'])
-    )
+    address_urls = AddressUrls()
 
     # act
-    result = await _get_address(address_info=address_info, deal_type=deal_type, offer_type=offer_type)
+    result = _get_address(address_info=address_info, urls=address_urls)
 
     # assert
     assert result is None
-    get_query_strings_for_address_mock.assert_not_called()
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize(
     ('undergrounds_info', 'address_info', 'expected'),
     (
@@ -151,50 +127,30 @@ async def test__get_address__no_adress__none(mocker):
         ([UndergroundInfo()], None, None),
         ([UndergroundInfo()], [AddressInfo()], None),
         ([UndergroundInfo(is_default=True)], [AddressInfo()], None),
-        (
-            [UndergroundInfo(id=11, name='xx', line_color='red', is_default=True)],
-            [AddressInfo(id=22, type=Type.location)],
-            Underground(
-                search_url='bb',
-                region_id=22,
-                line_color='red',
-                name='xx',
-            )
-        ),
     ),
 )
-async def test__get_underground(mocker, undergrounds_info, address_info, expected):
-    # arrange
-    deal_type = enums.DealType.sale
-    offer_type = enums.OfferType.flat
-    mocker.patch(f'{PATH}get_query_strings_for_address', return_value=future(['bb']))
-
-    # act
-    result = await _get_underground(
+def test__get_underground(mocker, undergrounds_info, address_info, expected):
+    # arrange & act
+    result = _get_underground(
         undergrounds_info=undergrounds_info,
         address_info=address_info,
-        deal_type=deal_type,
-        offer_type=offer_type,
+        urls=AddressUrls(),
     )
 
     # assert
     assert result == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize(
-    ('jk', 'expected'),
+    ('jk', 'urls', 'expected'),
     (
-        (None, None),
-        (Jk(id=22, name='yy'), Newbuilding(name='yy', search_url='bb')),
+        (None, {}, None),
+        (Jk(id=22, name='yy'), {22: 'bb'}, Newbuilding(name='yy', search_url='bb')),
     ),
 )
-async def test__get_newbuilding(mocker, jk, expected):
-    # arrange
-    mocker.patch(f'{PATH}get_newbuilding_url_cached', return_value=future('bb'))
-
-    # act
-    result = await _get_newbuilding(jk)
+def test__get_newbuilding(mocker, jk, urls, expected):
+    # arrange & act
+    result = _get_newbuilding(jk=jk, urls=urls)
 
     # assert
     assert result == expected

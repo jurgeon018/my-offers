@@ -8,6 +8,7 @@ from my_offers.repositories.newbuilding_search.entities import (
 )
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_cached
 
+
 PATH = 'my_offers.services.newbuilding.newbuilding_url.'
 
 

@@ -1,10 +1,9 @@
 import asyncio
-
 from typing import Dict, List
 
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_cached
-from my_offers.services.offers.enrich.enrich_data import EnrichParams, EnrichData, AddressUrls
+from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams
 from my_offers.services.seo_urls import get_query_strings_for_address
 
 

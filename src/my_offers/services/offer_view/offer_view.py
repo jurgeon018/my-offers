@@ -16,6 +16,7 @@ from my_offers.services.offer_view.fields.is_from_package import is_from_package
 from my_offers.services.offer_view.fields.vas import get_vas
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
+
 SQUARE_METER_SYMBOL = 'м²'
 
 CURRENCY = {
