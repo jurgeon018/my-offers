@@ -1,29 +1,21 @@
-from typing import List, Optional
+from typing import Optional
 
 from simple_settings import settings
 
 from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
-from my_offers.entities.offer_view_model import PriceInfo
-from my_offers.helpers.numbers import get_pretty_number
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel
-from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
 from my_offers.services.announcement.category import get_types
+from my_offers.services.offer_view.constants import SQUARE_METER_SYMBOL
+from my_offers.services.offer_view.fields.features import get_features
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
+from my_offers.services.offer_view.fields.price_info import get_price_info
 from my_offers.services.offer_view.fields.publish_features import get_publish_features
 from my_offers.services.offer_view.fields.vas import get_vas
 
-
-SQUARE_METER_SYMBOL = 'м²'
-
-CURRENCY = {
-    Currency.rur: '₽',
-    Currency.usd: '$',
-    Currency.eur: '€',
-}
 
 OFFER_TITLES = {
     # commercial
@@ -106,7 +98,7 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
 
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
     is_manual = bool(object_model.source and object_model.source.is_upload)
-    price_info = _get_price_info(
+    price_info = get_price_info(
         bargain_terms=object_model.bargain_terms,
         category=object_model.category,
         can_parts=bool(object_model.can_parts),
@@ -116,7 +108,7 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
         offer_type=offer_type,
         deal_type=deal_type
     )
-    features = _get_features(
+    features = get_features(
         bargain_terms=object_model.bargain_terms,
         category=object_model.category,
         total_area=object_model.total_area,
@@ -192,122 +184,6 @@ def _get_title(*, object_model: ObjectModel, category: Category) -> str:
 def _is_publication_time_ends(raw_offer: ObjectModel) -> bool:
     # TODO: https://jira.cian.tech/browse/CD-74186
     return False
-
-
-def _get_price_info(
-        *,
-        bargain_terms: BargainTerms,
-        category: Category,
-        can_parts: bool,
-        min_area: Optional[float],
-        max_area: Optional[float],
-        total_area: Optional[float],
-        offer_type: enums.OfferType,
-        deal_type: enums.DealType
-) -> PriceInfo:
-    is_rent = deal_type.is_rent
-    is_daily_rent = category in [
-        Category.daily_flat_rent,
-        Category.daily_room_rent,
-        Category.daily_bed_rent,
-        Category.daily_house_rent,
-    ]
-    is_square_meter = bargain_terms.price_type and bargain_terms.price_type.is_square_meter
-    can_calc_parts = all([is_square_meter, offer_type.is_commercial, can_parts])
-
-    currency = CURRENCY.get(bargain_terms.currency)
-    price = int(bargain_terms.price)
-    price_exact = None
-    price_range = None
-
-    if currency:
-        pretty_price = get_pretty_number(number=price)
-
-        if is_daily_rent:
-            price_exact = f'{pretty_price} {currency}/сут.'
-
-        elif is_rent:
-            # mypy не понимает вычисления в all([..., max_area, min_area])
-            if can_calc_parts and max_area and min_area:
-                months_count = 12
-                min_price = get_pretty_number(number=int(price / months_count * min_area))
-                max_price = get_pretty_number(number=int(price / months_count * max_area))
-                price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']
-            else:
-                price = int(price * total_area) if is_square_meter and total_area else price
-                pretty_price = get_pretty_number(number=price)
-                price_exact = f'{pretty_price} {currency}/мес.'
-
-        else:
-            price_exact = f'{pretty_price} {currency}'
-
-    return PriceInfo(exact=price_exact, range=price_range)
-
-
-def _get_features(
-        *,
-        bargain_terms: BargainTerms,
-        category: Category,
-        total_area: Optional[float],
-        offer_type: enums.OfferType,
-        deal_type: enums.DealType
-) -> List[str]:
-    is_commercial = offer_type.is_commercial
-    is_newobject = category.is_new_building_flat_sale
-
-    currency = CURRENCY.get(bargain_terms.currency)
-    is_square_meter = bargain_terms.price_type and bargain_terms.price_type.is_square_meter
-    is_all = bargain_terms.price_type and bargain_terms.price_type.is_all
-    sale_type = bargain_terms.sale_type
-    lease_type = bargain_terms.lease_type
-
-    features = []
-
-    # TODO: https://jira.cian.tech/browse/CD-74195
-    if deal_type.is_sale:
-        if bargain_terms.mortgage_allowed:
-            features.append('Возможна ипотека')
-
-        if sale_type and sale_type.is_free:
-            features.append('Свободная продажа')
-
-        if sale_type and sale_type.is_alternative:
-            features.append('Альтернативная продажа')
-
-        if (is_commercial or is_newobject) and is_square_meter and currency:
-            pretty_price = get_pretty_number(number=int(bargain_terms.price))
-            features.append(f'{pretty_price} {currency} {SQUARE_METER_SYMBOL}')
-
-        if not is_commercial and sale_type and sale_type.is_dupt:
-            features.append('Переуступка')
-
-        if is_all and currency and total_area:
-            pretty_price = get_pretty_number(number=int(bargain_terms.price / total_area))
-            features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
-    else:
-        if bargain_terms.agent_fee:
-            features.append(f'Агенту: {bargain_terms.agent_fee}%')
-
-        if bargain_terms.client_fee:
-            features.append(f'Клиенту: {bargain_terms.client_fee}%')
-
-        if bargain_terms.deposit and currency:
-            features.append(f'Залог: {bargain_terms.deposit} {currency}')
-
-        if is_commercial:
-
-            if is_square_meter and currency:
-                months = 12
-                pretty_price = get_pretty_number(number=int(bargain_terms.price * months))
-                features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL} в год')
-
-            if lease_type and lease_type.is_sublease:
-                features.append('Субаренда')
-
-            if lease_type and lease_type.is_direct:
-                features.append('Прямая аренда')
-
-    return features
 
 
 def _get_floors(floor_number: Optional[int], floors_count: Optional[int]) -> Optional[str]:
