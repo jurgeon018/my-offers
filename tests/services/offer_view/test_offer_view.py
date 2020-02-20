@@ -196,36 +196,36 @@ async def test_build_offer_view__tittle_suburban(category, prepared, building, e
     (
         Category.room_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Комната, 60 м², 3/19 этаж'),
+        'Комната, 60 м², 3/19 этаж'),
     (
         Category.daily_room_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Комната, 60 м², 3/19 этаж'
+        'Комната, 60 м², 3/19 этаж'
     ),
     (
         Category.bed_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Койко-место, 60 м², 3/19 этаж'
+        'Койко-место, 60 м², 3/19 этаж'
     ),
     (
         Category.daily_bed_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Койко-место, 60 м², 3/19 этаж'
+        'Койко-место, 60 м², 3/19 этаж'
     ),
     (
         Category.flat_share_sale,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Доля в квартире, 60 м², 3/19 этаж'
+        'Доля в квартире, 60 м², 3/19 этаж'
     ),
     (
         Category.flat_rent,
         dict(total_area=60.0, floor_number=3, flat_type=FlatType.studio), Building(floors_count=19),
-        f'Квартира-студия, 60 м², 3/19 этаж'
+        'Квартира-студия, 60 м², 3/19 этаж'
     ),
     (
         Category.flat_rent,
         dict(total_area=60.0, floor_number=3, flat_type=FlatType.open_plan), Building(floors_count=19),
-        f'Квартира со свободной планир., 60 м², 3/19 этаж'
+        'Кв. со своб. планировкой, 60 м², 3/19 этаж'
     ),
 ])
 async def test_build_offer_view__tittle_flat(category, prepared, building, expected):
