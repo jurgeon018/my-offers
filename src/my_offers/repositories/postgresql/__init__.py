@@ -1,2 +1,2 @@
-from my_offers.repositories.postgresql.object_models import get_object_models
-from my_offers.repositories.postgresql.save_offer import save_offer
+from my_offers.repositories.postgresql.object_model import get_object_models
+from my_offers.repositories.postgresql.offer import save_offer

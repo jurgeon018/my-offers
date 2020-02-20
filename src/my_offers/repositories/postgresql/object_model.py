@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpgsa
 import sqlalchemy as sa
@@ -75,3 +75,14 @@ def _prepare_conditions(filters: Dict[str, Any]) -> List:
         )
 
     return conditions
+
+
+async def get_object_model_by_id(offer_id: int) -> Optional[ObjectModel]:
+    query = 'SELECT raw_data FROM offers WHERE offer_id = $1'
+
+    row = await pg.get().fetchrow(query, offer_id)
+
+    if not row:
+        return None
+
+    return object_model_mapper.map_from(json.loads(row['raw_data']))

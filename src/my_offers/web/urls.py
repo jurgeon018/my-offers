@@ -4,7 +4,8 @@ from cian_web import get_handler
 from tornado.web import url
 
 from my_offers import entities
-from my_offers.services import offers
+from my_offers.entities.qa import QaGetByIdRequest
+from my_offers.services import offers, qa
 from my_offers.web.handlers import PublicHandler
 
 
@@ -33,6 +34,27 @@ urlpatterns = base_urls.urlpatterns + [
             service=offers.update_offer,
             method='POST',  # pragma: no mutate
             request_schema=entities.UpdateOfferRequest,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
+
+    # QA
+    url(
+        r'/qa/v1/get-offer/$',
+        get_handler(
+            service=qa.get_offer,
+            method='GET',  # pragma: no mutate
+            request_schema=QaGetByIdRequest,
+            response_schema=entities.Offer,
+            base_handler_cls=RequestContextHandler,
+        )),
+    url(
+        r'/qa/v1/get-offer_view/',
+        get_handler(
+            service=qa.get_offer_view,
+            method='GET',  # pragma: no mutate
+            request_schema=QaGetByIdRequest,
+            response_schema=entities.OfferViewModel,
             base_handler_cls=RequestContextHandler,
         )
     ),
