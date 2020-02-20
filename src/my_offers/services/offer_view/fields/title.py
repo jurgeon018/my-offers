@@ -49,14 +49,15 @@ def get_title(object_model: ObjectModel) -> str:
 
 
 def _get_floors(floor_number: Optional[int], floors_count: Optional[int]) -> Optional[str]:
-    floors_name = None
-    if floor_number:
-        if floor_number in BASEMENT_FLOOR:
-            floors_name = BASEMENT_FLOOR[floor_number]
-        else:
-            if floors_count:
-                floors_name = f'{floor_number}/{floors_count} этаж'
-            else:
-                floors_name = f'{floor_number} этаж'
+    if not floor_number:
+        return None
+
+    if floor_number in BASEMENT_FLOOR:
+        return BASEMENT_FLOOR[floor_number]
+
+    if floors_count:
+        floors_name = f'{floor_number}/{floors_count} этаж'
+    else:
+        floors_name = f'{floor_number} этаж'
 
     return floors_name
