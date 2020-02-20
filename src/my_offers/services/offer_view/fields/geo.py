@@ -73,7 +73,7 @@ async def _get_newbuilding(jk: Optional[Jk]) -> Optional[Newbuilding]:
 
     return Newbuilding(
         search_url=await get_newbuilding_url_cached(jk.id),
-        name=jk.name,
+        name='ЖК "{}"'.format(jk.name),
     )
 
 
