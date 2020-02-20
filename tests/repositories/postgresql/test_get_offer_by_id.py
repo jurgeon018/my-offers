@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from cian_test_utils import future
 
-from my_offers import pg, enums
+from my_offers import enums, pg
 from my_offers.entities import Offer
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql.offer import get_offer_by_id
@@ -43,7 +43,7 @@ from my_offers.repositories.postgresql.offer import get_offer_by_id
 )
 async def test_get_offer_by_id(mocker, row, expected):
     # arrange
-    mocker.patch('my_offers.repositories.postgresql.offer_mapper.map_from', return_value=expected)
+    mocker.patch('my_offers.repositories.postgresql.offer.offer_mapper.map_from', return_value=expected)
     pg.get().fetchrow.return_value = future(row)
 
     # act
