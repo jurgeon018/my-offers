@@ -5,6 +5,7 @@ import sqlalchemy as sa
 import sqlalchemy.dialects.postgresql as psa
 
 from my_offers import enums
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 
 
 _metadata = sa.MetaData()
@@ -21,7 +22,7 @@ def get_names(enum: EnumMeta) -> List[str]:
 _deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
 _offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type',)
 _offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type',)
-_service = psa.ENUM(*get_names(enums.Services), name='service', )
+_service = psa.ENUM(*get_names(Services), name='service', )
 
 
 offers = sa.Table(

@@ -3,14 +3,13 @@ from cian_test_utils import future
 
 from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
-from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, PriceInfo, Underground
+from my_offers.entities.offer_view_model import OfferGeo, PriceInfo, Underground
 from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     AddressInfo,
     BargainTerms,
     Building,
     Geo,
-    Jk,
     Land,
     ObjectModel,
     Phone,
@@ -50,7 +49,7 @@ async def test_build_offer_view():
         subagent=None,
         price_info=PriceInfo(exact=None, range=None),
         features=[],
-        publish_features=None,
+        publish_features=[],
         vas=[],
         is_from_package=False,
         is_manual=False,
