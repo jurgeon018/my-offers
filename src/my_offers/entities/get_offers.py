@@ -4,6 +4,7 @@ from typing import List, Optional
 from my_offers import enums
 from my_offers.entities.offer_view_model import OfferViewModel
 from my_offers.enums.sort_types import GetOffersSortType
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 
 
 @dataclass
@@ -16,7 +17,7 @@ class Filter:
     """Тип сделки"""
     offer_type: Optional[enums.OfferType]
     """Тип объявления"""
-    services: Optional[List[enums.Services]]
+    services: Optional[List[Services]]
     """Тип размещения"""
     sub_agent_ids: Optional[List[int]]
     """Список сотрудников (только для мастрер аккаунтов)"""

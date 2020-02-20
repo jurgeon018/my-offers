@@ -21,6 +21,7 @@ def _is_autoprolong(publish_terms: Optional[PublishTerms]) -> bool:
     if not publish_terms.autoprolong:
         return False
 
+    # не выводим автопродление если размещение с посуточной оплатой
     main_term = get_main_term(publish_terms.terms)
     if main_term and main_term.days == 1:
         return False
