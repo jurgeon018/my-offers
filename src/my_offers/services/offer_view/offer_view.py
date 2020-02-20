@@ -22,10 +22,6 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
         offer_type=offer_type,
         deal_type=deal_type
     )
-    title = get_title(
-        object_model=object_model,
-        category=object_model.category,
-    )
 
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
     is_manual = bool(object_model.source and object_model.source.is_upload)
@@ -52,7 +48,7 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
     return GetOffer(
         id=object_model.id,
         created_at=object_model.creation_date,
-        title=title,
+        title=get_title(object_model),
         main_photo_url=main_photo_url,
         url=url_to_offer,
         geo=await prepare_geo(geo=object_model.geo, deal_type=deal_type, offer_type=offer_type),

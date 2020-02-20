@@ -11,11 +11,13 @@ from my_offers.services.offer_view.constants import (
 )
 
 
-def get_title(*, object_model: ObjectModel, category: Category) -> str:
+def get_title(object_model: ObjectModel) -> str:
     min_area = object_model.min_area and int(object_model.min_area)
     total_area = object_model.total_area and int(object_model.total_area)
     floor_number = object_model.floor_number
     floors_count = object_model.building and object_model.building.floors_count
+    category = object_model.category
+
     is_land = all([
         object_model.land and object_model.land.area and object_model.land.area_unit_type,
         category in [Category.land_sale, Category.commercial_land_rent, Category.commercial_land_sale]
