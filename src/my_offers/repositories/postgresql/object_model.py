@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpgsa
 import sqlalchemy as sa
@@ -68,7 +68,7 @@ async def get_object_models(
     return models, total
 
 
-def _prepare_conditions(filters: Dict[str, Any],):
+def _prepare_conditions(filters: Dict[str, Any]) -> List:
     conditions = []
     for key, value in filters.items():
         if key not in FILTERS_MAP:
@@ -93,3 +93,14 @@ def _prepare_conditions(filters: Dict[str, Any],):
 
 def _prepare_sort_order(sort_type: GetOffersSortType):
     return [SORT_TYPE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
+
+
+async def get_object_model_by_id(offer_id: int) -> Optional[ObjectModel]:
+    query = 'SELECT raw_data FROM offers WHERE offer_id = $1'
+
+    row = await pg.get().fetchrow(query, offer_id)
+
+    if not row:
+        return None
+
+    return object_model_mapper.map_from(json.loads(row['raw_data']))

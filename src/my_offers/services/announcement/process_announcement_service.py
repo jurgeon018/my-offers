@@ -5,6 +5,7 @@ from my_offers import entities, enums
 from my_offers.mappers.date_time import date_time_time_zone_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement.category import get_types
 
 
@@ -114,11 +115,11 @@ def _get_search_text(announcement: Dict) -> str:
     return ' '.join(result)
 
 
-def _get_services(terms: Dict) -> List[enums.Services]:
+def _get_services(terms: Dict) -> List[Services]:
     result = []
     for term in terms:
         for service in term['services']:
-            result.append(enums.Services(service))
+            result.append(Services(service))
 
     return result
 

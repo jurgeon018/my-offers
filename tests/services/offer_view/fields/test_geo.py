@@ -186,7 +186,7 @@ async def test__get_underground(mocker, undergrounds_info, address_info, expecte
     ('jk', 'expected'),
     (
         (None, None),
-        (Jk(id=22, name='yy'), Newbuilding(name='yy', search_url='bb')),
+        (Jk(id=22, name='yy'), Newbuilding(name='ЖК "yy"', search_url='bb')),
     ),
 )
 async def test__get_newbuilding(mocker, jk, expected):

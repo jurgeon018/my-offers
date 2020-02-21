@@ -6,6 +6,7 @@ import pytz
 
 from my_offers import enums, pg
 from my_offers.entities import Offer
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql import save_offer
 from tests.utils import load_data
 
@@ -24,7 +25,7 @@ async def test_save_offer(mocker):
         search_text='zzzzzzz',
         row_version=4444444,
         raw_data={'offer_id': 1111},
-        services=[enums.Services.auction],
+        services=[Services.auction],
         is_manual=True,
         is_in_hidden_base=False,
         has_photo=False,
