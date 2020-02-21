@@ -15,7 +15,7 @@ async def test_get_object_models__empty_filter__result(mocker):
     pg.get().fetch.return_value = future([{'raw_data': '{"id": 12}', 'total_count': 1}])
     query = load_data(__file__, 'get_object_models_empty_filter.sql').strip()
     mocker.patch(
-        'my_offers.repositories.postgresql.object_models.object_model_mapper.map_from',
+        'my_offers.repositories.postgresql.object_model.object_model_mapper.map_from',
         return_value=object_model,
     )
     expected = ([object_model], 1)

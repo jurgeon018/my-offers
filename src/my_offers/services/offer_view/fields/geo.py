@@ -61,7 +61,7 @@ def _get_newbuilding(jk: Optional[Jk], urls: Dict[int, str]) -> Optional[Newbuil
 
     return Newbuilding(
         search_url=urls.get(jk.id),
-        name=jk.name,
+        name='ЖК "{}"'.format(jk.name),
     )
 
 

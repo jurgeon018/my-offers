@@ -144,7 +144,7 @@ def test__get_underground(mocker, undergrounds_info, address_info, expected):
     ('jk', 'urls', 'expected'),
     (
         (None, {}, None),
-        (Jk(id=22, name='yy'), {22: 'bb'}, Newbuilding(name='yy', search_url='bb')),
+        (Jk(id=22, name='yy'), {22: 'bb'}, Newbuilding(name='ЖК "yy"', search_url='bb')),
     ),
 )
 def test__get_newbuilding(mocker, jk, urls, expected):

@@ -1,5 +1,6 @@
 import copy
 from datetime import datetime
+from typing import Optional
 
 import asyncpgsa
 import pytz
@@ -32,3 +33,14 @@ async def save_offer(offer: entities.Offer) -> None:
     )
 
     await pg.get().execute(query, *params)
+
+
+async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
+    query = 'SELECT * FROM offers WHERE offer_id = $1'
+
+    row = await pg.get().fetchrow(query, offer_id)
+
+    if not row:
+        return None
+
+    return offer_mapper.map_from(row)

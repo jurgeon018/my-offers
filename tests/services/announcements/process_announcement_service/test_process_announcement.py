@@ -5,6 +5,7 @@ from cian_helpers.timezone import TIMEZONE
 from cian_test_utils import future
 
 from my_offers import entities, enums
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement import process_announcement
 from tests.utils import load_json_data
 
@@ -32,7 +33,7 @@ async def test_process_announcement(mocker, announcement):
                     'Большая Садовая улица, 73',
         row_version=announcement['rowVersion'],
         raw_data=announcement,
-        services=[enums.Services.highlight, enums.Services.calltracking, enums.Services.premium],
+        services=[Services.highlight, Services.calltracking, Services.premium],
         is_manual=True,
         is_in_hidden_base=False,
         has_photo=False,
