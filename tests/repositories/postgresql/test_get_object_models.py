@@ -110,7 +110,7 @@ async def test_get_object_models___wrong_filter__result(mocker):
     expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40, offset=0)
+    result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == expected
