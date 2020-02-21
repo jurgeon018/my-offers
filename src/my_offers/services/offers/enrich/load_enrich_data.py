@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
-from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams
+from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams, GeoUrlKey
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
@@ -43,8 +43,8 @@ async def _load_jk_urls(jk_ids: List[int]) -> Dict[int, str]:
     return result.value
 
 
-async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[tuple, AddressUrls]:
-    result: Dict[tuple, AddressUrls] = {}
+async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[GeoUrlKey, AddressUrls]:
+    result: Dict[GeoUrlKey, AddressUrls] = {}
     for param in params:
         data = await get_query_strings_for_address_degradation_handler(
             address_elements=param.address_info,
@@ -56,7 +56,7 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[tuple, AddressU
             continue
 
         for i, address in enumerate(param.address_info):
-            key = (param.deal_type, param.offer_type)
+            key = GeoUrlKey(param.deal_type, param.offer_type)
             if key not in result:
                 result[key] = AddressUrls()
             result[key].add_url(address=address, url=data.value[i])

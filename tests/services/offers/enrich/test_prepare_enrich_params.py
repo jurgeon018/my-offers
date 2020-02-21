@@ -33,8 +33,8 @@ def test_prepare_enrich_params(mocker):
     result = prepare_enrich_params(models)
 
     # assert
-    assert result._jk_ids == {555: 555}
-    assert result._offer_ids == {111: 111}
+    assert result._jk_ids == {555}
+    assert result._offer_ids == {111}
     assert result._geo_url_params == {
         (enums.DealType.rent, enums.OfferType.flat): {
             Type.location: {1: 1},

@@ -1,31 +1,34 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, NamedTuple, Optional, Set
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 
 
+class GeoUrlKey(NamedTuple):
+    deal_type: enums.DealType
+    offer_type: enums.OfferType
+
+
 class EnrichParams:
     def __init__(self) -> None:
-        self._offer_ids: Dict[int, int] = {}
-        self._jk_ids: Dict[int, int] = {}
-        self._geo_url_params: Dict[tuple, Dict] = defaultdict(dict)
-
-        super().__init__()
+        self._offer_ids: Set[int] = set()
+        self._jk_ids: Set[int] = set()
+        self._geo_url_params: Dict[GeoUrlKey, Dict] = defaultdict(dict)
 
     def add_offer_id(self, offer_id: int) -> None:
-        self._offer_ids[offer_id] = offer_id
+        self._offer_ids.add(offer_id)
 
     def get_offer_ids(self) -> List[int]:
-        return list(self._offer_ids.keys())
+        return list(self._offer_ids)
 
     def add_jk_id(self, jk_id: int) -> None:
-        self._jk_ids[jk_id] = jk_id
+        self._jk_ids.add(jk_id)
 
     def get_jk_ids(self) -> List[int]:
-        return list(self._jk_ids.keys())
+        return list(self._jk_ids)
 
     def add_geo_url_id(
             self,
@@ -35,7 +38,7 @@ class EnrichParams:
             geo_type: address_info.Type,
             geo_id: int
     ) -> None:
-        key = (deal_type, offer_type)
+        key = GeoUrlKey(deal_type, offer_type)
         if geo_type not in self._geo_url_params[key]:
             self._geo_url_params[key][geo_type] = {}
 
@@ -63,7 +66,6 @@ class EnrichParams:
 class AddressUrls:
     def __init__(self) -> None:
         self._storage: Dict[address_info.Type, Dict] = defaultdict(dict)
-        super().__init__()
 
     def add_url(self, *, address: address_info.AddressInfo, url: str) -> None:
         self._storage[address.type][address.id] = url
@@ -80,7 +82,7 @@ class EnrichData:
     statistics: Dict[int, Any]
     auctions: Dict[int, Any]
     jk_urls: Dict[int, str]
-    geo_urls: Dict[tuple, AddressUrls]
+    geo_urls: Dict[GeoUrlKey, AddressUrls]
 
     def get_urls_by_types(
             self,
@@ -88,4 +90,4 @@ class EnrichData:
             deal_type: enums.DealType,
             offer_type: enums.OfferType
     ) -> AddressUrls:
-        return self.geo_urls.get((deal_type, offer_type), AddressUrls())
+        return self.geo_urls.get(GeoUrlKey(deal_type, offer_type), AddressUrls())

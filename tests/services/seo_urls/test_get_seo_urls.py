@@ -46,7 +46,7 @@ async def test_get_query_strings_for_address(mocker):
     )
 
     # assert
-    assert result == ['/cat.php?asd1', '/cat.php?asd2']
+    assert result == ['https://cian.ru/cat.php?asd1', 'https://cian.ru/cat.php?asd2']
     get_region_ids_cached_mock.assert_called_once_with()
     get_query_params_for_address_element_mock.assert_has_calls([
         mocker.call(
