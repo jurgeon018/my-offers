@@ -131,6 +131,10 @@ def _get_is_test(announcement: Dict) -> bool:
 def _get_prices(*, bargain_terms: Dict, total_area: Optional[float] = None) -> Tuple[Optional[float], Optional[float]]:
     price: Optional[float] = None
     price_per_meter: Optional[float] = None
+
+    if 'priceType' not in bargain_terms:
+        return price, price_per_meter
+
     price_type = bargain_terms['priceType']
 
     if price_type == 'all':
