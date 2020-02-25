@@ -30,10 +30,15 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.monolith_cian_announcementapi.entities.tariff_identificator import TariffGridType
 from my_offers.services.offer_view.offer_view import build_offer_view
+from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
-@pytest.mark.gen_test
-async def test_build_offer_view():
+@pytest.fixture(name='enrich_data_mock')
+def enrich_data_fixture():
+    return EnrichData(statistics={}, auctions={}, jk_urls={}, geo_urls={})
+
+
+def test_build_offer_view(enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         id=111,
@@ -61,13 +66,12 @@ async def test_build_offer_view():
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result == expected_result
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, prepared, building, expected', (
     (
         Category.office_sale,
@@ -120,7 +124,7 @@ async def test_build_offer_view():
     (Category.domestic_services_rent, dict(total_area=60.0), None, 'Бытовые услуги, 60 м²'),
     (Category.domestic_services_rent, dict(total_area=60.0), None, 'Бытовые услуги, 60 м²'),
 ))
-async def test_build_offer_view__tittle_commercial(category, prepared, building, expected):
+def test_build_offer_view__tittle_commercial(category, prepared, building, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
@@ -131,13 +135,12 @@ async def test_build_offer_view__tittle_commercial(category, prepared, building,
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.title == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, prepared, building, expected', [
     (Category.house_sale, dict(total_area=60.0), None, 'Дом, 60 м²'),
     (Category.house_rent, dict(total_area=60.0), None, 'Дом, 60 м²'),
@@ -149,7 +152,7 @@ async def test_build_offer_view__tittle_commercial(category, prepared, building,
     (Category.townhouse_rent, dict(total_area=60.0), None, 'Таунхаус, 60 м²'),
     (Category.townhouse_sale, dict(total_area=60.0), None, 'Таунхаус, 60 м²'),
 ])
-async def test_build_offer_view__tittle_suburban(category, prepared, building, expected):
+def test_build_offer_view__tittle_suburban(category, prepared, building, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
@@ -160,13 +163,12 @@ async def test_build_offer_view__tittle_suburban(category, prepared, building, e
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.title == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, prepared, building, expected', [
     (
         Category.daily_flat_rent,
@@ -228,7 +230,7 @@ async def test_build_offer_view__tittle_suburban(category, prepared, building, e
         'Кв. со своб. планировкой, 60 м², 3/19 этаж'
     ),
 ])
-async def test_build_offer_view__tittle_flat(category, prepared, building, expected):
+def test_build_offer_view__tittle_flat(category, prepared, building, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
@@ -239,13 +241,12 @@ async def test_build_offer_view__tittle_flat(category, prepared, building, expec
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.title == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, land, expected', [
     (
         Category.land_sale,
@@ -269,7 +270,7 @@ async def test_build_offer_view__tittle_flat(category, prepared, building, expec
     ),
 
 ])
-async def test_build_offer_view__tittle__land(category, land, expected):
+def test_build_offer_view__tittle__land(category, land, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
@@ -279,20 +280,19 @@ async def test_build_offer_view__tittle__land(category, land, expected):
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.title == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('photos, expected', [
     ([Photo(mini_url='http://photo_url.ru/1_mini.jpg')], 'http://photo_url.ru/1_mini.jpg'),
     ([Photo(mini_url=None)], None),
     ([], None),
     (None, None),
 ])
-async def test_build_offer_view__main_photo_url(photos, expected):
+def test_build_offer_view__main_photo_url(photos, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
@@ -302,20 +302,19 @@ async def test_build_offer_view__main_photo_url(photos, expected):
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.main_photo_url == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, expected', [
     (Category.room_rent, 'https://cian.ru/rent/flat/123'),
     (Category.office_rent, 'https://cian.ru/rent/commercial/123'),
     (Category.house_rent, 'https://cian.ru/rent/suburban/123'),
     (Category.new_building_flat_sale, 'https://cian.ru/sale/flat/123'),
 ])
-async def test_build_offer_view__offer_url(category, expected):
+def test_build_offer_view__offer_url(category, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         id=123,
@@ -325,14 +324,13 @@ async def test_build_offer_view__offer_url(category, expected):
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.url == expected
 
 
-@pytest.mark.gen_test
-async def test_build_offer_view__subagent():
+def test_build_offer_view__subagent(enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123),
@@ -341,19 +339,18 @@ async def test_build_offer_view__subagent():
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.subagent is None
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('source, is_manual', [
     (Source.upload, True),
     (Source.website, False),
     (Source.mobile_app, False),
 ])
-async def test_build_offer_view__is__from_import(source, is_manual):
+def test_build_offer_view__is__from_import(source, is_manual, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         source=source,
@@ -363,13 +360,12 @@ async def test_build_offer_view__is__from_import(source, is_manual):
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.is_manual is is_manual
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, currency, price_type, expected', [
     (Category.office_rent, Currency.rur, PriceType.square_meter, '100 000 ₽/мес.'),
     (Category.bed_rent, Currency.usd, None, '10 000 $/мес.'),
@@ -382,7 +378,7 @@ async def test_build_offer_view__is__from_import(source, is_manual):
     (Category.daily_bed_rent, Currency.eur, None, '10 000 €/сут.'),
     (Category.daily_bed_rent, None, None, None),
 ])
-async def test_build_offer_view__price_info(category, currency, price_type, expected):
+def test_build_offer_view__price_info(category, currency, price_type, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=10000.0, currency=currency, price_type=price_type),
@@ -392,20 +388,19 @@ async def test_build_offer_view__price_info(category, currency, price_type, expe
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.price_info.exact == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, currency, expected', [
     (Category.office_rent, Currency.rur, [f'от 50 000', f'до 83 333 ₽/мес']),
     (Category.office_rent, Currency.usd, [f'от 50 000', f'до 83 333 $/мес']),
     (Category.office_rent, Currency.eur, [f'от 50 000', f'до 83 333 €/мес']),
     (Category.flat_sale, None, None),
 ])
-async def test_build_offer_view__price_info__can_parts(category, currency, expected):
+def test_build_offer_view__price_info__can_parts(category, currency, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(
@@ -421,13 +416,12 @@ async def test_build_offer_view__price_info__can_parts(category, currency, expec
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.price_info.range == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, prepared, expected', [
     (Category.flat_sale, dict(mortgage_allowed=True), ['Возможна ипотека']),
     (Category.flat_sale, dict(sale_type=SaleType.alternative), ['Альтернативная продажа']),
@@ -450,7 +444,7 @@ async def test_build_offer_view__price_info__can_parts(category, currency, expec
     (Category.flat_sale, dict(sale_type=SaleType.dupt), ['Переуступка']),
     (Category.new_building_flat_sale, dict(sale_type=SaleType.dupt), ['Переуступка']),
 ])
-async def test_build_offer_view__features(category, prepared, expected):
+def test_build_offer_view__features(category, prepared, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123.0, **prepared, currency=Currency.rur),
@@ -459,20 +453,19 @@ async def test_build_offer_view__features(category, prepared, expected):
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.features == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('category, price_type, expected', [
     (Category.office_sale, PriceType.square_meter, ['123 000 ₽ м²']),
     (Category.new_building_flat_sale, PriceType.square_meter, ['123 000 ₽ м²']),
     (Category.office_rent, PriceType.square_meter, ['123 000 ₽ за м² в год']),
     (Category.office_sale, PriceType.all, ['12 300 ₽ за м²']),
 ])
-async def test_build_offer_view__features__price(category, price_type, expected):
+def test_build_offer_view__features__price(category, price_type, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(
@@ -486,17 +479,16 @@ async def test_build_offer_view__features__price(category, price_type, expected)
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.features == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('publish_terms, expected', [
     (PublishTerms(autoprolong=True), ['автопродление']),
 ])
-async def test_build_offer_view__publish_features(publish_terms, expected):
+def test_build_offer_view__publish_features(publish_terms, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123.0),
@@ -506,13 +498,12 @@ async def test_build_offer_view__publish_features(publish_terms, expected):
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.publish_features == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('terms, expected', [
     (
         [PublishTerm(services=[Services.calltracking, Services.paid])],
@@ -523,7 +514,7 @@ async def test_build_offer_view__publish_features(publish_terms, expected):
         [enums.OfferVas.payed, enums.OfferVas.top3]
     ),
 ])
-async def test_build_offer_view__vas(terms, expected):
+def test_build_offer_view__vas(terms, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123.0),
@@ -533,13 +524,12 @@ async def test_build_offer_view__vas(terms, expected):
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.vas == expected
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('publish_terms, expected', [
     (None, False),
     (PublishTerms(terms=[]), False),
@@ -556,7 +546,7 @@ async def test_build_offer_view__vas(terms, expected):
         True
     )
 ])
-async def test_build_offer_view__is_from_package(publish_terms, expected):
+def test_build_offer_view__is_from_package(publish_terms, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123.0),
@@ -566,14 +556,13 @@ async def test_build_offer_view__is_from_package(publish_terms, expected):
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.is_from_package is expected
 
 
-@pytest.mark.gen_test
-async def test_build_offer_view__is_publication_time_ends():
+def test_build_offer_view__is_publication_time_ends(enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123.0),
@@ -582,13 +571,12 @@ async def test_build_offer_view__is_publication_time_ends():
     )
 
     # act
-    result = await build_offer_view(object_model=raw_offer)
+    result = build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     assert result.is_publication_time_ends is False
 
 
-@pytest.mark.gen_test
 @pytest.mark.parametrize('geo, expected', [
     (None, None),
     (Geo(undergrounds=[], address=[]), None),
@@ -600,7 +588,7 @@ async def test_build_offer_view__is_publication_time_ends():
         Underground(search_url='', region_id=1, line_color='#12321', name='Сокольники')
     )
 ])
-async def test_build_offer_view__geo_underground(mocker, geo, expected):
+def test_build_offer_view__geo_underground(mocker, geo, expected, enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         bargain_terms=BargainTerms(price=123.0),
@@ -615,7 +603,7 @@ async def test_build_offer_view__geo_underground(mocker, geo, expected):
     )
 
     # act
-    await build_offer_view(object_model=raw_offer)
+    build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
 
     # assert
     prepare_geo_mock.assert_called_once()

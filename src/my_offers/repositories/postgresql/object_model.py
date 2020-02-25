@@ -6,6 +6,7 @@ from cian_json import json
 from sqlalchemy import and_, any_, cast, func, over, select
 
 from my_offers import pg
+from my_offers.enums import GetOffersSortType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import tables
@@ -24,15 +25,28 @@ FILTERS_MAP = {
     'sub_agent_ids': OFFER_TABLE.user_id,
 }
 
+SORT_TYPE_MAP = {
+    GetOffersSortType.by_default: OFFER_TABLE.sort_date.desc(),
+    GetOffersSortType.by_price_min: OFFER_TABLE.price.desc(),
+    GetOffersSortType.by_price_max: OFFER_TABLE.price,
+    GetOffersSortType.by_price_for_meter: OFFER_TABLE.price_per_meter.desc(),
+    GetOffersSortType.by_area_min: OFFER_TABLE.total_area.desc(),
+    GetOffersSortType.by_area_max: OFFER_TABLE.total_area,
+    GetOffersSortType.by_walk_time: OFFER_TABLE.walking_time,
+    GetOffersSortType.by_street: OFFER_TABLE.street_name,
+    GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
+}
+
 
 async def get_object_models(
         *,
         filters: Dict[str, Any],
         limit: int,
         offset: int,
+        sort_type: GetOffersSortType,
 ) -> Tuple[List[ObjectModel], int]:
     conditions = _prepare_conditions(filters)
-    sort = [OFFER_TABLE.sort_date.desc().nullslast(), OFFER_TABLE.offer_id]
+    sort = _prepare_sort_order(sort_type)
 
     sql = (
         select([OFFER_TABLE.raw_data, over(func.count()).label('total_count')])
@@ -75,6 +89,10 @@ def _prepare_conditions(filters: Dict[str, Any]) -> List:
         )
 
     return conditions
+
+
+def _prepare_sort_order(sort_type: GetOffersSortType):
+    return [SORT_TYPE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
 
 
 async def get_object_model_by_id(offer_id: int) -> Optional[ObjectModel]:
