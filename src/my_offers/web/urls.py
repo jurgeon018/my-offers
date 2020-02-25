@@ -18,7 +18,8 @@ urlpatterns = base_urls.urlpatterns + [
             request_schema=entities.GetOffersRequest,
             response_schema=entities.GetOffersResponse,
             base_handler_cls=PublicHandler,
-        )),
+        )
+    ),
     url(
         r'/v1/get-offers/$',
         get_handler(
@@ -27,7 +28,8 @@ urlpatterns = base_urls.urlpatterns + [
             request_schema=entities.GetOffersPrivateRequest,
             response_schema=entities.GetOffersResponse,
             base_handler_cls=RequestContextHandler,
-        )),
+        )
+    ),
     url(
         r'/v1/update-offer/',
         get_handler(
@@ -37,6 +39,29 @@ urlpatterns = base_urls.urlpatterns + [
             base_handler_cls=RequestContextHandler,
         )
     ),
+
+    # Actions
+    url(
+        r'/v1/actions/archive-offer/$',
+        get_handler(
+            service=offers.get_offers_private,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersPrivateRequest,
+            response_schema=entities.GetOffersResponse,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
+    url(
+        r'/v1/actions/delete-offer/$',
+        get_handler(
+            service=offers.get_offers_private,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersPrivateRequest,
+            response_schema=entities.GetOffersResponse,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
+
 
     # QA
     url(
