@@ -32,6 +32,7 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
         filters=filters,
         limit=limit,
         offset=offset,
+        sort_type=request.sort if request.sort else get_offers.GetOffersSortType.by_default,
     )
 
     # шаг 3 - формирование ответа
