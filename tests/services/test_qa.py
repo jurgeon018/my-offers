@@ -39,8 +39,8 @@ async def test_get_offer_view(mocker):
     object_model = mocker.sentinel.object_model
     offer_view = mocker.sentinel.offer_view
     build_offer_view_mock = mocker.patch(
-        'my_offers.services.qa.build_offer_view',
-        return_value=future(offer_view)
+        'my_offers.services.qa.get_offer_views',
+        return_value=future([offer_view])
     )
 
     get_object_model_by_id_mock = mocker.patch(
@@ -54,7 +54,7 @@ async def test_get_offer_view(mocker):
     # assert
     assert result == offer_view
     get_object_model_by_id_mock.assert_called_once_with(111)
-    build_offer_view_mock.assert_called_once_with(object_model)
+    build_offer_view_mock.assert_called_once_with([object_model])
 
 
 @pytest.mark.gen_test

@@ -1,20 +1,22 @@
-from typing import Optional
+from typing import Dict, List
 
-from cian_cache import cached
+from cian_core.degradation import get_degradation_handler
 
 from my_offers.repositories.newbuilding_search import v1_get_newbuildings_by_ids
 from my_offers.repositories.newbuilding_search.entities import GetNewBuildingsByIdsRequest
 
 
-@cached(group='newbuilding_url')
-async def get_newbuilding_url_cached(jk_id: int) -> Optional[str]:
-    return await get_newbuilding_url(jk_id)
-
-
-async def get_newbuilding_url(jk_id: int) -> Optional[str]:
-    response = await v1_get_newbuildings_by_ids(GetNewBuildingsByIdsRequest(ids=[jk_id]))
+async def get_newbuilding_urls(jk_ids: List[int]) -> Dict[int, str]:
+    response = await v1_get_newbuildings_by_ids(GetNewBuildingsByIdsRequest(ids=jk_ids))
+    result = {}
     for item in response.items:
-        if item.id == jk_id:
-            return item.url
+        if item.id:
+            result[item.id] = item.url
 
-    return None
+    return result
+
+get_newbuilding_urls_degradation_handler = get_degradation_handler(
+    func=get_newbuilding_urls,
+    key='get_newbuilding_urls',
+    default={},
+)
