@@ -27,6 +27,7 @@ async def process_announcement_callback(messages: List[Message]) -> None:
             try:
                 await process_announcement(raw_offer)
             except:
+                # todo: https://jira.cian.tech/browse/CD-73846 - обработка ошибок
                 logger.exception(
                     'Announcement process error: %s key: %s',
                     raw_offer.get('id'),
