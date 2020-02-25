@@ -48,7 +48,7 @@ async def delete_offer(request: entities.OfferActionRequest, realty_user_id: int
                 cian_user_id=get_realty_id_by_cian_id(realty_user_id),
             )
         )
-    except ApiClientException as e:
+    except ApiClientException:
         logger.exception('Delete offer %s error', offer_id)
         raise BrokenRulesException([
             Error(
