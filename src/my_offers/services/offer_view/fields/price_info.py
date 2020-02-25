@@ -31,28 +31,34 @@ def get_price_info(
     can_calc_parts = all([is_square_meter, offer_type.is_commercial, can_parts])
 
     currency = CURRENCY.get(bargain_terms.currency)
-    price = int(bargain_terms.price)
+
     price_exact = None
     price_range = None
 
-    if currency:
-        pretty_price = get_pretty_number(number=price)
+    if not currency:
+        return PriceInfo(exact=price_exact, range=price_range)
 
-        if is_daily_rent:
-            price_exact = f'{pretty_price} {currency}/сут.'
+    price = int(bargain_terms.price)
+    pretty_price = get_pretty_number(number=price)
 
-        elif is_rent:
-            # mypy не понимает вычисления в all([..., max_area, min_area])
-            if can_calc_parts and max_area and min_area:
-                months_count = 12
-                min_price = get_pretty_number(number=int(price / months_count * min_area))
-                max_price = get_pretty_number(number=int(price / months_count * max_area))
-                price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']
-            else:
-                price = int(price * total_area) if is_square_meter and total_area else price
-                pretty_price = get_pretty_number(number=price)
-                price_exact = f'{pretty_price} {currency}/мес.'
-
+    if is_daily_rent:
+        price_exact = f'{pretty_price} {currency}/сут.'
+    elif is_rent:
+        # mypy не понимает вычисления в all([..., max_area, min_area])
+        if can_calc_parts and max_area and min_area:
+            months_count = 12
+            min_price = get_pretty_number(int(price / months_count * min_area))
+            max_price = get_pretty_number(int(price / months_count * max_area))
+            price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']
+        else:
+            price = int(price * total_area) if is_square_meter and total_area else price
+            pretty_price = get_pretty_number(price)
+            price_exact = f'{pretty_price} {currency}/мес.'
+    else:
+        if can_parts and max_area and min_area:
+            min_price = get_pretty_number(int(price * min_area / max_area))
+            max_price = get_pretty_number(price)
+            price_range = [f'от {min_price}', f'до {max_price} {currency}']
         else:
             price_exact = f'{pretty_price} {currency}'
 
