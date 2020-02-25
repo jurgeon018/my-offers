@@ -4,6 +4,7 @@ from cian_http.exceptions import ApiClientException
 from cian_web.exceptions import BrokenRulesException, Error
 
 from my_offers import entities, enums
+from my_offers.helpers.user_ids import get_realty_id_by_cian_id
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.monolith_cian_realty import api_announcement_set_deleted
 from my_offers.repositories.monolith_cian_realty.entities import AnnouncementChangeStatus
@@ -14,6 +15,7 @@ from my_offers.services.get_master_user_id import get_master_user_id
 
 
 logger = logging.getLogger(__name__)
+
 
 class AnnouncementTypeError(Exception):
     pass
@@ -43,13 +45,14 @@ async def delete_offer(request: entities.OfferActionRequest, realty_user_id: int
                 realty_object_id=offer_id,
                 announcement_type=_get_type_for_asp(offer_type=offer_type, deal_type=deal_type),
                 cian_announcement_id=object_model.cian_id,
+                cian_user_id=get_realty_id_by_cian_id(realty_user_id),
             )
         )
     except ApiClientException as e:
         logger.exception('Delete offer %s error', offer_id)
         raise BrokenRulesException([
             Error(
-                message=e.message,
+                message='Ошибка при удаленни объявления',
                 code='operation_error',
                 key='offer_id'
             )
