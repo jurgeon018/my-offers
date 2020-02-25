@@ -1,6 +1,5 @@
-import asyncio
 import math
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from simple_settings import settings
 
@@ -8,7 +7,10 @@ from my_offers import entities
 from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view import build_offer_view
+from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
+from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
 
 
 async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entities.GetOffersResponse:
@@ -21,23 +23,20 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
 
 async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: int) -> entities.GetOffersResponse:
     """ Получить получить объявления для пользователя. Для м/а с учетом иерархии. """
+    # шаг 1 - подготовка параметров запроса
     filters = _get_filters(filters=request.filters, user_id=realty_user_id)
     limit, offset = _get_pagination(request.pagination)
 
+    # шаг 2 - получение object models
     object_models, total = await postgresql.get_object_models(
         filters=filters,
         limit=limit,
         offset=offset,
     )
 
-    futures = [
-        build_offer_view(object_model=object_model)
-        for object_model in object_models
-    ]
-    offers_views = await asyncio.gather(*futures)
-
+    # шаг 3 - формирование ответа
     return entities.GetOffersResponse(
-        offers=offers_views,
+        offers=await get_offer_views(object_models),
         counters=get_offers.OfferCounters(
             active=1,
             not_active=0,
@@ -50,6 +49,20 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
             page_count=math.ceil(total / limit)
         )
     )
+
+
+async def get_offer_views(object_models: List[ObjectModel]) -> List[get_offers.GetOffer]:
+    # шаг 1 - подготовка параметров для обогащения
+    enrich_params = prepare_enrich_params(object_models)
+
+    # шаг 2 - получение данных для обогащения
+    enrich_data = await load_enrich_data(enrich_params)
+
+    # шаг 3 - подготовка моделей для ответа
+    return [
+        build_offer_view(object_model=object_model, enrich_data=enrich_data)
+        for object_model in object_models
+    ]
 
 
 def _get_filters(*, user_id: int, filters: Optional[get_offers.Filter]) -> Dict[str, Any]:
