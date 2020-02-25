@@ -40,7 +40,7 @@ SORT_TYPE_MAP = {
 
 
 async def get_object_model(filters: Dict[str, Any]) -> Optional[ObjectModel]:
-    object_models = await get_object_models(
+    object_models, _ = await get_object_models(
         filters=filters,
         limit=1,
         offset=0,
