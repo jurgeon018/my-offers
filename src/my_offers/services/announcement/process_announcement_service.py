@@ -7,6 +7,7 @@ from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement.category import get_types
+from my_offers.services.get_master_user_id import get_master_user_id
 
 
 STATUS_TO_TAB_MAP = {
@@ -43,7 +44,7 @@ async def process_announcement(announcement: Dict) -> None:
 
     offer = entities.Offer(
         offer_id=announcement['id'],
-        master_user_id=announcement['userId'],  # TODO: определить мастераккаунт
+        master_user_id=await get_master_user_id(announcement['userId']),
         user_id=announcement['publishedUserId'],
         deal_type=deal_type,
         offer_type=offer_type,

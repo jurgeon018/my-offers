@@ -23,6 +23,7 @@ FILTERS_MAP = {
     'is_in_hidden_base': OFFER_TABLE.is_in_hidden_base,
     'master_user_id': OFFER_TABLE.master_user_id,
     'sub_agent_ids': OFFER_TABLE.user_id,
+    'offer_id': OFFER_TABLE.offer_id,
 }
 
 SORT_TYPE_MAP = {
@@ -36,6 +37,20 @@ SORT_TYPE_MAP = {
     GetOffersSortType.by_street: OFFER_TABLE.street_name,
     GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
 }
+
+
+async def get_object_model(filters: Dict[str, Any]) -> Optional[ObjectModel]:
+    object_models = await get_object_models(
+        filters=filters,
+        limit=1,
+        offset=0,
+        sort_type=GetOffersSortType.by_default,
+    )
+
+    if not object_models:
+        return None
+
+    return object_models[0]
 
 
 async def get_object_models(
