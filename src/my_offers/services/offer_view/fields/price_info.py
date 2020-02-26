@@ -46,7 +46,11 @@ def get_price_info(
     elif is_rent:
         # mypy не понимает вычисления в all([..., max_area, min_area])
         if can_calc_parts and max_area and min_area:
-            months_count = 12
+            if bargain_terms.payment_period and bargain_terms.payment_period.is_monthly:
+                months_count = 1
+            else:
+                months_count = 12
+
             min_price = get_pretty_number(int(price / months_count * min_area))
             max_price = get_pretty_number(int(price / months_count * max_area))
             price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']

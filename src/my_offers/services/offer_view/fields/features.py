@@ -60,7 +60,11 @@ def get_features(
         if is_commercial:
 
             if is_square_meter and currency:
-                pretty_price = get_pretty_number(number=int(bargain_terms.price))
+                if bargain_terms.payment_period and bargain_terms.payment_period.is_monthly:
+                    months_count = 12
+                else:
+                    months_count = 1
+                pretty_price = get_pretty_number(int(bargain_terms.price * months_count))
                 features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL} в год')
 
             if lease_type and lease_type.is_sublease:
