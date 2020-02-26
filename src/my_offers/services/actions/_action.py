@@ -20,7 +20,7 @@ class OfferAction:
 
     async def execute(self) -> entities.OfferActionResponse:
         object_model = await self._load_object_model()
-        await self._check_rights(object_model=object_model)
+        await self._check_rights(object_model)
 
         try:
             await self._run_action(object_model)
