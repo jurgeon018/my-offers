@@ -114,7 +114,12 @@ from my_offers.services.announcement.process_announcement_service import _get_pr
             },
             20,
             (7200000.0, 360000.0),
-        )
+        ),
+        (
+            {'currency': 'rur'},
+            90.7,
+            (None, None),
+        ),
     ),
 )
 def test__get_prices(bargain_terms, total_area, expected):

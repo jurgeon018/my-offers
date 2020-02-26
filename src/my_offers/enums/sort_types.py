@@ -2,6 +2,8 @@ from cian_enum import StrEnum
 
 
 class GetOffersSortType(StrEnum):
+    by_default = 'by_default'
+    """По-умолчанию"""
     by_price_min = 'by_price_min'
     """По цене: убывающая"""
     by_price_max = 'by_price_max'

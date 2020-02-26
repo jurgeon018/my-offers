@@ -14,7 +14,9 @@ from my_offers.services.announcement.category import get_types
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
 from my_offers.services.offer_view.fields.publish_features import get_publish_features
+from my_offers.services.offer_view.fields.status import get_status
 from my_offers.services.offer_view.fields.vas import get_vas
+from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
 SQUARE_METER_SYMBOL = 'м²'
@@ -90,7 +92,7 @@ UNIT_TYPE = {
 }
 
 
-async def build_offer_view(object_model: ObjectModel) -> GetOffer:
+def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> GetOffer:
     """ Собирает из шарповой модели компактное представление объявления для выдачи."""
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
@@ -126,13 +128,14 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
     publish_terms = object_model.publish_terms
     terms = publish_terms.terms if publish_terms else None
 
+    geo_urls = enrich_data.get_urls_by_types(deal_type=deal_type, offer_type=offer_type)
     return GetOffer(
         id=object_model.id,
         created_at=object_model.creation_date,
         title=title,
         main_photo_url=main_photo_url,
         url=url_to_offer,
-        geo=await prepare_geo(geo=object_model.geo, deal_type=deal_type, offer_type=offer_type),
+        geo=prepare_geo(geo=object_model.geo, geo_urls=geo_urls, jk_urls=enrich_data.jk_urls),
         subagent=subagent,
         price_info=price_info,
         features=features,
@@ -141,7 +144,9 @@ async def build_offer_view(object_model: ObjectModel) -> GetOffer:
         is_from_package=is_from_package(terms),
         is_manual=is_manual,
         is_publication_time_ends=_is_publication_time_ends(object_model),
-        statistics=Statistics()
+        statistics=Statistics(),
+        archived_at=object_model.archived_date,
+        status=get_status(status=object_model.status, flags=object_model.flags)
     )
 
 
