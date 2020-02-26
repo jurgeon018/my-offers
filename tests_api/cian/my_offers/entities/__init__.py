@@ -24,4 +24,6 @@ from .get_offers_request import GetOffersRequest
 from .offer_counters import OfferCounters
 from .page_info import PageInfo
 from .get_offers_response import GetOffersResponse
+from .offer_action_request import OfferActionRequest
+from .offer_action_response import OfferActionResponse
 from cian_automation.models import CommonResponse

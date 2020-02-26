@@ -10,8 +10,10 @@ new-codegen version: 4.0.1
 """
 from cian_automation.context import LazyImport
 
+from .clients.public_v1_actions_delete_offer import PublicV1ActionsDeleteOffer
 from .clients.public_v1_get_offers import PublicV1GetOffers
 
 
 class MyOffers(metaclass=LazyImport):
+    public_v1_actions_delete_offer: PublicV1ActionsDeleteOffer
     public_v1_get_offers: PublicV1GetOffers

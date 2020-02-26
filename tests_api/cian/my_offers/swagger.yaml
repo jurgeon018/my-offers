@@ -356,6 +356,25 @@ definitions:
         title: views
         type: integer
     type: object
+  my_offers.entities.offer_action.OfferActionRequestSchema:
+    properties:
+      offerId:
+        format: int64
+        title: offer_id
+        type: integer
+    required:
+    - offerId
+    type: object
+  my_offers.entities.offer_action.OfferActionResponseSchema:
+    properties:
+      status:
+        enum:
+        - ok
+        type: string
+        x-ok: ''
+    required:
+    - status
+    type: object
   my_offers.entities.offer_view_model.AddressSchema:
     properties:
       name:
@@ -473,6 +492,23 @@ info:
   title: my-offers
   version: 1.0.0
 paths:
+  /public/v1/actions/delete-offer/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/my_offers.entities.offer_action.OfferActionRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/my_offers.entities.offer_action.OfferActionResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
   /public/v1/get-offers/:
     post:
       parameters:
