@@ -11,6 +11,3 @@ class OfferActionRequest:
 @dataclass
 class OfferActionResponse:
     status: OfferActionStatus
-
-
-
