@@ -4,6 +4,7 @@ from cian_http.exceptions import ApiClientException
 from cian_web.exceptions import BrokenRulesException, Error
 
 from my_offers import entities, enums
+from my_offers.enums.offer_action_status import OfferActionStatus
 from my_offers.helpers.user_ids import get_realty_id_by_cian_id
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.monolith_cian_realty import api_announcement_set_deleted
@@ -21,7 +22,7 @@ class AnnouncementTypeError(Exception):
     pass
 
 
-async def delete_offer(request: entities.OfferActionRequest, realty_user_id: int) -> None:
+async def delete_offer(request: entities.OfferActionRequest, realty_user_id: int) -> entities.OfferActionResponse:
     offer_id = request.offer_id
     object_model = await get_object_model({
         'offer_id': offer_id,
@@ -57,6 +58,8 @@ async def delete_offer(request: entities.OfferActionRequest, realty_user_id: int
                 key='offer_id'
             )
         ])
+
+    return entities.OfferActionResponse(status=OfferActionStatus.ok)
 
 
 async def _check_rights(*, user_id: int, object_model: ObjectModel) -> None:

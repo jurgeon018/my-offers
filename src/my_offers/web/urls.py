@@ -47,6 +47,7 @@ urlpatterns = base_urls.urlpatterns + [
             service=actions.archive_offer,
             method='POST',  # pragma: no mutate
             request_schema=entities.OfferActionRequest,
+            response_schema=entities.OfferActionResponse,
             base_handler_cls=PublicHandler,
         )
     ),
@@ -56,6 +57,7 @@ urlpatterns = base_urls.urlpatterns + [
             service=actions.delete_offer,
             method='POST',  # pragma: no mutate
             request_schema=entities.OfferActionRequest,
+            response_schema=entities.OfferActionResponse,
             base_handler_cls=PublicHandler,
         )
     ),

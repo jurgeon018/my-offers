@@ -23,7 +23,7 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
 
 
 async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: int) -> entities.GetOffersResponse:
-    """ Получить получить объявления для пользователя. Для м/а с учетом иерархии. """
+    """ Получить объявления для пользователя. Для м/а с учетом иерархии. """
     # шаг 1 - подготовка параметров запроса
     filters = await _get_filters(filters=request.filters, user_id=realty_user_id)
     limit, offset = _get_pagination(request.pagination)
