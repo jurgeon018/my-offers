@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import Land
 from my_offers.services.announcement.helpers.units import area_to_meters_kf

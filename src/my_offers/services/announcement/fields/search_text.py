@@ -1,5 +1,3 @@
-from typing import Dict
-
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 
 

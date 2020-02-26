@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.services.announcement.process_announcement_service import _get_walking_time
+from my_offers.services.announcement.fields.walking_time import get_walking_time
 from tests.utils import load_json_data
 
 
@@ -15,7 +15,7 @@ from tests.utils import load_json_data
 )
 def test__get_walking_time(geo, expected):
     # arrange & act
-    result = _get_walking_time(geo)
+    result = get_walking_time(geo)
 
     # assert
     assert result == expected

@@ -1,6 +1,7 @@
 from my_offers import enums
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
+
 STATUS_TO_TAB_MAP = {
     Status.published: enums.OfferStatusTab.active,
 
