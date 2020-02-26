@@ -1,5 +1,7 @@
 import pytest
 
+from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo
+from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
 from my_offers.services.announcement.fields.street_name import get_street_name
 
 
@@ -8,37 +10,25 @@ from my_offers.services.announcement.fields.street_name import get_street_name
     (
         (None, None),
         (
-            [{
-                'id': 4606,
-                'name': 'Ростовская',
-                'type': 'location',
-                'fullName': 'Ростовская область',
-                'shortName': 'Ростовская область',
-                'locationTypeId': 2,
-                'isFormingAddress': True
-            }, {
-                'id': 4959,
-                'name': 'Ростов-на-Дону',
-                'type': 'location',
-                'fullName': 'Ростов-на-Дону',
-                'shortName': 'Ростов-на-Дону',
-                'locationTypeId': 1,
-                'isFormingAddress': True
-            }, {
-                'id': 288556,
-                'name': 'Большая Садовая',
-                'type': 'street',
-                'fullName': 'Большая Садовая улица',
-                'shortName': 'Большая Садовая ул.',
-                'isFormingAddress': True
-            }, {
-                'id': 2045030,
-                'name': '73',
-                'type': 'house',
-                'fullName': '73',
-                'shortName': '73',
-                'isFormingAddress': True
-            }],
+            [
+                AddressInfo(
+                    id=4959,
+                    name='Ростов-на-Дону',
+                    type=Type.location,
+                    full_name='Ростов-на-Дону',
+                    short_name='Ростов-на-Дону',
+                    location_type_id=1,
+                    is_forming_address=True,
+                ),
+                AddressInfo(
+                    id=288556,
+                    name='Большая Садовая',
+                    type=Type.street,
+                    full_name='Большая Садовая улица',
+                    short_name='Большая Садовая ул.',
+                    is_forming_address=True,
+                )
+            ],
             'Большая Садовая',
         )
     )

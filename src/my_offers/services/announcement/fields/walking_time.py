@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import CalculatedUndergrounds, Geo, UndergroundInfo
 

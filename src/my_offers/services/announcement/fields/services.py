@@ -1,11 +1,11 @@
-from typing import Optional, List
+from typing import List, Optional
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 
 
 def get_services(publish_terms: Optional[PublishTerms]) -> List[Services]:
-    result = []
+    result: List[Services] = []
     if not publish_terms:
         return result
 

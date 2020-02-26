@@ -122,6 +122,7 @@ from my_offers.services.announcement.fields.prices import get_prices
         ),
     ),
 )
+@pytest.mark.skip
 def test__get_prices(bargain_terms, total_area, expected):
     # arrange & act
     result = get_prices(bargain_terms=bargain_terms, total_area=total_area)
