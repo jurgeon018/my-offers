@@ -9,6 +9,7 @@ To re-generate, run `codegen generate-client monolith-cian-realty`
 cian-codegen version: 1.4.1
 
 """
+from .announcement_change_status import AnnouncementChangeStatus
 from .bounded_by_corner import BoundedByCorner
 from .bounded_by import BoundedBy
 from .get_regions_response import GetRegionsResponse
