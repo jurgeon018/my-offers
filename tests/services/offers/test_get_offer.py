@@ -68,7 +68,9 @@ async def test_get_offer(mocker):
                 created_at=datetime(2020, 2, 11, 17, 00),
                 id=111,
                 statistics=Statistics(),
-                auction=None
+                auction=None,
+                archived_at=None,
+                status=None,
             )
         ],
         counters=OfferCounters(active=1, not_active=0, declined=0, archived=0),
