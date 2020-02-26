@@ -9,6 +9,7 @@ from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
 from my_offers.services.offer_view.fields.price_info import get_price_info
 from my_offers.services.offer_view.fields.publish_features import get_publish_features
+from my_offers.services.offer_view.fields.status import get_status
 from my_offers.services.offer_view.fields.title import get_title
 from my_offers.services.offer_view.fields.vas import get_vas
 from my_offers.services.offers.enrich.enrich_data import EnrichData
@@ -63,6 +64,8 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         is_manual=is_manual,
         is_publication_time_ends=_is_publication_time_ends(object_model),
         statistics=Statistics(),
+        archived_at=object_model.archived_date,
+        status=get_status(status=object_model.status, flags=object_model.flags)
     )
 
 

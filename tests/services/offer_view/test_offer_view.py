@@ -63,6 +63,8 @@ def test_build_offer_view(enrich_data_mock):
         id=111,
         statistics=Statistics(),
         auction=None,
+        archived_at=None,
+        status=None,
     )
 
     # act
