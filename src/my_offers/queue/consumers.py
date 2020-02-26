@@ -14,23 +14,14 @@ logger = logging.getLogger(__name__)
 async def process_announcement_callback(messages: List[Message]) -> None:
     for message in messages:
         announcement_message: AnnouncementMessage = message.data
-        raw_offer = announcement_message.model
-        if not raw_offer.get('rowVersion'):
+        object_model = announcement_message.model
+        if not object_model.row_version:
             # todo: подумать как обработать такой случай CD-73846
             logger.exception(
                 'Row version not found offerId: %s key: %s',
-                raw_offer.get('id'),
+                object_model.id,
                 message.envelope.routing_key,
             )
             continue
         with new_operation_id(announcement_message.operation_id):
-            try:
-                await process_announcement(raw_offer)
-            except:
-                # todo: https://jira.cian.tech/browse/CD-73846 - обработка ошибок
-                logger.exception(
-                    'Announcement process error: %s key: %s',
-                    raw_offer.get('id'),
-                    message.envelope.routing_key,
-                )
-                raise
+            await process_announcement(object_model)

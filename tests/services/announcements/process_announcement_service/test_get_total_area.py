@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.services.announcement.process_announcement_service import _get_total_area
+from my_offers.services.announcement.fields.total_area import get_total_area
 
 
 @pytest.mark.parametrize(
@@ -29,7 +29,7 @@ from my_offers.services.announcement.process_announcement_service import _get_to
 )
 def test__get_total_area(total_area, land, expected):
     # arrange & act
-    result = _get_total_area(total_area=total_area, land=land)
+    result = get_total_area(total_area=total_area, land=land)
 
     # assert
     assert result == expected

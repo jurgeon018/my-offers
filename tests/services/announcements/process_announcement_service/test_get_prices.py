@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.services.announcement.process_announcement_service import _get_prices
+from my_offers.services.announcement.fields.prices import get_prices
 
 
 @pytest.mark.parametrize(
@@ -124,7 +124,7 @@ from my_offers.services.announcement.process_announcement_service import _get_pr
 )
 def test__get_prices(bargain_terms, total_area, expected):
     # arrange & act
-    result = _get_prices(bargain_terms=bargain_terms, total_area=total_area)
+    result = get_prices(bargain_terms=bargain_terms, total_area=total_area)
 
     # assert
     assert result == expected

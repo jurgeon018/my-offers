@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.services.announcement.process_announcement_service import _get_street_name
+from my_offers.services.announcement.fields.street_name import get_street_name
 
 
 @pytest.mark.parametrize(
@@ -45,7 +45,7 @@ from my_offers.services.announcement.process_announcement_service import _get_st
 )
 def test__get_street_name(address, expected):
     # arrange & act
-    result = _get_street_name(address)
+    result = get_street_name(address)
 
     # assert
     assert result == expected

@@ -10,7 +10,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Bargai
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
-from my_offers.services.announcement.category import get_types
+from my_offers.services.announcement.fields.category import get_types
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
 from my_offers.services.offer_view.fields.publish_features import get_publish_features

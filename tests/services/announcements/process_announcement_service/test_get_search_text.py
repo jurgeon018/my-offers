@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.services.announcement.process_announcement_service import _get_search_text
+from my_offers.services.announcement.fields.search_text import get_search_text
 from tests.utils import load_json_data
 
 
@@ -23,7 +23,7 @@ from tests.utils import load_json_data
 )
 def test__get_search_text(announcement, expected):
     # arrange & act
-    result = _get_search_text(announcement)
+    result = get_search_text(announcement)
 
     # assert
     assert result == expected

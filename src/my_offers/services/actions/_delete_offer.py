@@ -5,7 +5,7 @@ from my_offers.repositories.monolith_cian_realty import api_announcement_set_del
 from my_offers.repositories.monolith_cian_realty.entities import AnnouncementChangeStatus
 from my_offers.repositories.monolith_cian_realty.entities.announcement_change_status import AnnouncementType
 from my_offers.services.actions._action import OfferAction
-from my_offers.services.announcement import category
+from my_offers.services.announcement.fields import category
 
 
 class AnnouncementTypeError(Exception):
