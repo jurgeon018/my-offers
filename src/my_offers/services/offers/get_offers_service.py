@@ -8,6 +8,7 @@ from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
+from my_offers.services.get_master_user_id import get_master_user_id
 from my_offers.services.offer_view import build_offer_view
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
@@ -22,9 +23,9 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
 
 
 async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: int) -> entities.GetOffersResponse:
-    """ Получить получить объявления для пользователя. Для м/а с учетом иерархии. """
+    """ Получить объявления для пользователя. Для м/а с учетом иерархии. """
     # шаг 1 - подготовка параметров запроса
-    filters = _get_filters(filters=request.filters, user_id=realty_user_id)
+    filters = await _get_filters(filters=request.filters, user_id=realty_user_id)
     limit, offset = _get_pagination(request.pagination)
 
     # шаг 2 - получение object models
@@ -66,10 +67,9 @@ async def get_offer_views(object_models: List[ObjectModel]) -> List[get_offers.G
     ]
 
 
-def _get_filters(*, user_id: int, filters: Optional[get_offers.Filter]) -> Dict[str, Any]:
+async def _get_filters(*, user_id: int, filters: Optional[get_offers.Filter]) -> Dict[str, Any]:
     result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters) if filters else []
-    result['master_user_id'] = user_id  # todo определение мастрер аккаунта https://jira.cian.tech/browse/CD-73807
-
+    result['master_user_id'] = await get_master_user_id(user_id)
     return result
 
 

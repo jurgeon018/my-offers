@@ -16,6 +16,12 @@ from . import entities
 
 
 _api = Api(microservice_name='monolith-cian-realty')
+api_announcement_set_deleted = _api.make_client(
+    path='/api/announcement/set-deleted/',
+    method='POST',
+    handle_http_exceptions=True,
+    request_schema=entities.AnnouncementChangeStatus,
+)
 api_geo_get_regions = _api.make_client(
     path='/api/geo/get-regions/',
     method='GET',
