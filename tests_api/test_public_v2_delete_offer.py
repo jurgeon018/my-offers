@@ -1,12 +1,13 @@
 import time
+from typing import TYPE_CHECKING
 
 import pytest
 from requests import HTTPError
-from typing import TYPE_CHECKING
 
 from tests_api.helper import MyOffersHelper
 from .cian.my_offers.entities import OfferActionRequest
 from .cian.my_offers.entities.offer_action_response import Status
+
 
 if TYPE_CHECKING:
     from .cian.services import CianServices
@@ -43,7 +44,7 @@ class TestPublicV1GetOffers(MyOffersHelper):
         time.sleep(10)
 
         # act
-        with  pytest.raises(HTTPError) as error, context.x_real_user(user_id=1):
+        with pytest.raises(HTTPError) as error, context.x_real_user(user_id=1):
             sl.my_offers.public_v1_actions_delete_offer.request_post(
                 data=OfferActionRequest(offerId=offer.realtyObjectId)
             )
