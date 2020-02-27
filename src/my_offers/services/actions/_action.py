@@ -24,11 +24,12 @@ class OfferAction:
 
         try:
             await self._run_action(object_model)
-        except ApiClientException:
+        except ApiClientException as e:
             logger.exception('Offer action error offer_id %s', self.offer_id)
+            message = e.message.strip()
             raise BrokenRulesException([
                 Error(
-                    message='Ошибка при выполнении операции',
+                    message=message if message else 'Ошибка при выполнении операции',
                     code='operation_error',
                     key='offer_id'
                 )
