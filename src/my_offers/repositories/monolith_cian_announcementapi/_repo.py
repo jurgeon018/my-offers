@@ -21,3 +21,9 @@ v1_get_announcement = _api.make_client(
     request_schema=entities.V1GetAnnouncement,
     response_schema=entities.ObjectModel,
 )
+v2_announcements_archive = _api.make_client(
+    path='/v2/announcements/archive/',
+    method='POST',
+    handle_http_exceptions=True,
+    request_schema=entities.ArchiveAnnouncementV2Request,
+)

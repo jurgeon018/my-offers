@@ -2505,6 +2505,10 @@ definitions:
         description: Стоимость части
         format: double
         type: number
+      vatPrice:
+        description: Налог на стоимость части
+        format: double
+        type: number
     type: object
   RealtyApi.Models.Announcements.Swagger.SourcePhoneSchema:
     properties:
@@ -2657,7 +2661,15 @@ definitions:
         x-waterIntakeFacility: Водозаборный узел
         x-waterTower: Водонапорная башня
     type: object
-host: master.monolith-cian-announcementapi.dev3.cian.ru
+  Web.AnnouncementApi.App.Announcements.Models.Announcements.ArchiveAnnouncementV2Request:
+    description: Запрос на архивацию объявления
+    properties:
+      announcementId:
+        description: Id Объявления
+        format: int32
+        type: integer
+    type: object
+host: beta4.announcementapi.stage.cian.ru
 info:
   title: monolith-cian-announcementapi
   version: v1
@@ -2683,6 +2695,27 @@ paths:
       summary: "Получение модели объявления по Id.\r\nМетод закрыт по ключу."
       tags:
       - Announcements
+  /v2/announcements/archive/:
+    post:
+      consumes:
+      - application/json
+      - text/json
+      - application/x-www-form-urlencoded
+      operationId: Archiving_ArchiveAnnouncementV2
+      parameters:
+      - in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/Web.AnnouncementApi.App.Announcements.Models.Announcements.ArchiveAnnouncementV2Request'
+      produces: []
+      responses:
+        '204':
+          description: No Content
+      summary: "Помечает объявление архивным.\r\nКидает 500 ошибку если объявление\
+        \ не найдено.\r\nМетод закрыт по ключу."
+      tags:
+      - Archiving
 schemes:
 - http
 swagger: '2.0'
