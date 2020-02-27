@@ -52,6 +52,8 @@ class GetOffer:
     """URL объявления"""
     vas: List[Vas]
     """Список VAS'ов"""
+    archivedAt: Optional[datetime] = None
+    """Дата архивации"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
     mainPhotoUrl: Optional[str] = None
@@ -60,6 +62,8 @@ class GetOffer:
     """Параметры публикации: сколько осталось, автопродление"""
     statistics: Optional[Statistics] = None
     """Статистика по объявлению"""
+    status: Optional[str] = None
+    """Строка статуса"""
     subagent: Optional[Subagent] = None
     """Сабагент"""
     title: Optional[str] = None

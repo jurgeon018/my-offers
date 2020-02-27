@@ -135,6 +135,11 @@ definitions:
     type: object
   my_offers.entities.get_offers.GetOfferSchema:
     properties:
+      archivedAt:
+        description: Дата архивации
+        format: date-time
+        title: archived_at
+        type: string
       auction:
         $ref: '#/definitions/my_offers.entities.get_offers.AuctionSchema'
         description: Данные об аукционе по объявлению
@@ -187,6 +192,10 @@ definitions:
       statistics:
         $ref: '#/definitions/my_offers.entities.get_offers.StatisticsSchema'
         description: Статистика по объявлению
+      status:
+        description: Строка статуса
+        title: status
+        type: string
       subagent:
         $ref: '#/definitions/my_offers.entities.offer_view_model.SubagentSchema'
         description: Сабагент
@@ -492,6 +501,23 @@ info:
   title: my-offers
   version: 1.0.0
 paths:
+  /public/v1/actions/archive-offer/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/my_offers.entities.offer_action.OfferActionRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/my_offers.entities.offer_action.OfferActionResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
   /public/v1/actions/delete-offer/:
     post:
       parameters:

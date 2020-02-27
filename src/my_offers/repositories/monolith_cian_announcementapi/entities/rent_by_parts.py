@@ -20,3 +20,5 @@ class RentByParts:
     """Площадь части"""
     price: Optional[float] = None
     """Стоимость части"""
+    vat_price: Optional[float] = None
+    """Налог на стоимость части"""
