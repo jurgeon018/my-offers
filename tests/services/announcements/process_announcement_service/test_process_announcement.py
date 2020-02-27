@@ -30,8 +30,8 @@ async def test_process_announcement(mocker, announcement):
         deal_type=enums.DealType.rent,
         offer_type=enums.OfferType.flat,
         status_tab=enums.OfferStatusTab.active,
-        search_text='165456885 выапывапвыапыпыпвыапывапывапыап +79994606004 +79982276978 Россия, Ростов-на-Дону, '
-                    'Большая Садовая улица, 73',
+        search_text='165456885 zzzzzzzzz выапывапвыапыпыпвыапывапывапыап +79994606004 +79982276978 '
+                    'Россия, Ростов-на-Дону, Большая Садовая улица, 73',
         row_version=announcement.row_version,
         raw_data=object_model_mapper.map_to(announcement),
         services=[Services.highlight, Services.calltracking, Services.premium],
