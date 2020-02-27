@@ -1,4 +1,4 @@
-def get_pretty_number(*, number: int) -> str:
+def get_pretty_number(number: int) -> str:
     """ Получить число в "красивом" представлении.
 
         100 -> '100'
