@@ -1,11 +1,11 @@
 from my_offers import entities, enums
+from my_offers.helpers import category
 from my_offers.helpers.user_ids import get_realty_id_by_cian_id
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.monolith_cian_realty import api_announcement_set_deleted
 from my_offers.repositories.monolith_cian_realty.entities import AnnouncementChangeStatus
 from my_offers.repositories.monolith_cian_realty.entities.announcement_change_status import AnnouncementType
 from my_offers.services.actions._action import OfferAction
-from my_offers.services.announcement.fields import category
 
 
 class AnnouncementTypeError(Exception):
