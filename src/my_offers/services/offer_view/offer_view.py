@@ -2,13 +2,9 @@ from simple_settings import settings
 
 from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
-from my_offers.entities.offer_view_model import PriceInfo
-from my_offers.helpers.numbers import get_pretty_number
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel
-from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
-from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.announcement.fields.category import get_types
+from my_offers.services.offer_view.fields.features import get_features
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
 from my_offers.services.offer_view.fields.price_info import get_price_info
