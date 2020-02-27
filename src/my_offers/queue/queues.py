@@ -10,7 +10,7 @@ from my_offers.queue.routing_keys import AnnouncementReportingV1RoutingKey
 def _get_bindings(prefix: str, enum: Type[StrEnum]) -> List[QueueBinding]:
     result: List[QueueBinding] = []
     values: List[StrEnum] = list(enum)
-    for item in list(values):
+    for item in values:
         result.append(
             QueueBinding(
                 exchange=Exchange('announcements'),

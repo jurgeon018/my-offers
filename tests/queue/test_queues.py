@@ -17,7 +17,7 @@ def test__get_bindings(mocker):
             routing_key='zzz.sale',
         )
     ]
-    
+
     # act
     result = _get_bindings('zzz', enums.DealType)
 
