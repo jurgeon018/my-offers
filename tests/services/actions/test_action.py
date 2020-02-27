@@ -1,5 +1,5 @@
 import pytest
-from cian_http.exceptions import ApiClientException
+from cian_http.exceptions import BadRequestException, TimeoutException
 from cian_test_utils import future
 from cian_web.exceptions import BrokenRulesException
 
@@ -46,6 +46,36 @@ class TestOfferAction:
         run_action_mock.assert_called_once_with(mocker.ANY, object_model)
 
     @pytest.mark.gen_test
+    async def test_execute__timeout__broken_rules(self, mocker):
+        # arrange
+        object_model = mocker.sentinel.object_model
+        load_object_model_mock = mocker.patch.object(
+            OfferAction,
+            '_load_object_model',
+            return_value=future(object_model)
+        )
+        check_rights_mock = mocker.patch.object(
+            OfferAction,
+            '_check_rights',
+            return_value=future()
+        )
+        run_action_mock = mocker.patch.object(
+            OfferAction,
+            '_run_action',
+            return_value=future(exception=TimeoutException(message='zzzz'))
+        )
+        action = OfferAction(offer_id=111, user_id=123)
+
+        # act
+        with pytest.raises(BrokenRulesException):
+            await action.execute()
+
+        # assert
+        load_object_model_mock.assert_called_once()
+        check_rights_mock.assert_called_once_with(mocker.ANY, object_model)
+        run_action_mock.assert_called_once_with(mocker.ANY, object_model)
+
+    @pytest.mark.gen_test
     async def test_execute__exception__broken_rules(self, mocker):
         # arrange
         object_model = mocker.sentinel.object_model
@@ -62,7 +92,7 @@ class TestOfferAction:
         run_action_mock = mocker.patch.object(
             OfferAction,
             '_run_action',
-            return_value=future(exception=ApiClientException(message='zzzz'))
+            return_value=future(exception=BadRequestException(message='zzzz'))
         )
         action = OfferAction(offer_id=111, user_id=123)
 
