@@ -27,6 +27,17 @@ from my_offers.services.announcement.fields.total_area import get_total_area
             None,
             300,
         ),
+        (
+            None,
+            Land(
+                area=None,
+                area_unit_type=AreaUnitType.sotka,
+                possible_to_change_status=None,
+                status=None,
+                type=None,
+            ),
+            None,
+        )
     ),
 )
 def test__get_total_area(total_area, land, expected):
