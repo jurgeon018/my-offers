@@ -1,5 +1,5 @@
 from my_offers import entities, enums
-from my_offers.helpers.user_ids import get_realty_id_by_cian_id
+from my_offers.helpers.user_ids import get_user_cian_id_by_realty_id
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.monolith_cian_realty import api_announcement_set_deleted
 from my_offers.repositories.monolith_cian_realty.entities import AnnouncementChangeStatus
@@ -20,7 +20,7 @@ class DeleteOfferAction(OfferAction):
                 realty_object_id=object_model.id,
                 announcement_type=self._get_type_for_asp(offer_type=offer_type, deal_type=deal_type),
                 cian_announcement_id=object_model.cian_id,
-                cian_user_id=get_realty_id_by_cian_id(self.user_id),
+                cian_user_id=get_user_cian_id_by_realty_id(self.user_id),
             )
         )
 
