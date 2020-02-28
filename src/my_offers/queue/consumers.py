@@ -19,4 +19,8 @@ async def process_announcement_callback(messages: List[Message]) -> None:
         operation_id = announcement_message.operation_id
         routing_key = message.envelope.routing_key
         with new_operation_id(operation_id), statsd.timer(f'queue.{routing_key}'):
-            await process_announcement(object_model)
+            try:
+                await process_announcement(object_model)
+            except:
+                logger.exception('Process announcement error id: %s, key: %s', object_model.id, routing_key)
+                raise

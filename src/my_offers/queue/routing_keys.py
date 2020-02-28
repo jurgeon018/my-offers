@@ -12,8 +12,6 @@ class AnnouncementReportingV1RoutingKey(StrEnum):
     """Деактивирован"""
     draft = 'draft'
     """Черновик"""
-    sold = 'sold'
-    """Продан"""
     refused_by_moderator = 'refusedbymoderator'
     """Отклонен модератором"""
     removed_by_moderator = 'removedbymoderator'
@@ -25,14 +23,8 @@ class AnnouncementReportingV1RoutingKey(StrEnum):
     delete_permanently = 'deletepermanently'
     """Удален на всегда"""
 
-    actualize_trust = 'actualizetrust'
-    """Пересчет уровня доверия"""
-    change_trust_for_builder = 'changetrustforbuilder'
-    """Изменение Trust на тарифе застройщик"""
     image_changed = 'imagechanged'
     """Изменено изображение"""
-    prolong = 'prolong'
-    """Продление"""
     billed_after_published = 'billedafterpublished'
     """Тарификация после публикации"""
     accept_by_moderator = 'acceptbymoderator'
@@ -41,3 +33,11 @@ class AnnouncementReportingV1RoutingKey(StrEnum):
     # не обрабатываем
     # removed_from_archive = 'removed_from_archive'
     # """Удалено из архива"""
+    # actualize_trust = 'actualizetrust'
+    # """Пересчет уровня доверия"""
+    # change_trust_for_builder = 'changetrustforbuilder'
+    # """Изменение Trust на тарифе застройщик"""
+    # prolong = 'prolong'
+    # """Продление"""
+    # sold = 'sold'
+    # """Продан"""
