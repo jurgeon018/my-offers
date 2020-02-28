@@ -16,4 +16,4 @@ def get_total_area(*, total_area: Optional[float], land: Optional[Land]) -> Opti
     if unit_type:
         result *= area_to_meters_kf(unit_type)
 
-    return result
+    return round(result, 2)

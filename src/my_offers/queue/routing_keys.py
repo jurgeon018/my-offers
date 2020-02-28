@@ -29,7 +29,7 @@ class AnnouncementReportingV1RoutingKey(StrEnum):
     """Пересчет уровня доверия"""
     change_trust_for_builder = 'changetrustforbuilder'
     """Изменение Trust на тарифе застройщик"""
-    image_changed = 'imageChanged'
+    image_changed = 'imagechanged'
     """Изменено изображение"""
     prolong = 'prolong'
     """Продление"""
