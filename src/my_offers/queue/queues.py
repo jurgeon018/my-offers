@@ -22,6 +22,6 @@ def _get_bindings(prefix: str, enum: Type[StrEnum]) -> List[QueueBinding]:
 
 
 process_announcements_queue = Queue(
-    name=get_modified_queue_name('process_announcement'),
-    bindings=_get_bindings('announcement_reporting_v2', AnnouncementReportingV1RoutingKey),
+    name=get_modified_queue_name('process_announcement_v2'),
+    bindings=_get_bindings('announcement_reporting', AnnouncementReportingV1RoutingKey),
 )
