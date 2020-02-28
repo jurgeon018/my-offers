@@ -16,5 +16,5 @@ command = "process_announcement_consumer"
 type = "consumer"
 command = "process_announcement_consumer"
 instances = 3
-cpu = 1536
-memory = 256
+cpu = 2048
+memory = 128

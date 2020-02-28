@@ -5,6 +5,7 @@ from cian_helpers.timezone import TIMEZONE
 from cian_test_utils import future
 
 from my_offers import entities, enums
+from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement import process_announcement
 from tests.utils import load_json_data
@@ -12,7 +13,7 @@ from tests.utils import load_json_data
 
 @pytest.fixture(name='announcement')
 def announcement_fixture():
-    return load_json_data(__file__, 'announcement.json')
+    return object_model_mapper.map_from(load_json_data(__file__, 'announcement.json'))
 
 
 @pytest.mark.gen_test
@@ -29,10 +30,10 @@ async def test_process_announcement(mocker, announcement):
         deal_type=enums.DealType.rent,
         offer_type=enums.OfferType.flat,
         status_tab=enums.OfferStatusTab.active,
-        search_text='165456885 выапывапвыапыпыпвыапывапывапыап +79994606004 +79982276978 Россия, Ростов-на-Дону, '
-                    'Большая Садовая улица, 73',
-        row_version=announcement['rowVersion'],
-        raw_data=announcement,
+        search_text='165456885 zzzzzzzzz выапывапвыапыпыпвыапывапывапыап +79994606004 +79982276978 '
+                    'Россия, Ростов-на-Дону, Большая Садовая улица, 73',
+        row_version=announcement.row_version,
+        raw_data=object_model_mapper.map_to(announcement),
         services=[Services.highlight, Services.calltracking, Services.premium],
         is_manual=True,
         is_in_hidden_base=False,

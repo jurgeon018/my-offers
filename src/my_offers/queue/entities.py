@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict
+
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 
 
 @dataclass
 class AnnouncementMessage:
-    model: Dict
+    model: ObjectModel
     """Объявление"""
     operation_id: str
     """Operation id"""
