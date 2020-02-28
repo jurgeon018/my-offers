@@ -1,6 +1,6 @@
 import logging
 
-from cian_http.exceptions import BadRequestException, TimeoutException
+from cian_http.exceptions import ApiClientException, BadRequestException, TimeoutException
 from cian_web.exceptions import BrokenRulesException, Error
 
 from my_offers import entities
@@ -39,6 +39,15 @@ class OfferAction:
                 Error(
                     message='Ошибка при выполнении операции',
                     code='operation_timeout',
+                    key='offer_id'
+                )
+            ])
+        except ApiClientException:
+            logger.exception('Offer action ApiClientException offer_id %s', self.offer_id)
+            raise BrokenRulesException([
+                Error(
+                    message='Ошибка при выполнении операции',
+                    code='operation_unknown_error',
                     key='offer_id'
                 )
             ])
