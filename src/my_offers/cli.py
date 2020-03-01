@@ -33,7 +33,7 @@ register_consumer(
     dead_queue_ttl=timedelta(seconds=60),
 )
 
-# [billing] сохраняет контракты по объявлению
+# [billing] сохраняет/обновляет контракты по объявлению
 register_consumer(
     command=cli.command('save_announcement_contract_consumer'),
     queue=queues.save_announcement_contract_queue,
@@ -43,7 +43,7 @@ register_consumer(
     dead_queue_ttl=timedelta(seconds=60),
 )
 
-# [billing] помечает контракты как удаленные
+# [billing] помечает закрытые контракты как удаленные
 register_consumer(
     command=cli.command('mark_to_delete_announcement_contract_consumer'),
     queue=queues.close_announcement_contract_queue,
