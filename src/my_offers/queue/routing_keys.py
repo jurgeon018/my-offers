@@ -1,4 +1,4 @@
-from cian_enum import StrEnum
+from cian_enum import NoFormat, StrEnum
 
 
 class AnnouncementReportingV1RoutingKey(StrEnum):
@@ -41,3 +41,14 @@ class AnnouncementReportingV1RoutingKey(StrEnum):
     # """Продление"""
     # sold = 'sold'
     # """Продан"""
+
+
+class ServiceContractsReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    created = 'service-contract-reporting.v1.created'
+    """Контракт создан"""
+    changed = 'service-contract-reporting.v1.changed'
+    """Контракт обновлен"""
+    closed = 'service-contract-reporting.v1.closed'
+    """Конктракт закрыт"""

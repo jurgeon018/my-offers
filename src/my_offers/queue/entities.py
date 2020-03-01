@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-
 from my_offers import entities
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 
 
 @dataclass
