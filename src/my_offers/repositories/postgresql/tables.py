@@ -20,10 +20,9 @@ def get_names(enum: EnumMeta) -> List[str]:
 
 
 _deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
-_offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type',)
-_offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type',)
+_offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type', )
+_offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type', )
 _service = psa.ENUM(*get_names(Services), name='service', )
-
 
 offers = sa.Table(
     'offers',
@@ -50,4 +49,21 @@ offers = sa.Table(
     sa.Column('street_name', sa.String),
     sa.Column('sort_date', sa.TIMESTAMP),
     sa.Column('is_test', sa.BOOLEAN),
+)
+
+_target_object_type = psa.ENUM(*get_names(enums.TargetObjectType), name='target_object_type')
+offers_billing_contracts = sa.Table(
+    'offers_billing_contracts',
+    _metadata,
+    sa.Column('id', sa.BIGINT, primary_key=True),
+    sa.Column('user_id', sa.BIGINT, nullable=False),
+    sa.Column('actor_user_id', sa.BIGINT, nullable=False),
+    sa.Column('publisher_user_id', sa.BIGINT, nullable=False),
+    sa.Column('target_object_id', sa.BIGINT, nullable=False),
+    sa.Column('target_object_type', _target_object_type, nullable=False),
+    sa.Column('start_date', sa.TIMESTAMP, nullable=False),
+    sa.Column('payed_till', sa.TIMESTAMP, nullable=False),
+    sa.Column('raw_data', sa.TEXT, nullable=False),
+    sa.Column('row_version', sa.BIGINT, nullable=False),
+    sa.Column('is_deleted', sa.BOOLEAN, nullable=False, default=False),
 )

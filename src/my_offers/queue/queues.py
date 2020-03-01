@@ -12,3 +12,27 @@ process_announcements_queue = Queue(
         ),
     ],
 )
+
+save_announcement_contract_queue = Queue(
+    name=get_modified_queue_name('save_announcement_contract'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('billing'),
+            routing_key='service-contract-reporting.v1.created'
+        ),
+        QueueBinding(
+            exchange=Exchange('billing'),
+            routing_key='service-contract-reporting.v1.created'
+        )
+    ]
+)
+
+close_announcement_contract_queue = Queue(
+    name=get_modified_queue_name('mark_to_delete_announcement_contract'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('billing'),
+            routing_key='service-contract-reporting.v1.closed'
+        )
+    ]
+)
