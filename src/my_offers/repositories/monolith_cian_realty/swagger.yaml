@@ -19,6 +19,37 @@ definitions:
         format: double
         type: number
     type: object
+  RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus:
+    description: "    Запрос для изменения статуса объявления.<br />\r\n    Если заполнено\
+      \ поле {RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus.RealtyObjectId},\
+      \ будет использоваться оно, иначе должны быть заполнены поля \r\n{RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus.CianAnnouncementId}\
+      \ и {RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus.AnnouncementType}.<br\
+      \ />\r\n    Для изменения статуса объявления в архиве, должно быть заполнено\
+      \ поле {RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus.RealtyObjectId}."
+    properties:
+      announcementType:
+        enum:
+        - Flat
+        - Flat2
+        - Suburbian
+        - Office
+        type: string
+        x-Flat: Городская недвижимость - Квартира аренда
+        x-Flat2: Городская недвижимость - Квартира продажа
+        x-Office: Коммерческая недвижимость - офисы и прочее
+        x-Suburbian: Загородная недвижимость и земля
+      cianAnnouncementId:
+        description: Id объявления в Циане.
+        format: int32
+        type: integer
+      cianUserId:
+        format: int32
+        type: integer
+      realtyObjectId:
+        description: Realty Id объявления.
+        format: int32
+        type: integer
+    type: object
   RealtyDmir.App.Geo.Models.GetRegionsResponse:
     properties:
       boundedBy:
@@ -59,6 +90,28 @@ info:
   title: monolith-cian-realty
   version: v1
 paths:
+  /api/announcement/set-deleted/:
+    post:
+      consumes:
+      - application/json
+      - text/json
+      - application/x-www-form-urlencoded
+      operationId: AnnouncementWebApi_AnnouncementSetDeleted
+      parameters:
+      - description: ''
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus'
+      produces: []
+      responses:
+        '204':
+          description: No Content
+      summary: "Меняет статус объявления на \"{Core.Data.Enums.Status.Deleted}\".<br\
+        \ />\r\nМожет работать с объявлениями в архиве."
+      tags:
+      - AnnouncementWebApi
   /api/geo/get-regions/:
     get:
       consumes: []

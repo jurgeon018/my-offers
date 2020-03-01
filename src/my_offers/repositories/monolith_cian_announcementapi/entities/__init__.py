@@ -11,6 +11,7 @@ cian-codegen version: 1.4.1
 """
 from .address_info import AddressInfo
 from .agent_bonus import AgentBonus
+from .archive_announcement_v2_request import ArchiveAnnouncementV2Request
 from .auction import Auction
 from .utilities_terms import UtilitiesTerms
 from .bargain_terms import BargainTerms

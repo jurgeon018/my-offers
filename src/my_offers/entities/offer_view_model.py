@@ -91,3 +91,7 @@ class OfferViewModel:
     """Дата подачи объявления"""
     id: int
     """ID объявления"""
+    archived_at: Optional[datetime]
+    """Дата архивации"""
+    status: Optional[str]
+    """Строка статуса"""

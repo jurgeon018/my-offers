@@ -63,6 +63,8 @@ def test_build_offer_view(enrich_data_mock):
         id=111,
         statistics=Statistics(),
         auction=None,
+        archived_at=None,
+        status=None,
     )
 
     # act
@@ -198,36 +200,36 @@ def test_build_offer_view__tittle_suburban(category, prepared, building, expecte
     (
         Category.room_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Комната, 60 м², 3/19 этаж'),
+        'Комната, 60 м², 3/19 этаж'),
     (
         Category.daily_room_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Комната, 60 м², 3/19 этаж'
+        'Комната, 60 м², 3/19 этаж'
     ),
     (
         Category.bed_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Койко-место, 60 м², 3/19 этаж'
+        'Койко-место, 60 м², 3/19 этаж'
     ),
     (
         Category.daily_bed_rent,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Койко-место, 60 м², 3/19 этаж'
+        'Койко-место, 60 м², 3/19 этаж'
     ),
     (
         Category.flat_share_sale,
         dict(total_area=60.0, floor_number=3), Building(floors_count=19),
-        f'Доля в квартире, 60 м², 3/19 этаж'
+        'Доля в квартире, 60 м², 3/19 этаж'
     ),
     (
         Category.flat_rent,
         dict(total_area=60.0, floor_number=3, flat_type=FlatType.studio), Building(floors_count=19),
-        f'Квартира-студия, 60 м², 3/19 этаж'
+        'Квартира-студия, 60 м², 3/19 этаж'
     ),
     (
         Category.flat_rent,
         dict(total_area=60.0, floor_number=3, flat_type=FlatType.open_plan), Building(floors_count=19),
-        f'Квартира со свободной планир., 60 м², 3/19 этаж'
+        'Кв. со своб. планировкой, 60 м², 3/19 этаж'
     ),
 ])
 def test_build_offer_view__tittle_flat(category, prepared, building, expected, enrich_data_mock):
@@ -462,8 +464,8 @@ def test_build_offer_view__features(category, prepared, expected, enrich_data_mo
 @pytest.mark.parametrize('category, price_type, expected', [
     (Category.office_sale, PriceType.square_meter, ['123 000 ₽ м²']),
     (Category.new_building_flat_sale, PriceType.square_meter, ['123 000 ₽ м²']),
-    (Category.office_rent, PriceType.square_meter, [f'1 476 000 ₽ за м² в год']),
-    (Category.office_sale, PriceType.all, [f'12 300 ₽ за м²']),
+    (Category.office_rent, PriceType.square_meter, ['123 000 ₽ за м² в год']),
+    (Category.office_sale, PriceType.all, ['12 300 ₽ за м²']),
 ])
 def test_build_offer_view__features__price(category, price_type, expected, enrich_data_mock):
     # arrange

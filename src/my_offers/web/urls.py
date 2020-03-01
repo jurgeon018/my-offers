@@ -5,7 +5,7 @@ from tornado.web import url
 
 from my_offers import entities
 from my_offers.entities.qa import QaGetByIdRequest
-from my_offers.services import offers, qa
+from my_offers.services import actions, offers, qa
 from my_offers.web.handlers import PublicHandler
 
 
@@ -18,7 +18,8 @@ urlpatterns = base_urls.urlpatterns + [
             request_schema=entities.GetOffersRequest,
             response_schema=entities.GetOffersResponse,
             base_handler_cls=PublicHandler,
-        )),
+        )
+    ),
     url(
         r'/v1/get-offers/$',
         get_handler(
@@ -27,7 +28,8 @@ urlpatterns = base_urls.urlpatterns + [
             request_schema=entities.GetOffersPrivateRequest,
             response_schema=entities.GetOffersResponse,
             base_handler_cls=RequestContextHandler,
-        )),
+        )
+    ),
     url(
         r'/v1/update-offer/',
         get_handler(
@@ -37,6 +39,29 @@ urlpatterns = base_urls.urlpatterns + [
             base_handler_cls=RequestContextHandler,
         )
     ),
+
+    # Actions
+    url(
+        r'/public/v1/actions/archive-offer/$',
+        get_handler(
+            service=actions.archive_offer,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.OfferActionRequest,
+            response_schema=entities.OfferActionResponse,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
+        r'/public/v1/actions/delete-offer/$',
+        get_handler(
+            service=actions.delete_offer,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.OfferActionRequest,
+            response_schema=entities.OfferActionResponse,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+
 
     # QA
     url(
@@ -49,7 +74,7 @@ urlpatterns = base_urls.urlpatterns + [
             base_handler_cls=RequestContextHandler,
         )),
     url(
-        r'/qa/v1/get-offer_view/',
+        r'/qa/v1/get-offer-view/',
         get_handler(
             service=qa.get_offer_view,
             method='GET',  # pragma: no mutate

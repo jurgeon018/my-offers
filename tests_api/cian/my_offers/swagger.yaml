@@ -93,6 +93,7 @@ definitions:
         enum:
         - byAreaMax
         - byAreaMin
+        - byDefault
         - byOfferId
         - byPriceForMeter
         - byPriceMax
@@ -102,6 +103,7 @@ definitions:
         type: string
         x-byAreaMax: 'По площади: возрастающая'
         x-byAreaMin: 'По площади: убывающая'
+        x-byDefault: По-умолчанию
         x-byOfferId: По ID объявления
         x-byPriceForMeter: По цене за метр
         x-byPriceMax: 'По цене: возрастающая'
@@ -133,6 +135,11 @@ definitions:
     type: object
   my_offers.entities.get_offers.GetOfferSchema:
     properties:
+      archivedAt:
+        description: Дата архивации
+        format: date-time
+        title: archived_at
+        type: string
       auction:
         $ref: '#/definitions/my_offers.entities.get_offers.AuctionSchema'
         description: Данные об аукционе по объявлению
@@ -185,6 +192,10 @@ definitions:
       statistics:
         $ref: '#/definitions/my_offers.entities.get_offers.StatisticsSchema'
         description: Статистика по объявлению
+      status:
+        description: Строка статуса
+        title: status
+        type: string
       subagent:
         $ref: '#/definitions/my_offers.entities.offer_view_model.SubagentSchema'
         description: Сабагент
@@ -238,6 +249,7 @@ definitions:
         enum:
         - byAreaMax
         - byAreaMin
+        - byDefault
         - byOfferId
         - byPriceForMeter
         - byPriceMax
@@ -247,6 +259,7 @@ definitions:
         type: string
         x-byAreaMax: 'По площади: возрастающая'
         x-byAreaMin: 'По площади: убывающая'
+        x-byDefault: По-умолчанию
         x-byOfferId: По ID объявления
         x-byPriceForMeter: По цене за метр
         x-byPriceMax: 'По цене: возрастающая'
@@ -351,6 +364,25 @@ definitions:
         format: int64
         title: views
         type: integer
+    type: object
+  my_offers.entities.offer_action.OfferActionRequestSchema:
+    properties:
+      offerId:
+        format: int64
+        title: offer_id
+        type: integer
+    required:
+    - offerId
+    type: object
+  my_offers.entities.offer_action.OfferActionResponseSchema:
+    properties:
+      status:
+        enum:
+        - ok
+        type: string
+        x-ok: ''
+    required:
+    - status
     type: object
   my_offers.entities.offer_view_model.AddressSchema:
     properties:
@@ -469,6 +501,40 @@ info:
   title: my-offers
   version: 1.0.0
 paths:
+  /public/v1/actions/archive-offer/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/my_offers.entities.offer_action.OfferActionRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/my_offers.entities.offer_action.OfferActionResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+  /public/v1/actions/delete-offer/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/my_offers.entities.offer_action.OfferActionRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/my_offers.entities.offer_action.OfferActionResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
   /public/v1/get-offers/:
     post:
       parameters:
@@ -486,5 +552,5 @@ paths:
         '400':
           schema:
             $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
-      summary: Получить получить объявления для пользователя. Для м/а с учетом иерархии.
+      summary: Получить объявления для пользователя. Для м/а с учетом иерархии.
 swagger: '2.0'
