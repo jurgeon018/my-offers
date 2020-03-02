@@ -18,3 +18,11 @@ command = "process_announcement_consumer"
 instances = 3
 cpu = 2048
 memory = 128
+
+[job.save_announcement_contract_consumer]
+type = "consumer"
+command = "save_announcement_contract_consumer"
+
+[job.mark_to_delete_announcement_contract_consumer]
+type = "consumer"
+command = "save_announcement_contract_consumer"

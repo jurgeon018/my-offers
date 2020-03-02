@@ -59,10 +59,11 @@ offers_billing_contracts = sa.Table(
     sa.Column('user_id', sa.BIGINT, nullable=False),
     sa.Column('actor_user_id', sa.BIGINT, nullable=False),
     sa.Column('publisher_user_id', sa.BIGINT, nullable=False),
-    sa.Column('target_object_id', sa.BIGINT, nullable=False),
-    sa.Column('target_object_type', _target_object_type, nullable=False),
+    sa.Column('offer_id', sa.BIGINT, nullable=False),
     sa.Column('start_date', sa.TIMESTAMP, nullable=False),
     sa.Column('payed_till', sa.TIMESTAMP, nullable=False),
     sa.Column('row_version', sa.BIGINT, nullable=False),
     sa.Column('is_deleted', sa.BOOLEAN, nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
 )

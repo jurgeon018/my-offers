@@ -96,14 +96,16 @@ create type target_object_type as enum (
 
 CREATE TABLE offers_billing_contracts
 (
-    id                 bigint                   not null primary key,
-    user_id            bigint                   not null,
-    actor_user_id      bigint                   not null,
-    publisher_user_id  bigint                   not null,
-    target_object_id   bigint                   not null,
-    target_object_type target_object_type       not null,
-    start_date         timestamp with time zone not null,
-    payed_till         timestamp with time zone not null,
-    row_version        bigint                   not null,
-    is_deleted         boolean                  not null
+    id                bigint                   not null primary key,
+    user_id           bigint                   not null,
+    actor_user_id     bigint                   not null,
+    publisher_user_id bigint                   not null,
+    offer_id          bigint                   not null,
+    start_date        timestamp with time zone not null,
+    payed_till        timestamp with time zone not null,
+    row_version       bigint                   not null,
+    is_deleted        boolean                  not null,
+    created_at        timestamp with time zone not null,
+    updated_at        timestamp with time zone not null
 );
+CREATE INDEX ON offers_billing_contracts (offer_id);

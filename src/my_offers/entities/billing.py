@@ -47,11 +47,13 @@ class OfferBillingContract:
     """Дата начала действия"""
     payed_till: datetime
     """Дата, до которой оплачен контракт"""
-    target_object_id: int
-    """Id объекта применения"""
-    target_object_type: enums.TargetObjectType
-    """Тип объекта"""
-    service_types: List[str]
-    """Услуги"""
+    offer_id: int
+    """ID объявления"""
     row_version: Optional[int]
     """Версия записи"""
+    is_deleted: bool
+    """Макер удален ли контракт"""
+    created_at: datetime
+    """Время создания контракта"""
+    updated_at: datetime
+    """Время изменения контракта"""

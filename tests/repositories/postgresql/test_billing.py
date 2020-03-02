@@ -1,11 +1,10 @@
 from datetime import datetime
 
 import pytest
-from cian_test_utils import future, v
+from cian_test_utils import future
 
 from my_offers import pg
-from my_offers.entities import AnnouncementBillingContract
-from my_offers.enums import TargetObjectType
+from my_offers.entities import OfferBillingContract
 from my_offers.mappers.billing import offer_billing_contract_mapper
 from my_offers.repositories import postgresql
 
@@ -15,53 +14,55 @@ pytestmark = pytest.mark.gen_test
 
 async def test_save_offer_contract(mocker):
     # arrange
-    is_deleted = False
-    offer_contract = v(AnnouncementBillingContract(
+    now = datetime(2020, 12, 12)
+    offer_contract = OfferBillingContract(
         id=1,
         user_id=666,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
         payed_till=datetime(2020, 2, 2),
-        target_object_id=999999,
-        target_object_type=TargetObjectType.announcement,
-        service_types=[],
-        row_version=1111111
-    ))
+        offer_id=999999,
+        row_version=0,
+        is_deleted=False,
+        created_at=now,
+        updated_at=now,
+    )
 
     # act
     await postgresql.save_offer_contract(offer_contract=offer_contract)
 
     # assert
     pg.get().execute.assert_called_once_with(
-        'INSERT INTO offers_billing_contracts (id, user_id, actor_user_id, publisher_user_id, target_object_id, '
-        'target_object_type, start_date, payed_till, row_version, is_deleted)'
-        ' VALUES ($2, $21, $1, $15, $19, $20, $18, $14, $17, $3) '
+        'INSERT INTO offers_billing_contracts (id, user_id, actor_user_id, publisher_user_id, offer_id, start_date, '
+        'payed_till, row_version, is_deleted, created_at, updated_at) '
+        'VALUES ($3, $22, $1, $17, $5, $20, $16, $19, $4, $2, $21) '
         'ON CONFLICT (id) '
-        'DO UPDATE SET id = $4, user_id = $6, actor_user_id = $7, publisher_user_id = $8, target_object_id = $9, '
-        'target_object_type = $10, start_date = $11, payed_till = $12, row_version = $13, is_deleted = $5 '
-        'WHERE offers_billing_contracts.row_version < $16',
+        'DO UPDATE SET id = $6, user_id = $8, actor_user_id = $9, publisher_user_id = $10, offer_id = $11, '
+        'start_date = $12, payed_till = $13, row_version = $14, is_deleted = $15, updated_at = $7 '
+        'WHERE offers_billing_contracts.row_version < $18',
         offer_contract.actor_user_id,
+        now,
         offer_contract.id,
-        is_deleted,
+        offer_contract.is_deleted,
+        offer_contract.offer_id,
         offer_contract.id,
-        is_deleted,
+        now,
         offer_contract.user_id,
         offer_contract.actor_user_id,
         offer_contract.publisher_user_id,
-        offer_contract.target_object_id,
-        offer_contract.target_object_type.name,
+        offer_contract.offer_id,
         offer_contract.start_date,
         offer_contract.payed_till,
         offer_contract.row_version,
+        offer_contract.is_deleted,
         offer_contract.payed_till,
         offer_contract.publisher_user_id,
         offer_contract.row_version,
         offer_contract.row_version,
         offer_contract.start_date,
-        offer_contract.target_object_id,
-        offer_contract.target_object_type.name,
-        offer_contract.user_id,
+        now,
+        offer_contract.user_id
     )
 
 
@@ -75,26 +76,24 @@ async def test_get_offer_contract(mocker):
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
         payed_till=datetime(2020, 2, 2),
-        target_object_id=999999,
-        target_object_type=TargetObjectType.announcement,
-        service_types=[]
+        offer_id=999999,
+        row_version=0
     )
     pg.get().fetchrow.return_value = future(offer_contract)
 
     # act
-    result = await postgresql.get_offer_contract(contract_id=expected_contract_id)
+    result = await postgresql.get_offer_contract(offer_id=expected_contract_id)
 
     # assert
     assert result == offer_billing_contract_mapper.map_from(offer_contract)
     pg.get().fetchrow.assert_called_once_with(
-        'SELECT '
-        'offers_billing_contracts.id, offers_billing_contracts.user_id, offers_billing_contracts.actor_user_id, '
-        'offers_billing_contracts.publisher_user_id, offers_billing_contracts.target_object_id, '
-        'offers_billing_contracts.target_object_type, offers_billing_contracts.start_date, '
-        'offers_billing_contracts.payed_till, offers_billing_contracts.row_version, '
-        'offers_billing_contracts.is_deleted '
+        'SELECT offers_billing_contracts.id, offers_billing_contracts.user_id, offers_billing_contracts.actor_user_id, '
+        'offers_billing_contracts.publisher_user_id, offers_billing_contracts.offer_id, '
+        'offers_billing_contracts.start_date, offers_billing_contracts.payed_till, '
+        'offers_billing_contracts.row_version, offers_billing_contracts.is_deleted, '
+        'offers_billing_contracts.created_at, offers_billing_contracts.updated_at '
         '\nFROM offers_billing_contracts '
-        '\nWHERE offers_billing_contracts.id = $1',
+        '\nWHERE offers_billing_contracts.offer_id = $1',
         expected_contract_id
     )
 
@@ -105,19 +104,18 @@ async def test_get_offer_contract__contract_is_none(mocker):
     pg.get().fetchrow.return_value = future([])
 
     # act
-    result = await postgresql.get_offer_contract(contract_id=expected_contract_id)
+    result = await postgresql.get_offer_contract(offer_id=expected_contract_id)
 
     # assert
     assert result is None
     pg.get().fetchrow.assert_called_once_with(
-        'SELECT '
-        'offers_billing_contracts.id, offers_billing_contracts.user_id, offers_billing_contracts.actor_user_id, '
-        'offers_billing_contracts.publisher_user_id, offers_billing_contracts.target_object_id, '
-        'offers_billing_contracts.target_object_type, offers_billing_contracts.start_date, '
-        'offers_billing_contracts.payed_till, offers_billing_contracts.row_version, '
-        'offers_billing_contracts.is_deleted '
+        'SELECT offers_billing_contracts.id, offers_billing_contracts.user_id, offers_billing_contracts.actor_user_id, '
+        'offers_billing_contracts.publisher_user_id, offers_billing_contracts.offer_id, '
+        'offers_billing_contracts.start_date, offers_billing_contracts.payed_till, '
+        'offers_billing_contracts.row_version, offers_billing_contracts.is_deleted, '
+        'offers_billing_contracts.created_at, offers_billing_contracts.updated_at '
         '\nFROM offers_billing_contracts '
-        '\nWHERE offers_billing_contracts.id = $1',
+        '\nWHERE offers_billing_contracts.offer_id = $1',
         expected_contract_id
     )
 
