@@ -1,6 +1,5 @@
 from typing import Optional
 
-from my_offers.repositories.monolith_cian_announcementapi.entities import Flags
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
 
