@@ -51,7 +51,7 @@ async def test_save_announcement_contract(mocker):
 
     # act
     with freeze_time(now):
-        await save_announcement_contract(offer_contract=announcement_billing_contract)
+        await save_announcement_contract(billing_contract=announcement_billing_contract)
 
     # assert
     save_offer_contract_mock.assert_called_with(offer_contract=offer_contract)
@@ -77,7 +77,7 @@ async def test_save_announcement_contract__row_version_is_none(mocker):
     )
 
     # act
-    await save_announcement_contract(offer_contract=offer_contract)
+    await save_announcement_contract(billing_contract=offer_contract)
 
     # assert
     logger.error.assert_called_with('Contract changed/created without row_version: %s', offer_contract.id)
@@ -118,7 +118,7 @@ async def test_save_announcement_contract__ignore_types(mocker, target_object_ty
     )
 
     # act
-    await save_announcement_contract(offer_contract=offer_contract)
+    await save_announcement_contract(billing_contract=offer_contract)
 
     # assert
     save_offer_contract_mock.assert_not_called()
@@ -214,7 +214,7 @@ async def test__mark_to_delete_announcement_contract__ignore_types(mocker, targe
     )
 
     # act
-    await save_announcement_contract(offer_contract=offer_contract)
+    await save_announcement_contract(billing_contract=offer_contract)
 
     # assert
     set_offer_contract_is_deleted_status_mock.assert_not_called()

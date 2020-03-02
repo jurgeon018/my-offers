@@ -10,26 +10,26 @@ from my_offers.repositories import postgresql
 logger = logging.getLogger(__name__)
 
 
-async def save_announcement_contract(offer_contract: AnnouncementBillingContract) -> None:
+async def save_announcement_contract(billing_contract: AnnouncementBillingContract) -> None:
     """ Сохранить/обновить контракт на услуги по объялвению """
 
-    if not offer_contract.target_object_type.is_announcement:
+    if not billing_contract.target_object_type.is_announcement:
         return
 
-    if offer_contract.row_version is None:
-        logger.error('Contract changed/created without row_version: %s', offer_contract.id)
+    if billing_contract.row_version is None:
+        logger.error('Contract changed/created without row_version: %s', billing_contract.id)
         return
 
     now = datetime.now(pytz.utc)
     contract = OfferBillingContract(
-        id=offer_contract.id,
-        user_id=offer_contract.user_id,
-        actor_user_id=offer_contract.actor_user_id,
-        publisher_user_id=offer_contract.publisher_user_id,
-        offer_id=offer_contract.target_object_id,
-        start_date=offer_contract.start_date,
-        payed_till=offer_contract.payed_till,
-        row_version=offer_contract.row_version,
+        id=billing_contract.id,
+        user_id=billing_contract.user_id,
+        actor_user_id=billing_contract.actor_user_id,
+        publisher_user_id=billing_contract.publisher_user_id,
+        offer_id=billing_contract.target_object_id,
+        start_date=billing_contract.start_date,
+        payed_till=billing_contract.payed_till,
+        row_version=billing_contract.row_version,
         is_deleted=False,
         created_at=now,
         updated_at=now

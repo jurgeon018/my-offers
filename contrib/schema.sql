@@ -76,8 +76,6 @@ CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));
 CREATE INDEX ON offers (master_user_id, status_tab);
 CREATE INDEX ON offers (updated_at);
 
-
-
 CREATE TABLE offers_billing_contracts
 (
     id                bigint                   not null primary key,

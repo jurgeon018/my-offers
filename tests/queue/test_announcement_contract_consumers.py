@@ -44,7 +44,7 @@ async def test_save_announcement_contract_callback(mocker):
     await save_announcement_contract_callback([message])
 
     # assert
-    save_announcement_contract_mock.assert_called_with(offer_contract=offer_contract)
+    save_announcement_contract_mock.assert_called_with(billing_contract=offer_contract)
     new_operation_id_mock.assert_called_with(opeartion_id)
 
 
