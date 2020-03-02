@@ -65,5 +65,5 @@ offers_billing_contracts = sa.Table(
     sa.Column('payed_till', sa.TIMESTAMP, nullable=False),
     sa.Column('raw_data', sa.TEXT, nullable=False),
     sa.Column('row_version', sa.BIGINT, nullable=False),
-    sa.Column('is_deleted', sa.BOOLEAN, nullable=False, default=False),
+    sa.Column('is_deleted', sa.BOOLEAN, nullable=False),
 )

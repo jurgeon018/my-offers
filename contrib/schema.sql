@@ -106,5 +106,5 @@ CREATE TABLE offers_billing_contracts
     payed_till         timestamp with time zone not null,
     raw_data           text                     not null,
     row_version        bigint                   not null,
-    is_deleted         boolean default TRUE
+    is_deleted         boolean                  not null
 );

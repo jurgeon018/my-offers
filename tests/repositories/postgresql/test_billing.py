@@ -38,16 +38,17 @@ async def test_save_offer_contract(mocker):
     pg.get().execute.assert_called_once_with(
         'INSERT INTO offers_billing_contracts (id, user_id, actor_user_id, publisher_user_id, target_object_id, '
         'target_object_type, start_date, payed_till, raw_data, row_version, is_deleted) '
-        'VALUES ($2, $22, $1, $15, $20, $21, $19, $14, $16, $18, $3) '
+        'VALUES ($2, $23, $1, $16, $21, $22, $20, $15, $17, $19, $3) '
         'ON CONFLICT (id) '
-        'DO UPDATE SET id = $4, user_id = $6, actor_user_id = $7, publisher_user_id = $8, target_object_id = $9, '
-        'target_object_type = $10, start_date = $11, payed_till = $12, raw_data = $13, row_version = $5 '
-        'WHERE offers_billing_contracts.row_version < $17',
+        'DO UPDATE SET id = $4, user_id = $7, actor_user_id = $8, publisher_user_id = $9, target_object_id = $10, '
+        'target_object_type = $11, start_date = $12, payed_till = $13, raw_data = $14, row_version = $5, '
+        'is_deleted = $6 WHERE offers_billing_contracts.row_version < $18',
         offer_contract.actor_user_id,
         offer_contract.id,
         is_deleted,
         offer_contract.id,
         offer_contract.row_version,
+        is_deleted,
         offer_contract.user_id,
         offer_contract.actor_user_id,
         offer_contract.publisher_user_id,

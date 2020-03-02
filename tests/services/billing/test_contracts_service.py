@@ -63,7 +63,7 @@ async def test_save_announcement_contract__row_version_is_none(mocker):
     await save_announcement_contract(offer_contract=offer_contract)
 
     # assert
-    logger.warning.assert_called_with('Contract changed/created without row_version: %s', offer_contract.id)
+    logger.error.assert_called_with('Contract changed/created without row_version: %s', offer_contract.id)
 
 
 @pytest.mark.parametrize('target_object_type', [
@@ -159,4 +159,4 @@ async def test_mark_to_delete_announcement_contract__row_version_is_none(mocker)
     await mark_to_delete_announcement_contract(offer_contract=offer_contract)
 
     # assert
-    logger.warning.assert_called_with('Contract closed without row_version: %s', offer_contract.id)
+    logger.error.assert_called_with('Contract closed without row_version: %s', offer_contract.id)

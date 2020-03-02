@@ -22,6 +22,7 @@ async def save_offer_contract(offer_contract: OfferBillingContract) -> None:
         'start_date': offer_contract.start_date,
         'payed_till': offer_contract.payed_till,
         'row_version': offer_contract.row_version,
+        'is_deleted': False,
         'raw_data': json.dumps(service_contract_mapper.map_to(offer_contract))
     }
 

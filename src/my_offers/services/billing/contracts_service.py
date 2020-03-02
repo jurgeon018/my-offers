@@ -14,7 +14,7 @@ async def save_announcement_contract(offer_contract: OfferBillingContract) -> No
         return
 
     if offer_contract.row_version is None:
-        logger.warning('Contract changed/created without row_version: %s', offer_contract.id)
+        logger.error('Contract changed/created without row_version: %s', offer_contract.id)
         return
 
     await postgresql.save_offer_contract(offer_contract=offer_contract)
@@ -26,7 +26,7 @@ async def mark_to_delete_announcement_contract(offer_contract: OfferBillingContr
     """
 
     if offer_contract.row_version is None:
-        logger.warning('Contract closed without row_version: %s', offer_contract.id)
+        logger.error('Contract closed without row_version: %s', offer_contract.id)
         return
 
     await postgresql.set_offer_contract_is_deleted_status(
