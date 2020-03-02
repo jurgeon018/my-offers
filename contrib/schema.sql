@@ -77,22 +77,6 @@ CREATE INDEX ON offers (master_user_id, status_tab);
 CREATE INDEX ON offers (updated_at);
 
 
-create type target_object_type as enum (
-    'announcement',
-    'announcement_lite',
-    'account',
-    'account_subscription',
-    'account_service_package',
-    'penalty',
-    'order_cancellation',
-    'order_transfer',
-    'tech_transfer',
-    'tech_spend',
-    'expired_bonus_wallet',
-    'post_paid',
-    'demand',
-    'demand_package'
-    );
 
 CREATE TABLE offers_billing_contracts
 (

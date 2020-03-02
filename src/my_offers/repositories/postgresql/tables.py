@@ -51,7 +51,6 @@ offers = sa.Table(
     sa.Column('is_test', sa.BOOLEAN),
 )
 
-_target_object_type = psa.ENUM(*get_names(enums.TargetObjectType), name='target_object_type')
 offers_billing_contracts = sa.Table(
     'offers_billing_contracts',
     _metadata,
