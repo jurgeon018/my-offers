@@ -1,7 +1,7 @@
 from typing import List
 
+from my_offers.helpers import category
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, address_info
-from my_offers.services.announcement import category
 from my_offers.services.offers.enrich.enrich_data import EnrichParams
 
 

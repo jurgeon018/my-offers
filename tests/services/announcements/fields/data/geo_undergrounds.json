@@ -65,6 +65,12 @@
 	},
 	"undergrounds": [{
 		"id": 17,
+		"name": "Маяковская",
+		"lineId": 9,
+		"time": 130,
+		"lineColor": "A2A5B5"
+	}, {
+		"id": 17,
 		"name": "Бибирево",
 		"time": 13,
 		"lineId": 9,
