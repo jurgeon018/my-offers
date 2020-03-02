@@ -10,6 +10,15 @@ from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_addre
 
 async def load_enrich_data(params: EnrichParams) -> EnrichData:
     offer_ids = params.get_offer_ids()
+    if not offer_ids:
+        return EnrichData(
+            statistics={},
+            auctions={},
+            jk_urls={},
+            geo_urls={},
+            can_update_edit_dates={},
+        )
+
     data = await asyncio.gather(
         _load_statistic(offer_ids),  # 0
         _load_auctions(offer_ids),   # 1
