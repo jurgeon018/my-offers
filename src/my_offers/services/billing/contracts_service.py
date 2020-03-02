@@ -37,20 +37,20 @@ async def save_announcement_contract(billing_contract: AnnouncementBillingContra
     await postgresql.save_offer_contract(offer_contract=contract)
 
 
-async def mark_to_delete_announcement_contract(offer_contract: AnnouncementBillingContract) -> None:
+async def mark_to_delete_announcement_contract(billing_contract: AnnouncementBillingContract) -> None:
     """ Пометить контракт как удаленный.
         Такой контракт будет удален кроном через некоторое время.
     """
-    if not offer_contract.target_object_type.is_announcement:
+    if not billing_contract.target_object_type.is_announcement:
         return
 
-    if offer_contract.row_version is None:
-        logger.error('Contract closed without row_version: %s', offer_contract.id)
+    if billing_contract.row_version is None:
+        logger.error('Contract closed without row_version: %s', billing_contract.id)
         return
 
     await postgresql.set_offer_contract_is_deleted_status(
-        contract_id=offer_contract.id,
-        row_version=offer_contract.row_version
+        contract_id=billing_contract.id,
+        row_version=billing_contract.row_version
     )
 
 

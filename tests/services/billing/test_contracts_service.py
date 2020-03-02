@@ -144,7 +144,7 @@ async def test_mark_to_delete_announcement_contract(mocker):
     )
 
     # act
-    await mark_to_delete_announcement_contract(offer_contract=offer_contract)
+    await mark_to_delete_announcement_contract(billing_contract=offer_contract)
 
     # assert
     set_offer_contract_is_deleted_status_mock.assert_called_with(
@@ -173,7 +173,7 @@ async def test_mark_to_delete_announcement_contract__row_version_is_none(mocker)
     )
 
     # act
-    await mark_to_delete_announcement_contract(offer_contract=offer_contract)
+    await mark_to_delete_announcement_contract(billing_contract=offer_contract)
 
     # assert
     logger.error.assert_called_with('Contract closed without row_version: %s', offer_contract.id)

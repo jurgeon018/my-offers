@@ -47,4 +47,4 @@ async def mark_to_delete_announcement_contract_callback(messages: List[Message])
         offer_contract = contract_message.service_contract_reporting_model
 
         with new_operation_id(operation_id):
-            await mark_to_delete_announcement_contract(offer_contract=offer_contract)
+            await mark_to_delete_announcement_contract(billing_contract=offer_contract)

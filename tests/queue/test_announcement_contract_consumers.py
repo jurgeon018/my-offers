@@ -79,5 +79,5 @@ async def test_mark_to_delete_announcement_contract_callback(mocker):
     await mark_to_delete_announcement_contract_callback([message])
 
     # assert
-    mark_to_delete_announcement_contract.assert_called_with(offer_contract=offer_contract)
+    mark_to_delete_announcement_contract.assert_called_with(billing_contract=offer_contract)
     new_operation_id_mock.assert_called_with(opeartion_id)
