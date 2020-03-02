@@ -14,7 +14,7 @@ from my_offers.entities.get_offers import (
     Pagination,
     Statistics,
 )
-from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
+from my_offers.entities.offer_view_model import AvailableActions, OfferGeo, PriceInfo
 from my_offers.enums import GetOffersSortType, GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
@@ -71,6 +71,7 @@ async def test_get_offer(mocker):
                 auction=None,
                 archived_at=None,
                 status=None,
+                available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
             )
         ],
         counters=OfferCounters(active=1, not_active=0, declined=0, archived=0),

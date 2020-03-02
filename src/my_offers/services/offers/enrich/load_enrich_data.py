@@ -2,6 +2,7 @@ import asyncio
 from typing import Dict, List
 
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.services.get_can_update_edit_date import get_can_update_edit_date
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams, GeoUrlKey
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
@@ -14,6 +15,7 @@ async def load_enrich_data(params: EnrichParams) -> EnrichData:
         _load_auctions(offer_ids),   # 1
         _load_jk_urls(params.get_jk_ids()),  # 2
         _load_geo_urls(params.get_geo_url_params()),  # 3
+        _load_can_update_edit_date(offer_ids),  # 4
     )
 
     return EnrichData(
@@ -21,6 +23,7 @@ async def load_enrich_data(params: EnrichParams) -> EnrichData:
         auctions=data[1],
         jk_urls=data[2],
         geo_urls=data[3],
+        can_update_edit_dates=data[4],
     )
 
 
@@ -62,3 +65,7 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[GeoUrlKey, Addr
             result[key].add_url(address=address, url=data.value[i])
 
     return result
+
+
+async def _load_can_update_edit_date(offer_ids: List[int]) -> Dict[int, bool]:
+    return await get_can_update_edit_date(offer_ids)

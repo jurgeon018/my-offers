@@ -4,6 +4,7 @@ from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.helpers.category import get_types
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
+from my_offers.services.offer_view.fields.available_actions import get_available_actions
 from my_offers.services.offer_view.fields.features import get_features
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
@@ -27,6 +28,7 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
 
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
     is_manual = bool(object_model.source and object_model.source.is_upload)
+    is_archived = bool(object_model.flags and object_model.flags.is_archived)
     price_info = get_price_info(
         bargain_terms=object_model.bargain_terms,
         category=object_model.category,
@@ -65,7 +67,13 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         is_publication_time_ends=_is_publication_time_ends(object_model),
         statistics=Statistics(),
         archived_at=object_model.archived_date,
-        status=get_status(status=object_model.status, flags=object_model.flags)
+        status=get_status(status=object_model.status, is_archived=is_archived),
+        available_actions=get_available_actions(
+            status=object_model.status,
+            is_archived=is_archived,
+            is_manual=is_manual,
+            can_update_edit_date=enrich_data.can_update_edit_dates.get(object_model.id, False),
+        ),
     )
 
 
