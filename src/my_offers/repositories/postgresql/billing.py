@@ -1,17 +1,17 @@
 from typing import Optional
 
 import asyncpgsa
-from cian_json import json
 from sqlalchemy import and_, select, update
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
-from my_offers.entities import OfferBillingContract
-from my_offers.mappers.billing import service_contract_mapper
+from my_offers.entities import AnnouncementBillingContract
+from my_offers.entities.billing import OfferBillingContract
+from my_offers.mappers.billing import offer_billing_contract_mapper
 from my_offers.repositories.postgresql.tables import offers_billing_contracts
 
 
-async def save_offer_contract(offer_contract: OfferBillingContract) -> None:
+async def save_offer_contract(offer_contract: AnnouncementBillingContract) -> None:
     values = {
         'id': offer_contract.id,
         'user_id': offer_contract.user_id,
@@ -23,7 +23,6 @@ async def save_offer_contract(offer_contract: OfferBillingContract) -> None:
         'payed_till': offer_contract.payed_till,
         'row_version': offer_contract.row_version,
         'is_deleted': False,
-        'raw_data': json.dumps(service_contract_mapper.map_to(offer_contract))
     }
 
     query, params = asyncpgsa.compile_query(
@@ -60,7 +59,7 @@ async def set_offer_contract_is_deleted_status(*, contract_id: int, row_version:
 async def get_offer_contract(contract_id: int) -> Optional[OfferBillingContract]:
     sql = (
         select([
-            offers_billing_contracts.c.raw_data
+            offers_billing_contracts
         ]).where(
             offers_billing_contracts.c.id == contract_id
         )
@@ -68,4 +67,4 @@ async def get_offer_contract(contract_id: int) -> Optional[OfferBillingContract]
     query, params = asyncpgsa.compile_query(sql)
     result = await pg.get().fetchrow(query, *params)
 
-    return service_contract_mapper.map_from(json.loads(result['raw_data'])) if result else None
+    return offer_billing_contract_mapper.map_from(dict(result)) if result else None

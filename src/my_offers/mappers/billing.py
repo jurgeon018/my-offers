@@ -1,6 +1,6 @@
 from cian_entities import EntityMapper
 
-from my_offers.entities import OfferBillingContract
+from my_offers.entities.billing import OfferBillingContract
 
 
-service_contract_mapper = EntityMapper(OfferBillingContract)
+offer_billing_contract_mapper = EntityMapper(OfferBillingContract)

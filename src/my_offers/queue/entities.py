@@ -17,7 +17,7 @@ class AnnouncementMessage:
 
 @dataclass
 class ServiceContractMessage:
-    service_contract_reporting_model: entities.OfferBillingContract
+    service_contract_reporting_model: entities.AnnouncementBillingContract
     """Cобытие изменения контрактов"""
     operation_id: str
     """Operation id"""

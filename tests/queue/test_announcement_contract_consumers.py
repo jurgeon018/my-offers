@@ -4,7 +4,7 @@ import pytest
 from cian_core.rabbitmq.consumer import Message
 from cian_test_utils import future, v
 
-from my_offers.entities.billing import OfferBillingContract
+from my_offers.entities.billing import AnnouncementBillingContract
 from my_offers.enums import TargetObjectType
 from my_offers.queue.consumers import mark_to_delete_announcement_contract_callback, save_announcement_contract_callback
 from my_offers.queue.entities import ServiceContractMessage
@@ -16,7 +16,7 @@ pytestmark = pytest.mark.gen_test
 async def test_save_announcement_contract_callback(mocker):
     # arrange
     opeartion_id = mocker.sentinel.operation_id
-    offer_contract = v(OfferBillingContract(
+    offer_contract = v(AnnouncementBillingContract(
         id=1,
         user_id=666,
         actor_user_id=777,
@@ -51,7 +51,7 @@ async def test_save_announcement_contract_callback(mocker):
 async def test_mark_to_delete_announcement_contract_callback(mocker):
     # arrange
     opeartion_id = mocker.sentinel.operation_id
-    offer_contract = v(OfferBillingContract(
+    offer_contract = v(AnnouncementBillingContract(
         id=1,
         user_id=666,
         actor_user_id=777,

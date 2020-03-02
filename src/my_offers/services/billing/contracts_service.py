@@ -1,13 +1,13 @@
 import logging
 
-from my_offers.entities.billing import OfferBillingContract
+from my_offers.entities.billing import AnnouncementBillingContract
 from my_offers.repositories import postgresql
 
 
 logger = logging.getLogger(__name__)
 
 
-async def save_announcement_contract(offer_contract: OfferBillingContract) -> None:
+async def save_announcement_contract(offer_contract: AnnouncementBillingContract) -> None:
     """ Сохранить/обновить контракт на услуги по объялвению """
 
     if not offer_contract.target_object_type.is_announcement:
@@ -20,7 +20,7 @@ async def save_announcement_contract(offer_contract: OfferBillingContract) -> No
     await postgresql.save_offer_contract(offer_contract=offer_contract)
 
 
-async def mark_to_delete_announcement_contract(offer_contract: OfferBillingContract) -> None:
+async def mark_to_delete_announcement_contract(offer_contract: AnnouncementBillingContract) -> None:
     """ Пометить контракт как удаленный.
         Такой контракт будет удален кроном через некоторое время.
     """
@@ -35,6 +35,6 @@ async def mark_to_delete_announcement_contract(offer_contract: OfferBillingContr
     )
 
 
-async def delete_announcement_contract(service_contract: OfferBillingContract) -> None:
+async def delete_announcement_contract(service_contract: AnnouncementBillingContract) -> None:
     """ Удалить контракт на услуги по объялвению """
     # TODO: https://jira.cian.tech/browse/CD-75463

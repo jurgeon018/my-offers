@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from cian_test_utils import future, v
 
-from my_offers.entities.billing import OfferBillingContract
+from my_offers.entities.billing import AnnouncementBillingContract
 from my_offers.enums import TargetObjectType
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
@@ -16,7 +16,7 @@ pytestmark = pytest.mark.gen_test
 
 async def test_save_announcement_contract(mocker):
     # arrange
-    offer_contract = v(OfferBillingContract(
+    offer_contract = v(AnnouncementBillingContract(
         id=1,
         user_id=666,
         actor_user_id=777,
@@ -42,7 +42,7 @@ async def test_save_announcement_contract(mocker):
 
 async def test_save_announcement_contract__row_version_is_none(mocker):
     # arrange
-    offer_contract = v(OfferBillingContract(
+    offer_contract = v(AnnouncementBillingContract(
         id=1,
         user_id=666,
         actor_user_id=777,
@@ -83,7 +83,7 @@ async def test_save_announcement_contract__row_version_is_none(mocker):
 ])
 async def test_save_announcement_contract__ignore_types(mocker, target_object_type):
     # arrange
-    offer_contract = v(OfferBillingContract(
+    offer_contract = v(AnnouncementBillingContract(
         id=1,
         user_id=666,
         actor_user_id=777,
@@ -109,7 +109,7 @@ async def test_save_announcement_contract__ignore_types(mocker, target_object_ty
 
 async def test_mark_to_delete_announcement_contract(mocker):
     # arrange
-    offer_contract = v(OfferBillingContract(
+    offer_contract = v(AnnouncementBillingContract(
         id=1,
         user_id=666,
         actor_user_id=777,
@@ -138,7 +138,7 @@ async def test_mark_to_delete_announcement_contract(mocker):
 
 async def test_mark_to_delete_announcement_contract__row_version_is_none(mocker):
     # arrange
-    offer_contract = v(OfferBillingContract(
+    offer_contract = v(AnnouncementBillingContract(
         id=1,
         user_id=666,
         actor_user_id=777,
