@@ -25,4 +25,4 @@ command = "save_announcement_contract_consumer"
 
 [job.mark_to_delete_announcement_contract_consumer]
 type = "consumer"
-command = "save_announcement_contract_consumer"
+command = "mark_to_delete_announcement_contract_consumer"

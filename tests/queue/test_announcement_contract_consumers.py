@@ -18,7 +18,7 @@ async def test_save_announcement_contract_callback(mocker):
     opeartion_id = mocker.sentinel.operation_id
     offer_contract = v(AnnouncementBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -53,7 +53,7 @@ async def test_mark_to_delete_announcement_contract_callback(mocker):
     opeartion_id = mocker.sentinel.operation_id
     offer_contract = v(AnnouncementBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),

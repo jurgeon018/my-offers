@@ -17,7 +17,7 @@ async def test_save_offer_contract(mocker):
     now = datetime(2020, 12, 12)
     offer_contract = OfferBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -71,7 +71,7 @@ async def test_get_offer_contract(mocker):
     expected_contract_id = 1
     offer_contract = dict(
         id=expected_contract_id,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -122,7 +122,7 @@ async def test_get_offer_contract__contract_is_none(mocker):
 
 async def test_set_offer_contract_is_deleted_status(mocker):
     # arrange
-    contract_id = 666
+    contract_id = 555
     row_version = 1231212
     is_deleted = True
 

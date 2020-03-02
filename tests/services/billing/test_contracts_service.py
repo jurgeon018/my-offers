@@ -21,7 +21,7 @@ async def test_save_announcement_contract(mocker):
     now = datetime.now(pytz.utc)
     announcement_billing_contract = v(AnnouncementBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -33,7 +33,7 @@ async def test_save_announcement_contract(mocker):
     ))
     offer_contract = OfferBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -61,7 +61,7 @@ async def test_save_announcement_contract__row_version_is_none(mocker):
     # arrange
     offer_contract = v(AnnouncementBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -102,7 +102,7 @@ async def test_save_announcement_contract__ignore_types(mocker, target_object_ty
     # arrange
     offer_contract = v(AnnouncementBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -128,7 +128,7 @@ async def test_mark_to_delete_announcement_contract(mocker):
     # arrange
     offer_contract = v(AnnouncementBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -157,7 +157,7 @@ async def test_mark_to_delete_announcement_contract__row_version_is_none(mocker)
     # arrange
     offer_contract = v(AnnouncementBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
@@ -198,7 +198,7 @@ async def test__mark_to_delete_announcement_contract__ignore_types(mocker, targe
     # arrange
     offer_contract = v(AnnouncementBillingContract(
         id=1,
-        user_id=666,
+        user_id=555,
         actor_user_id=777,
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
