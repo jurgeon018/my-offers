@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from my_offers import enums
 from my_offers.entities.offer_view_model import OfferViewModel
@@ -108,3 +108,4 @@ class GetOffersResponse:
     offers: List[GetOffer]
     counters: OfferCounters
     page: PageInfo
+    degradation: Dict[str, bool]

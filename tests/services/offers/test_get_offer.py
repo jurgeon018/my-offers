@@ -50,37 +50,44 @@ async def test_get_offer(mocker):
         phones=[Phone(country_code='1', number='12312')],
         creation_date=datetime(2020, 2, 11, 17, 00),
     )
+
+    get_offer = GetOffer(
+        main_photo_url=None,
+        title='',
+        url='https://cian.ru/rent/flat/111',
+        geo=OfferGeo(address=None, newbuilding=None, underground=None),
+        subagent=None,
+        price_info=PriceInfo(exact=None, range=None),
+        features=[],
+        publish_features=[],
+        vas=[],
+        is_from_package=False,
+        is_manual=False,
+        is_publication_time_ends=False,
+        created_at=datetime(2020, 2, 11, 17, 00),
+        id=111,
+        statistics=Statistics(),
+        auction=None,
+        archived_at=None,
+        status=None,
+        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+    )
+
     expected_result = GetOffersResponse(
-        offers=[
-            GetOffer(
-                main_photo_url=None,
-                title='',
-                url='https://cian.ru/rent/flat/111',
-                geo=OfferGeo(address=None, newbuilding=None, underground=None),
-                subagent=None,
-                price_info=PriceInfo(exact=None, range=None),
-                features=[],
-                publish_features=[],
-                vas=[],
-                is_from_package=False,
-                is_manual=False,
-                is_publication_time_ends=False,
-                created_at=datetime(2020, 2, 11, 17, 00),
-                id=111,
-                statistics=Statistics(),
-                auction=None,
-                archived_at=None,
-                status=None,
-                available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
-            )
-        ],
+        offers=[get_offer],
         counters=OfferCounters(active=1, not_active=0, declined=0, archived=0),
         page=PageInfo(count=1, page_count=1, can_load_more=False),
+        degradation={},
     )
 
     get_offers_by_status_mock = mocker.patch(
         'my_offers.services.offers.get_offers_service.postgresql.get_object_models',
         return_value=future(([object_model], 1)),
+    )
+
+    get_offer_views_mock = mocker.patch(
+        'my_offers.services.offers.get_offers_service.get_offer_views',
+        return_value=future(([get_offer], {})),
     )
 
     # act
@@ -91,6 +98,7 @@ async def test_get_offer(mocker):
 
     # assert
     assert result == expected_result
+    get_offer_views_mock.assert_called_once_with([object_model])
     get_offers_by_status_mock.assert_called_once_with(
         filters={'status_tab': 'active', 'master_user_id': 777},
         limit=20,

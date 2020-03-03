@@ -1,6 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, Dict, List, NamedTuple, Optional, Set
+from typing import Any, Dict, List, NamedTuple, Optional, Set, T, TypeVar
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
@@ -75,6 +75,13 @@ class AddressUrls:
             return None
 
         return self._storage[address.type].get(address.id)
+
+
+@dataclass
+class EnrichItem:
+    key: str
+    value: T
+    degraded: bool
 
 
 @dataclass
