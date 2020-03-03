@@ -87,10 +87,10 @@ class GetOffer(OfferViewModel):
 
 @dataclass
 class OfferCounters:
-    active: int
-    not_active: int
-    declined: int
-    archived: int
+    active: Optional[int]
+    not_active: Optional[int]
+    declined: Optional[int]
+    archived: Optional[int]
 
 
 @dataclass
