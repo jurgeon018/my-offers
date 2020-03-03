@@ -5,13 +5,15 @@ from cian_test_utils import future
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
-from my_offers.services.offers.enrich.enrich_data import EnrichItem
+from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
+from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem, EnrichParams
 from my_offers.services.offers.enrich.load_enrich_data import (
     _load_auctions,
-    _load_can_update_edit_date,
+    _load_can_update_edit_dates,
     _load_geo_urls,
     _load_jk_urls,
     _load_statistic,
+    load_enrich_data,
 )
 
 
@@ -19,9 +21,91 @@ PATH = 'my_offers.services.offers.enrich.load_enrich_data.'
 
 
 @pytest.mark.gen_test
+async def test_load_enrich_data(mocker):
+    # arrange
+    params = EnrichParams()
+    params.add_offer_id(11)
+    params.add_jk_id(44)
+    params.add_geo_url_id(
+        deal_type=enums.DealType.rent,
+        offer_type=enums.OfferType.flat,
+        geo_type=Type.location,
+        geo_id=1,
+    )
+
+    load_statistic_mock = mocker.patch(
+        f'{PATH}_load_statistic',
+        return_value=future(EnrichItem(key='statistics', degraded=False, value={})),
+    )
+    load_auctions_mock = mocker.patch(
+        f'{PATH}_load_auctions',
+        return_value=future(EnrichItem(key='auctions', degraded=False, value={})),
+    )
+    load_jk_urls_mock = mocker.patch(
+        f'{PATH}_load_jk_urls',
+        return_value=future(EnrichItem(key='jk_urls', degraded=False, value={})),
+    )
+    load_geo_urls_mock = mocker.patch(
+        f'{PATH}_load_geo_urls',
+        return_value=future(EnrichItem(key='geo_urls', degraded=False, value={})),
+    )
+    load_can_update_edit_dates_mock = mocker.patch(
+        f'{PATH}_load_can_update_edit_dates',
+        return_value=future(EnrichItem(key='can_update_edit_dates', degraded=False, value={})),
+    )
+
+    expected = (
+        EnrichData(statistics={}, auctions={}, jk_urls={}, geo_urls={}, can_update_edit_dates={}),
+        {
+            'auctions': False,
+            'can_update_edit_dates': False,
+            'geo_urls': False,
+            'jk_urls': False,
+            'statistics': False
+        }
+    )
+
+    # act
+    result = await load_enrich_data(params)
+
+    # assert
+    assert result == expected
+    load_statistic_mock.assert_called_once_with([11])
+    load_auctions_mock.assert_called_once_with([11])
+    load_jk_urls_mock.assert_called_once_with([44])
+    load_geo_urls_mock.assert_called_once_with([
+        AddressUrlParams(
+            deal_type=enums.DealType.rent,
+            offer_type=enums.OfferType.flat,
+            address_info=[AddressInfo(id=1, type=Type.location)]
+        )
+    ])
+    load_can_update_edit_dates_mock.assert_called_once_with([11])
+
+
+@pytest.mark.gen_test
+async def test_load_enrich_data__empty__empty(mocker):
+    # arrange
+    params = EnrichParams()
+    expected = EnrichData(
+        statistics={},
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+    ), {}
+
+    # act
+    result = await load_enrich_data(params)
+
+    # assert
+    assert result == expected
+
+
+@pytest.mark.gen_test
 async def test__load_jk_urls(mocker):
     # arrange
-    get_newbuilding_urls_degradation_handler = mocker.patch(
+    get_newbuilding_urls_degradation_handler_mock = mocker.patch(
         f'{PATH}get_newbuilding_urls_degradation_handler',
         return_value=future(DegradationResult(value={1: 'zz', 2: 'yy'}, degraded=False)),
     )
@@ -32,7 +116,7 @@ async def test__load_jk_urls(mocker):
 
     # assert
     assert result == excepted
-    get_newbuilding_urls_degradation_handler.assert_called_once_with([1, 2, 3])
+    get_newbuilding_urls_degradation_handler_mock.assert_called_once_with([1, 2, 3])
 
 
 @pytest.mark.gen_test
@@ -142,7 +226,7 @@ async def test__load_can_update_edit_date(mocker):
     expected = EnrichItem(key='can_update_edit_dates', degraded=False, value={11: True, 12: False})
 
     # act
-    result = await _load_can_update_edit_date([11, 22])
+    result = await _load_can_update_edit_dates([11, 22])
 
     # assert
     assert result == expected

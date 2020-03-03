@@ -24,7 +24,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         _load_auctions(offer_ids),
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
-        _load_can_update_edit_date(offer_ids),
+        _load_can_update_edit_dates(offer_ids),
     )
 
     params = {}
@@ -78,7 +78,7 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> EnrichItem:
     return EnrichItem(key='geo_urls', degraded=degraded, value=result)
 
 
-async def _load_can_update_edit_date(offer_ids: List[int]) -> EnrichItem:
+async def _load_can_update_edit_dates(offer_ids: List[int]) -> EnrichItem:
     result = await can_update_edit_date_degradation_handler(offer_ids)
 
     return EnrichItem(key='can_update_edit_dates', degraded=result.degraded, value=result.value)
