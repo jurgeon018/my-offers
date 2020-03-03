@@ -2,8 +2,8 @@ from cian_web.exceptions import BrokenRulesException, Error
 
 from my_offers import entities
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
+from my_offers.services import announcement_api
 from my_offers.services.actions._action import OfferAction
-from my_offers.services.announcement import announcement_api
 
 
 class UpdateEditDateOfferAction(OfferAction):

@@ -2,7 +2,7 @@ import asyncio
 from typing import Dict, List, Tuple
 
 from my_offers.entities.enrich import AddressUrlParams
-from my_offers.services.announcement.announcement_api import can_update_edit_date_degradation_handler
+from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
