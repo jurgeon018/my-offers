@@ -14,14 +14,17 @@ async def test_can_update_edit_date(mocker):
             CanUpdateEditdateResult(can_update_edit_date=True, id=11),
             CanUpdateEditdateResult(can_update_edit_date=False, id=12),
             CanUpdateEditdateResult(can_update_edit_date=True, id=44),
+            CanUpdateEditdateResult(can_update_edit_date=True, id=None),
+            CanUpdateEditdateResult(can_update_edit_date=None, id=None),
+            CanUpdateEditdateResult(can_update_edit_date=None, id=15),
         ])
     )
 
-    expected = {11: True, 12: False, 14: False}
+    expected = {11: True, 12: False, 14: False, 15: False}
 
     # act
-    result = await can_update_edit_date([11, 12, 14])
+    result = await can_update_edit_date([11, 12, 14, 15])
 
     # assert
     assert result == expected
-    v1_can_update_editdate_mock.assert_called_once_with(V1CanUpdateEditdate(ids=[11, 12, 14]))
+    v1_can_update_editdate_mock.assert_called_once_with(V1CanUpdateEditdate(ids=[11, 12, 14, 15]))

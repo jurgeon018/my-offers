@@ -8,8 +8,13 @@ from my_offers.repositories.monolith_cian_ms_announcements.entities import V1Can
 
 async def can_update_edit_date(ids: List[int]) -> Dict[int, bool]:
     response = await v1_can_update_editdate(V1CanUpdateEditdate(ids=ids))
+    data = {item.id: bool(item.can_update_edit_date) for item in response}
 
-    return {item.id: item.can_update_edit_date for item in response}
+    result = {}
+    for offer_id in ids:
+        result[offer_id] = data[offer_id] if offer_id in data else False
+
+    return result
 
 
 can_update_edit_date_degradation_handler = get_degradation_handler(

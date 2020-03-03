@@ -11,16 +11,16 @@ async def test_update_offer(mocker):
     # arrange
     object_model = mocker.sentinel.object_model
     v1_get_announcement_mock = mocker.patch(
-        'my_offers.services.offers.update_offer_service.v1_get_announcement',
+        'my_offers.services.offers._update_offer.v1_get_announcement',
         return_value=future(object_model),
     )
     process_announcement_mock = mocker.patch(
-        'my_offers.services.offers.update_offer_service.process_announcement',
+        'my_offers.services.offers._update_offer.process_announcement',
         return_value=future(),
     )
 
     map_to_mock = mocker.patch(
-        'my_offers.services.offers.update_offer_service.object_model_mapper.map_to',
+        'my_offers.services.offers._update_offer.object_model_mapper.map_to',
         return_value={'id': 11},
     )
 

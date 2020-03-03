@@ -20,7 +20,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Bargai
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.services import offers
 from my_offers.services.offers import get_offers_private
-from my_offers.services.offers.get_offers_service import _get_pagination
+from my_offers.services.offers._get_offers import _get_pagination
 
 
 @pytest.mark.gen_test
@@ -81,12 +81,12 @@ async def test_get_offer(mocker):
     )
 
     get_offers_by_status_mock = mocker.patch(
-        'my_offers.services.offers.get_offers_service.postgresql.get_object_models',
+        'my_offers.services.offers._get_offers.postgresql.get_object_models',
         return_value=future(([object_model], 1)),
     )
 
     get_offer_views_mock = mocker.patch(
-        'my_offers.services.offers.get_offers_service.get_offer_views',
+        'my_offers.services.offers._get_offers.get_offer_views',
         return_value=future(([get_offer], {})),
     )
 
@@ -131,7 +131,7 @@ async def test_get_offers_private(mocker):
     response = mocker.sentinel.response
 
     get_offers_public_mock = mocker.patch(
-        'my_offers.services.offers.get_offers_service.get_offers_public',
+        'my_offers.services.offers._get_offers.get_offers_public',
         return_value=future(response),
     )
 
