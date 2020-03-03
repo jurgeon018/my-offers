@@ -20,11 +20,12 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Bargai
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.services import offers
 from my_offers.services.offers import get_offers_private
-from my_offers.services.offers._get_offers import _get_pagination
+from my_offers.services.offers._get_offers import _get_pagination, get_offer_views
+from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
 @pytest.mark.gen_test
-async def test_get_offer(mocker):
+async def test_get_offers_public(mocker):
     # arrange
     expected_user = 777
     request = GetOffersRequest(
@@ -164,3 +165,63 @@ def test__get_pagination(pagination, expected):
 
     # assert
     assert result == expected
+
+
+@pytest.mark.gen_test
+async def test_get_offer_views(mocker):
+    # arrange
+    load_enrich_data_mock = mocker.patch(
+        'my_offers.services.offers._get_offers.load_enrich_data',
+        return_value=future((
+            EnrichData(
+                statistics={},
+                auctions={},
+                jk_urls={},
+                geo_urls={},
+                can_update_edit_dates={},
+            ),
+            {}
+        )),
+    )
+
+    object_model = ObjectModel(
+        id=111,
+        bargain_terms=BargainTerms(price=123),
+        category=Category.flat_rent,
+        phones=[Phone(country_code='1', number='12312')],
+        creation_date=datetime(2020, 2, 11, 17, 00),
+    )
+
+    expected = (
+        [
+            GetOffer(
+                main_photo_url=None,
+                title='',
+                url='https://cian.ru/rent/flat/111',
+                geo=OfferGeo(address=None, newbuilding=None, underground=None),
+                subagent=None,
+                price_info=PriceInfo(exact=None, range=None),
+                features=[],
+                publish_features=[],
+                vas=[],
+                is_from_package=False,
+                is_manual=False,
+                is_publication_time_ends=False,
+                created_at=datetime(2020, 2, 11, 17, 0),
+                id=111,
+                archived_at=None,
+                status=None,
+                available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+                statistics=Statistics(shows=None, views=None, favorites=None),
+                auction=None,
+            )
+        ],
+        {}
+    )
+
+    # act
+    result = await get_offer_views([object_model])
+
+    # assert
+    assert result == expected
+    load_enrich_data_mock.assert_called_once()
