@@ -106,6 +106,10 @@ class PageInfo:
 @dataclass
 class GetOffersResponse:
     offers: List[GetOffer]
+    """Список объявлений"""
     counters: OfferCounters
+    """Счеткики еоличества объявлений"""
     page: PageInfo
+    """Информация о странице"""
     degradation: Dict[str, bool]
+    """Информация о деградации"""
