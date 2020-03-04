@@ -82,6 +82,6 @@ class TestDeleteOfferAction:
                 realty_object_id=111,
                 announcement_type=AnnouncementType.flat,
                 cian_announcement_id=333,
-                cian_user_id=6973754,
+                cian_user_id=222,
             )
         )

@@ -25,11 +25,32 @@ def serve(debug: bool, host: str, port: int) -> None:
     app.start(host=host, port=port)
 
 
+# [announcements] обновляет объявление
 register_consumer(
     command=cli.command('process_announcement_consumer'),
     queue=queues.process_announcements_queue,
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
+    dead_queue_enabled=True,
+    dead_queue_ttl=timedelta(seconds=60),
+)
+
+# [billing] сохраняет/обновляет контракты по объявлению
+register_consumer(
+    command=cli.command('save_announcement_contract_consumer'),
+    queue=queues.save_announcement_contract_queue,
+    callback=consumers.save_announcement_contract_callback,
+    schema_cls=schemas.RabbitMQServiceContractCreatedMessageSchema,
+    dead_queue_enabled=True,
+    dead_queue_ttl=timedelta(seconds=60),
+)
+
+# [billing] помечает закрытые контракты как удаленные
+register_consumer(
+    command=cli.command('mark_to_delete_announcement_contract_consumer'),
+    queue=queues.close_announcement_contract_queue,
+    callback=consumers.mark_to_delete_announcement_contract_callback,
+    schema_cls=schemas.RabbitMQServiceContractCreatedMessageSchema,
     dead_queue_enabled=True,
     dead_queue_ttl=timedelta(seconds=60),
 )

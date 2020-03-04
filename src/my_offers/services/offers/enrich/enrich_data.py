@@ -77,12 +77,19 @@ class AddressUrls:
         return self._storage[address.type].get(address.id)
 
 
+class EnrichItem(NamedTuple):
+    key: str
+    value: Any
+    degraded: bool
+
+
 @dataclass
 class EnrichData:
     statistics: Dict[int, Any]
     auctions: Dict[int, Any]
     jk_urls: Dict[int, str]
     geo_urls: Dict[GeoUrlKey, AddressUrls]
+    can_update_edit_dates: Dict[int, bool]
 
     def get_urls_by_types(
             self,

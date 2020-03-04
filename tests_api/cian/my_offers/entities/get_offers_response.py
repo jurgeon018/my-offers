@@ -19,5 +19,10 @@ from .page_info import PageInfo
 @dataclass
 class GetOffersResponse:
     counters: OfferCounters
+    """Счеткики еоличества объявлений"""
+    degradation: dict
+    """Информация о деградации"""
     offers: List[GetOffer]
+    """Список объявлений"""
     page: PageInfo
+    """Информация о странице"""
