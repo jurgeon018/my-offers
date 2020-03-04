@@ -1,4 +1,4 @@
-from cian_enum import StrEnum
+from cian_enum import NoFormat, StrEnum
 
 
 class AnnouncementReportingV1RoutingKey(StrEnum):
@@ -41,3 +41,12 @@ class AnnouncementReportingV1RoutingKey(StrEnum):
     # """Продление"""
     # sold = 'sold'
     # """Продан"""
+
+
+class ModerationOfferOffenceReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    created = 'moderation-offence-reporting.v1.created'
+    """Нарушение создано"""
+    changed = 'moderation-offence-reporting.v1.changed'
+    """Нарушение обновлено"""

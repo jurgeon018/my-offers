@@ -5,8 +5,10 @@ from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
+from my_offers.entities import ModerationOfferOffence
 from my_offers.queue.entities import AnnouncementMessage
 from my_offers.services.announcement import process_announcement
+from my_offers.services.moderation.moderation_service import save_offer_offence
 
 
 logger = logging.getLogger(__name__)
@@ -24,3 +26,12 @@ async def process_announcement_callback(messages: List[Message]) -> None:
             except:
                 logger.exception('Process announcement error id: %s, key: %s', object_model.id, routing_key)
                 raise
+
+
+async def save_offer_offence_callback(messages: List[Message]) -> None:
+    for message in messages:
+        offer_offence: ModerationOfferOffence = message.data
+        operation_id = offer_offence.operation_id
+
+        with new_operation_id(operation_id):
+            await save_offer_offence(offer_offence=offer_offence)

@@ -67,8 +67,8 @@ async def get_offer_views(object_models: List[ObjectModel]) -> List[get_offers.G
     ]
 
 
-async def _get_filters(*, user_id: int, filters: Optional[get_offers.Filter]) -> Dict[str, Any]:
-    result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters) if filters else []
+async def _get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
+    result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
     result['master_user_id'] = await get_master_user_id(user_id)
     return result
 

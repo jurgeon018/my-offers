@@ -18,3 +18,12 @@ command = "process_announcement_consumer"
 instances = 3
 cpu = 2048
 memory = 128
+
+[job.save_moderation_offer_offence_consumer]
+type = "consumer"
+command = "save_moderation_offer_offence_consumer"
+
+[job.save_moderation_offer_offence_consumer.prod]
+type = "consumer"
+command = "save_moderation_offer_offence_consumer"
+memory = 128

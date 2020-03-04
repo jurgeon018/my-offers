@@ -51,3 +51,19 @@ offers = sa.Table(
     sa.Column('sort_date', sa.TIMESTAMP),
     sa.Column('is_test', sa.BOOLEAN),
 )
+
+_offence_status = psa.ENUM(*get_names(enums.ModerationOffenceStatus), name='offence_status')
+offers_offences = sa.Table(
+    'offers_offences',
+    _metadata,
+    sa.Column('offence_id', sa.BIGINT, primary_key=True),
+    sa.Column('offence_type', sa.BIGINT, nullable=False),
+    sa.Column('offence_text', sa.TEXT, nullable=False),
+    sa.Column('offence_status', _offence_status, nullable=False),
+    sa.Column('offer_id', sa.BIGINT, nullable=False),
+    sa.Column('row_version', sa.BIGINT, nullable=False),
+    sa.Column('created_by', sa.BIGINT, nullable=False),
+    sa.Column('created_date', sa.TIMESTAMP, nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
+)
