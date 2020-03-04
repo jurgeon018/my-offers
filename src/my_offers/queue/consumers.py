@@ -5,9 +5,8 @@ from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
-from my_offers.queue.entities import AnnouncementMessage, ServiceContractMessage
 from my_offers.entities import ModerationOfferOffence
-from my_offers.queue.entities import AnnouncementMessage
+from my_offers.queue.entities import AnnouncementMessage, ServiceContractMessage
 from my_offers.services.announcement import process_announcement
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,

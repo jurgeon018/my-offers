@@ -4,11 +4,14 @@ from cian_core.rabbitmq.consumer import Exchange, Queue, QueueBinding
 from cian_enum import StrEnum
 
 from my_offers.helpers.queue import get_modified_queue_name
-from my_offers.queue.routing_keys import AnnouncementReportingV1RoutingKey, ServiceContractsReportingV1RoutingKey
+from my_offers.queue.routing_keys import (
+    AnnouncementReportingV1RoutingKey,
+    ModerationOfferOffenceReportingV1RoutingKey,
+    ServiceContractsReportingV1RoutingKey,
+)
 
 
 billing_exchange = Exchange('billing')
-from my_offers.queue.routing_keys import AnnouncementReportingV1RoutingKey, ModerationOfferOffenceReportingV1RoutingKey
 
 
 def _get_bindings(prefix: str, enum: Type[StrEnum]) -> List[QueueBinding]:

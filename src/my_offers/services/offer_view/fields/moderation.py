@@ -19,7 +19,7 @@ DECLINED_STATUS = [
 
 
 def get_moderation(*, status: Optional[Status], offer_offence: Optional[OfferOffence]) -> Optional[Moderation]:
-    if status not in DECLINED_STATUS:
+    if not status or status not in DECLINED_STATUS:
         return None
 
     if status.is_blocked:

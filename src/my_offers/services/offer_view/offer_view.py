@@ -5,6 +5,7 @@ from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.helpers.category import get_types
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view.fields import (
+    get_available_actions,
     get_features,
     get_moderation,
     get_price_info,
@@ -76,8 +77,7 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
             is_manual=is_manual,
             can_update_edit_date=enrich_data.can_update_edit_dates.get(object_model.id, False),
         ),
-        status=get_status(status=object_model.status, flags=object_model.flags),
-        moderation=get_moderation(status=None, offer_offence=None)
+        moderation=get_moderation(status=object_model.status, offer_offence=None)
     )
 
 

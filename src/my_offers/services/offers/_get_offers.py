@@ -36,7 +36,10 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
         sort_type=request.sort or get_offers.GetOffersSortType.by_default,
     )
 
-    offers, degradation = await get_offer_views(object_models)
+    offers, degradation = await get_offer_views(
+        object_models=object_models,
+        status_tab=request.filters.status_tab
+    )
 
     # шаг 3 - формирование ответа
     return entities.GetOffersResponse(
@@ -56,17 +59,16 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
     )
 
 
-async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_offers.GetOffer], Dict[str, bool]]:
 async def get_offer_views(
         *,
         object_models: List[ObjectModel],
         status_tab: enums.GetOfferStatusTab
-) -> List[get_offers.GetOffer]:
+) -> Tuple[List[get_offers.GetOffer], Dict[str, bool]]:
     # шаг 1 - подготовка параметров для обогащения
     enrich_params = prepare_enrich_params(object_models)
 
     # шаг 2 - получение данных для обогащения
-    enrich_data, degradation = await load_enrich_data(enrich_params)
+    enrich_data, degradation = await load_enrich_data(enrich_params, status_tab=status_tab)
 
     # шаг 3 - подготовка моделей для ответа
     offers = [

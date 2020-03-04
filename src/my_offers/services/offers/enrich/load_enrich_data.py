@@ -9,7 +9,10 @@ from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
-async def load_enrich_data(params: EnrichParams, status_tab: enums.GetOfferStatusTab) -> Tuple[EnrichData, Dict[str, bool]]:
+async def load_enrich_data(
+        params: EnrichParams,
+        status_tab: enums.GetOfferStatusTab
+) -> Tuple[EnrichData, Dict[str, bool]]:
     offer_ids = params.get_offer_ids()
     if not offer_ids:
         return EnrichData(

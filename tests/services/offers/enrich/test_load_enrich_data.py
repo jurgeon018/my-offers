@@ -4,6 +4,7 @@ from cian_test_utils import future
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.enums import GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
 from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem, EnrichParams
@@ -66,7 +67,7 @@ async def test_load_enrich_data(mocker):
     )
 
     # act
-    result = await load_enrich_data(params)
+    result = await load_enrich_data(params=params, status_tab=GetOfferStatusTab.active)
 
     # assert
     assert result == expected
@@ -96,7 +97,7 @@ async def test_load_enrich_data__empty__empty(mocker):
     ), {}
 
     # act
-    result = await load_enrich_data(params)
+    result = await load_enrich_data(params=params, status_tab=GetOfferStatusTab.active)
 
     # assert
     assert result == expected
