@@ -4,8 +4,8 @@ from cian_core.rabbitmq.consumer import Exchange, Queue, QueueBinding
 from cian_enum import StrEnum
 
 from my_offers.helpers.queue import get_modified_queue_name
-from my_offers.queue.routing_keys import AnnouncementReportingV1RoutingKey, ServiceContractsReportingV1RoutingKey
-
+from my_offers.queue.routing_keys import AnnouncementReportingV1RoutingKey, ServiceContractsReportingV1RoutingKey, \
+    UnloadOrderReportingV1RoutingKey
 
 billing_exchange = Exchange('billing')
 
@@ -49,6 +49,16 @@ close_announcement_contract_queue = Queue(
         QueueBinding(
             exchange=billing_exchange,
             routing_key=ServiceContractsReportingV1RoutingKey.closed.value
+        )
+    ]
+)
+
+save_offer_unload_error_queue = Queue(
+    name=get_modified_queue_name('save_offer__unload_error'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('unload'),
+            routing_key=UnloadOrderReportingV1RoutingKey.error.value
         )
     ]
 )

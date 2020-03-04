@@ -11,3 +11,8 @@ class RabbitMQAnnouncementMessageSchema(EntitySchema):
 class RabbitMQServiceContractCreatedMessageSchema(EntitySchema):
     class Meta:
         entity = entities.ServiceContractMessage
+
+
+class RabbitMQSaveUnloadErrorMessageSchema(EntitySchema):
+    class Meta:
+        entity = entities.SaveUnloadErrorMessage

@@ -5,13 +5,14 @@ from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
-from my_offers.queue.entities import AnnouncementMessage, ServiceContractMessage
+from my_offers.entities import OfferImportError
+from my_offers.queue.entities import AnnouncementMessage, ServiceContractMessage, SaveUnloadErrorMessage
 from my_offers.services.announcement import process_announcement
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
     save_announcement_contract,
 )
-
+from my_offers.services.offers_import import save_offers_import_error
 
 logger = logging.getLogger(__name__)
 
@@ -48,3 +49,21 @@ async def mark_to_delete_announcement_contract_callback(messages: List[Message])
 
         with new_operation_id(operation_id):
             await mark_to_delete_announcement_contract(billing_contract=offer_contract)
+
+
+async def save_offer_unload_error_callback(messages: List[Message]) -> None:
+    errors = {}
+    for message in messages:
+        error_message: SaveUnloadErrorMessage = message.data
+        if not error_message.object_id:
+            continue
+        errors[error_message.object_id] = OfferImportError(
+            offer_id=error_message.object_id,
+            type=error_message.error.type,
+            message=error_message.error.message,
+            created_at=error_message.date,
+        )
+
+    if errors:
+        with new_operation_id():
+            await save_offers_import_error(list(errors.values()))

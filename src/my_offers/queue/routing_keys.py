@@ -52,3 +52,8 @@ class ServiceContractsReportingV1RoutingKey(StrEnum):
     """Контракт обновлен"""
     closed = 'service-contract-reporting.v1.closed'
     """Конктракт закрыт"""
+
+
+class UnloadOrderReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+    error = 'unload-order-reporting.v1.error'

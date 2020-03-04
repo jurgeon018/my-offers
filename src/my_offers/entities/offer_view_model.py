@@ -70,6 +70,12 @@ class AvailableActions:
 
 
 @dataclass
+class NotActiveInfo:
+    status: str
+    message: Optional[str]
+
+
+@dataclass
 class OfferViewModel:
     main_photo_url: Optional[str]
     """Основаная фотография объекта"""
@@ -105,3 +111,5 @@ class OfferViewModel:
     """Строка статуса"""
     available_actions: AvailableActions
     """Доступные действия с объявлениями"""
+    not_active_info: Optional[NotActiveInfo]
+    """Доп. информация для вкладки неактивные"""

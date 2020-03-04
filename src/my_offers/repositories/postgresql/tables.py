@@ -66,3 +66,12 @@ offers_billing_contracts = sa.Table(
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
 )
+
+offers_last_import_error = sa.Table(
+    'offers_last_import_error',
+    _metadata,
+    sa.Column('offer_id', sa.BIGINT, primary_key=True),
+    sa.Column('type', sa.String),
+    sa.Column('message', sa.String),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
+)
