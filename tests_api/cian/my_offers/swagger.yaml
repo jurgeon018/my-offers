@@ -143,6 +143,9 @@ definitions:
       auction:
         $ref: '#/definitions/my_offers.entities.get_offers.AuctionSchema'
         description: Данные об аукционе по объявлению
+      availableActions:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.AvailableActionsSchema'
+        description: Доступные действия с объявлениями
       createdAt:
         description: Дата подачи объявления
         format: date-time
@@ -225,6 +228,7 @@ definitions:
         title: vas
         type: array
     required:
+    - availableActions
     - createdAt
     - features
     - geo
@@ -273,14 +277,22 @@ definitions:
     properties:
       counters:
         $ref: '#/definitions/my_offers.entities.get_offers.OfferCountersSchema'
+        description: Счеткики еоличества объявлений
+      degradation:
+        description: Информация о деградации
+        title: degradation
+        type: object
       offers:
+        description: Список объявлений
         items:
           $ref: '#/definitions/my_offers.entities.get_offers.GetOfferSchema'
         type: array
       page:
         $ref: '#/definitions/my_offers.entities.get_offers.PageInfoSchema'
+        description: Информация о странице
     required:
     - counters
+    - degradation
     - offers
     - page
     type: object
@@ -414,6 +426,20 @@ definitions:
     - searchUrl
     - type
     type: object
+  my_offers.entities.offer_view_model.AvailableActionsSchema:
+    properties:
+      canMoveToArchive:
+        description: Пользователь может перенести объявление в архив
+        title: can_move_to_archive
+        type: boolean
+      canUpdateEditDate:
+        description: Можно обновить дату
+        title: can_update_edit_date
+        type: boolean
+    required:
+    - canMoveToArchive
+    - canUpdateEditDate
+    type: object
   my_offers.entities.offer_view_model.NewbuildingSchema:
     properties:
       name:
@@ -519,6 +545,23 @@ paths:
           schema:
             $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
   /public/v1/actions/delete-offer/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/my_offers.entities.offer_action.OfferActionRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/my_offers.entities.offer_action.OfferActionResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+  /public/v1/actions/update-edit-date/:
     post:
       parameters:
       - in: body
