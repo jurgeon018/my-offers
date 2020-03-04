@@ -3,9 +3,11 @@ from datetime import timedelta
 import click
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
+from tornado.ioloop import IOLoop
 
 from my_offers import setup
 from my_offers.queue import consumers, queues, schemas
+from my_offers.services.offers.clear_offer_service import clear_deleted_offer
 from my_offers.web.urls import urlpatterns
 
 
@@ -31,3 +33,10 @@ register_consumer(
     dead_queue_enabled=True,
     dead_queue_ttl=timedelta(seconds=60),
 )
+
+
+@cli.command()
+def clear_deleted_offer_cron() -> None:
+    """Крон удаления офферов"""
+    io_loop = IOLoop.current()
+    io_loop.run_sync(clear_deleted_offer)

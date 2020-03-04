@@ -18,3 +18,8 @@ command = "process_announcement_consumer"
 instances = 3
 cpu = 1536
 memory = 256
+
+[job.clear_deleted_offer_cron]
+type = "cron"
+command = "clear-deleted-offer-cron"
+cron = "0 2 * * *"

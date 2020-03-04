@@ -6,7 +6,7 @@ import asyncpgsa
 import pytz
 from sqlalchemy.dialects.postgresql import insert
 
-from my_offers import entities, pg
+from my_offers import entities, enums, pg
 from my_offers.mappers.offer_mapper import offer_mapper
 from my_offers.repositories.postgresql import tables
 
@@ -44,3 +44,11 @@ async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
         return None
 
     return offer_mapper.map_from(row)
+
+
+async def delete_offers_older_than(days_count: int):
+    query = """DELETE FROM offers where status_tab = $1 and updated_at <= now() - $2 * interval  '1 day'"""
+
+    await pg.get().execute(query,
+                           enums.OfferStatusTab.deleted.name,
+                           days_count)

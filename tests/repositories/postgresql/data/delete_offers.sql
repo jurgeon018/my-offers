@@ -1,0 +1,1 @@
+DELETE FROM offers where status_tab = $1 and updated_at <= now() - $2 * interval  '1 day'
