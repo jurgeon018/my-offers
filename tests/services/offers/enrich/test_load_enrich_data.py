@@ -1,6 +1,7 @@
 import pytest
 from cian_core.degradation import DegradationResult
 from cian_test_utils import future
+from mock import call
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
@@ -13,6 +14,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_can_update_edit_dates,
     _load_geo_urls,
     _load_jk_urls,
+    _load_moderation_info,
     _load_statistic,
     load_enrich_data,
 )
@@ -54,15 +56,27 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_can_update_edit_dates',
         return_value=future(EnrichItem(key='can_update_edit_dates', degraded=False, value={})),
     )
+    load_moderation_info_mock = mocker.patch(
+        f'{PATH}_load_moderation_info',
+        return_value=future(EnrichItem(key='moderation_info', degraded=False, value={})),
+    )
 
     expected = (
-        EnrichData(statistics={}, auctions={}, jk_urls={}, geo_urls={}, can_update_edit_dates={}),
+        EnrichData(
+            statistics={},
+            auctions={},
+            jk_urls={},
+            geo_urls={},
+            can_update_edit_dates={},
+            moderation_info={}
+        ),
         {
             'auctions': False,
             'can_update_edit_dates': False,
             'geo_urls': False,
             'jk_urls': False,
-            'statistics': False
+            'statistics': False,
+            'moderation_info': False,
         }
     )
 
@@ -82,6 +96,7 @@ async def test_load_enrich_data(mocker):
         )
     ])
     load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_moderation_info_mock.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -232,3 +247,26 @@ async def test__load_can_update_edit_date(mocker):
     # assert
     assert result == expected
     can_update_edit_date_degradation_handler_mock.assert_called_once_with([11, 22])
+
+
+@pytest.mark.gen_test
+async def test___load_moderation_info(mocker):
+    # arrange
+    offers_ids = [11, 22]
+    offer_offence = mocker.sentinel.offer_offence
+    expected = EnrichItem(
+        key='moderation_info',
+        degraded=False,
+        value={11: offer_offence, 22: offer_offence}
+    )
+    get_offer_offence_mock = mocker.patch(f'{PATH}postgresql.get_offer_offence', return_value=future(offer_offence))
+
+    # act
+    result = await _load_moderation_info(offers_ids)
+
+    # assert
+    assert result == expected
+    get_offer_offence_mock.assert_has_calls([
+        call(offer_id=11),
+        call(offer_id=22)
+    ])

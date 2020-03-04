@@ -14,6 +14,7 @@ class GeoUrlKey(NamedTuple):
 
 
 class EnrichParams:
+
     def __init__(self) -> None:
         self._offer_ids: Set[int] = set()
         self._jk_ids: Set[int] = set()
@@ -65,6 +66,7 @@ class EnrichParams:
 
 
 class AddressUrls:
+
     def __init__(self) -> None:
         self._storage: Dict[address_info.Type, Dict] = defaultdict(dict)
 
@@ -91,7 +93,7 @@ class EnrichData:
     jk_urls: Dict[int, str]
     geo_urls: Dict[GeoUrlKey, AddressUrls]
     can_update_edit_dates: Dict[int, bool]
-    moderation_info: Optional[OfferOffence] = None
+    moderation_info: Optional[Dict[int, OfferOffence]] = None
 
     def get_urls_by_types(
             self,
@@ -100,3 +102,9 @@ class EnrichData:
             offer_type: enums.OfferType
     ) -> AddressUrls:
         return self.geo_urls.get(GeoUrlKey(deal_type, offer_type), AddressUrls())
+
+    def get_offer_offence(self, offer_id: int) -> Optional[OfferOffence]:
+        if not self.moderation_info:
+            return None
+
+        return self.moderation_info.get(offer_id)
