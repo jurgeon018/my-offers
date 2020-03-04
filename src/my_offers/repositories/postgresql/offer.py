@@ -49,6 +49,8 @@ async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
 async def delete_offers_older_than(days_count: int):
     query = """DELETE FROM offers where status_tab = $1 and updated_at <= now() - $2 * interval  '1 day'"""
 
-    await pg.get().execute(query,
-                           enums.OfferStatusTab.deleted.name,
-                           days_count)
+    await pg.get().execute(
+        query,
+        enums.OfferStatusTab.deleted.name,
+        days_count
+    )
