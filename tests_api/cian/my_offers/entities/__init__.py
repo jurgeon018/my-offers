@@ -11,6 +11,7 @@ new-codegen version: 4.0.1
 """
 from .address import Address
 from .auction import Auction
+from .available_actions import AvailableActions
 from .filter import Filter
 from .newbuilding import Newbuilding
 from .underground import Underground

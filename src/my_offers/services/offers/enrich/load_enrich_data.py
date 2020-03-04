@@ -1,50 +1,64 @@
 import asyncio
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
-from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams, GeoUrlKey
+from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
-async def load_enrich_data(params: EnrichParams) -> EnrichData:
+async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, bool]]:
     offer_ids = params.get_offer_ids()
+    if not offer_ids:
+        return EnrichData(
+            statistics={},
+            auctions={},
+            jk_urls={},
+            geo_urls={},
+            can_update_edit_dates={},
+        ), {}
+
     data = await asyncio.gather(
-        _load_statistic(offer_ids),  # 0
-        _load_auctions(offer_ids),   # 1
-        _load_jk_urls(params.get_jk_ids()),  # 2
-        _load_geo_urls(params.get_geo_url_params()),  # 3
+        _load_statistic(offer_ids),
+        _load_auctions(offer_ids),
+        _load_jk_urls(params.get_jk_ids()),
+        _load_geo_urls(params.get_geo_url_params()),
+        _load_can_update_edit_dates(offer_ids),
+        # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
     )
 
-    return EnrichData(
-        statistics=data[0],
-        auctions=data[1],
-        jk_urls=data[2],
-        geo_urls=data[3],
-    )
+    params = {}
+    degradation = {}
+    for item in data:
+        params[item.key] = item.value
+        degradation[item.key] = item.degraded
+
+    return EnrichData(**params), degradation
 
 
-async def _load_statistic(offer_ids: List[int]) -> Dict:
+async def _load_statistic(offer_ids: List[int]) -> EnrichItem:
     # todo: https://jira.cian.tech/browse/CD-74478
-    return {}
+    return EnrichItem(key='statistics', degraded=False, value={})
 
 
-async def _load_auctions(offer_ids: List[int]) -> Dict:
+async def _load_auctions(offer_ids: List[int]) -> EnrichItem:
     # todo: https://jira.cian.tech/browse/CD-74479
-    return {}
+    return EnrichItem(key='auctions', degraded=False, value={})
 
 
-async def _load_jk_urls(jk_ids: List[int]) -> Dict[int, str]:
+async def _load_jk_urls(jk_ids: List[int]) -> EnrichItem:
     if not jk_ids:
-        return {}
+        return EnrichItem(key='jk_urls', degraded=False, value={})
 
     result = await get_newbuilding_urls_degradation_handler(jk_ids)
 
-    return result.value
+    return EnrichItem(key='jk_urls', degraded=result.degraded, value=result.value)
 
 
-async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[GeoUrlKey, AddressUrls]:
+async def _load_geo_urls(params: List[AddressUrlParams]) -> EnrichItem:
     result: Dict[GeoUrlKey, AddressUrls] = {}
+    degraded = False
     for param in params:
         data = await get_query_strings_for_address_degradation_handler(
             address_elements=param.address_info,
@@ -53,6 +67,7 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[GeoUrlKey, Addr
         )
 
         if data.degraded:
+            degraded = True
             continue
 
         for i, address in enumerate(param.address_info):
@@ -61,4 +76,10 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> Dict[GeoUrlKey, Addr
                 result[key] = AddressUrls()
             result[key].add_url(address=address, url=data.value[i])
 
-    return result
+    return EnrichItem(key='geo_urls', degraded=degraded, value=result)
+
+
+async def _load_can_update_edit_dates(offer_ids: List[int]) -> EnrichItem:
+    result = await can_update_edit_date_degradation_handler(offer_ids)
+
+    return EnrichItem(key='can_update_edit_dates', degraded=result.degraded, value=result.value)

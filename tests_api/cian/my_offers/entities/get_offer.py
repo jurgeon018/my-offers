@@ -15,6 +15,7 @@ from typing import List, Optional
 from cian_enum import NoFormat, StrEnum
 
 from .auction import Auction
+from .available_actions import AvailableActions
 from .offer_geo import OfferGeo
 from .price_info import PriceInfo
 from .statistics import Statistics
@@ -32,6 +33,8 @@ class Vas(StrEnum):
 
 @dataclass
 class GetOffer:
+    availableActions: AvailableActions
+    """Доступные действия с объявлениями"""
     createdAt: datetime
     """Дата подачи объявления"""
     features: List[str]

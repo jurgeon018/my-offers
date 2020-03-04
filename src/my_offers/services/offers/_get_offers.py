@@ -33,12 +33,14 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
         filters=filters,
         limit=limit,
         offset=offset,
-        sort_type=request.sort if request.sort else get_offers.GetOffersSortType.by_default,
+        sort_type=request.sort or get_offers.GetOffersSortType.by_default,
     )
+
+    offers, degradation = await get_offer_views(object_models)
 
     # шаг 3 - формирование ответа
     return entities.GetOffersResponse(
-        offers=await get_offer_views(object_models),
+        offers=offers,
         counters=get_offers.OfferCounters(
             active=1,
             not_active=0,
@@ -49,22 +51,25 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
             count=total,
             can_load_more=total > offset + limit,
             page_count=math.ceil(total / limit)
-        )
+        ),
+        degradation=degradation,
     )
 
 
-async def get_offer_views(object_models: List[ObjectModel]) -> List[get_offers.GetOffer]:
+async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_offers.GetOffer], Dict[str, bool]]:
     # шаг 1 - подготовка параметров для обогащения
     enrich_params = prepare_enrich_params(object_models)
 
     # шаг 2 - получение данных для обогащения
-    enrich_data = await load_enrich_data(enrich_params)
+    enrich_data, degradation = await load_enrich_data(enrich_params)
 
     # шаг 3 - подготовка моделей для ответа
-    return [
+    offers = [
         build_offer_view(object_model=object_model, enrich_data=enrich_data)
         for object_model in object_models
     ]
+
+    return offers, degradation
 
 
 async def _get_filters(*, user_id: int, filters: Optional[get_offers.Filter]) -> Dict[str, Any]:

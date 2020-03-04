@@ -61,6 +61,16 @@ urlpatterns = base_urls.urlpatterns + [
             base_handler_cls=PublicHandler,
         )
     ),
+    url(
+        r'/public/v1/actions/update-edit-date/$',
+        get_handler(
+            service=actions.update_edit_date,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.OfferActionRequest,
+            response_schema=entities.OfferActionResponse,
+            base_handler_cls=PublicHandler,
+        )
+    ),
 
 
     # QA
