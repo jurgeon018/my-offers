@@ -12,3 +12,8 @@ class RabbitMQAnnouncementMessageSchema(EntitySchema):
 class RabbitMQOffenceMessageSchema(EntitySchema):
     class Meta:
         entity = entities.ModerationOfferOffence
+
+
+class RabbitMQServiceContractCreatedMessageSchema(EntitySchema):
+    class Meta:
+        entity = entities.ServiceContractMessage

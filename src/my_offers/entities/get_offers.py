@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
+from typing import Dict, List, Optional
 
 from my_offers import enums
 from my_offers.entities.offer_view_model import OfferViewModel
@@ -125,5 +126,10 @@ class PageInfo:
 @dataclass
 class GetOffersResponse:
     offers: List[GetOffer]
+    """Список объявлений"""
     counters: OfferCounters
+    """Счеткики еоличества объявлений"""
     page: PageInfo
+    """Информация о странице"""
+    degradation: Dict[str, bool]
+    """Информация о деградации"""

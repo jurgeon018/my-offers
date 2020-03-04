@@ -43,6 +43,17 @@ class AnnouncementReportingV1RoutingKey(StrEnum):
     # """Продан"""
 
 
+class ServiceContractsReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    created = 'service-contract-reporting.v1.created'
+    """Контракт создан"""
+    changed = 'service-contract-reporting.v1.changed'
+    """Контракт обновлен"""
+    closed = 'service-contract-reporting.v1.closed'
+    """Конктракт закрыт"""
+
+
 class ModerationOfferOffenceReportingV1RoutingKey(StrEnum):
     __value_format__ = NoFormat
 

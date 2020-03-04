@@ -30,6 +30,7 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
 
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
     is_manual = bool(object_model.source and object_model.source.is_upload)
+    is_archived = bool(object_model.flags and object_model.flags.is_archived)
     price_info = get_price_info(
         bargain_terms=object_model.bargain_terms,
         category=object_model.category,
@@ -68,6 +69,13 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         is_publication_time_ends=_is_publication_time_ends(object_model),
         statistics=Statistics(),
         archived_at=object_model.archived_date,
+        status=get_status(status=object_model.status, is_archived=is_archived),
+        available_actions=get_available_actions(
+            status=object_model.status,
+            is_archived=is_archived,
+            is_manual=is_manual,
+            can_update_edit_date=enrich_data.can_update_edit_dates.get(object_model.id, False),
+        ),
         status=get_status(status=object_model.status, flags=object_model.flags),
         moderation=get_moderation(status=None, offer_offence=None)
     )

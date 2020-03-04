@@ -20,8 +20,7 @@ if TYPE_CHECKING:
 
 
 class TestPublicV1GetOffers(MyOffersHelper):
-    path = '/public/v1/get-offers/'
-
+    # todo: https://jira.cian.tech/browse/CD-75751
     @pytest.mark.base
     def test_200_post(self, sl: 'CianServices', context):
         # arrange

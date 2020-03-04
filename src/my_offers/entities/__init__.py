@@ -1,3 +1,4 @@
+from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.entities.get_offers import GetOffersPrivateRequest, GetOffersRequest, GetOffersResponse
 from my_offers.entities.moderation import ModerationOfferOffence
 from my_offers.entities.offer import Offer

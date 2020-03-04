@@ -36,7 +36,7 @@ create type service as enum (
     'calltracking'
     );
 
-CREATE table offers
+CREATE TABLE offers
 (
 -- базовые поля
     offer_id          bigint                   not null primary key,
@@ -73,9 +73,24 @@ CREATE table offers
 );
 
 CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));
-create index on offers (master_user_id, status_tab);
-create index on offers (updated_at);
+CREATE INDEX ON offers (master_user_id, status_tab);
+CREATE INDEX ON offers (updated_at);
 
+CREATE TABLE offers_billing_contracts
+(
+    id                bigint                   not null primary key,
+    user_id           bigint                   not null,
+    actor_user_id     bigint                   not null,
+    publisher_user_id bigint                   not null,
+    offer_id          bigint                   not null,
+    start_date        timestamp with time zone not null,
+    payed_till        timestamp with time zone not null,
+    row_version       bigint                   not null,
+    is_deleted        boolean                  not null,
+    created_at        timestamp with time zone not null,
+    updated_at        timestamp with time zone not null
+);
+CREATE INDEX ON offers_billing_contracts (offer_id);
 CREATE TYPE offence_status as enum (
     'Confirmed',
     'Corrected',

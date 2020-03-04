@@ -5,9 +5,14 @@ from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
+from my_offers.queue.entities import AnnouncementMessage, ServiceContractMessage
 from my_offers.entities import ModerationOfferOffence
 from my_offers.queue.entities import AnnouncementMessage
 from my_offers.services.announcement import process_announcement
+from my_offers.services.billing.contracts_service import (
+    mark_to_delete_announcement_contract,
+    save_announcement_contract,
+)
 from my_offers.services.moderation.moderation_service import save_offer_offence
 
 
@@ -26,6 +31,26 @@ async def process_announcement_callback(messages: List[Message]) -> None:
             except:
                 logger.exception('Process announcement error id: %s, key: %s', object_model.id, routing_key)
                 raise
+
+
+async def save_announcement_contract_callback(messages: List[Message]) -> None:
+    for message in messages:
+        contract_message: ServiceContractMessage = message.data
+        operation_id = contract_message.operation_id
+        offer_contract = contract_message.service_contract_reporting_model
+
+        with new_operation_id(operation_id):
+            await save_announcement_contract(billing_contract=offer_contract)
+
+
+async def mark_to_delete_announcement_contract_callback(messages: List[Message]) -> None:
+    for message in messages:
+        contract_message: ServiceContractMessage = message.data
+        operation_id = contract_message.operation_id
+        offer_contract = contract_message.service_contract_reporting_model
+
+        with new_operation_id(operation_id):
+            await mark_to_delete_announcement_contract(billing_contract=offer_contract)
 
 
 async def save_offer_offence_callback(messages: List[Message]) -> None:

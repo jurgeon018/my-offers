@@ -1,2 +1,2 @@
-from my_offers.services.offers.get_offers_service import get_offers_private, get_offers_public
-from my_offers.services.offers.update_offer_service import update_offer
+from my_offers.services.offers._get_offers import get_offer_views, get_offers_private, get_offers_public
+from my_offers.services.offers._update_offer import update_offer

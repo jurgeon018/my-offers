@@ -14,17 +14,18 @@ from my_offers.entities.get_offers import (
     Pagination,
     Statistics,
 )
-from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
+from my_offers.entities.offer_view_model import AvailableActions, OfferGeo, PriceInfo
 from my_offers.enums import GetOffersSortType, GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.services import offers
 from my_offers.services.offers import get_offers_private
-from my_offers.services.offers.get_offers_service import _get_pagination
+from my_offers.services.offers._get_offers import _get_pagination, get_offer_views
+from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
 @pytest.mark.gen_test
-async def test_get_offer(mocker):
+async def test_get_offers_public(mocker):
     # arrange
     expected_user = 777
     request = GetOffersRequest(
@@ -50,36 +51,44 @@ async def test_get_offer(mocker):
         phones=[Phone(country_code='1', number='12312')],
         creation_date=datetime(2020, 2, 11, 17, 00),
     )
+
+    get_offer = GetOffer(
+        main_photo_url=None,
+        title='',
+        url='https://cian.ru/rent/flat/111',
+        geo=OfferGeo(address=None, newbuilding=None, underground=None),
+        subagent=None,
+        price_info=PriceInfo(exact=None, range=None),
+        features=[],
+        publish_features=[],
+        vas=[],
+        is_from_package=False,
+        is_manual=False,
+        is_publication_time_ends=False,
+        created_at=datetime(2020, 2, 11, 17, 00),
+        id=111,
+        statistics=Statistics(),
+        auction=None,
+        archived_at=None,
+        status=None,
+        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+    )
+
     expected_result = GetOffersResponse(
-        offers=[
-            GetOffer(
-                main_photo_url=None,
-                title='',
-                url='https://cian.ru/rent/flat/111',
-                geo=OfferGeo(address=None, newbuilding=None, underground=None),
-                subagent=None,
-                price_info=PriceInfo(exact=None, range=None),
-                features=[],
-                publish_features=[],
-                vas=[],
-                is_from_package=False,
-                is_manual=False,
-                is_publication_time_ends=False,
-                created_at=datetime(2020, 2, 11, 17, 00),
-                id=111,
-                statistics=Statistics(),
-                auction=None,
-                archived_at=None,
-                status=None,
-            )
-        ],
+        offers=[get_offer],
         counters=OfferCounters(active=1, not_active=0, declined=0, archived=0),
         page=PageInfo(count=1, page_count=1, can_load_more=False),
+        degradation={},
     )
 
     get_offers_by_status_mock = mocker.patch(
-        'my_offers.services.offers.get_offers_service.postgresql.get_object_models',
+        'my_offers.services.offers._get_offers.postgresql.get_object_models',
         return_value=future(([object_model], 1)),
+    )
+
+    get_offer_views_mock = mocker.patch(
+        'my_offers.services.offers._get_offers.get_offer_views',
+        return_value=future(([get_offer], {})),
     )
 
     # act
@@ -90,6 +99,7 @@ async def test_get_offer(mocker):
 
     # assert
     assert result == expected_result
+    get_offer_views_mock.assert_called_once_with([object_model])
     get_offers_by_status_mock.assert_called_once_with(
         filters={'status_tab': 'active', 'master_user_id': 777},
         limit=20,
@@ -122,7 +132,7 @@ async def test_get_offers_private(mocker):
     response = mocker.sentinel.response
 
     get_offers_public_mock = mocker.patch(
-        'my_offers.services.offers.get_offers_service.get_offers_public',
+        'my_offers.services.offers._get_offers.get_offers_public',
         return_value=future(response),
     )
 
@@ -155,3 +165,63 @@ def test__get_pagination(pagination, expected):
 
     # assert
     assert result == expected
+
+
+@pytest.mark.gen_test
+async def test_get_offer_views(mocker):
+    # arrange
+    load_enrich_data_mock = mocker.patch(
+        'my_offers.services.offers._get_offers.load_enrich_data',
+        return_value=future((
+            EnrichData(
+                statistics={},
+                auctions={},
+                jk_urls={},
+                geo_urls={},
+                can_update_edit_dates={},
+            ),
+            {}
+        )),
+    )
+
+    object_model = ObjectModel(
+        id=111,
+        bargain_terms=BargainTerms(price=123),
+        category=Category.flat_rent,
+        phones=[Phone(country_code='1', number='12312')],
+        creation_date=datetime(2020, 2, 11, 17, 00),
+    )
+
+    expected = (
+        [
+            GetOffer(
+                main_photo_url=None,
+                title='',
+                url='https://cian.ru/rent/flat/111',
+                geo=OfferGeo(address=None, newbuilding=None, underground=None),
+                subagent=None,
+                price_info=PriceInfo(exact=None, range=None),
+                features=[],
+                publish_features=[],
+                vas=[],
+                is_from_package=False,
+                is_manual=False,
+                is_publication_time_ends=False,
+                created_at=datetime(2020, 2, 11, 17, 0),
+                id=111,
+                archived_at=None,
+                status=None,
+                available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+                statistics=Statistics(shows=None, views=None, favorites=None),
+                auction=None,
+            )
+        ],
+        {}
+    )
+
+    # act
+    result = await get_offer_views([object_model])
+
+    # assert
+    assert result == expected
+    load_enrich_data_mock.assert_called_once()
