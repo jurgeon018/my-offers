@@ -25,6 +25,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
         _load_can_update_edit_dates(offer_ids),
+        # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
     )
 
     params = {}

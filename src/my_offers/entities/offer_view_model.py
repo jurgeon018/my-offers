@@ -104,4 +104,4 @@ class OfferViewModel:
     status: Optional[str]
     """Строка статуса"""
     available_actions: AvailableActions
-    """доступные действия с объявлениями"""
+    """Доступные действия с объявлениями"""

@@ -34,7 +34,7 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
         filters=filters,
         limit=limit,
         offset=offset,
-        sort_type=request.sort if request.sort else get_offers.GetOffersSortType.by_default,
+        sort_type=request.sort or get_offers.GetOffersSortType.by_default,
     )
 
     offers, degradation = await get_offer_views(object_models)
@@ -60,10 +60,12 @@ async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_of
     enrich_data, degradation = await load_enrich_data(enrich_params)
 
     # шаг 3 - подготовка моделей для ответа
-    return [
+    offers = [
         build_offer_view(object_model=object_model, enrich_data=enrich_data)
         for object_model in object_models
-    ], degradation
+    ]
+
+    return offers, degradation
 
 
 async def _get_filters(*, user_id: int, filters: Optional[get_offers.Filter]) -> Dict[str, Any]:

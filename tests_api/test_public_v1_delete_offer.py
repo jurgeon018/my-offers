@@ -14,8 +14,6 @@ if TYPE_CHECKING:
 
 
 class TestPublicV1GetOffers(MyOffersHelper):
-    path = '/public/v1/actions/delete-offer/'
-
     @pytest.mark.base
     def test_200_post(self, sl: 'CianServices', context):
         # arrange
