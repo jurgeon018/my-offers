@@ -45,4 +45,4 @@ async def get_offer_offence(offer_id: int) -> Optional[OfferOffence]:
     query, params = asyncpgsa.compile_query(sql)
     result = await pg.get().fetchrow(query, *params)
 
-    return offer_offence_mapper.map_from(dict(result)) if result else None
+    return offer_offence_mapper.map_from(result) if result else None

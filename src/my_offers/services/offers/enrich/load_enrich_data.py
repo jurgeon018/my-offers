@@ -1,13 +1,14 @@
 import asyncio
 from typing import Dict, List
 
+from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams, GeoUrlKey
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
-async def load_enrich_data(params: EnrichParams) -> EnrichData:
+async def load_enrich_data(params: EnrichParams, status_tab: enums.GetOfferStatusTab) -> EnrichData:
     offer_ids = params.get_offer_ids()
     data = await asyncio.gather(
         _load_statistic(offer_ids),  # 0

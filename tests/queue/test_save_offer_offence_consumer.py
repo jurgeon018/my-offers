@@ -18,7 +18,7 @@ async def test_save_announcement_contract_callback(mocker):
     moderation_offer_offence = v(ModerationOfferOffence(
         offence_id=555,
         offence_type=1,
-        text_for_user='НУ ТЫ И ПЕС',
+        text_for_user='ТЕСТ',
         state=ModerationOffenceStatus.confirmed,
         object_id=777,
         created_by=888,

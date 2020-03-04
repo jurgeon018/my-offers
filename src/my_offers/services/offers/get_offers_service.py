@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from simple_settings import settings
 
-from my_offers import entities
+from my_offers import entities, enums
 from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
@@ -35,10 +35,11 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
         offset=offset,
         sort_type=request.sort if request.sort else get_offers.GetOffersSortType.by_default,
     )
+    offers_views = await get_offer_views(object_models=object_models, status_tab=request.filters.status_tab)
 
     # шаг 3 - формирование ответа
     return entities.GetOffersResponse(
-        offers=await get_offer_views(object_models),
+        offers=offers_views,
         counters=get_offers.OfferCounters(
             active=1,
             not_active=0,
@@ -53,12 +54,16 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
     )
 
 
-async def get_offer_views(object_models: List[ObjectModel]) -> List[get_offers.GetOffer]:
+async def get_offer_views(
+        *,
+        object_models: List[ObjectModel],
+        status_tab: enums.GetOfferStatusTab
+) -> List[get_offers.GetOffer]:
     # шаг 1 - подготовка параметров для обогащения
     enrich_params = prepare_enrich_params(object_models)
 
     # шаг 2 - получение данных для обогащения
-    enrich_data = await load_enrich_data(enrich_params)
+    enrich_data = await load_enrich_data(params=enrich_params, status_tab=status_tab)
 
     # шаг 3 - подготовка моделей для ответа
     return [

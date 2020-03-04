@@ -20,7 +20,7 @@ async def test_save_offer_offence(mocker):
     moderation_offer_offence = v(ModerationOfferOffence(
         offence_id=555,
         offence_type=1,
-        text_for_user='НУ ТЫ И ПЕС',
+        text_for_user='ТЕСТ',
         state=ModerationOffenceStatus.confirmed,
         object_id=777,
         created_by=888,
@@ -32,7 +32,7 @@ async def test_save_offer_offence(mocker):
     offer_offence = OfferOffence(
         offence_id=555,
         offence_type=1,
-        offence_text='НУ ТЫ И ПЕС',
+        offence_text='ТЕСТ',
         offence_status=ModerationOffenceStatus.confirmed,
         offer_id=777,
         created_by=888,
@@ -60,7 +60,7 @@ async def test_save_offer_offence__row_version_is_none(mocker):
     moderation_offer_offence = v(ModerationOfferOffence(
         offence_id=555,
         offence_type=1,
-        text_for_user='НУ ТЫ И ПЕС',
+        text_for_user='ТЕСТ',
         state=ModerationOffenceStatus.confirmed,
         object_id=777,
         created_by=888,
@@ -72,7 +72,7 @@ async def test_save_offer_offence__row_version_is_none(mocker):
     offer_offence = OfferOffence(
         offence_id=555,
         offence_type=1,
-        offence_text='НУ ТЫ И ПЕС',
+        offence_text='ТЕСТ',
         offence_status=ModerationOffenceStatus.confirmed,
         offer_id=777,
         created_by=888,

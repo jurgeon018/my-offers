@@ -4,6 +4,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.moderation import OfferOffence
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 
 
@@ -83,6 +84,7 @@ class EnrichData:
     auctions: Dict[int, Any]
     jk_urls: Dict[int, str]
     geo_urls: Dict[GeoUrlKey, AddressUrls]
+    moderation_info: Optional[OfferOffence] = None
 
     def get_urls_by_types(
             self,

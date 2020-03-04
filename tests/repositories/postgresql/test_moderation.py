@@ -19,7 +19,7 @@ async def test_save_offer_offence(mocker):
     offer_offence = OfferOffence(
         offence_id=555,
         offence_type=1,
-        offence_text='НУ ТЫ И ПЕС',
+        offence_text='ТЕСТ',
         offence_status=ModerationOffenceStatus.confirmed,
         offer_id=777,
         created_by=888,
@@ -71,7 +71,7 @@ async def test_get_offer_offence(mocker):
     offer_offence = dict(
         offence_id=555,
         offence_type=1,
-        offence_text='НУ ТЫ И ПЕС',
+        offence_text='ТЕСТ',
         offence_status=ModerationOffenceStatus.confirmed,
         offer_id=offer_id,
         created_by=888,

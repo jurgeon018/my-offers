@@ -4,14 +4,17 @@ from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.helpers.category import get_types
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.services.offer_view.fields.features import get_features
-from my_offers.services.offer_view.fields.geo import prepare_geo
-from my_offers.services.offer_view.fields.is_from_package import is_from_package
-from my_offers.services.offer_view.fields.price_info import get_price_info
-from my_offers.services.offer_view.fields.publish_features import get_publish_features
-from my_offers.services.offer_view.fields.status import get_status
-from my_offers.services.offer_view.fields.title import get_title
-from my_offers.services.offer_view.fields.vas import get_vas
+from my_offers.services.offer_view.fields import (
+    get_features,
+    get_moderation,
+    get_price_info,
+    get_publish_features,
+    get_status,
+    get_title,
+    get_vas,
+    is_from_package,
+    prepare_geo,
+)
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -65,7 +68,8 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         is_publication_time_ends=_is_publication_time_ends(object_model),
         statistics=Statistics(),
         archived_at=object_model.archived_date,
-        status=get_status(status=object_model.status, flags=object_model.flags)
+        status=get_status(status=object_model.status, flags=object_model.flags),
+        moderation=get_moderation(status=None, offer_offence=None)
     )
 
 
