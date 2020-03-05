@@ -8,6 +8,7 @@ from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
+from my_offers.repositories.postgresql.offer import get_offer_counters
 from my_offers.services.get_master_user_id import get_master_user_id
 from my_offers.services.offer_view import build_offer_view
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
@@ -43,12 +44,7 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
     # шаг 3 - формирование ответа
     return entities.GetOffersResponse(
         offers=offers,
-        counters=get_offers.OfferCounters(
-            active=1,
-            not_active=0,
-            declined=0,
-            archived=0
-        ),
+        counters=await get_offer_counters(realty_user_id),
         page=get_offers.PageInfo(
             count=total,
             can_load_more=total > offset + limit,
