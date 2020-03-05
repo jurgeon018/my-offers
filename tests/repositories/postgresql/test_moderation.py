@@ -80,14 +80,14 @@ async def test_get_offer_offence(mocker):
         updated_at=now,
         created_at=now,
     )
-    pg.get().fetchrow.return_value = future([offer_offence])
+    pg.get().fetch.return_value = future([offer_offence])
 
     # act
     result = await postgresql.get_offers_offence(offer_ids=[offer_id], status=ModerationOffenceStatus.confirmed)
 
     # assert
     assert result == [offer_offence_mapper.map_from(offer_offence)]
-    pg.get().fetchrow.assert_called_once_with(
+    pg.get().fetch.assert_called_once_with(
         '\n        WITH offence_ids AS (\n        SELECT offence_id                                     as offence_id,'
         '\n               row_number() over (order by created_date desc) as row_number'
         '\n        from offers_offences\n        WHERE offer_id = ANY ($1::bigint[])'
@@ -103,14 +103,14 @@ async def test_get_offer_offence(mocker):
 async def test_get_offer_offence__offence_is_none(mocker):
     # arrange
     offer_id = 999
-    pg.get().fetchrow.return_value = future([])
+    pg.get().fetch.return_value = future([])
 
     # act
     result = await postgresql.get_offers_offence(offer_ids=[offer_id], status=ModerationOffenceStatus.confirmed)
 
     # assert
     assert result == []
-    pg.get().fetchrow.assert_called_once_with(
+    pg.get().fetch.assert_called_once_with(
         '\n        WITH offence_ids AS (\n        SELECT offence_id                                     as offence_id,'
         '\n               row_number() over (order by created_date desc) as row_number'
         '\n        from offers_offences\n        WHERE offer_id = ANY ($1::bigint[])'
