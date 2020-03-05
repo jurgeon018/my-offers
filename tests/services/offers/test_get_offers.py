@@ -77,7 +77,7 @@ async def test_get_offers_public(mocker):
 
     expected_result = GetOffersResponse(
         offers=[get_offer],
-        counters=OfferCounters(active=1, not_active=0, declined=0, archived=0),
+        counters=OfferCounters(active=1, not_active=2, declined=3, archived=4),
         page=PageInfo(count=1, page_count=1, can_load_more=False),
         degradation={},
     )
@@ -90,6 +90,10 @@ async def test_get_offers_public(mocker):
     get_offer_views_mock = mocker.patch(
         'my_offers.services.offers._get_offers.get_offer_views',
         return_value=future(([get_offer], {})),
+    )
+    get_offer_counters_mock = mocker.patch(
+        'my_offers.services.offers._get_offers.get_offer_counters',
+        return_value=future(OfferCounters(active=1, not_active=2, declined=3, archived=4)),
     )
 
     # act
@@ -107,6 +111,7 @@ async def test_get_offers_public(mocker):
         offset=0,
         sort_type=GetOffersSortType.by_default,
     )
+    get_offer_counters_mock.assert_called_once_with(expected_user)
 
 
 @pytest.mark.gen_test
