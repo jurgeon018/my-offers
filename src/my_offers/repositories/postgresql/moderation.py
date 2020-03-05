@@ -51,4 +51,7 @@ async def get_offers_offence(*, offer_ids: List[int], status: ModerationOffenceS
     ]
     rows = await pg.get().fetchrow(sql, *params)
 
+    if not rows:
+        return []
+
     return [offer_offence_mapper.map_from(row) for row in rows]

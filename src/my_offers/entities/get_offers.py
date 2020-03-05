@@ -84,13 +84,14 @@ class AvailableActions:
     """Можно обновить дату"""
     can_move_to_archive: bool
     """Пользователь может перенести объявление в архив"""
+    can_delete: bool
+    """Можно ли удалить объялвение"""
 
 
 @dataclass
 class NotActiveInfo:
     status: str
     message: Optional[str] = None
-
 
 
 @dataclass

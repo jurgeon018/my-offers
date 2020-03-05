@@ -2,9 +2,9 @@ import asyncio
 from typing import Dict, List, Tuple
 
 from my_offers.entities.enrich import AddressUrlParams
-from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories import postgresql
+from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey

@@ -64,5 +64,4 @@ register_consumer(
     callback=consumers.save_offer_offence_callback,
     schema_cls=schemas.RabbitMQOffenceMessageSchema,
     dead_queue_enabled=True,
-    dead_queue_ttl=timedelta(seconds=60),
 )
