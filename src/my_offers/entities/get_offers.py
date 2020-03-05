@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Dict, List, Optional
 
 from my_offers import enums
@@ -93,6 +94,18 @@ class NotActiveInfo:
 
 
 @dataclass
+class Moderation:
+    declined_date: Optional[datetime] = None
+    """Дата отклонения"""
+    is_declined: Optional[bool] = None
+    """Отклонено ли модератором"""
+    reason: Optional[str] = None
+    """Текст причины отклонения"""
+    offence_status: Optional[str] = None
+    """Статус модерации"""
+
+
+@dataclass
 class GetOffer(OfferViewModel):
     statistics: Optional[Statistics]
     """Статистика по объявлению"""
@@ -100,6 +113,8 @@ class GetOffer(OfferViewModel):
     """Доступные действия с объявлениями"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
+    moderation: Optional[Moderation] = None
+    """Данные о причине отклонения объявления"""
     not_active_info: Optional[NotActiveInfo] = None
     """Доп. информация для вкладки неактивные"""
 

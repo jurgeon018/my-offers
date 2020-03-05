@@ -98,4 +98,26 @@ CREATE table offers_last_import_error
     type       varchar,
     message    varchar,
     created_at timestamp with time zone not null
-)
+);
+
+CREATE TYPE offence_status as enum (
+    'Confirmed',
+    'Corrected',
+    'Untruth'
+    );
+
+CREATE TABLE offers_offences
+(
+    offence_id     bigint primary key       not null,
+    created_by     bigint                   not null,
+    offer_id       bigint                   not null,
+    offence_type   bigint                   not null,
+    offence_status offence_status           not null,
+    offence_text   text                     not null,
+    row_version    bigint                   not null,
+    created_date   timestamp with time zone not null,
+    created_at     timestamp with time zone not null,
+    updated_at     timestamp with time zone not null
+);
+
+CREATE INDEX ON offers_offences (offer_id);

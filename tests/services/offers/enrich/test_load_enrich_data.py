@@ -1,9 +1,14 @@
+from datetime import datetime
+
 import pytest
 from cian_core.degradation import DegradationResult
 from cian_test_utils import future
+from mock import call
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.moderation import OfferOffence
+from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
 from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem, EnrichParams
@@ -12,6 +17,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_can_update_edit_dates,
     _load_geo_urls,
     _load_jk_urls,
+    _load_moderation_info,
     _load_statistic,
     load_enrich_data,
 )
@@ -57,9 +63,21 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_import_errors',
         return_value=future(EnrichItem(key='import_errors', degraded=False, value={})),
     )
+    load_moderation_info_mock = mocker.patch(
+        f'{PATH}_load_moderation_info',
+        return_value=future(EnrichItem(key='moderation_info', degraded=False, value={})),
+    )
 
     expected = (
-        EnrichData(statistics={}, auctions={}, jk_urls={}, geo_urls={}, can_update_edit_dates={}, import_errors={},),
+        EnrichData(
+            statistics={},
+            auctions={},
+            jk_urls={},
+            geo_urls={},
+            can_update_edit_dates={},
+            moderation_info={},
+            import_errors={},
+        ),
         {
             'auctions': False,
             'can_update_edit_dates': False,
@@ -67,11 +85,13 @@ async def test_load_enrich_data(mocker):
             'jk_urls': False,
             'statistics': False,
             'import_errors': False,
+            'statistics': False,
+            'moderation_info': False,
         }
     )
 
     # act
-    result = await load_enrich_data(params)
+    result = await load_enrich_data(params=params)
 
     # assert
     assert result == expected
@@ -87,6 +107,7 @@ async def test_load_enrich_data(mocker):
     ])
     load_can_update_edit_dates_mock.assert_called_once_with([11])
     load_import_errors_mock.assert_called_once_with([11])
+    load_moderation_info_mock.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -103,7 +124,7 @@ async def test_load_enrich_data__empty__empty(mocker):
     ), {}
 
     # act
-    result = await load_enrich_data(params)
+    result = await load_enrich_data(params=params)
 
     # assert
     assert result == expected
@@ -238,3 +259,52 @@ async def test__load_can_update_edit_date(mocker):
     # assert
     assert result == expected
     can_update_edit_date_degradation_handler_mock.assert_called_once_with([11, 22])
+
+
+@pytest.mark.gen_test
+async def test___load_moderation_info(mocker):
+    # arrange
+    offers_ids = [11, 22]
+    offer_offence_1 = OfferOffence(
+        offence_id=555,
+        offence_type=1,
+        offence_text='ТЕСТ',
+        offence_status=ModerationOffenceStatus.corrected,
+        offer_id=11,
+        created_by=888,
+        created_date=datetime(2020, 1, 1),
+        row_version=0,
+        updated_at=None,
+        created_at=None,
+    )
+    offer_offence_2 = OfferOffence(
+        offence_id=555,
+        offence_type=1,
+        offence_text='ТЕСТ',
+        offence_status=ModerationOffenceStatus.corrected,
+        offer_id=22,
+        created_by=888,
+        created_date=datetime(2020, 1, 1),
+        row_version=0,
+        updated_at=None,
+        created_at=None,
+    )
+
+    expected = EnrichItem(
+        key='moderation_info',
+        degraded=False,
+        value={11: offer_offence_1, 22: offer_offence_2}
+    )
+    get_offer_offence_mock = mocker.patch(
+        f'{PATH}postgresql.get_offers_offence',
+        return_value=future([offer_offence_1, offer_offence_2])
+    )
+
+    # act
+    result = await _load_moderation_info(offers_ids)
+
+    # assert
+    assert result == expected
+    get_offer_offence_mock.assert_has_calls([
+        call(offer_ids=[11, 22], status=ModerationOffenceStatus.confirmed)
+    ])

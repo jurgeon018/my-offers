@@ -72,7 +72,7 @@ async def test_get_offers_public(mocker):
         auction=None,
         archived_at=None,
         status=None,
-        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False, can_delete=False),
     )
 
     expected_result = GetOffersResponse(
@@ -104,7 +104,7 @@ async def test_get_offers_public(mocker):
 
     # assert
     assert result == expected_result
-    get_offer_views_mock.assert_called_once_with([object_model])
+    get_offer_views_mock.assert_called_once_with(object_models=[object_model])
     get_offers_by_status_mock.assert_called_once_with(
         filters={'status_tab': 'active', 'master_user_id': 777},
         limit=20,
@@ -218,7 +218,11 @@ async def test_get_offer_views(mocker):
                 id=111,
                 archived_at=None,
                 status=None,
-                available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+                available_actions=AvailableActions(
+                    can_update_edit_date=False,
+                    can_move_to_archive=False,
+                    can_delete=False
+                ),
                 statistics=Statistics(shows=None, views=None, favorites=None),
                 auction=None,
             )
@@ -227,7 +231,7 @@ async def test_get_offer_views(mocker):
     )
 
     # act
-    result = await get_offer_views([object_model])
+    result = await get_offer_views(object_models=[object_model])
 
     # assert
     assert result == expected

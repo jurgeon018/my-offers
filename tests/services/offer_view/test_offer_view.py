@@ -72,7 +72,7 @@ def test_build_offer_view(enrich_data_mock):
         auction=None,
         archived_at=None,
         status=None,
-        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False, can_delete=False),
     )
 
     # act

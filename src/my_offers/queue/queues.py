@@ -8,7 +8,7 @@ from my_offers.queue.routing_keys import (
     AnnouncementReportingV1RoutingKey,
     ServiceContractsReportingV1RoutingKey,
     UnloadOrderReportingV1RoutingKey,
-)
+    ModerationOfferOffenceReportingV1RoutingKey)
 
 
 billing_exchange = Exchange('billing')
@@ -65,4 +65,18 @@ save_offer_unload_error_queue = Queue(
             routing_key=UnloadOrderReportingV1RoutingKey.error.value
         )
     ]
+)
+
+moderation_offence_queue = Queue(
+    name=get_modified_queue_name('save_moderation_offer_offence'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('moderation'),
+            routing_key=ModerationOfferOffenceReportingV1RoutingKey.created.value,
+        ),
+        QueueBinding(
+            exchange=Exchange('moderation'),
+            routing_key=ModerationOfferOffenceReportingV1RoutingKey.changed.value,
+        )
+    ],
 )

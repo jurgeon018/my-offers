@@ -57,3 +57,12 @@ class ServiceContractsReportingV1RoutingKey(StrEnum):
 class UnloadOrderReportingV1RoutingKey(StrEnum):
     __value_format__ = NoFormat
     error = 'unload-order-reporting.v1.error'
+
+
+class ModerationOfferOffenceReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    created = 'moderation-offence-reporting.v1.created'
+    """Нарушение создано"""
+    changed = 'moderation-offence-reporting.v1.changed'
+    """Нарушение обновлено"""
