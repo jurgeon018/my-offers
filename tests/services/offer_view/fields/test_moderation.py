@@ -62,8 +62,6 @@ from my_offers.services.offer_view.fields.moderation import get_moderation
         ),
         Moderation(
             declined_date=datetime(2020, 1, 1, tzinfo=pytz.utc),
-            can_delete=False,
-            can_move_to_archive=False,
             reason='ТЕСТ',
             is_declined=False,
             offence_status='Удалено модератором'
@@ -85,8 +83,6 @@ from my_offers.services.offer_view.fields.moderation import get_moderation
         ),
         Moderation(
             declined_date=datetime(2020, 1, 1, tzinfo=pytz.utc),
-            can_delete=False,
-            can_move_to_archive=False,
             reason='ТЕСТ',
             is_declined=True,
             offence_status='Отклонено модератором'
@@ -108,8 +104,6 @@ from my_offers.services.offer_view.fields.moderation import get_moderation
         ),
         Moderation(
             declined_date=None,
-            can_delete=False,
-            can_move_to_archive=False,
             is_declined=False,
             offence_status='Заблокировано'
         )

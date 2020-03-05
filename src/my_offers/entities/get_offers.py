@@ -84,10 +84,6 @@ class Moderation:
     """Дата отклонения"""
     is_declined: Optional[bool] = None
     """Отклонено ли модератором"""
-    can_move_to_archive: Optional[bool] = None
-    """Можно ли перенести в архив"""
-    can_delete: Optional[bool] = None
-    """Можно ли удалить"""
     reason: Optional[str] = None
     """Текст причины отклонения"""
     offence_status: Optional[str] = None

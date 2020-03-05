@@ -26,8 +26,6 @@ def get_moderation(*, status: Optional[Status], offer_offence: Optional[OfferOff
         # TODO: https://jira.cian.tech/browse/CD-75832
         return Moderation(
             declined_date=None,
-            can_delete=False,
-            can_move_to_archive=False,
             is_declined=False,
             offence_status=MODERATION_STATUS_MAPPING[status]
         )
@@ -40,8 +38,6 @@ def get_moderation(*, status: Optional[Status], offer_offence: Optional[OfferOff
 
     moderation = Moderation(
         declined_date=offer_offence.created_date,
-        can_delete=False,
-        can_move_to_archive=False,
         reason=offer_offence.offence_text,
         is_declined=status.is_refused,
         offence_status=MODERATION_STATUS_MAPPING[status]
