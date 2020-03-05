@@ -53,15 +53,20 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_can_update_edit_dates',
         return_value=future(EnrichItem(key='can_update_edit_dates', degraded=False, value={})),
     )
+    load_import_errors_mock = mocker.patch(
+        f'{PATH}_load_import_errors',
+        return_value=future(EnrichItem(key='import_errors', degraded=False, value={})),
+    )
 
     expected = (
-        EnrichData(statistics={}, auctions={}, jk_urls={}, geo_urls={}, can_update_edit_dates={}),
+        EnrichData(statistics={}, auctions={}, jk_urls={}, geo_urls={}, can_update_edit_dates={}, import_errors={},),
         {
             'auctions': False,
             'can_update_edit_dates': False,
             'geo_urls': False,
             'jk_urls': False,
-            'statistics': False
+            'statistics': False,
+            'import_errors': False,
         }
     )
 
@@ -81,6 +86,7 @@ async def test_load_enrich_data(mocker):
         )
     ])
     load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_import_errors_mock.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -93,6 +99,7 @@ async def test_load_enrich_data__empty__empty(mocker):
         jk_urls={},
         geo_urls={},
         can_update_edit_dates={},
+        import_errors={},
     ), {}
 
     # act

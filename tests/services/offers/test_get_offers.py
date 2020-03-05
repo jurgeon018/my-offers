@@ -185,6 +185,7 @@ async def test_get_offer_views(mocker):
                 jk_urls={},
                 geo_urls={},
                 can_update_edit_dates={},
+                import_errors={},
             ),
             {}
         )),
