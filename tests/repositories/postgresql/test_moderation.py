@@ -88,15 +88,15 @@ async def test_get_offer_offence(mocker):
     # assert
     assert result == [offer_offence_mapper.map_from(offer_offence)]
     pg.get().fetchrow.assert_called_once_with(
-        'SELECT offers_offences.offence_id, offers_offences.offence_type, offers_offences.offence_text, '
-        'offers_offences.offence_status, offers_offences.offer_id, offers_offences.row_version, '
-        'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
-        'offers_offences.updated_at '
-        '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id IN ($2) AND offers_offences.offence_status = $1 '
-        'ORDER BY offers_offences.created_date DESC',
+        '\n        WITH offence_ids AS (\n        SELECT offence_id                                     as offence_id,'
+        '\n               row_number() over (order by created_date desc) as row_number'
+        '\n        from offers_offences\n        WHERE offer_id = ANY ($1::bigint[])'
+        '\n          AND offence_status = $2\n    )'
+        '\n        SELECT *'
+        '\n        FROM offers_offences oo'
+        '\n             JOIN offence_ids oi ON oi.offence_id = oo.offence_id AND oi.row_number = 1\n    ',
+        [offer_id],
         ModerationOffenceStatus.confirmed.value,
-        offer_id,
     )
 
 
@@ -112,13 +112,13 @@ async def test_get_offer_offence__offence_is_none(mocker):
     # assert
     assert result == []
     pg.get().fetchrow.assert_called_once_with(
-        'SELECT offers_offences.offence_id, offers_offences.offence_type, offers_offences.offence_text, '
-        'offers_offences.offence_status, offers_offences.offer_id, offers_offences.row_version, '
-        'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
-        'offers_offences.updated_at '
-        '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id IN ($2) AND offers_offences.offence_status = $1 '
-        'ORDER BY offers_offences.created_date DESC',
+        '\n        WITH offence_ids AS (\n        SELECT offence_id                                     as offence_id,'
+        '\n               row_number() over (order by created_date desc) as row_number'
+        '\n        from offers_offences\n        WHERE offer_id = ANY ($1::bigint[])'
+        '\n          AND offence_status = $2\n    )'
+        '\n        SELECT *'
+        '\n        FROM offers_offences oo'
+        '\n             JOIN offence_ids oi ON oi.offence_id = oo.offence_id AND oi.row_number = 1\n    ',
+        [offer_id],
         ModerationOffenceStatus.confirmed.value,
-        offer_id,
     )
