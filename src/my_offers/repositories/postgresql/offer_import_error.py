@@ -1,6 +1,7 @@
+from typing import List
+
 import asyncpgsa
 from sqlalchemy.dialects.postgresql import insert
-from typing import List
 
 from my_offers import entities, pg
 from my_offers.mappers.offer_import_error_mapper import offer_import_error_mapper

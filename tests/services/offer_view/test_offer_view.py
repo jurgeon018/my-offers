@@ -2,8 +2,8 @@ import pytest
 from cian_test_utils import future
 
 from my_offers import enums
-from my_offers.entities.get_offers import GetOffer, Statistics
-from my_offers.entities.offer_view_model import AvailableActions, OfferGeo, PriceInfo, Underground
+from my_offers.entities.get_offers import AvailableActions, GetOffer, Statistics
+from my_offers.entities.offer_view_model import OfferGeo, PriceInfo, Underground
 from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     AddressInfo,

@@ -78,11 +78,30 @@ class Auction:
 
 
 @dataclass
+class AvailableActions:
+    can_update_edit_date: bool
+    """Можно обновить дату"""
+    can_move_to_archive: bool
+    """Пользователь может перенести объявление в архив"""
+
+
+@dataclass
+class NotActiveInfo:
+    status: str
+    message: Optional[str]
+
+
+
+@dataclass
 class GetOffer(OfferViewModel):
     statistics: Optional[Statistics]
     """Статистика по объявлению"""
+    available_actions: AvailableActions
+    """Доступные действия с объявлениями"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
+    not_active_info: Optional[NotActiveInfo] = None
+    """Доп. информация для вкладки неактивные"""
 
 
 @dataclass

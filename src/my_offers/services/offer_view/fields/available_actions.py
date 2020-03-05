@@ -1,4 +1,4 @@
-from my_offers.entities.offer_view_model import AvailableActions
+from my_offers.entities.get_offers import AvailableActions
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
 

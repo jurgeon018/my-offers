@@ -6,13 +6,14 @@ from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
 from my_offers.entities import OfferImportError
-from my_offers.queue.entities import AnnouncementMessage, ServiceContractMessage, SaveUnloadErrorMessage
+from my_offers.queue.entities import AnnouncementMessage, SaveUnloadErrorMessage, ServiceContractMessage
 from my_offers.services.announcement import process_announcement
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
     save_announcement_contract,
 )
 from my_offers.services.offers_import import save_offers_import_error
+
 
 logger = logging.getLogger(__name__)
 
