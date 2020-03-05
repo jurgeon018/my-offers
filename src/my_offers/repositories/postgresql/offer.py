@@ -1,5 +1,5 @@
 import copy
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 import asyncpgsa
@@ -48,10 +48,11 @@ async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
 
 
 async def delete_offers_older_than(days_count: int = settings.COUNT_DAYS_HOLD_DELETED_OFFERS):
-    query = """DELETE FROM offers where status_tab = $1 and updated_at <= now() - $2 * interval  '1 day'"""
+    need_date = datetime.now(tz=pytz.UTC) - timedelta(days=days_count)
+    query = """DELETE FROM offers where status_tab = $1 and updated_at <= $2"""
 
     await pg.get().execute(
         query,
         enums.OfferStatusTab.deleted.name,
-        days_count
+        need_date
     )
