@@ -67,6 +67,7 @@ class AvailableActions:
     """Можно обновить дату"""
     can_move_to_archive: bool
     """Пользователь может перенести объявление в архив"""
+    can_delete: bool
 
 
 @dataclass

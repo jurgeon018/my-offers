@@ -40,7 +40,9 @@ async def get_offer_offence(*, offer_id: int, status: ModerationOffenceStatus) -
         ]).where(and_(
             offers_offences.c.offer_id == offer_id,
             offers_offences.c.offence_status == status.value,
-        ))
+        )).order_by(
+            offers_offences.c.created_date
+        ).limit(1)
     )
     query, params = asyncpgsa.compile_query(sql)
     result = await pg.get().fetchrow(query, *params)

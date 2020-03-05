@@ -66,7 +66,8 @@ async def test_save_offer_offence(mocker):
 
 async def test_get_offer_offence(mocker):
     # arrange
-    offer_id = 1
+    limit = 1
+    offer_id = 999
     now = datetime(2020, 12, 12)
     offer_offence = dict(
         offence_id=555,
@@ -93,16 +94,18 @@ async def test_get_offer_offence(mocker):
         'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
         'offers_offences.updated_at '
         '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id = $2 '
-        'AND offers_offences.offence_status = $1',
+        '\nWHERE offers_offences.offer_id = $2 AND offers_offences.offence_status = $1 '
+        'ORDER BY offers_offences.created_date \n LIMIT $3',
         ModerationOffenceStatus.confirmed.value,
-        offer_id
+        offer_id,
+        limit
     )
 
 
 async def test_get_offer_offence__offence_is_none(mocker):
     # arrange
-    offer_id = 1
+    limit = 1
+    offer_id = 999
     pg.get().fetchrow.return_value = future([])
 
     # act
@@ -116,8 +119,9 @@ async def test_get_offer_offence__offence_is_none(mocker):
         'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
         'offers_offences.updated_at '
         '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id = $2 '
-        'AND offers_offences.offence_status = $1',
+        '\nWHERE offers_offences.offer_id = $2 AND offers_offences.offence_status = $1 '
+        'ORDER BY offers_offences.created_date \n LIMIT $3',
         ModerationOffenceStatus.confirmed.value,
-        offer_id
+        offer_id,
+        limit
     )

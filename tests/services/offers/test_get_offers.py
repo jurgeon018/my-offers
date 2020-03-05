@@ -71,7 +71,7 @@ async def test_get_offers_public(mocker):
         auction=None,
         archived_at=None,
         status=None,
-        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False, can_delete=False),
     )
 
     expected_result = GetOffersResponse(
@@ -211,7 +211,11 @@ async def test_get_offer_views(mocker):
                 id=111,
                 archived_at=None,
                 status=None,
-                available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False),
+                available_actions=AvailableActions(
+                    can_update_edit_date=False,
+                    can_move_to_archive=False,
+                    can_delete=False
+                ),
                 statistics=Statistics(shows=None, views=None, favorites=None),
                 auction=None,
             )
