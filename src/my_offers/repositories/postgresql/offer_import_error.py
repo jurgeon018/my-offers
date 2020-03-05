@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 import asyncpgsa
 from sqlalchemy.dialects.postgresql import insert
@@ -37,3 +37,21 @@ async def delete_offer_import_error(offer_id: int) -> None:
     query = 'DELETE FROM my_offers.public.offers_last_import_error WHERE offer_id = $1'
 
     await pg.get().execute(query, offer_id)
+
+
+async def get_last_import_errors(offer_ids: List[int]) -> Dict[int, str]:
+    query = """
+        SELECT
+            offer_id,
+            message
+        FROM
+            offers_last_import_error
+        WHERE
+            offer_id = ANY($1::BIGINT[])
+    """
+
+    rows = await pg.get().fetch(query, offer_ids)
+    if not rows:
+        return {}
+
+    return {row['offer_id']: row['message'] for row in rows}

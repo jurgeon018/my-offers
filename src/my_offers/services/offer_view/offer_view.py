@@ -8,6 +8,7 @@ from my_offers.services.offer_view.fields.available_actions import get_available
 from my_offers.services.offer_view.fields.features import get_features
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
+from my_offers.services.offer_view.fields.not_active_info import get_not_active_info
 from my_offers.services.offer_view.fields.price_info import get_price_info
 from my_offers.services.offer_view.fields.publish_features import get_publish_features
 from my_offers.services.offer_view.fields.status import get_status
@@ -74,6 +75,10 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
             is_manual=is_manual,
             can_update_edit_date=enrich_data.can_update_edit_dates.get(object_model.id, False),
         ),
+        not_active_info=get_not_active_info(
+            status=object_model.status,
+            import_error=enrich_data.import_errors.get(object_model.id)
+        )
     )
 
 

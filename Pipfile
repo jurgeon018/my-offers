@@ -20,6 +20,7 @@ cian-pg = "~=0.0"
 asyncpgsa = "~=0.26"
 sqlalchemy = "~=1.3"
 cian-cache = "~=1.1"
+pytils  = "~=0.3"
 
 [dev-packages]
 cian-lint = "*"

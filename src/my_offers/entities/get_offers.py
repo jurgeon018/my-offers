@@ -88,7 +88,7 @@ class AvailableActions:
 @dataclass
 class NotActiveInfo:
     status: str
-    message: Optional[str]
+    message: Optional[str] = None
 
 
 

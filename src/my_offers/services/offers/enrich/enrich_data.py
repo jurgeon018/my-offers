@@ -90,6 +90,7 @@ class EnrichData:
     jk_urls: Dict[int, str]
     geo_urls: Dict[GeoUrlKey, AddressUrls]
     can_update_edit_dates: Dict[int, bool]
+    import_errors: Dict[int, str]
 
     def get_urls_by_types(
             self,

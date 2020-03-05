@@ -2,6 +2,7 @@ import asyncio
 from typing import Dict, List, Tuple
 
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
@@ -17,6 +18,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
             jk_urls={},
             geo_urls={},
             can_update_edit_dates={},
+            import_errors={},
         ), {}
 
     data = await asyncio.gather(
@@ -25,6 +27,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
         _load_can_update_edit_dates(offer_ids),
+        _load_import_errors(offer_ids),
         # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
     )
 
@@ -83,3 +86,9 @@ async def _load_can_update_edit_dates(offer_ids: List[int]) -> EnrichItem:
     result = await can_update_edit_date_degradation_handler(offer_ids)
 
     return EnrichItem(key='can_update_edit_dates', degraded=result.degraded, value=result.value)
+
+
+async def _load_import_errors(offer_ids: List[int]) -> EnrichItem:
+    result = await get_last_import_errors(offer_ids)
+
+    return EnrichItem(key='import_errors', degraded=False, value=result)

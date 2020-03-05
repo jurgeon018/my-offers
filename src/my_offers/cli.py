@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 import click
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
