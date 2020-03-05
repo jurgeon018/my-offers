@@ -93,13 +93,12 @@ async def test_get_offer_offence(mocker):
         'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
         'offers_offences.updated_at '
         '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id = $1 '
-        'ORDER BY offers_offences.offer_id',
+        '\nWHERE offers_offences.offer_id = $1',
         offer_id
     )
 
 
-async def test_get_offer_contract__contract_is_none(mocker):
+async def test_get_offer_offence__offence_is_none(mocker):
     # arrange
     offer_id = 1
     pg.get().fetchrow.return_value = future([])
@@ -115,7 +114,6 @@ async def test_get_offer_contract__contract_is_none(mocker):
         'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
         'offers_offences.updated_at '
         '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id = $1 '
-        'ORDER BY offers_offences.offer_id',
+        '\nWHERE offers_offences.offer_id = $1',
         offer_id
     )

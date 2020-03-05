@@ -38,8 +38,6 @@ async def get_offer_offence(offer_id: int) -> Optional[OfferOffence]:
             offers_offences
         ]).where(
             offers_offences.c.offer_id == offer_id
-        ).order_by(
-            offers_offences.c.offer_id
         )
     )
     query, params = asyncpgsa.compile_query(sql)
