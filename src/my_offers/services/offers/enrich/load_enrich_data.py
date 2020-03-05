@@ -1,8 +1,8 @@
 import asyncio
 from typing import Dict, List, Tuple
 
-from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories import postgresql
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
@@ -10,10 +10,7 @@ from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
-async def load_enrich_data(
-        params: EnrichParams,
-        status_tab: enums.GetOfferStatusTab
-) -> Tuple[EnrichData, Dict[str, bool]]:
+async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, bool]]:
     offer_ids = params.get_offer_ids()
     if not offer_ids:
         return EnrichData(
@@ -45,7 +42,7 @@ async def load_enrich_data(
 
 async def _load_moderation_info(offer_ids: List[int]) -> EnrichItem:
     values = {
-        offer_id: await postgresql.get_offer_offence(offer_id=offer_id)
+        offer_id: await postgresql.get_offer_offence(offer_id=offer_id, status=ModerationOffenceStatus.confirmed)
         for offer_id in offer_ids
     }
 

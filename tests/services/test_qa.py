@@ -3,7 +3,6 @@ from cian_test_utils import future
 from cian_web.exceptions import BrokenRulesException
 
 from my_offers.entities.qa import QaGetByIdRequest
-from my_offers.enums import GetOfferStatusTab
 from my_offers.services.qa import get_offer, get_offer_view
 
 
@@ -14,7 +13,7 @@ async def test_get_offer(mocker):
     get_offer_by_id_mock = mocker.patch('my_offers.services.qa.get_offer_by_id', return_value=future(expected))
 
     # act
-    result = await get_offer(QaGetByIdRequest(offer_id=111, status_tab=GetOfferStatusTab.active))
+    result = await get_offer(QaGetByIdRequest(offer_id=111))
 
     # assert
     assert result == expected
@@ -28,7 +27,7 @@ async def test_get_offer__not_found__error(mocker):
 
     # act
     with pytest.raises(BrokenRulesException):
-        await get_offer(QaGetByIdRequest(offer_id=111, status_tab=GetOfferStatusTab.active))
+        await get_offer(QaGetByIdRequest(offer_id=111))
 
     # assert
     get_offer_by_id_mock.assert_called_once_with(111)
@@ -50,12 +49,12 @@ async def test_get_offer_view(mocker):
     )
 
     # act
-    result = await get_offer_view(QaGetByIdRequest(offer_id=111, status_tab=GetOfferStatusTab.active))
+    result = await get_offer_view(QaGetByIdRequest(offer_id=111))
 
     # assert
     assert result == offer_view
     get_object_model_by_id_mock.assert_called_once_with(111)
-    build_offer_view_mock.assert_called_once_with(object_models=[object_model], status_tab=GetOfferStatusTab.active)
+    build_offer_view_mock.assert_called_once_with(object_models=[object_model])
 
 
 @pytest.mark.gen_test
@@ -65,7 +64,7 @@ async def test_get_offer_view__not_found__error(mocker):
 
     # act
     with pytest.raises(BrokenRulesException):
-        await get_offer_view(QaGetByIdRequest(offer_id=111, status_tab=GetOfferStatusTab.active))
+        await get_offer_view(QaGetByIdRequest(offer_id=111))
 
     # assert
     get_object_model_by_id_mock.assert_called_once_with(111)

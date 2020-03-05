@@ -1,11 +1,12 @@
 from typing import Optional
 
 import asyncpgsa
-from sqlalchemy import select
+from sqlalchemy import and_, select
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
 from my_offers.entities.moderation import OfferOffence
+from my_offers.enums import ModerationOffenceStatus
 from my_offers.mappers.moderation import offer_offence_mapper
 from my_offers.repositories.postgresql.tables import offers_offences
 
@@ -32,13 +33,14 @@ async def save_offer_offence(offer_offence: OfferOffence) -> None:
     await pg.get().execute(query, *params)
 
 
-async def get_offer_offence(offer_id: int) -> Optional[OfferOffence]:
+async def get_offer_offence(*, offer_id: int, status: ModerationOffenceStatus) -> Optional[OfferOffence]:
     sql = (
         select([
             offers_offences
-        ]).where(
-            offers_offences.c.offer_id == offer_id
-        )
+        ]).where(and_(
+            offers_offences.c.offer_id == offer_id,
+            offers_offences.c.offence_status == status.value,
+        ))
     )
     query, params = asyncpgsa.compile_query(sql)
     result = await pg.get().fetchrow(query, *params)

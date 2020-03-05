@@ -5,7 +5,7 @@ from mock import call
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
-from my_offers.enums import GetOfferStatusTab
+from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
 from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem, EnrichParams
@@ -81,7 +81,7 @@ async def test_load_enrich_data(mocker):
     )
 
     # act
-    result = await load_enrich_data(params=params, status_tab=GetOfferStatusTab.active)
+    result = await load_enrich_data(params=params)
 
     # assert
     assert result == expected
@@ -112,7 +112,7 @@ async def test_load_enrich_data__empty__empty(mocker):
     ), {}
 
     # act
-    result = await load_enrich_data(params=params, status_tab=GetOfferStatusTab.active)
+    result = await load_enrich_data(params=params)
 
     # assert
     assert result == expected
@@ -267,6 +267,6 @@ async def test___load_moderation_info(mocker):
     # assert
     assert result == expected
     get_offer_offence_mock.assert_has_calls([
-        call(offer_id=11),
-        call(offer_id=22)
+        call(offer_id=11, status=ModerationOffenceStatus.confirmed),
+        call(offer_id=22, status=ModerationOffenceStatus.confirmed)
     ])

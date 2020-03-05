@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from simple_settings import settings
 
-from my_offers import entities, enums
+from my_offers import entities
 from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
@@ -37,8 +37,7 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
     )
 
     offers, degradation = await get_offer_views(
-        object_models=object_models,
-        status_tab=request.filters.status_tab
+        object_models=object_models
     )
 
     # шаг 3 - формирование ответа
@@ -59,16 +58,12 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
     )
 
 
-async def get_offer_views(
-        *,
-        object_models: List[ObjectModel],
-        status_tab: enums.GetOfferStatusTab
-) -> Tuple[List[get_offers.GetOffer], Dict[str, bool]]:
+async def get_offer_views(*, object_models: List[ObjectModel], ) -> Tuple[List[get_offers.GetOffer], Dict[str, bool]]:
     # шаг 1 - подготовка параметров для обогащения
     enrich_params = prepare_enrich_params(object_models)
 
     # шаг 2 - получение данных для обогащения
-    enrich_data, degradation = await load_enrich_data(enrich_params, status_tab=status_tab)
+    enrich_data, degradation = await load_enrich_data(enrich_params)
 
     # шаг 3 - подготовка моделей для ответа
     offers = [

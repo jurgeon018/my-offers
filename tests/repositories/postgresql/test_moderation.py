@@ -83,7 +83,7 @@ async def test_get_offer_offence(mocker):
     pg.get().fetchrow.return_value = future(offer_offence)
 
     # act
-    result = await postgresql.get_offer_offence(offer_id=offer_id)
+    result = await postgresql.get_offer_offence(offer_id=offer_id, status=ModerationOffenceStatus.confirmed)
 
     # assert
     assert result == offer_offence_mapper.map_from(offer_offence)
@@ -93,7 +93,9 @@ async def test_get_offer_offence(mocker):
         'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
         'offers_offences.updated_at '
         '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id = $1',
+        '\nWHERE offers_offences.offer_id = $2 '
+        'AND offers_offences.offence_status = $1',
+        ModerationOffenceStatus.confirmed.value,
         offer_id
     )
 
@@ -104,7 +106,7 @@ async def test_get_offer_offence__offence_is_none(mocker):
     pg.get().fetchrow.return_value = future([])
 
     # act
-    result = await postgresql.get_offer_offence(offer_id=offer_id)
+    result = await postgresql.get_offer_offence(offer_id=offer_id, status=ModerationOffenceStatus.confirmed)
 
     # assert
     assert result is None
@@ -114,6 +116,8 @@ async def test_get_offer_offence__offence_is_none(mocker):
         'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
         'offers_offences.updated_at '
         '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id = $1',
+        '\nWHERE offers_offences.offer_id = $2 '
+        'AND offers_offences.offence_status = $1',
+        ModerationOffenceStatus.confirmed.value,
         offer_id
     )
