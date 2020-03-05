@@ -2,6 +2,8 @@ import asyncio
 from typing import Dict, List, Tuple
 
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.enums import ModerationOffenceStatus
+from my_offers.repositories import postgresql
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
@@ -25,6 +27,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
         _load_can_update_edit_dates(offer_ids),
+        _load_moderation_info(offer_ids)
         # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
     )
 
@@ -35,6 +38,19 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         degradation[item.key] = item.degraded
 
     return EnrichData(**params), degradation
+
+
+async def _load_moderation_info(offer_ids: List[int]) -> EnrichItem:
+    result = await postgresql.get_offers_offence(
+        offer_ids=offer_ids,
+        status=ModerationOffenceStatus.confirmed
+    )
+    values = {
+        offer_offence.offer_id: offer_offence
+        for offer_offence in result
+    }
+
+    return EnrichItem(key='moderation_info', degraded=False, value=values)
 
 
 async def _load_statistic(offer_ids: List[int]) -> EnrichItem:

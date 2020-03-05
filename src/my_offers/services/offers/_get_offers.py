@@ -37,7 +37,9 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
         sort_type=request.sort or get_offers.GetOffersSortType.by_default,
     )
 
-    offers, degradation = await get_offer_views(object_models)
+    offers, degradation = await get_offer_views(
+        object_models=object_models
+    )
 
     # шаг 3 - формирование ответа
     return entities.GetOffersResponse(
@@ -68,8 +70,8 @@ async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_of
     return offers, degradation
 
 
-async def _get_filters(*, user_id: int, filters: Optional[get_offers.Filter]) -> Dict[str, Any]:
-    result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters) if filters else []
+async def _get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
+    result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
     result['master_user_id'] = await get_master_user_id(user_id)
     return result
 

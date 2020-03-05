@@ -52,3 +52,12 @@ class ServiceContractsReportingV1RoutingKey(StrEnum):
     """Контракт обновлен"""
     closed = 'service-contract-reporting.v1.closed'
     """Конктракт закрыт"""
+
+
+class ModerationOfferOffenceReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    created = 'moderation-offence-reporting.v1.created'
+    """Нарушение создано"""
+    changed = 'moderation-offence-reporting.v1.changed'
+    """Нарушение обновлено"""

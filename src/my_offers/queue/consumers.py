@@ -5,12 +5,14 @@ from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
+from my_offers.entities import ModerationOfferOffence
 from my_offers.queue.entities import AnnouncementMessage, ServiceContractMessage
 from my_offers.services.announcement import process_announcement
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
     save_announcement_contract,
 )
+from my_offers.services.moderation.moderation_service import save_offer_offence
 
 
 logger = logging.getLogger(__name__)
@@ -48,3 +50,12 @@ async def mark_to_delete_announcement_contract_callback(messages: List[Message])
 
         with new_operation_id(operation_id):
             await mark_to_delete_announcement_contract(billing_contract=offer_contract)
+
+
+async def save_offer_offence_callback(messages: List[Message]) -> None:
+    for message in messages:
+        offer_offence: ModerationOfferOffence = message.data
+        operation_id = offer_offence.operation_id
+
+        with new_operation_id(operation_id):
+            await save_offer_offence(offer_offence=offer_offence)
