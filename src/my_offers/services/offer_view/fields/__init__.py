@@ -3,6 +3,7 @@ from my_offers.services.offer_view.fields.features import get_features
 from my_offers.services.offer_view.fields.geo import prepare_geo
 from my_offers.services.offer_view.fields.is_from_package import is_from_package
 from my_offers.services.offer_view.fields.moderation import get_moderation
+from my_offers.services.offer_view.fields.not_active_info import get_not_active_info
 from my_offers.services.offer_view.fields.price_info import get_price_info
 from my_offers.services.offer_view.fields.publish_features import get_publish_features
 from my_offers.services.offer_view.fields.status import get_status

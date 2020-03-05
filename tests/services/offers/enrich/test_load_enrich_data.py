@@ -16,6 +16,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_auctions,
     _load_can_update_edit_dates,
     _load_geo_urls,
+    _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
     _load_statistic,
@@ -85,7 +86,6 @@ async def test_load_enrich_data(mocker):
             'jk_urls': False,
             'statistics': False,
             'import_errors': False,
-            'statistics': False,
             'moderation_info': False,
         }
     )
@@ -308,3 +308,20 @@ async def test___load_moderation_info(mocker):
     get_offer_offence_mock.assert_has_calls([
         call(offer_ids=[11, 22], status=ModerationOffenceStatus.confirmed)
     ])
+
+
+@pytest.mark.gen_test
+async def test__load_import_errors(mocker):
+    # arrange
+    get_last_import_errors_mock = mocker.patch(
+        f'{PATH}get_last_import_errors',
+        return_value=future({11: 'zzz'})
+    )
+    expected = EnrichItem(key='import_errors', degraded=False, value={11: 'zzz'})
+
+    # act
+    result = await _load_import_errors([11])
+
+    # assert
+    assert result == expected
+    get_last_import_errors_mock.assert_called_once_with([11])

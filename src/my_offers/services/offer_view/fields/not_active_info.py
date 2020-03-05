@@ -10,7 +10,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 
 def get_not_active_info(
         *,
-        status: Status,
+        status: Optional[Status],
         import_error: str,
         archive_date: Optional[datetime] = None
 ) -> Optional[NotActiveInfo]:

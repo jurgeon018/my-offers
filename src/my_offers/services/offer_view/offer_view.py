@@ -8,6 +8,7 @@ from my_offers.services.offer_view.fields import (
     get_available_actions,
     get_features,
     get_moderation,
+    get_not_active_info,
     get_price_info,
     get_publish_features,
     get_status,
@@ -16,7 +17,6 @@ from my_offers.services.offer_view.fields import (
     is_from_package,
     prepare_geo,
 )
-from my_offers.services.offer_view.fields.not_active_info import get_not_active_info
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 

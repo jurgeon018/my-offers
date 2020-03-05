@@ -51,7 +51,5 @@ async def get_last_import_errors(offer_ids: List[int]) -> Dict[int, str]:
     """
 
     rows = await pg.get().fetch(query, offer_ids)
-    if not rows:
-        return {}
 
     return {row['offer_id']: row['message'] for row in rows}
