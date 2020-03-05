@@ -102,7 +102,6 @@ async def test_get_offer_offence(mocker):
 
 async def test_get_offer_offence__offence_is_none(mocker):
     # arrange
-    limit = 1
     offer_id = 999
     pg.get().fetchrow.return_value = future([])
 

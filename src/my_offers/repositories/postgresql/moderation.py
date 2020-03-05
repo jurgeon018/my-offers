@@ -1,7 +1,6 @@
-from typing import List, Optional
+from typing import List
 
 import asyncpgsa
-from sqlalchemy import and_, desc, select
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg

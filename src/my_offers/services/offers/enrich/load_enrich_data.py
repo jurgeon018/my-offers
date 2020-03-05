@@ -1,7 +1,6 @@
 import asyncio
 from typing import Dict, List, Tuple
 
-from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories import postgresql
