@@ -1,6 +1,7 @@
 import asyncio
 from typing import Dict, List, Tuple
 
+from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories import postgresql
@@ -41,9 +42,13 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
 
 
 async def _load_moderation_info(offer_ids: List[int]) -> EnrichItem:
+    result = await postgresql.get_offers_offence(
+        offer_ids=offer_ids,
+        status=ModerationOffenceStatus.confirmed
+    )
     values = {
-        offer_id: await postgresql.get_offer_offence(offer_id=offer_id, status=ModerationOffenceStatus.confirmed)
-        for offer_id in offer_ids
+        offer_offence.offer_id: offer_offence
+        for offer_offence in result
     }
 
     return EnrichItem(key='moderation_info', degraded=False, value=values)

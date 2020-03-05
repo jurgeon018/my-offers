@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 
 import asyncpgsa
-from sqlalchemy import and_, select
+from sqlalchemy import and_, desc, select
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
@@ -33,18 +33,18 @@ async def save_offer_offence(offer_offence: OfferOffence) -> None:
     await pg.get().execute(query, *params)
 
 
-async def get_offer_offence(*, offer_id: int, status: ModerationOffenceStatus) -> Optional[OfferOffence]:
+async def get_offers_offence(*, offer_ids: List[int], status: ModerationOffenceStatus) -> List[OfferOffence]:
     sql = (
         select([
             offers_offences
         ]).where(and_(
-            offers_offences.c.offer_id == offer_id,
+            offers_offences.c.offer_id.in_(offer_ids),
             offers_offences.c.offence_status == status.value,
         )).order_by(
-            offers_offences.c.created_date
-        ).limit(1)
+            desc(offers_offences.c.created_date)
+        )
     )
     query, params = asyncpgsa.compile_query(sql)
-    result = await pg.get().fetchrow(query, *params)
+    rows = await pg.get().fetchrow(query, *params)
 
-    return offer_offence_mapper.map_from(result) if result else None
+    return [offer_offence_mapper.map_from(row) for row in rows]

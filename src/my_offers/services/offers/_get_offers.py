@@ -54,7 +54,7 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
     )
 
 
-async def get_offer_views(*, object_models: List[ObjectModel], ) -> Tuple[List[get_offers.GetOffer], Dict[str, bool]]:
+async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_offers.GetOffer], Dict[str, bool]]:
     # шаг 1 - подготовка параметров для обогащения
     enrich_params = prepare_enrich_params(object_models)
 

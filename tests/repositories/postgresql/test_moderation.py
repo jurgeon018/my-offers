@@ -66,7 +66,6 @@ async def test_save_offer_offence(mocker):
 
 async def test_get_offer_offence(mocker):
     # arrange
-    limit = 1
     offer_id = 999
     now = datetime(2020, 12, 12)
     offer_offence = dict(
@@ -81,24 +80,23 @@ async def test_get_offer_offence(mocker):
         updated_at=now,
         created_at=now,
     )
-    pg.get().fetchrow.return_value = future(offer_offence)
+    pg.get().fetchrow.return_value = future([offer_offence])
 
     # act
-    result = await postgresql.get_offer_offence(offer_id=offer_id, status=ModerationOffenceStatus.confirmed)
+    result = await postgresql.get_offers_offence(offer_ids=[offer_id], status=ModerationOffenceStatus.confirmed)
 
     # assert
-    assert result == offer_offence_mapper.map_from(offer_offence)
+    assert result == [offer_offence_mapper.map_from(offer_offence)]
     pg.get().fetchrow.assert_called_once_with(
         'SELECT offers_offences.offence_id, offers_offences.offence_type, offers_offences.offence_text, '
         'offers_offences.offence_status, offers_offences.offer_id, offers_offences.row_version, '
         'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
         'offers_offences.updated_at '
         '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id = $2 AND offers_offences.offence_status = $1 '
-        'ORDER BY offers_offences.created_date \n LIMIT $3',
+        '\nWHERE offers_offences.offer_id IN ($2) AND offers_offences.offence_status = $1 '
+        'ORDER BY offers_offences.created_date DESC',
         ModerationOffenceStatus.confirmed.value,
         offer_id,
-        limit
     )
 
 
@@ -109,19 +107,18 @@ async def test_get_offer_offence__offence_is_none(mocker):
     pg.get().fetchrow.return_value = future([])
 
     # act
-    result = await postgresql.get_offer_offence(offer_id=offer_id, status=ModerationOffenceStatus.confirmed)
+    result = await postgresql.get_offers_offence(offer_ids=[offer_id], status=ModerationOffenceStatus.confirmed)
 
     # assert
-    assert result is None
+    assert result == []
     pg.get().fetchrow.assert_called_once_with(
         'SELECT offers_offences.offence_id, offers_offences.offence_type, offers_offences.offence_text, '
         'offers_offences.offence_status, offers_offences.offer_id, offers_offences.row_version, '
         'offers_offences.created_by, offers_offences.created_date, offers_offences.created_at, '
         'offers_offences.updated_at '
         '\nFROM offers_offences '
-        '\nWHERE offers_offences.offer_id = $2 AND offers_offences.offence_status = $1 '
-        'ORDER BY offers_offences.created_date \n LIMIT $3',
+        '\nWHERE offers_offences.offer_id IN ($2) AND offers_offences.offence_status = $1 '
+        'ORDER BY offers_offences.created_date DESC',
         ModerationOffenceStatus.confirmed.value,
         offer_id,
-        limit
     )
