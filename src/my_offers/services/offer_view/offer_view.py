@@ -8,14 +8,14 @@ from my_offers.services.offer_view.fields import (
     get_not_active_info,
     get_offer_url,
     get_price_info,
-    get_publish_features,
     get_status,
     get_title,
-    get_vas,
-    is_from_package,
-    is_publication_time_ends,
     prepare_geo,
 )
+from my_offers.services.offer_view.fields.from_package import is_from_package
+from my_offers.services.offer_view.fields.publication_time_ends import is_publication_time_ends
+from my_offers.services.offer_view.fields.publish_features import get_publish_features
+from my_offers.services.offer_view.fields.vas import get_vas
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 

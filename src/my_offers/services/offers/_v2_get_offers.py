@@ -10,7 +10,7 @@ from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql.offer import get_offer_counters
 from my_offers.services.get_master_user_id import get_master_user_id
-from my_offers.services.offer_view import build_offer_view
+from my_offers.services.offer_view import v2_build_offer_view
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
 
@@ -54,7 +54,7 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     )
 
 
-async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_offers.GetOffer], Dict[str, bool]]:
+async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_offers.GetOfferV2], Dict[str, bool]]:
     # шаг 1 - подготовка параметров для обогащения
     enrich_params = prepare_enrich_params(object_models)
 
@@ -63,7 +63,7 @@ async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_of
 
     # шаг 3 - подготовка моделей для ответа
     offers = [
-        build_offer_view(object_model=object_model, enrich_data=enrich_data)
+        v2_build_offer_view(object_model=object_model, enrich_data=enrich_data)
         for object_model in object_models
     ]
 

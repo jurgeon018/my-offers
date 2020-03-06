@@ -1,8 +1,8 @@
 import pytest
 
 from my_offers.enums import OfferStatusTab
+from my_offers.helpers.status_tab import get_status_tab
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
-from my_offers.services.announcement.fields.status_tab import get_status_tab
 
 
 @pytest.mark.parametrize(
