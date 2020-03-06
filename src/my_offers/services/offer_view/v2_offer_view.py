@@ -1,4 +1,3 @@
-from my_offers import enums
 from my_offers.entities import get_offers
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import is_archived
