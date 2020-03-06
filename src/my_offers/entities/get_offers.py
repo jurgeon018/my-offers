@@ -137,6 +137,7 @@ class PageSpecificInfo:
     not_active_info: Optional[NotActiveInfo] = None
     """Доп. информация для вкладки неактивные"""
     declined_info: Optional[DeclinedInfo] = None
+    """Доп. информация для вкладки отклоненные"""
 
 
 @dataclass
