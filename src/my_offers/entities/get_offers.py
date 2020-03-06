@@ -89,14 +89,6 @@ class AvailableActions:
 
 
 @dataclass
-class NotActiveInfo:
-    status: str
-    """Статус для некативных"""
-    message: Optional[str] = None
-    """Доп. сообщение"""
-
-
-@dataclass
 class Moderation:
     declined_date: Optional[datetime] = None
     """Дата отклонения"""
@@ -109,17 +101,49 @@ class Moderation:
 
 
 @dataclass
+class ActiveInfo:
+    vas: List[enums.OfferVas]
+    """Список VAS'ов"""
+    is_from_package: bool
+    """ Флаг 'из пакета'"""
+    is_autoprolong: bool
+    """Автопродление"""
+    is_publication_time_ends: bool
+    """ Флаг 'меньше суток до конца публикации'"""
+    auction: Optional[Auction] = None
+    """Данные об аукционе по объявлению"""
+
+
+@dataclass
+class NotActiveInfo:
+    status: str
+    """Статус для некативных"""
+    message: Optional[str] = None
+    """Доп. сообщение"""
+
+
+@dataclass
+class Declined:
+    moderation: Optional[Moderation] = None
+    """Данные о причине отклонения объявления"""
+
+
+@dataclass
+class PageSpecificInfo:
+    active_info: Optional[ActiveInfo] = None
+    """Доп. информация для вкладки активные"""
+    not_active_info: Optional[NotActiveInfo] = None
+    """Доп. информация для вкладки неактивные"""
+
+
+@dataclass
 class GetOffer(OfferViewModel):
     statistics: Optional[Statistics]
     """Статистика по объявлению"""
     available_actions: AvailableActions
     """Доступные действия с объявлениями"""
-    auction: Optional[Auction] = None
-    """Данные об аукционе по объявлению"""
-    moderation: Optional[Moderation] = None
-    """Данные о причине отклонения объявления"""
-    not_active_info: Optional[NotActiveInfo] = None
-    """Доп. информация для вкладки неактивные"""
+    page_specific_info: PageSpecificInfo
+    """Данные зависящие от конкретной вкладки"""
 
 
 @dataclass

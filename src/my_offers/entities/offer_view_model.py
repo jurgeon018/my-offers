@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
-from my_offers import enums
 from my_offers.enums.offer_address import AddressType
 
 
@@ -63,6 +62,8 @@ class OfferGeo:
 
 @dataclass
 class OfferViewModel:
+    id: int
+    """ID объявления"""
     main_photo_url: Optional[str]
     """Основаная фотография объекта"""
     title: Optional[str]
@@ -78,19 +79,11 @@ class OfferViewModel:
     features: List[str]
     """Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека"""
     publish_features: Optional[List[str]]
-    """Параметры публикации: сколько осталось, автопродление"""
-    vas: List[enums.OfferVas]
-    """Список VAS'ов"""
-    is_from_package: bool
-    """ Флаг 'из пакета'"""
+    """Параметры публикации: сколько осталось"""
     is_manual: bool
     """ Флаг 'из импорта'"""
-    is_publication_time_ends: bool
-    """ Флаг 'меньше суток до конца публикации'"""
     created_at: datetime
     """Дата подачи объявления"""
-    id: int
-    """ID объявления"""
     archived_at: Optional[datetime]
     """Дата архивации"""
     status: Optional[str]
