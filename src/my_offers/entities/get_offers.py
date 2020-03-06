@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from my_offers import enums
-from my_offers.entities.offer_view_model import OfferViewModel
+from my_offers.entities.offer_view_model import OfferViewModel, OfferViewModelV2
 from my_offers.enums.sort_types import GetOffersSortType
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 
@@ -110,6 +110,8 @@ class ActiveInfo:
     """Автопродление"""
     is_publication_time_ends: bool
     """ Флаг 'меньше суток до конца публикации'"""
+    publish_features: Optional[List[str]]
+    """Параметры публикации: сколько осталось"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
 
@@ -123,7 +125,7 @@ class NotActiveInfo:
 
 
 @dataclass
-class Declined:
+class DeclinedInfo:
     moderation: Optional[Moderation] = None
     """Данные о причине отклонения объявления"""
 
@@ -134,10 +136,25 @@ class PageSpecificInfo:
     """Доп. информация для вкладки активные"""
     not_active_info: Optional[NotActiveInfo] = None
     """Доп. информация для вкладки неактивные"""
+    declined_info: Optional[DeclinedInfo] = None
 
 
 @dataclass
 class GetOffer(OfferViewModel):
+    statistics: Optional[Statistics]
+    """Статистика по объявлению"""
+    available_actions: AvailableActions
+    """Доступные действия с объявлениями"""
+    auction: Optional[Auction] = None
+    """Данные об аукционе по объявлению"""
+    moderation: Optional[Moderation] = None
+    """Данные о причине отклонения объявления"""
+    not_active_info: Optional[NotActiveInfo] = None
+    """Доп. информация для вкладки неактивные"""
+
+
+@dataclass
+class GetOfferV2(OfferViewModelV2):
     statistics: Optional[Statistics]
     """Статистика по объявлению"""
     available_actions: AvailableActions
@@ -169,7 +186,19 @@ class GetOffersResponse:
     offers: List[GetOffer]
     """Список объявлений"""
     counters: OfferCounters
-    """Счеткики еоличества объявлений"""
+    """Счеткики количества объявлений"""
+    page: PageInfo
+    """Информация о странице"""
+    degradation: Dict[str, bool]
+    """Информация о деградации"""
+
+
+@dataclass
+class GetOffersV2Response:
+    offers: List[GetOfferV2]
+    """Список объявлений"""
+    counters: OfferCounters
+    """Счеткики количества объявлений"""
     page: PageInfo
     """Информация о странице"""
     degradation: Dict[str, bool]

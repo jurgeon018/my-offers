@@ -22,12 +22,32 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
     url(
+        r'/public/v2/get-offers/$',
+        get_handler(
+            service=offers.v2_get_offers_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersRequest,
+            response_schema=entities.GetOffersV2Response,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
         r'/v1/get-offers/$',
         get_handler(
             service=offers.get_offers_private,
             method='POST',  # pragma: no mutate
             request_schema=entities.GetOffersPrivateRequest,
             response_schema=entities.GetOffersResponse,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
+    url(
+        r'/v2/get-offers/$',
+        get_handler(
+            service=offers.v2_get_offers_private,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersPrivateRequest,
+            response_schema=entities.GetOffersV2Response,
             base_handler_cls=RequestContextHandler,
         )
     ),
