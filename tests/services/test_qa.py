@@ -54,7 +54,7 @@ async def test_get_offer_view(mocker):
     # assert
     assert result == offer_view
     get_object_model_by_id_mock.assert_called_once_with(111)
-    build_offer_view_mock.assert_called_once_with([object_model])
+    build_offer_view_mock.assert_called_once_with(object_models=[object_model])
 
 
 @pytest.mark.gen_test

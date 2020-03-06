@@ -55,6 +55,16 @@ register_consumer(
     dead_queue_ttl=timedelta(seconds=60),
 )
 
+# [moderation] сохраняет/обновляет нарушения по объявлениям
+register_consumer(
+    command=cli.command('save_moderation_offer_offence_consumer'),
+    queue=queues.moderation_offence_queue,
+    callback=consumers.save_offer_offence_callback,
+    schema_cls=schemas.RabbitMQOffenceMessageSchema,
+    dead_queue_enabled=True,
+    dead_queue_ttl=timedelta(seconds=60),
+)
+
 
 @cli.command()
 def clear_deleted_offer_cron() -> None:

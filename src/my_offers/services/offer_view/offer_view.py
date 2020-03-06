@@ -4,15 +4,18 @@ from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.helpers.category import get_types
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.services.offer_view.fields.available_actions import get_available_actions
-from my_offers.services.offer_view.fields.features import get_features
-from my_offers.services.offer_view.fields.geo import prepare_geo
-from my_offers.services.offer_view.fields.is_from_package import is_from_package
-from my_offers.services.offer_view.fields.price_info import get_price_info
-from my_offers.services.offer_view.fields.publish_features import get_publish_features
-from my_offers.services.offer_view.fields.status import get_status
-from my_offers.services.offer_view.fields.title import get_title
-from my_offers.services.offer_view.fields.vas import get_vas
+from my_offers.services.offer_view.fields import (
+    get_available_actions,
+    get_features,
+    get_moderation,
+    get_price_info,
+    get_publish_features,
+    get_status,
+    get_title,
+    get_vas,
+    is_from_package,
+    prepare_geo,
+)
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -25,7 +28,6 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         offer_type=offer_type,
         deal_type=deal_type
     )
-
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
     is_manual = bool(object_model.source and object_model.source.is_upload)
     is_archived = bool(object_model.flags and object_model.flags.is_archived)
@@ -48,8 +50,12 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
     )
     publish_terms = object_model.publish_terms
     terms = publish_terms.terms if publish_terms else None
-
     geo_urls = enrich_data.get_urls_by_types(deal_type=deal_type, offer_type=offer_type)
+    moderation = get_moderation(
+        status=object_model.status,
+        offer_offence=enrich_data.get_offer_offence(offer_id=object_model.id)
+    )
+
     return GetOffer(
         id=object_model.id,
         created_at=object_model.creation_date,
@@ -74,6 +80,7 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
             is_manual=is_manual,
             can_update_edit_date=enrich_data.can_update_edit_dates.get(object_model.id, False),
         ),
+        moderation=moderation
     )
 
 
