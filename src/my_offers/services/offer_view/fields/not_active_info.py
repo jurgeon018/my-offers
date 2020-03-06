@@ -4,8 +4,8 @@ from typing import Optional
 import pytz
 
 from my_offers.entities.get_offers import NotActiveInfo
-from my_offers.helpers.time import get_left_time_display
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
+from my_offers.services.offer_view.helpers.time import get_left_time_display
 
 
 def get_not_active_info(

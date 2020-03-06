@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from my_offers.helpers.time import get_left_time_display
+from my_offers.services.offer_view.helpers.time import get_left_time_display
 
 
 @pytest.mark.parametrize(

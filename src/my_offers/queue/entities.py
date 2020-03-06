@@ -29,7 +29,9 @@ class ServiceContractMessage:
 @dataclass
 class SaveUnloadError:
     type: str
+    """Тип ошибки"""
     message: str
+    """Сообщение об ошибки"""
 
 
 @dataclass

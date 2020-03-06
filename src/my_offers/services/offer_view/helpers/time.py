@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from pytils.numeral import choose_plural
 
 
-def get_left_time_display(*, current: datetime, end: datetime):
+def get_left_time_display(*, current: datetime, end: datetime) -> str:
     if end < current:
         raise ValueError('Дата окончания меньше даты начала')
 

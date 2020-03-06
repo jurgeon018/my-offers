@@ -91,7 +91,9 @@ class AvailableActions:
 @dataclass
 class NotActiveInfo:
     status: str
+    """Статус для некативных"""
     message: Optional[str] = None
+    """Доп. сообщение"""
 
 
 @dataclass

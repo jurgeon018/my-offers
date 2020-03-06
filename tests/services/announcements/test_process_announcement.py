@@ -6,8 +6,11 @@ from cian_test_utils import future
 
 from my_offers import entities, enums
 from my_offers.mappers.object_model import object_model_mapper
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement import process_announcement
+from my_offers.services.announcement.process_announcement_service import post_process_announcement
 from tests.utils import load_json_data
 
 
@@ -52,3 +55,25 @@ async def test_process_announcement(mocker, announcement):
 
     # assert
     save_offer_mock.assert_called_once_with(offer)
+
+
+@pytest.mark.gen_test
+async def test_post_process_announcement(mocker):
+    # arrange
+    offer = ObjectModel(
+        id=111,
+        bargain_terms=BargainTerms(price=123),
+        phones=[Phone(country_code='1', number='12312')],
+        category=Category.flat_rent,
+        status=Status.published,
+    )
+    delete_offer_import_error_mock = mocker.patch(
+        'my_offers.services.announcement.process_announcement_service.postgresql.delete_offer_import_error',
+        return_value=future(),
+    )
+
+    # act
+    await post_process_announcement(offer)
+
+    # assert
+    delete_offer_import_error_mock.assert_called_once_with(111)

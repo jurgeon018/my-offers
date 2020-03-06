@@ -59,7 +59,7 @@ close_announcement_contract_queue = Queue(
 )
 
 save_offer_unload_error_queue = Queue(
-    name=get_modified_queue_name('save_offer__unload_error'),
+    name=get_modified_queue_name('save_offer_unload_error'),
     bindings=[
         QueueBinding(
             exchange=Exchange('unload'),
