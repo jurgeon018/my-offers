@@ -50,3 +50,9 @@ async def process_announcement(object_model: ObjectModel) -> None:
     )
 
     await postgresql.save_offer(offer)
+    await post_process_announcement(object_model)
+
+
+async def post_process_announcement(object_model: ObjectModel) -> None:
+    if not object_model.status.is_draft:
+        await postgresql.delete_offer_import_error(object_model.id)

@@ -32,3 +32,8 @@ memory = 128
 type = "consumer"
 command = "mark_to_delete_announcement_contract_consumer"
 memory = 128
+
+[job.save_offer_unload_error_consumer]
+type = "consumer"
+command = "save_offer_unload_error_consumer"
+memory = 128

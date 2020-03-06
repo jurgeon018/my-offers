@@ -3,6 +3,6 @@ from my_offers.entities.get_offers import GetOffersPrivateRequest, GetOffersRequ
 from my_offers.entities.moderation import ModerationOfferOffence
 from my_offers.entities.offer import Offer
 from my_offers.entities.offer_action import OfferActionRequest, OfferActionResponse
+from my_offers.entities.offer_import_error import OfferImportError
 from my_offers.entities.offer_view_model import OfferViewModel
 from my_offers.entities.update_offer import UpdateOfferRequest
-from my_offers.queue.entities import ServiceContractMessage

@@ -58,6 +58,7 @@ def test_enrich_data__get_offer_offence__moderation_info_is_none(mocker):
         jk_urls={},
         geo_urls={},
         can_update_edit_dates={},
+        import_errors={},
         moderation_info=None
     )
 
@@ -80,6 +81,7 @@ def test_enrich_data__get_offer_offence(mocker, moderation_info, expected):
         jk_urls={},
         geo_urls={},
         can_update_edit_dates={},
+        import_errors={},
         moderation_info=moderation_info
     )
 

@@ -8,6 +8,7 @@ from my_offers.services.offer_view.fields import (
     get_available_actions,
     get_features,
     get_moderation,
+    get_not_active_info,
     get_price_info,
     get_publish_features,
     get_status,
@@ -80,7 +81,11 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
             is_manual=is_manual,
             can_update_edit_date=enrich_data.can_update_edit_dates.get(object_model.id, False),
         ),
-        moderation=moderation
+        not_active_info=get_not_active_info(
+            status=object_model.status,
+            import_error=enrich_data.import_errors.get(object_model.id)
+        ),
+        moderation=moderation,
     )
 
 

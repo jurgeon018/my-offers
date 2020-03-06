@@ -8,6 +8,7 @@ from my_offers.queue.routing_keys import (
     AnnouncementReportingV1RoutingKey,
     ModerationOfferOffenceReportingV1RoutingKey,
     ServiceContractsReportingV1RoutingKey,
+    UnloadOrderReportingV1RoutingKey,
 )
 
 
@@ -53,6 +54,16 @@ close_announcement_contract_queue = Queue(
         QueueBinding(
             exchange=billing_exchange,
             routing_key=ServiceContractsReportingV1RoutingKey.closed.value
+        )
+    ]
+)
+
+save_offer_unload_error_queue = Queue(
+    name=get_modified_queue_name('save_offer_unload_error'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('unload'),
+            routing_key=UnloadOrderReportingV1RoutingKey.error.value
         )
     ]
 )

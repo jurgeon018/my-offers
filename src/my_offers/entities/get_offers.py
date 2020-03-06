@@ -79,6 +79,24 @@ class Auction:
 
 
 @dataclass
+class AvailableActions:
+    can_update_edit_date: bool
+    """Можно обновить дату"""
+    can_move_to_archive: bool
+    """Пользователь может перенести объявление в архив"""
+    can_delete: bool
+    """Можно ли удалить объялвение"""
+
+
+@dataclass
+class NotActiveInfo:
+    status: str
+    """Статус для некативных"""
+    message: Optional[str] = None
+    """Доп. сообщение"""
+
+
+@dataclass
 class Moderation:
     declined_date: Optional[datetime] = None
     """Дата отклонения"""
@@ -94,10 +112,14 @@ class Moderation:
 class GetOffer(OfferViewModel):
     statistics: Optional[Statistics]
     """Статистика по объявлению"""
+    available_actions: AvailableActions
+    """Доступные действия с объявлениями"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
     moderation: Optional[Moderation] = None
     """Данные о причине отклонения объявления"""
+    not_active_info: Optional[NotActiveInfo] = None
+    """Доп. информация для вкладки неактивные"""
 
 
 @dataclass

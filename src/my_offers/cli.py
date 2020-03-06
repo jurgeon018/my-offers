@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 import click
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
@@ -30,7 +28,6 @@ register_consumer(
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
     dead_queue_enabled=True,
-    dead_queue_ttl=timedelta(seconds=60),
 )
 
 # [billing] сохраняет/обновляет контракты по объявлению
@@ -40,7 +37,6 @@ register_consumer(
     callback=consumers.save_announcement_contract_callback,
     schema_cls=schemas.RabbitMQServiceContractCreatedMessageSchema,
     dead_queue_enabled=True,
-    dead_queue_ttl=timedelta(seconds=60),
 )
 
 # [billing] помечает закрытые контракты как удаленные
@@ -50,7 +46,15 @@ register_consumer(
     callback=consumers.mark_to_delete_announcement_contract_callback,
     schema_cls=schemas.RabbitMQServiceContractCreatedMessageSchema,
     dead_queue_enabled=True,
-    dead_queue_ttl=timedelta(seconds=60),
+)
+
+# [import] сохраняет последнию ошибку импорта по объявлению
+register_consumer(
+    command=cli.command('save_offer_unload_error_consumer'),
+    queue=queues.save_offer_unload_error_queue,
+    callback=consumers.save_offer_unload_error_callback,
+    schema_cls=schemas.RabbitMQSaveUnloadErrorMessageSchema,
+    dead_queue_enabled=True,
 )
 
 # [moderation] сохраняет/обновляет нарушения по объявлениям
@@ -60,5 +64,4 @@ register_consumer(
     callback=consumers.save_offer_offence_callback,
     schema_cls=schemas.RabbitMQOffenceMessageSchema,
     dead_queue_enabled=True,
-    dead_queue_ttl=timedelta(seconds=60),
 )

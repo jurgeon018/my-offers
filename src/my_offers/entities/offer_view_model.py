@@ -62,16 +62,6 @@ class OfferGeo:
 
 
 @dataclass
-class AvailableActions:
-    can_update_edit_date: bool
-    """Можно обновить дату"""
-    can_move_to_archive: bool
-    """Пользователь может перенести объявление в архив"""
-    can_delete: bool
-    """Можно ли удалить объялвение"""
-
-
-@dataclass
 class OfferViewModel:
     main_photo_url: Optional[str]
     """Основаная фотография объекта"""
@@ -105,5 +95,3 @@ class OfferViewModel:
     """Дата архивации"""
     status: Optional[str]
     """Строка статуса"""
-    available_actions: AvailableActions
-    """Доступные действия с объявлениями"""

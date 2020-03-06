@@ -91,6 +91,15 @@ CREATE TABLE offers_billing_contracts
     updated_at        timestamp with time zone not null
 );
 CREATE INDEX ON offers_billing_contracts (offer_id);
+
+CREATE table offers_last_import_error
+(
+    offer_id   bigint                   not null primary key,
+    type       varchar,
+    message    varchar,
+    created_at timestamp with time zone not null
+);
+
 CREATE TYPE offence_status as enum (
     'Confirmed',
     'Corrected',

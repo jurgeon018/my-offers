@@ -5,6 +5,7 @@ from cian_test_utils import future
 
 from my_offers.entities import GetOffersRequest
 from my_offers.entities.get_offers import (
+    AvailableActions,
     Filter,
     GetOffer,
     GetOffersPrivateRequest,
@@ -14,7 +15,7 @@ from my_offers.entities.get_offers import (
     Pagination,
     Statistics,
 )
-from my_offers.entities.offer_view_model import AvailableActions, OfferGeo, PriceInfo
+from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.enums import GetOffersSortType, GetOfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
@@ -184,6 +185,7 @@ async def test_get_offer_views(mocker):
                 jk_urls={},
                 geo_urls={},
                 can_update_edit_dates={},
+                import_errors={},
             ),
             {}
         )),

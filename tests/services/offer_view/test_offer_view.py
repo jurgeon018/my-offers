@@ -2,8 +2,8 @@ import pytest
 from cian_test_utils import future
 
 from my_offers import enums
-from my_offers.entities.get_offers import GetOffer, Statistics
-from my_offers.entities.offer_view_model import AvailableActions, OfferGeo, PriceInfo, Underground
+from my_offers.entities.get_offers import AvailableActions, GetOffer, Statistics
+from my_offers.entities.offer_view_model import OfferGeo, PriceInfo, Underground
 from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     AddressInfo,
@@ -35,7 +35,14 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 @pytest.fixture(name='enrich_data_mock')
 def enrich_data_fixture():
-    return EnrichData(statistics={}, auctions={}, jk_urls={}, geo_urls={}, can_update_edit_dates={})
+    return EnrichData(
+        statistics={},
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+    )
 
 
 def test_build_offer_view(enrich_data_mock):
