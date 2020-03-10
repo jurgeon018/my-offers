@@ -70,7 +70,7 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         vas=get_vas(terms),
         is_from_package=is_from_package(terms),
         is_manual=is_manual,
-        is_publication_time_ends=is_publication_time_ends(object_model),
+        is_publication_time_ends=is_publication_time_ends(),
         statistics=Statistics(),
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=is_archived),
