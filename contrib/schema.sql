@@ -20,7 +20,7 @@ create type offer_type as enum (
 
 create type offer_status_tab as enum (
     'active',
-    'not_active',
+    'notActive',
     'declined',
     'archived',
     'deleted'

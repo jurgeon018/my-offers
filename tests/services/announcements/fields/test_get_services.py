@@ -22,6 +22,23 @@ from my_offers.services.announcement.fields.services import get_services
             ),
             [enums.OfferServices.paid],
         ),
+        (
+            PublishTerms(
+                terms=[
+                    PublishTerm(services=[Services.highlight]),
+                    PublishTerm(services=[Services.premium]),
+                ]
+            ),
+            [enums.OfferServices.premium, enums.OfferServices.premium_highlight],
+        ),
+        (
+            PublishTerms(
+                terms=[
+                    PublishTerm(services=[Services.calltracking]),
+                ]
+            ),
+            [],
+        ),
     )
 )
 def test_get_services(mocker, publish_terms, expected):
