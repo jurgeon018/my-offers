@@ -97,7 +97,7 @@ def _prepare_conditions(filters: Dict[str, Any]) -> List:
             conditions.append(field == value)
 
     if services := filters.get('services'):
-        conditions.append(OFFER_TABLE.services.contains(services))
+        conditions.append(OFFER_TABLE.services.overlap(services))
     if search_text := filters.get('search_text'):
         conditions.append(
             func.to_tsvector('russian', OFFER_TABLE.search_text).match(search_text, postgresql_regconfig='russian')
