@@ -1,7 +1,7 @@
 from cian_web.exceptions import BrokenRulesException, Error
 
 from my_offers import entities
-from my_offers.entities.get_offers import GetOffer
+from my_offers.entities.get_offers import GetOfferV2
 from my_offers.entities.qa import QaGetByIdRequest
 from my_offers.repositories.postgresql.object_model import get_object_model_by_id
 from my_offers.repositories.postgresql.offer import get_offer_by_id
@@ -17,7 +17,7 @@ async def get_offer(request: QaGetByIdRequest) -> entities.Offer:
     return offer
 
 
-async def get_offer_view(request: QaGetByIdRequest) -> GetOffer:
+async def get_offer_view(request: QaGetByIdRequest) -> GetOfferV2:
     object_model = await get_object_model_by_id(request.offer_id)
 
     if not object_model:

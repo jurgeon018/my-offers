@@ -1,16 +1,13 @@
 import math
-from typing import Any, Dict, List, Optional, Tuple
-
-from simple_settings import settings
+from typing import Dict, List, Tuple
 
 from my_offers import entities
 from my_offers.entities import get_offers
-from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql.offer import get_offer_counters
-from my_offers.services.get_master_user_id import get_master_user_id
 from my_offers.services.offer_view import v2_build_offer_view
+from my_offers.services.offers._get_offers import get_filters, get_pagination
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
 
@@ -26,8 +23,8 @@ async def v2_get_offers_private(request: entities.GetOffersPrivateRequest) -> en
 async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_id: int) -> entities.GetOffersV2Response:
     """ Получить объявления для пользователя. Для м/а с учетом иерархии. """
     # шаг 1 - подготовка параметров запроса
-    filters = await _get_filters(filters=request.filters, user_id=realty_user_id)
-    limit, offset = _get_pagination(request.pagination)
+    filters = await get_filters(filters=request.filters, user_id=realty_user_id)
+    limit, offset = get_pagination(request.pagination)
 
     # шаг 2 - получение object models
     object_models, total = await postgresql.get_object_models(
@@ -37,12 +34,10 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
         sort_type=request.sort or get_offers.GetOffersSortType.by_default,
     )
 
-    offers, degradation = await get_offer_views(
-        object_models=object_models
-    )
+    offers, degradation = await get_offer_views(object_models)
 
     # шаг 3 - формирование ответа
-    return entities.GetOffersResponse(
+    return entities.GetOffersV2Response(
         offers=offers,
         counters=await get_offer_counters(realty_user_id),
         page=get_offers.PageInfo(
@@ -68,27 +63,3 @@ async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_of
     ]
 
     return offers, degradation
-
-
-async def _get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
-    result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
-    result['master_user_id'] = await get_master_user_id(user_id)
-    return result
-
-
-def _get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, int]:
-    limit = settings.OFFER_LIST_LIMIT
-    offset = 0
-
-    if not pagination:
-        return limit, offset
-
-    if pagination.limit:
-        limit = pagination.limit
-
-    if pagination.offset:
-        offset = pagination.offset
-    elif pagination.page:
-        offset = limit * (pagination.page - 1)
-
-    return limit, offset
