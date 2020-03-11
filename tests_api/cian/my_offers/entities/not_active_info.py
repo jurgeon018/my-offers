@@ -9,11 +9,12 @@ new-codegen version: 4.0.2
 
 """
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
-class Newbuilding:
-    name: str
-    """Название ЖК"""
-    searchUrl: str
-    """Поисковый запрос по ЖК"""
+class NotActiveInfo:
+    status: str
+    """Статус для некативных"""
+    message: Optional[str] = None
+    """Доп. сообщение"""

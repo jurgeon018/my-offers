@@ -15,10 +15,10 @@ from cian_automation.web import DecoratedBaseClient
 from .. import entities
 
 
-class PublicV1ActionsUpdateEditDate(DecoratedBaseClient):
+class PublicV2GetOffers(DecoratedBaseClient):
     _is_service = True
     microservice_name = 'my-offers'
-    path = '/public/v1/actions/update-edit-date/'
+    path = '/public/v2/get-offers/'
     path_args = []
-    responses = {'post': entities.OfferActionResponse}
-    request_post: Callable[..., 'entities.OfferActionResponse']
+    responses = {'post': entities.GetOffersV2Response}
+    request_post: Callable[..., 'entities.GetOffersV2Response']

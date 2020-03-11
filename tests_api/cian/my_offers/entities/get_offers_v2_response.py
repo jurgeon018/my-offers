@@ -11,18 +11,18 @@ new-codegen version: 4.0.2
 from dataclasses import dataclass
 from typing import List
 
-from .get_offer import GetOffer
+from .get_offer_v2 import GetOfferV2
 from .offer_counters import OfferCounters
 from .page_info import PageInfo
 
 
 @dataclass
-class GetOffersResponse:
+class GetOffersV2Response:
     counters: OfferCounters
     """Счеткики количества объявлений"""
     degradation: dict
     """Информация о деградации"""
-    offers: List[GetOffer]
+    offers: List[GetOfferV2]
     """Список объявлений"""
     page: PageInfo
     """Информация о странице"""

@@ -11,10 +11,10 @@ new-codegen version: 4.0.2
 from dataclasses import dataclass
 from typing import Optional
 
+from .moderation import Moderation
+
 
 @dataclass
-class OfferCounters:
-    active: Optional[int] = None
-    archived: Optional[int] = None
-    declined: Optional[int] = None
-    notActive: Optional[int] = None
+class DeclinedInfo:
+    moderation: Optional[Moderation] = None
+    """Данные о причине отклонения объявления"""

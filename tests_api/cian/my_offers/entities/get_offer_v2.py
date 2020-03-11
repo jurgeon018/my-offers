@@ -12,63 +12,38 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
-from cian_enum import NoFormat, StrEnum
-
-from .auction import Auction
 from .available_actions import AvailableActions
-from .moderation import Moderation
-from .not_active_info import NotActiveInfo
 from .offer_geo import OfferGeo
+from .page_specific_info import PageSpecificInfo
 from .price_info import PriceInfo
 from .statistics import Statistics
 from .subagent import Subagent
 
 
-class Vas(StrEnum):
-    __value_format__ = NoFormat
-    auction = 'auction'
-    colorized = 'colorized'
-    payed = 'payed'
-    premium = 'premium'
-    top3 = 'top3'
-
-
 @dataclass
-class GetOffer:
+class GetOfferV2:
     availableActions: AvailableActions
     """Доступные действия с объявлениями"""
-    createdAt: datetime
-    """Дата подачи объявления"""
     features: List[str]
     """Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека"""
     geo: OfferGeo
     """Гео"""
     id: int
     """ID объявления"""
-    isFromPackage: bool
-    """ Флаг 'из пакета'"""
     isManual: bool
     """ Флаг 'из импорта'"""
-    isPublicationTimeEnds: bool
-    """ Флаг 'меньше суток до конца публикации'"""
+    pageSpecificInfo: PageSpecificInfo
+    """Данные зависящие от конкретной вкладки"""
     priceInfo: PriceInfo
     """Инофрмация о цене"""
     url: str
     """URL объявления"""
-    vas: List[Vas]
-    """Список VAS'ов"""
     archivedAt: Optional[datetime] = None
     """Дата архивации"""
-    auction: Optional[Auction] = None
-    """Данные об аукционе по объявлению"""
+    createdAt: Optional[datetime] = None
+    """Дата подачи объявления"""
     mainPhotoUrl: Optional[str] = None
     """Основаная фотография объекта"""
-    moderation: Optional[Moderation] = None
-    """Данные о причине отклонения объявления"""
-    notActiveInfo: Optional[NotActiveInfo] = None
-    """Доп. информация для вкладки неактивные"""
-    publishFeatures: Optional[List[str]] = None
-    """Параметры публикации: сколько осталось, автопродление"""
     statistics: Optional[Statistics] = None
     """Статистика по объявлению"""
     status: Optional[str] = None
