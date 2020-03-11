@@ -123,14 +123,6 @@ class ActiveInfo:
 
 
 @dataclass
-class NotActiveInfo:
-    status: str
-    """Статус для некативных"""
-    message: Optional[str] = None
-    """Доп. сообщение"""
-
-
-@dataclass
 class DeclinedInfo:
     moderation: Optional[Moderation] = None
     """Данные о причине отклонения объявления"""
