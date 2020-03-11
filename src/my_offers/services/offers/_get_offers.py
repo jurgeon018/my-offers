@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from simple_settings import settings
 
-from my_offers import entities
+from my_offers import entities, enums
 from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
@@ -34,7 +34,7 @@ async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: 
         filters=filters,
         limit=limit,
         offset=offset,
-        sort_type=request.sort or get_offers.GetOffersSortType.by_default,
+        sort_type=request.sort or enums.GetOffersSortType.by_default,
     )
 
     offers, degradation = await get_offer_views(

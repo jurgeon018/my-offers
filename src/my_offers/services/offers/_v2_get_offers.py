@@ -1,7 +1,7 @@
 import math
 from typing import Dict, List, Tuple
 
-from my_offers import entities
+from my_offers import entities, enums
 from my_offers.entities import get_offers
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
@@ -31,7 +31,7 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
         filters=filters,
         limit=limit,
         offset=offset,
-        sort_type=request.sort or get_offers.GetOffersSortType.by_default,
+        sort_type=request.sort or enums.GetOffersSortType.by_default,
     )
 
     offers, degradation = await v2_get_offer_views(object_models)
