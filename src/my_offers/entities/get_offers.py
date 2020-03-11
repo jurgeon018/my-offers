@@ -10,10 +10,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term 
 
 @dataclass
 class Filter:
-    status_tab: enums.GetOfferStatusTab
+    status_tab: enums.OfferStatusTab
     """Вкладка"""
-    sort_type: Optional[GetOffersSortType]
-    """Тип сортировки"""
     deal_type: Optional[enums.DealType]
     """Тип сделки"""
     offer_type: Optional[enums.OfferType]
