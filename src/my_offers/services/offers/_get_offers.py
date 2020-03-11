@@ -16,7 +16,7 @@ from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enric
 
 
 async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entities.GetOffersResponse:
-    """ Приватная апи получения моих объявлений. Требует явной передачи пользователя. """
+    """ DEPRECATED: use V2 Приватная апи получения моих объявлений. Требует явной передачи пользователя. """
     return await get_offers_public(
         request=request,
         realty_user_id=request.user_id
@@ -24,7 +24,7 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
 
 
 async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: int) -> entities.GetOffersResponse:
-    """ Получить объявления для пользователя. Для м/а с учетом иерархии. """
+    """ DEPRECATED: use V2 Получить объявления для пользователя. Для м/а с учетом иерархии. """
     # шаг 1 - подготовка параметров запроса
     filters = await get_filters(filters=request.filters, user_id=realty_user_id)
     limit, offset = get_pagination(request.pagination)
