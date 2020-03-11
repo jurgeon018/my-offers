@@ -62,5 +62,3 @@ def test_build_offer_view(enrich_data_mock):
 
     # assert
     assert result == expected_result
-
-
