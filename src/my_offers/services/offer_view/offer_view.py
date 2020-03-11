@@ -83,7 +83,8 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         ),
         not_active_info=get_not_active_info(
             status=object_model.status,
-            import_error=enrich_data.import_errors.get(object_model.id)
+            import_error=enrich_data.import_errors.get(object_model.id),
+            edit_date=object_model.edit_date
         ),
         moderation=moderation,
     )
