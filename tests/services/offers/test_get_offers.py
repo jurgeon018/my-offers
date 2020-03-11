@@ -16,12 +16,12 @@ from my_offers.entities.get_offers import (
     Statistics,
 )
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
-from my_offers.enums import GetOffersSortType, GetOfferStatusTab
+from my_offers.enums import GetOffersSortType, OfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.services import offers
 from my_offers.services.offers import get_offers_private
-from my_offers.services.offers._get_offers import _get_pagination, get_offer_views
+from my_offers.services.offers._get_offers import get_offer_views, get_pagination
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -31,8 +31,7 @@ async def test_get_offers_public(mocker):
     expected_user = 777
     request = GetOffersRequest(
         filters=Filter(
-            status_tab=GetOfferStatusTab.active,
-            sort_type=None,
+            status_tab=OfferStatusTab.active,
             deal_type=None,
             offer_type=None,
             services=None,
@@ -120,8 +119,7 @@ async def test_get_offers_private(mocker):
     request = GetOffersPrivateRequest(
         user_id=111,
         filters=Filter(
-            status_tab=GetOfferStatusTab.active,
-            sort_type=None,
+            status_tab=OfferStatusTab.active,
             deal_type=None,
             offer_type=None,
             services=None,
@@ -167,7 +165,7 @@ def test__get_pagination(pagination, expected):
     # arrange
 
     # act
-    result = _get_pagination(pagination)
+    result = get_pagination(pagination)
 
     # assert
     assert result == expected

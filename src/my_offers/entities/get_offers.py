@@ -3,17 +3,15 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from my_offers import enums
-from my_offers.entities.offer_view_model import OfferViewModel
+from my_offers.entities.offer_view_model import OfferViewModel, OfferViewModelV2
 from my_offers.enums.sort_types import GetOffersSortType
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 
 
 @dataclass
 class Filter:
-    status_tab: enums.GetOfferStatusTab
+    status_tab: enums.OfferStatusTab
     """Вкладка"""
-    sort_type: Optional[GetOffersSortType]
-    """Тип сортировки"""
     deal_type: Optional[enums.DealType]
     """Тип сделки"""
     offer_type: Optional[enums.OfferType]
@@ -109,6 +107,46 @@ class Moderation:
 
 
 @dataclass
+class ActiveInfo:
+    vas: List[enums.OfferVas]
+    """Список VAS'ов"""
+    is_from_package: bool
+    """ Флаг 'из пакета'"""
+    is_autoprolong: bool
+    """Автопродление"""
+    is_publication_time_ends: bool
+    """ Флаг 'меньше суток до конца публикации'"""
+    publish_features: Optional[List[str]]
+    """Параметры публикации: сколько осталось"""
+    auction: Optional[Auction] = None
+    """Данные об аукционе по объявлению"""
+
+
+@dataclass
+class NotActiveInfo:
+    status: str
+    """Статус для некативных"""
+    message: Optional[str] = None
+    """Доп. сообщение"""
+
+
+@dataclass
+class DeclinedInfo:
+    moderation: Optional[Moderation] = None
+    """Данные о причине отклонения объявления"""
+
+
+@dataclass
+class PageSpecificInfo:
+    active_info: Optional[ActiveInfo] = None
+    """Доп. информация для вкладки активные"""
+    not_active_info: Optional[NotActiveInfo] = None
+    """Доп. информация для вкладки неактивные"""
+    declined_info: Optional[DeclinedInfo] = None
+    """Доп. информация для вкладки отклоненные"""
+
+
+@dataclass
 class GetOffer(OfferViewModel):
     statistics: Optional[Statistics]
     """Статистика по объявлению"""
@@ -120,6 +158,16 @@ class GetOffer(OfferViewModel):
     """Данные о причине отклонения объявления"""
     not_active_info: Optional[NotActiveInfo] = None
     """Доп. информация для вкладки неактивные"""
+
+
+@dataclass
+class GetOfferV2(OfferViewModelV2):
+    statistics: Optional[Statistics]
+    """Статистика по объявлению"""
+    available_actions: AvailableActions
+    """Доступные действия с объявлениями"""
+    page_specific_info: PageSpecificInfo
+    """Данные зависящие от конкретной вкладки"""
 
 
 @dataclass
@@ -145,7 +193,19 @@ class GetOffersResponse:
     offers: List[GetOffer]
     """Список объявлений"""
     counters: OfferCounters
-    """Счеткики еоличества объявлений"""
+    """Счеткики количества объявлений"""
+    page: PageInfo
+    """Информация о странице"""
+    degradation: Dict[str, bool]
+    """Информация о деградации"""
+
+
+@dataclass
+class GetOffersV2Response:
+    offers: List[GetOfferV2]
+    """Список объявлений"""
+    counters: OfferCounters
+    """Счеткики количества объявлений"""
     page: PageInfo
     """Информация о странице"""
     degradation: Dict[str, bool]

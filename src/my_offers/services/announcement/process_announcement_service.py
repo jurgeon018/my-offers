@@ -1,5 +1,6 @@
 from my_offers import entities
 from my_offers.helpers.category import get_types
+from my_offers.helpers.status_tab import get_status_tab
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
@@ -8,7 +9,6 @@ from my_offers.services.announcement.fields.prices import get_prices
 from my_offers.services.announcement.fields.search_text import get_search_text
 from my_offers.services.announcement.fields.services import get_services
 from my_offers.services.announcement.fields.sort_date import get_sort_date
-from my_offers.services.announcement.fields.status_tab import get_status_tab
 from my_offers.services.announcement.fields.street_name import get_street_name
 from my_offers.services.announcement.fields.total_area import get_total_area
 from my_offers.services.announcement.fields.walking_time import get_walking_time
@@ -18,7 +18,7 @@ from my_offers.services.get_master_user_id import get_master_user_id
 async def process_announcement(object_model: ObjectModel) -> None:
     offer_type, deal_type = get_types(object_model.category)
     status_tab = get_status_tab(
-        is_archived=object_model.flags.is_archived if object_model.flags else False,
+        offer_flags=object_model.flags,
         offer_status=object_model.status,
     )
 

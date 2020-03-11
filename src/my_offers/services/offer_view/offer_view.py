@@ -1,6 +1,3 @@
-from simple_settings import settings
-
-from my_offers import enums
 from my_offers.entities.get_offers import GetOffer, Statistics
 from my_offers.helpers.category import get_types
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
@@ -9,14 +6,16 @@ from my_offers.services.offer_view.fields import (
     get_features,
     get_moderation,
     get_not_active_info,
+    get_offer_url,
     get_price_info,
-    get_publish_features,
     get_status,
     get_title,
-    get_vas,
-    is_from_package,
     prepare_geo,
 )
+from my_offers.services.offer_view.fields.from_package import is_from_package
+from my_offers.services.offer_view.fields.publication_time_ends import is_publication_time_ends
+from my_offers.services.offer_view.fields.publish_features import get_publish_features
+from my_offers.services.offer_view.fields.vas import get_vas
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -24,7 +23,7 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
     """ Собирает из шарповой модели компактное представление объявления для выдачи."""
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
-    url_to_offer = _get_offer_url(
+    url_to_offer = get_offer_url(
         offer_id=object_model.id,
         offer_type=offer_type,
         deal_type=deal_type
@@ -71,7 +70,7 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         vas=get_vas(terms),
         is_from_package=is_from_package(terms),
         is_manual=is_manual,
-        is_publication_time_ends=_is_publication_time_ends(object_model),
+        is_publication_time_ends=is_publication_time_ends(),
         statistics=Statistics(),
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=is_archived),
@@ -88,17 +87,3 @@ def build_offer_view(*, object_model: ObjectModel, enrich_data: EnrichData) -> G
         ),
         moderation=moderation,
     )
-
-
-def _get_offer_url(
-        *,
-        offer_id: int,
-        offer_type: enums.OfferType,
-        deal_type: enums.DealType
-) -> str:
-    return f'{settings.CiAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{offer_id}'
-
-
-def _is_publication_time_ends(raw_offer: ObjectModel) -> bool:
-    # TODO: https://jira.cian.tech/browse/CD-74186
-    return False
