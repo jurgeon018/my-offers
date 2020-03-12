@@ -12,10 +12,10 @@ from my_offers.services.offer_view.fields import get_not_active_info
 from my_offers.services.offer_view.helpers.time import get_left_time_display
 
 
-TODAY = datetime(2020, 3, 11)
-DELTA_DAYS = random.choice(list(i for i in range(1, settings.DAYS_BEFORE_ARCHIVATION)))
-SOME_DAY_BEFORE_TODAY = TODAY - timedelta(days=DELTA_DAYS)
-ARCHIVE_DAY = SOME_DAY_BEFORE_TODAY + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
+TODAY = datetime(2020, 3, 12)
+EDIT_DAY = datetime(2020, 3, 10)
+ARCHIVE_DAY = EDIT_DAY + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
+CHECK_DAYS = get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
 
 @pytest.mark.parametrize(
     ('status', 'import_error', 'edit_date', 'now', 'expected'),
@@ -28,80 +28,58 @@ ARCHIVE_DAY = SOME_DAY_BEFORE_TODAY + timedelta(days=settings.DAYS_BEFORE_ARCHIV
         (
             Status.deactivated,
             None,
-            SOME_DAY_BEFORE_TODAY - timedelta(days=settings.DAYS_BEFORE_ARCHIVATION),
+            EDIT_DAY - timedelta(days=settings.DAYS_BEFORE_ARCHIVATION),
             TODAY,
-            NotActiveInfo(status='Снято с публикации',
-                          message=None)
+            NotActiveInfo(status='Снято с публикации', message=None)
         ),
         (
             Status.deactivated,
             None,
-            SOME_DAY_BEFORE_TODAY,
+            EDIT_DAY,
             TODAY,
-            NotActiveInfo(status='Снято с публикации',
-                          message='До автоматического удаления осталось {}'.format(
-                              get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
-                          ))
+            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_DAYS}')
         ),
         (
             Status.deleted,
             None,
-            SOME_DAY_BEFORE_TODAY,
+            EDIT_DAY,
             TODAY,
-            NotActiveInfo(status='Снято с публикации',
-                          message='До автоматического удаления осталось {}'.format(
-                              get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
-                          ))
+            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_DAYS}')
         ),
         (
             Status.removed_by_moderator,
             None,
-            SOME_DAY_BEFORE_TODAY,
+            EDIT_DAY,
             TODAY,
-            NotActiveInfo(status='Снято с публикации',
-                          message='До автоматического удаления осталось {}'.format(
-                              get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
-                          ))
+            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_DAYS}')
         ),
         (
             Status.refused,
             None,
-            SOME_DAY_BEFORE_TODAY,
+            EDIT_DAY,
             TODAY,
-            NotActiveInfo(status='Снято с публикации',
-                          message='До автоматического удаления осталось {}'.format(
-                              get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
-                          ))
+            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_DAYS}')
         ),
         (
             Status.sold,
             None,
-            SOME_DAY_BEFORE_TODAY,
+            EDIT_DAY,
             TODAY,
-            NotActiveInfo(status='Снято с публикации',
-                          message='До автоматического удаления осталось {}'.format(
-                              get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
-                          ))
+            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_DAYS}')
         ),
         (
             Status.moderate,
             None,
-            SOME_DAY_BEFORE_TODAY,
+            EDIT_DAY,
             TODAY,
-            NotActiveInfo(status='Снято с публикации',
-                          message='До автоматического удаления осталось {}'.format(
-                              get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
-                          ))
+            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_DAYS}')
         ),
         (
             Status.blocked,
             None,
-            SOME_DAY_BEFORE_TODAY,
+            EDIT_DAY,
             TODAY,
-            NotActiveInfo(status='Снято с публикации',
-                          message='До автоматического удаления осталось {}'.format(
-                              get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
-                          ))
+            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_DAYS}')
         ),
     )
 )
