@@ -71,6 +71,6 @@ register_consumer(
 
 @cli.command()
 def reindex_offers() -> None:
-    """ Обновление данных специалистов """
+    """ Переиндексация объявлений """
     io_loop = IOLoop.current()
     io_loop.run_sync(reindex_offers_command)
