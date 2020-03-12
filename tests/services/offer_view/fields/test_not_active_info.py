@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
 from freezegun import freeze_time
-from simple_settings import settings
 from simple_settings.utils import settings_stub
 
 from my_offers.entities.get_offers import NotActiveInfo
@@ -25,7 +24,7 @@ CHECK_STR = '28 дней'
         (
             Status.deactivated,
             None,
-            EDIT_DAY - timedelta(days=settings.DAYS_BEFORE_ARCHIVATION),
+            datetime(2019, 3, 10, 10),
             TODAY,
             NotActiveInfo(status='Снято с публикации', message=None)
         ),
