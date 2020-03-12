@@ -120,3 +120,11 @@ CREATE TABLE offers_offences
 );
 
 CREATE INDEX ON offers_offences (offer_id);
+
+create table offers_reindex_queue
+(
+    offer_id   bigint                   not null primary key,
+    in_process bool                     not null default false,
+    created_at timestamp with time zone not null
+);
+create index on offers_reindex_queue (created_at);
