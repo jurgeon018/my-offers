@@ -43,7 +43,6 @@ def get_not_active_info(
             now = datetime.now(tz=pytz.UTC)
             if timezone.is_naive(edit_date):
                 edit_date = date_time.localize(edit_date)
-                now = date_time.localize(datetime.now())
 
             archive_date = edit_date + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
             if archive_date > now:
