@@ -37,7 +37,7 @@ async def test_process_announcement(mocker, announcement):
                     'Россия, Ростов-на-Дону, Большая Садовая улица, 73',
         row_version=announcement.row_version,
         raw_data=object_model_mapper.map_to(announcement),
-        services=[Services.highlight, Services.calltracking, Services.premium],
+        services=[enums.OfferServices.premium, enums.OfferServices.premium_highlight],
         is_manual=True,
         is_in_hidden_base=False,
         has_photo=False,

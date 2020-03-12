@@ -20,20 +20,19 @@ create type offer_type as enum (
 
 create type offer_status_tab as enum (
     'active',
-    'not_active',
+    'notActive',
     'declined',
     'archived',
     'deleted'
     );
 
-create type service as enum (
+create type offer_service as enum (
     'auction',
     'top3',
     'premium',
-    'highlight',
+    'premium+highlight',
     'paid',
-    'free',
-    'calltracking'
+    'free'
     );
 
 CREATE TABLE offers
@@ -47,7 +46,7 @@ CREATE TABLE offers
     deal_type         deal_type                not null,
     offer_type        offer_type               not null,
     status_tab        offer_status_tab         not null,
-    services          service[]                not null,
+    services          offer_service[]          not null,
 
     is_manual         bool                     not null,
     is_in_hidden_base bool                     not null,

@@ -65,7 +65,7 @@ async def get_offer_counters(user_id: int) -> OfferCounters:
 
     return OfferCounters(
         active=counters.get('active', 0),
-        not_active=counters.get('not_active', 0),
+        not_active=counters.get('notActive', 0),
         declined=counters.get('declined', 0),
         archived=counters.get('archived'),
     )
