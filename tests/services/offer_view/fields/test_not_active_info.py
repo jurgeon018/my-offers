@@ -1,4 +1,3 @@
-import random
 from datetime import datetime, timedelta
 
 import pytest
@@ -16,6 +15,7 @@ TODAY = datetime(2020, 3, 12)
 EDIT_DAY = datetime(2020, 3, 10)
 ARCHIVE_DAY = EDIT_DAY + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
 CHECK_DAYS = get_left_time_display(current=TODAY, end=ARCHIVE_DAY)
+
 
 @pytest.mark.parametrize(
     ('status', 'import_error', 'edit_date', 'now', 'expected'),
