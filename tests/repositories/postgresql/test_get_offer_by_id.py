@@ -5,7 +5,6 @@ from cian_test_utils import future
 
 from my_offers import enums, pg
 from my_offers.entities import Offer
-from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql.offer import get_offer_by_id
 
 
@@ -26,7 +25,7 @@ from my_offers.repositories.postgresql.offer import get_offer_by_id
                 search_text='zzzzzzz',
                 row_version=4444444,
                 raw_data={'offer_id': 1111},
-                services=[Services.auction],
+                services=[enums.OfferServices.auction],
                 is_manual=True,
                 is_in_hidden_base=False,
                 has_photo=False,
