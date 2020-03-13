@@ -85,6 +85,14 @@ class AvailableActions:
 
 
 @dataclass
+class NotActiveInfo:
+    status: str
+    """Статус для неактивных"""
+    message: Optional[str] = None
+    """Доп. сообщение"""
+
+
+@dataclass
 class Moderation:
     declined_date: Optional[datetime] = None
     """Дата отклонения"""
@@ -110,14 +118,6 @@ class ActiveInfo:
     """Параметры публикации: сколько осталось"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
-
-
-@dataclass
-class NotActiveInfo:
-    status: str
-    """Статус для некативных"""
-    message: Optional[str] = None
-    """Доп. сообщение"""
 
 
 @dataclass

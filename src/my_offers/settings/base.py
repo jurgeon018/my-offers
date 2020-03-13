@@ -14,3 +14,5 @@ DEFAULT_LOCATION_ID: int = 1
 CiAN_BASE_URL: str = 'https://cian.ru'
 
 OFFER_LIST_LIMIT: int = 20
+
+DAYS_BEFORE_ARCHIVATION: int = 30
