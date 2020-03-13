@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import pytz
+from cian_helpers import date_time, timezone
 from simple_settings import settings
-from cian_helpers import timezone, date_time
 
 from my_offers.entities.get_offers import NotActiveInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
@@ -44,8 +44,8 @@ def get_not_active_info(
             if timezone.is_naive(edit_date):
                 edit_date = date_time.localize(edit_date)
 
-            archive_date = edit_date + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
-            if archive_date > now:
+            archive_date = edit_date + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)  # type: ignore[operator]
+            if archive_date > now:  # type: ignore[operator]
                 message = 'До автоматического удаления осталось {}'.format(
                     get_left_time_display(current=now, end=archive_date)
                 )
