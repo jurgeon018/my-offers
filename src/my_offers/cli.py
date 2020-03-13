@@ -5,7 +5,7 @@ from tornado.ioloop import IOLoop
 
 from my_offers import setup
 from my_offers.queue import consumers, queues, schemas
-from my_offers.services.offers._reindex_offers import reindex_offers_command
+from my_offers.services.offers import reindex_offers_command
 from my_offers.web.urls import urlpatterns
 
 

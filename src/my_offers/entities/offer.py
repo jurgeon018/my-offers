@@ -65,7 +65,7 @@ class ReindexOfferItem:
 class ReindexOffer:
     offer_id: int
     """Id объявления"""
-    raw_data: Dict
+    raw_data: str
     """Модель объявления"""
     updated_at: datetime
     """Дата последнего обновления"""

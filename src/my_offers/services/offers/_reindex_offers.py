@@ -10,7 +10,7 @@ from my_offers.services.announcement.process_announcement_service import prepare
 logger = logging.getLogger(__name__)
 
 
-async def reindex_offers_command():
+async def reindex_offers_command() -> None:
     cnt = 0
     while reindex_items := await get_reindex_items():
         logger.info('Selected %s offers', len(reindex_items))
