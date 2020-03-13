@@ -11,3 +11,19 @@ offer_mapper = EntityMapper(
         'sort_date': ValueMapper(),
     }
 )
+
+reindex_offer_item_mapper = EntityMapper(
+    entities.ReindexOfferItem,
+    without_camelcase=True,
+    mappers={
+        'created_at': ValueMapper(),
+    }
+)
+
+reindex_offer_mapper = EntityMapper(
+    entities.ReindexOffer,
+    without_camelcase=True,
+    mappers={
+        'updated_at': ValueMapper(),
+    }
+)

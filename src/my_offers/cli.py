@@ -1,9 +1,11 @@
 import click
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
+from tornado.ioloop import IOLoop
 
 from my_offers import setup
 from my_offers.queue import consumers, queues, schemas
+from my_offers.services.offers import reindex_offers_command
 from my_offers.web.urls import urlpatterns
 
 
@@ -65,3 +67,10 @@ register_consumer(
     schema_cls=schemas.RabbitMQOffenceMessageSchema,
     dead_queue_enabled=True,
 )
+
+
+@cli.command()
+def reindex_offers() -> None:
+    """ Переиндексация объявлений """
+    io_loop = IOLoop.current()
+    io_loop.run_sync(reindex_offers_command)

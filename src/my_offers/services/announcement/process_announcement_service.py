@@ -16,16 +16,21 @@ from my_offers.services.get_master_user_id import get_master_user_id
 
 
 async def process_announcement(object_model: ObjectModel) -> None:
+    offer = await prepare_offer(object_model)
+
+    await postgresql.save_offer(offer)
+    await post_process_announcement(object_model)
+
+
+async def prepare_offer(object_model: ObjectModel) -> entities.Offer:
     offer_type, deal_type = get_types(object_model.category)
     status_tab = get_status_tab(
         offer_flags=object_model.flags,
         offer_status=object_model.status,
     )
-
     total_area = get_total_area(total_area=object_model.total_area, land=object_model.land)
     price, price_per_meter = get_prices(bargain_terms=object_model.bargain_terms, total_area=total_area)
     geo = object_model.geo
-
     offer = entities.Offer(
         offer_id=object_model.id,
         master_user_id=await get_master_user_id(object_model.user_id),
@@ -37,7 +42,7 @@ async def process_announcement(object_model: ObjectModel) -> None:
         row_version=object_model.row_version,
         raw_data=object_model_mapper.map_to(object_model),
         services=get_services(object_model.publish_terms),
-        is_manual=not(object_model.source and object_model.source.is_upload),
+        is_manual=not (object_model.source and object_model.source.is_upload),
         is_in_hidden_base=bool(object_model.is_in_hidden_base),
         has_photo=bool(object_model.photos),
         is_test=get_is_test(object_model),
@@ -49,8 +54,7 @@ async def process_announcement(object_model: ObjectModel) -> None:
         sort_date=get_sort_date(object_model=object_model, status_tab=status_tab),
     )
 
-    await postgresql.save_offer(offer)
-    await post_process_announcement(object_model)
+    return offer
 
 
 async def post_process_announcement(object_model: ObjectModel) -> None:

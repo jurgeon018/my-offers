@@ -51,3 +51,21 @@ class Offer:
     """Время в пути в минутах до метро пешком, мин"""
     sort_date: Optional[datetime] = None
     """Дата для сортировки"""
+
+
+@dataclass
+class ReindexOfferItem:
+    offer_id: int
+    """Id объявления"""
+    created_at: datetime
+    """Дата постановки в очередь"""
+
+
+@dataclass
+class ReindexOffer:
+    offer_id: int
+    """Id объявления"""
+    raw_data: str
+    """Модель объявления"""
+    updated_at: datetime
+    """Дата последнего обновления"""
