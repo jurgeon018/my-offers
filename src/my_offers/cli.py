@@ -68,6 +68,15 @@ register_consumer(
     dead_queue_enabled=True,
 )
 
+# [agents] сохраняет/обновляет данные об агентах
+register_consumer(
+    command=cli.command('save_agent_consumer'),
+    queue=queues.update_agents_queue,
+    callback=consumers.save_agent_callback,
+    schema_cls=schemas.RabbitMQAgentUpdatedMessageSchema,
+    dead_queue_enabled=True,
+)
+
 
 @cli.command()
 def reindex_offers() -> None:

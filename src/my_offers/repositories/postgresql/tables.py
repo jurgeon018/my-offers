@@ -91,3 +91,16 @@ offers_offences = sa.Table(
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
 )
+
+_account_type = psa.ENUM(*get_names(enums.AgentAccountType), name='account_type')
+agents_hierarchy = sa.Table(
+    'agents_hierarchy',
+    _metadata,
+    sa.Column('id', sa.BIGINT, primary_key=True),
+    sa.Column('account_type', _account_type, nullable=False),
+    sa.Column('realty_user_id', sa.BIGINT, nullable=True),
+    sa.Column('master_agent_user_id', sa.BIGINT, nullable=True),
+    sa.Column('row_version', sa.BIGINT, nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
+)

@@ -1,3 +1,4 @@
+from my_offers.entities.agents import AgentMessage
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.entities.get_offers import (
     GetOffersPrivateRequest,

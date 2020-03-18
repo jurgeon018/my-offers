@@ -66,3 +66,10 @@ class ModerationOfferOffenceReportingV1RoutingKey(StrEnum):
     """Нарушение создано"""
     changed = 'moderation-offence-reporting.v1.changed'
     """Нарушение обновлено"""
+
+
+class AgentsReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    updated = 'user-reporting.v1.changed'
+    """Агент изменен"""

@@ -118,13 +118,31 @@ CREATE TABLE offers_offences
     created_at     timestamp with time zone not null,
     updated_at     timestamp with time zone not null
 );
-
 CREATE INDEX ON offers_offences (offer_id);
 
-create table offers_reindex_queue
+CREATE TABLE offers_reindex_queue
 (
     offer_id   bigint                   not null primary key,
     in_process bool                     not null default false,
     created_at timestamp with time zone not null
 );
-create index on offers_reindex_queue (created_at);
+CREATE INDEX ON offers_reindex_queue (created_at);
+
+CREATE TYPE account_type as enum (
+    'Specialist',
+    'Agency',
+    'ManagementCompany',
+    'RentDepartment'
+    );
+
+CREATE TABLE agents_hierarchy
+(
+    id                   bigint primary key       not null,
+    row_version          bigint                   not null,
+    account_type         account_type,
+    realty_user_id       bigint,
+    master_agent_user_id bigint,
+    created_at           timestamp with time zone not null,
+    updated_at           timestamp with time zone not null
+);
+CREATE INDEX ON agents_hierarchy (realty_user_id NULLS LAST);

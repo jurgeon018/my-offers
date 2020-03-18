@@ -5,8 +5,9 @@ from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
-from my_offers.entities import ModerationOfferOffence, OfferImportError
+from my_offers.entities import AgentMessage, ModerationOfferOffence, OfferImportError
 from my_offers.queue.entities import AnnouncementMessage, SaveUnloadErrorMessage, ServiceContractMessage
+from my_offers.services.agents import update_agents_hierarchy
 from my_offers.services.announcement import process_announcement
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
@@ -78,3 +79,12 @@ async def save_offer_offence_callback(messages: List[Message]) -> None:
 
         with new_operation_id(operation_id):
             await save_offer_offence(offer_offence=offer_offence)
+
+
+async def save_agent_callback(messages: List[Message]) -> None:
+    for message in messages:
+        agent: AgentMessage = message.data
+        operation_id = agent.operation_id
+
+        with new_operation_id(operation_id):
+            await update_agents_hierarchy(agent=agent)
