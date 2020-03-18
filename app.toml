@@ -39,6 +39,10 @@ type = "consumer"
 command = "save_offer_unload_error_consumer"
 memory = 128
 
+[job.save_agent_consumer]
+type = "consumer"
+command = "save_agent_consumer"
+
 [job.reindex_offers]
 type = "manage"
 command = "reindex-offers"
