@@ -1,0 +1,99 @@
+definitions:
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items:
+          title: errors
+          type: object
+        title: errors
+        type: array
+      message:
+        title: message
+        type: string
+    type: object
+  search_coverage.entities.coverage.OfferCoverageSchema:
+    properties:
+      coverage:
+        description: Охват в процентах
+        format: int64
+        title: coverage
+        type: integer
+      offerId:
+        description: Id объявления
+        format: int64
+        title: offer_id
+        type: integer
+      searchesCount:
+        description: Количество поисков
+        format: int64
+        title: searches_count
+        type: integer
+      showsCount:
+        description: Количество показов
+        format: int64
+        title: shows_count
+        type: integer
+    required:
+    - coverage
+    - offerId
+    - searchesCount
+    - showsCount
+    type: object
+  search_coverage.entities.coverage.OffersCoverageRequestSchema:
+    properties:
+      dateFrom:
+        description: Дата начала периода
+        format: date
+        title: date_from
+        type: string
+      dateTo:
+        description: Дата конца периода
+        format: date
+        title: date_to
+        type: string
+      offerIds:
+        description: Id объявлений
+        items:
+          format: int64
+          title: offer_ids
+          type: integer
+        title: offer_ids
+        type: array
+    required:
+    - dateFrom
+    - dateTo
+    - offerIds
+    type: object
+  search_coverage.entities.coverage.OffersCoverageResponseSchema:
+    properties:
+      data:
+        description: Статистика по объявлениям
+        items:
+          $ref: '#/definitions/search_coverage.entities.coverage.OfferCoverageSchema'
+        type: array
+    required:
+    - data
+    type: object
+info:
+  description: Охват поиска
+  title: search-coverage
+  version: 1.0.0
+paths:
+  /v1/get-offers-search-coverage/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/search_coverage.entities.coverage.OffersCoverageRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/search_coverage.entities.coverage.OffersCoverageResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+swagger: '2.0'
