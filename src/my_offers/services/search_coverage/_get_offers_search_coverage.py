@@ -12,8 +12,8 @@ from my_offers.repositories.search_coverage.entities import OffersCoverageReques
 
 async def get_offers_search_coverage(offer_ids: List[int]) -> Dict[int, entities.Coverage]:
     now = datetime.now(tz=pytz.UTC)
-    date_from = now.date()
-    date_to = (now - timedelta(days=settings.DAYS_FOR_COVERAGE)).date()
+    date_to = now.date()
+    date_from = (now - timedelta(days=settings.DAYS_FOR_COVERAGE)).date()
 
     response = await v1_get_offers_search_coverage(
         OffersCoverageRequest(
