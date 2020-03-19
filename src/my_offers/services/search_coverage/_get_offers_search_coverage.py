@@ -1,29 +1,34 @@
+from datetime import datetime, timedelta
 from typing import Dict, List
 
+import pytz
 from cian_core.degradation import get_degradation_handler
+from simple_settings import settings
 
 from my_offers import entities
+from my_offers.repositories.search_coverage import v1_get_offers_search_coverage
+from my_offers.repositories.search_coverage.entities import OffersCoverageRequest
 
 
 async def get_offers_search_coverage(offer_ids: List[int]) -> Dict[int, entities.Coverage]:
-    data = []
-    coverage = {item.offer_id: item for item in data}
+    now = datetime.now(tz=pytz.UTC)
+    date_from = now.date()
+    date_to = (now - timedelta(days=settings.DAYS_FOR_COVERAGE)).date()
 
+    response = await v1_get_offers_search_coverage(
+        OffersCoverageRequest(
+            offer_ids=offer_ids,
+            date_from=date_from,
+            date_to=date_to,
+        )
+    )
     result = {}
-    for offer_id in offer_ids:
-        if offer_id in coverage:
-            item = coverage[offer_id]
-            result[offer_id] = entities.Coverage(
-                searches_count=item.searches_count,
-                shows_count=item.shows_count,
-                coverage=item.coverage,
-            )
-        else:
-            result[offer_id] = entities.Coverage(
-                searches_count=0,
-                shows_count=0,
-                coverage=0,
-            )
+    for item in response.data:
+        result[item.offer_id] = entities.Coverage(
+            searches_count=item.searches_count,
+            shows_count=item.shows_count,
+            coverage=item.coverage,
+        )
 
     return result
 

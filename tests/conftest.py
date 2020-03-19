@@ -1,7 +1,7 @@
 import pytest
+from cian_cache import cached
 from tornado import web
 
-from cian_cache import cached
 from my_offers.web.urls import urlpatterns
 
 

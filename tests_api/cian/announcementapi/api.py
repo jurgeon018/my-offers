@@ -9,6 +9,7 @@ new-codegen version: 4.0.2
 
 """
 from cian_automation.context import LazyImport
+
 from .clients.v2_announcements_add import V2AnnouncementsAdd
 
 

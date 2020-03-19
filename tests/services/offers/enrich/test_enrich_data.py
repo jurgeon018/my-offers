@@ -53,7 +53,7 @@ def test_address_urls__none__none(mocker):
 def test_enrich_data__get_offer_offence__moderation_info_is_none(mocker):
     # arrange
     enrich_data = EnrichData(
-        statistics={},
+        coverage={},
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -76,7 +76,7 @@ def test_enrich_data__get_offer_offence__moderation_info_is_none(mocker):
 def test_enrich_data__get_offer_offence(mocker, moderation_info, expected):
     # arrange
     enrich_data = EnrichData(
-        statistics={},
+        coverage={},
         auctions={},
         jk_urls={},
         geo_urls={},

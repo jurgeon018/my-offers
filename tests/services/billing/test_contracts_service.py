@@ -3,8 +3,8 @@ from datetime import datetime
 import pytest
 import pytz
 from cian_test_utils import future, v
-
 from freezegun import freeze_time
+
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.enums import TargetObjectType
 from my_offers.services.billing.contracts_service import (

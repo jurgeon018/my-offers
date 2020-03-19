@@ -1,9 +1,9 @@
 from typing import Any, Dict, List
 
+from cian_cache import cached
 from cian_core.context import get_operation_id, new_operation_id
 from simple_settings import settings
 
-from cian_cache import cached
 from my_offers.repositories.geo_subdomain import v1_get_subdomains
 
 
