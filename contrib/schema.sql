@@ -145,4 +145,5 @@ CREATE TABLE agents_hierarchy
     created_at           timestamp with time zone not null,
     updated_at           timestamp with time zone not null
 );
-CREATE INDEX ON agents_hierarchy (realty_user_id NULLS LAST);
+CREATE INDEX ON agents_hierarchy (realty_user_id);
+CREATE INDEX ON agents_hierarchy (master_agent_user_id NULLS LAST);

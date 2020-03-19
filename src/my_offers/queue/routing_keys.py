@@ -71,5 +71,5 @@ class ModerationOfferOffenceReportingV1RoutingKey(StrEnum):
 class AgentsReportingV1RoutingKey(StrEnum):
     __value_format__ = NoFormat
 
-    updated = 'user-reporting.v1.changed'
+    updated = 'agent-reporting.v1.changed'
     """Агент изменен"""

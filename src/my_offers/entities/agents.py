@@ -30,7 +30,7 @@ class AgentMessage:
     realty_user_id: Optional[int] = None
     """ID пользователя"""
     master_agent_user_id: Optional[int] = None
-    """ID пользователя мастераагента"""
+    """ID пользователя мастера-агента"""
     account_type: Optional[AgentAccountType] = None
     """Тип агента"""
     middle_name: Optional[str] = None
@@ -56,9 +56,9 @@ class AgentMessage:
     office_name: Optional[str] = None
     """Название офиса"""
     phones: Optional[List[str]] = None
-    """"""
+    """Телефоны"""
     phones_data: Optional[List[Phone]] = None
-    """"""
+    """Инофрмация о телефонах"""
     creation_date: Optional[datetime] = None
     """Дата создания агента"""
     name: Optional[str] = None
