@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import List, Optional
 
 from my_offers import enums
-from my_offers.enums.offer_address import AddressType
 
 
 @dataclass
@@ -48,7 +47,8 @@ class Address:
     """Полный адрес"""
     search_url: str
     """Поисковый запрос по адресу"""
-    type: AddressType
+    type: enums.AddressType
+    """Тип элемента адреса"""
 
 
 @dataclass
@@ -59,16 +59,6 @@ class OfferGeo:
     """Новостройки"""
     underground: Optional[Underground] = None
     """Метро"""
-
-
-@dataclass
-class AvailableActions:
-    can_update_edit_date: bool
-    """Можно обновить дату"""
-    can_move_to_archive: bool
-    """Пользователь может перенести объявление в архив"""
-    can_delete: bool
-    """Можно ли удалить объялвение"""
 
 
 @dataclass
@@ -105,5 +95,31 @@ class OfferViewModel:
     """Дата архивации"""
     status: Optional[str]
     """Строка статуса"""
-    available_actions: AvailableActions
-    """Доступные действия с объявлениями"""
+
+
+@dataclass
+class OfferViewModelV2:
+    id: int
+    """ID объявления"""
+    main_photo_url: Optional[str]
+    """Основаная фотография объекта"""
+    title: Optional[str]
+    """Заголовок объявления"""
+    url: str
+    """URL объявления"""
+    geo: OfferGeo
+    """Гео"""
+    subagent: Optional[Subagent]
+    """Сабагент"""
+    price_info: PriceInfo
+    """Инофрмация о цене"""
+    features: List[str]
+    """Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека"""
+    is_manual: bool
+    """ Флаг 'из импорта'"""
+    created_at: Optional[datetime]
+    """Дата подачи объявления"""
+    archived_at: Optional[datetime]
+    """Дата архивации"""
+    status: Optional[str]
+    """Строка статуса"""

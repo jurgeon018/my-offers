@@ -16,6 +16,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_auctions,
     _load_can_update_edit_dates,
     _load_geo_urls,
+    _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
     _load_statistic,
@@ -59,6 +60,10 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_can_update_edit_dates',
         return_value=future(EnrichItem(key='can_update_edit_dates', degraded=False, value={})),
     )
+    load_import_errors_mock = mocker.patch(
+        f'{PATH}_load_import_errors',
+        return_value=future(EnrichItem(key='import_errors', degraded=False, value={})),
+    )
     load_moderation_info_mock = mocker.patch(
         f'{PATH}_load_moderation_info',
         return_value=future(EnrichItem(key='moderation_info', degraded=False, value={})),
@@ -71,7 +76,8 @@ async def test_load_enrich_data(mocker):
             jk_urls={},
             geo_urls={},
             can_update_edit_dates={},
-            moderation_info={}
+            moderation_info={},
+            import_errors={},
         ),
         {
             'auctions': False,
@@ -79,6 +85,7 @@ async def test_load_enrich_data(mocker):
             'geo_urls': False,
             'jk_urls': False,
             'statistics': False,
+            'import_errors': False,
             'moderation_info': False,
         }
     )
@@ -99,6 +106,7 @@ async def test_load_enrich_data(mocker):
         )
     ])
     load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_import_errors_mock.assert_called_once_with([11])
     load_moderation_info_mock.assert_called_once_with([11])
 
 
@@ -112,6 +120,7 @@ async def test_load_enrich_data__empty__empty(mocker):
         jk_urls={},
         geo_urls={},
         can_update_edit_dates={},
+        import_errors={},
     ), {}
 
     # act
@@ -299,3 +308,20 @@ async def test___load_moderation_info(mocker):
     get_offer_offence_mock.assert_has_calls([
         call(offer_ids=[11, 22], status=ModerationOffenceStatus.confirmed)
     ])
+
+
+@pytest.mark.gen_test
+async def test__load_import_errors(mocker):
+    # arrange
+    get_last_import_errors_mock = mocker.patch(
+        f'{PATH}get_last_import_errors',
+        return_value=future({11: 'zzz'})
+    )
+    expected = EnrichItem(key='import_errors', degraded=False, value={11: 'zzz'})
+
+    # act
+    result = await _load_import_errors([11])
+
+    # assert
+    assert result == expected
+    get_last_import_errors_mock.assert_called_once_with([11])

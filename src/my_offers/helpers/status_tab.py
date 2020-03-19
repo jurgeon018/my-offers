@@ -1,4 +1,8 @@
+from typing import Optional
+
 from my_offers import enums
+from my_offers.helpers.fields import is_archived
+from my_offers.repositories.monolith_cian_announcementapi.entities import Flags
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
 
@@ -18,7 +22,7 @@ STATUS_TO_TAB_MAP = {
 }
 
 
-def get_status_tab(*, is_archived: bool, offer_status: Status) -> enums.OfferStatusTab:
+def get_status_tab(*, offer_flags: Optional[Flags], offer_status: Status) -> enums.OfferStatusTab:
     # Логика работы вкладок
     # -- вкладка активные
     # 'published',
@@ -35,7 +39,7 @@ def get_status_tab(*, is_archived: bool, offer_status: Status) -> enums.OfferSta
     # флаг из isArchived
     # -- Удаленные
     # 'deleted'
-    if is_archived:
+    if is_archived(offer_flags):
         return enums.OfferStatusTab.archived
 
     return STATUS_TO_TAB_MAP[offer_status]

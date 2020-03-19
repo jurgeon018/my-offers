@@ -11,6 +11,53 @@ definitions:
         title: message
         type: string
     type: object
+  my_offers.entities.get_offers.ActiveInfoSchema:
+    properties:
+      auction:
+        $ref: '#/definitions/my_offers.entities.get_offers.AuctionSchema'
+        description: Данные об аукционе по объявлению
+      isAutoprolong:
+        description: Автопродление
+        title: is_autoprolong
+        type: boolean
+      isFromPackage:
+        description: ' Флаг ''из пакета'''
+        title: is_from_package
+        type: boolean
+      isPublicationTimeEnds:
+        description: ' Флаг ''меньше суток до конца публикации'''
+        title: is_publication_time_ends
+        type: boolean
+      publishFeatures:
+        description: 'Параметры публикации: сколько осталось'
+        items:
+          title: publish_features
+          type: string
+        title: publish_features
+        type: array
+      vas:
+        description: Список VAS'ов
+        items:
+          enum:
+          - auction
+          - colorized
+          - payed
+          - premium
+          - top3
+          type: string
+          x-auction: ''
+          x-colorized: ''
+          x-payed: ''
+          x-premium: ''
+          x-top3: ''
+        title: vas
+        type: array
+    required:
+    - isAutoprolong
+    - isFromPackage
+    - isPublicationTimeEnds
+    - vas
+    type: object
   my_offers.entities.get_offers.AuctionSchema:
     properties:
       bet:
@@ -28,6 +75,31 @@ definitions:
         format: int64
         title: home_place
         type: integer
+    type: object
+  my_offers.entities.get_offers.AvailableActionsSchema:
+    properties:
+      canDelete:
+        description: Можно ли удалить объялвение
+        title: can_delete
+        type: boolean
+      canMoveToArchive:
+        description: Пользователь может перенести объявление в архив
+        title: can_move_to_archive
+        type: boolean
+      canUpdateEditDate:
+        description: Можно обновить дату
+        title: can_update_edit_date
+        type: boolean
+    required:
+    - canDelete
+    - canMoveToArchive
+    - canUpdateEditDate
+    type: object
+  my_offers.entities.get_offers.DeclinedInfoSchema:
+    properties:
+      moderation:
+        $ref: '#/definitions/my_offers.entities.get_offers.ModerationSchema'
+        description: Данные о причине отклонения объявления
     type: object
   my_offers.entities.get_offers.FilterSchema:
     properties:
@@ -88,40 +160,20 @@ definitions:
           x-top3: ''
         title: services
         type: array
-      sortType:
-        description: Тип сортировки
-        enum:
-        - byAreaMax
-        - byAreaMin
-        - byDefault
-        - byOfferId
-        - byPriceForMeter
-        - byPriceMax
-        - byPriceMin
-        - byStreet
-        - byWalkTime
-        type: string
-        x-byAreaMax: 'По площади: возрастающая'
-        x-byAreaMin: 'По площади: убывающая'
-        x-byDefault: По-умолчанию
-        x-byOfferId: По ID объявления
-        x-byPriceForMeter: По цене за метр
-        x-byPriceMax: 'По цене: возрастающая'
-        x-byPriceMin: 'По цене: убывающая'
-        x-byStreet: По улице
-        x-byWalkTime: По времени до метро
       statusTab:
         description: Вкладка
         enum:
         - active
         - archived
         - declined
-        - notActive
+        - deleted
+        - not_active
         type: string
         x-active: Активные
         x-archived: Архив
         x-declined: Отклоненные
-        x-notActive: Неактивные
+        x-deleted: Удалено
+        x-not_active: Неактивные
       subAgentIds:
         description: Список сотрудников (только для мастрер аккаунтов)
         items:
@@ -144,7 +196,7 @@ definitions:
         $ref: '#/definitions/my_offers.entities.get_offers.AuctionSchema'
         description: Данные об аукционе по объявлению
       availableActions:
-        $ref: '#/definitions/my_offers.entities.offer_view_model.AvailableActionsSchema'
+        $ref: '#/definitions/my_offers.entities.get_offers.AvailableActionsSchema'
         description: Доступные действия с объявлениями
       createdAt:
         description: Дата подачи объявления
@@ -182,6 +234,12 @@ definitions:
         description: Основаная фотография объекта
         title: main_photo_url
         type: string
+      moderation:
+        $ref: '#/definitions/my_offers.entities.get_offers.ModerationSchema'
+        description: Данные о причине отклонения объявления
+      notActiveInfo:
+        $ref: '#/definitions/my_offers.entities.get_offers.NotActiveInfoSchema'
+        description: Доп. информация для вкладки неактивные
       priceInfo:
         $ref: '#/definitions/my_offers.entities.offer_view_model.PriceInfoSchema'
         description: Инофрмация о цене
@@ -240,6 +298,78 @@ definitions:
     - url
     - vas
     type: object
+  my_offers.entities.get_offers.GetOfferV2Schema:
+    properties:
+      archivedAt:
+        description: Дата архивации
+        format: date-time
+        title: archived_at
+        type: string
+      availableActions:
+        $ref: '#/definitions/my_offers.entities.get_offers.AvailableActionsSchema'
+        description: Доступные действия с объявлениями
+      createdAt:
+        description: Дата подачи объявления
+        format: date-time
+        title: created_at
+        type: string
+      features:
+        description: 'Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека'
+        items:
+          title: features
+          type: string
+        title: features
+        type: array
+      geo:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.OfferGeoSchema'
+        description: Гео
+      id:
+        description: ID объявления
+        format: int64
+        title: id
+        type: integer
+      isManual:
+        description: ' Флаг ''из импорта'''
+        title: is_manual
+        type: boolean
+      mainPhotoUrl:
+        description: Основаная фотография объекта
+        title: main_photo_url
+        type: string
+      pageSpecificInfo:
+        $ref: '#/definitions/my_offers.entities.get_offers.PageSpecificInfoSchema'
+        description: Данные зависящие от конкретной вкладки
+      priceInfo:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.PriceInfoSchema'
+        description: Инофрмация о цене
+      statistics:
+        $ref: '#/definitions/my_offers.entities.get_offers.StatisticsSchema'
+        description: Статистика по объявлению
+      status:
+        description: Строка статуса
+        title: status
+        type: string
+      subagent:
+        $ref: '#/definitions/my_offers.entities.offer_view_model.SubagentSchema'
+        description: Сабагент
+      title:
+        description: Заголовок объявления
+        title: title
+        type: string
+      url:
+        description: URL объявления
+        title: url
+        type: string
+    required:
+    - availableActions
+    - features
+    - geo
+    - id
+    - isManual
+    - pageSpecificInfo
+    - priceInfo
+    - url
+    type: object
   my_offers.entities.get_offers.GetOffersRequestSchema:
     properties:
       filters:
@@ -277,7 +407,7 @@ definitions:
     properties:
       counters:
         $ref: '#/definitions/my_offers.entities.get_offers.OfferCountersSchema'
-        description: Счеткики еоличества объявлений
+        description: Счеткики количества объявлений
       degradation:
         description: Информация о деградации
         title: degradation
@@ -295,6 +425,62 @@ definitions:
     - degradation
     - offers
     - page
+    type: object
+  my_offers.entities.get_offers.GetOffersV2ResponseSchema:
+    properties:
+      counters:
+        $ref: '#/definitions/my_offers.entities.get_offers.OfferCountersSchema'
+        description: Счеткики количества объявлений
+      degradation:
+        description: Информация о деградации
+        title: degradation
+        type: object
+      offers:
+        description: Список объявлений
+        items:
+          $ref: '#/definitions/my_offers.entities.get_offers.GetOfferV2Schema'
+        type: array
+      page:
+        $ref: '#/definitions/my_offers.entities.get_offers.PageInfoSchema'
+        description: Информация о странице
+    required:
+    - counters
+    - degradation
+    - offers
+    - page
+    type: object
+  my_offers.entities.get_offers.ModerationSchema:
+    properties:
+      declinedDate:
+        description: Дата отклонения
+        format: date-time
+        title: declined_date
+        type: string
+      isDeclined:
+        description: Отклонено ли модератором
+        title: is_declined
+        type: boolean
+      offenceStatus:
+        description: Статус модерации
+        title: offence_status
+        type: string
+      reason:
+        description: Текст причины отклонения
+        title: reason
+        type: string
+    type: object
+  my_offers.entities.get_offers.NotActiveInfoSchema:
+    properties:
+      message:
+        description: Доп. сообщение
+        title: message
+        type: string
+      status:
+        description: Статус для некативных
+        title: status
+        type: string
+    required:
+    - status
     type: object
   my_offers.entities.get_offers.OfferCountersSchema:
     properties:
@@ -314,11 +500,6 @@ definitions:
         format: int64
         title: not_active
         type: integer
-    required:
-    - active
-    - archived
-    - declined
-    - notActive
     type: object
   my_offers.entities.get_offers.PageInfoSchema:
     properties:
@@ -340,6 +521,18 @@ definitions:
     - canLoadMore
     - count
     - pageCount
+    type: object
+  my_offers.entities.get_offers.PageSpecificInfoSchema:
+    properties:
+      activeInfo:
+        $ref: '#/definitions/my_offers.entities.get_offers.ActiveInfoSchema'
+        description: Доп. информация для вкладки активные
+      declinedInfo:
+        $ref: '#/definitions/my_offers.entities.get_offers.DeclinedInfoSchema'
+        description: Доп. информация для вкладки отклоненные
+      notActiveInfo:
+        $ref: '#/definitions/my_offers.entities.get_offers.NotActiveInfoSchema'
+        description: Доп. информация для вкладки неактивные
     type: object
   my_offers.entities.get_offers.PaginationSchema:
     properties:
@@ -407,6 +600,7 @@ definitions:
         title: search_url
         type: string
       type:
+        description: Тип элемента адреса
         enum:
         - country
         - district
@@ -425,20 +619,6 @@ definitions:
     - name
     - searchUrl
     - type
-    type: object
-  my_offers.entities.offer_view_model.AvailableActionsSchema:
-    properties:
-      canMoveToArchive:
-        description: Пользователь может перенести объявление в архив
-        title: can_move_to_archive
-        type: boolean
-      canUpdateEditDate:
-        description: Можно обновить дату
-        title: can_update_edit_date
-        type: boolean
-    required:
-    - canMoveToArchive
-    - canUpdateEditDate
     type: object
   my_offers.entities.offer_view_model.NewbuildingSchema:
     properties:
@@ -592,6 +772,25 @@ paths:
         '200':
           schema:
             $ref: '#/definitions/my_offers.entities.get_offers.GetOffersResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+      summary: 'DEPRECATED: use V2 Получить объявления для пользователя. Для м/а с
+        учетом иерархии.'
+  /public/v2/get-offers/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/my_offers.entities.get_offers.GetOffersRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/my_offers.entities.get_offers.GetOffersV2ResponseSchema'
         '400':
           schema:
             $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'

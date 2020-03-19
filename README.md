@@ -26,3 +26,18 @@ curl -X POST \
 	}
 }'
 ```
+
+Переиндескация объявлений
+1. Добавить объявления в очередь на переиндексацию
+```
+insert into offers_reindex_queue(offer_id, created_at)
+select
+    offer_id,
+    current_timestamp
+from
+    offers
+where
+    services && '{"highlight"}'
+;
+```
+2. запустить комманду `my-offers reindex-offers`

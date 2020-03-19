@@ -20,20 +20,19 @@ create type offer_type as enum (
 
 create type offer_status_tab as enum (
     'active',
-    'not_active',
+    'notActive',
     'declined',
     'archived',
     'deleted'
     );
 
-create type service as enum (
+create type offer_service as enum (
     'auction',
     'top3',
     'premium',
-    'highlight',
+    'premium+highlight',
     'paid',
-    'free',
-    'calltracking'
+    'free'
     );
 
 CREATE TABLE offers
@@ -47,7 +46,7 @@ CREATE TABLE offers
     deal_type         deal_type                not null,
     offer_type        offer_type               not null,
     status_tab        offer_status_tab         not null,
-    services          service[]                not null,
+    services          offer_service[]          not null,
 
     is_manual         bool                     not null,
     is_in_hidden_base bool                     not null,
@@ -91,6 +90,15 @@ CREATE TABLE offers_billing_contracts
     updated_at        timestamp with time zone not null
 );
 CREATE INDEX ON offers_billing_contracts (offer_id);
+
+CREATE table offers_last_import_error
+(
+    offer_id   bigint                   not null primary key,
+    type       varchar,
+    message    varchar,
+    created_at timestamp with time zone not null
+);
+
 CREATE TYPE offence_status as enum (
     'Confirmed',
     'Corrected',
@@ -112,3 +120,11 @@ CREATE TABLE offers_offences
 );
 
 CREATE INDEX ON offers_offences (offer_id);
+
+create table offers_reindex_queue
+(
+    offer_id   bigint                   not null primary key,
+    in_process bool                     not null default false,
+    created_at timestamp with time zone not null
+);
+create index on offers_reindex_queue (created_at);

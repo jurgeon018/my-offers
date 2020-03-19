@@ -1,5 +1,6 @@
 import pytest
 
+from my_offers import enums
 from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerm, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.announcement.fields.services import get_services
@@ -11,7 +12,33 @@ from my_offers.services.announcement.fields.services import get_services
         (None, []),
         (PublishTerms(), []),
         (PublishTerms(terms=[PublishTerm()]), []),
-        (PublishTerms(terms=[PublishTerm(services=[Services.highlight])]), [Services.highlight]),
+        (PublishTerms(terms=[PublishTerm(services=[Services.highlight])]), []),
+        (
+            PublishTerms(
+                terms=[
+                    PublishTerm(services=[Services.highlight]),
+                    PublishTerm(services=[Services.paid]),
+                ]
+            ),
+            [enums.OfferServices.paid],
+        ),
+        (
+            PublishTerms(
+                terms=[
+                    PublishTerm(services=[Services.highlight]),
+                    PublishTerm(services=[Services.premium]),
+                ]
+            ),
+            [enums.OfferServices.premium, enums.OfferServices.premium_highlight],
+        ),
+        (
+            PublishTerms(
+                terms=[
+                    PublishTerm(services=[Services.calltracking]),
+                ]
+            ),
+            [],
+        ),
     )
 )
 def test_get_services(mocker, publish_terms, expected):

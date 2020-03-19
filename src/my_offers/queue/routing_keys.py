@@ -54,6 +54,11 @@ class ServiceContractsReportingV1RoutingKey(StrEnum):
     """Конктракт закрыт"""
 
 
+class UnloadOrderReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+    error = 'unload-order-reporting.v1.error'
+
+
 class ModerationOfferOffenceReportingV1RoutingKey(StrEnum):
     __value_format__ = NoFormat
 

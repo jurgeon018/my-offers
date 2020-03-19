@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from my_offers import enums
-from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 
 
 @dataclass
@@ -21,7 +20,7 @@ class Offer:
     """Тип сделки"""
     offer_type: enums.OfferType
     """Тип объекта недвижимости"""
-    services: List[Services]
+    services: List[enums.OfferServices]
     """Список размещений"""
     is_manual: bool
     """Подано в ручную"""
@@ -52,3 +51,21 @@ class Offer:
     """Время в пути в минутах до метро пешком, мин"""
     sort_date: Optional[datetime] = None
     """Дата для сортировки"""
+
+
+@dataclass
+class ReindexOfferItem:
+    offer_id: int
+    """Id объявления"""
+    created_at: datetime
+    """Дата постановки в очередь"""
+
+
+@dataclass
+class ReindexOffer:
+    offer_id: int
+    """Id объявления"""
+    raw_data: str
+    """Модель объявления"""
+    updated_at: datetime
+    """Дата последнего обновления"""

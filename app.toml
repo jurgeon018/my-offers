@@ -7,6 +7,7 @@ version = "3.8"
 
 [job.web]
 type = "web"
+memory = 128
 
 [job.process_announcement_consumer]
 type = "consumer"
@@ -32,6 +33,15 @@ memory = 128
 type = "consumer"
 command = "mark_to_delete_announcement_contract_consumer"
 memory = 128
+
+[job.save_offer_unload_error_consumer]
+type = "consumer"
+command = "save_offer_unload_error_consumer"
+memory = 128
+
+[job.reindex_offers]
+type = "manage"
+command = "reindex-offers"
 
 [job.clear_deleted_offer_cron]
 type = "cron"

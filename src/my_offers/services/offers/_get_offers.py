@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from simple_settings import settings
 
-from my_offers import entities
+from my_offers import entities, enums
 from my_offers.entities import get_offers
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
@@ -16,7 +16,7 @@ from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enric
 
 
 async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entities.GetOffersResponse:
-    """ Приватная апи получения моих объявлений. Требует явной передачи пользователя. """
+    """ DEPRECATED: use V2 Приватная апи получения моих объявлений. Требует явной передачи пользователя. """
     return await get_offers_public(
         request=request,
         realty_user_id=request.user_id
@@ -24,17 +24,17 @@ async def get_offers_private(request: entities.GetOffersPrivateRequest) -> entit
 
 
 async def get_offers_public(request: entities.GetOffersRequest, realty_user_id: int) -> entities.GetOffersResponse:
-    """ Получить объявления для пользователя. Для м/а с учетом иерархии. """
+    """ DEPRECATED: use V2 Получить объявления для пользователя. Для м/а с учетом иерархии. """
     # шаг 1 - подготовка параметров запроса
-    filters = await _get_filters(filters=request.filters, user_id=realty_user_id)
-    limit, offset = _get_pagination(request.pagination)
+    filters = await get_filters(filters=request.filters, user_id=realty_user_id)
+    limit, offset = get_pagination(request.pagination)
 
     # шаг 2 - получение object models
     object_models, total = await postgresql.get_object_models(
         filters=filters,
         limit=limit,
         offset=offset,
-        sort_type=request.sort or get_offers.GetOffersSortType.by_default,
+        sort_type=request.sort or enums.GetOffersSortType.by_default,
     )
 
     offers, degradation = await get_offer_views(
@@ -70,13 +70,13 @@ async def get_offer_views(object_models: List[ObjectModel]) -> Tuple[List[get_of
     return offers, degradation
 
 
-async def _get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
+async def get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
     result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
     result['master_user_id'] = await get_master_user_id(user_id)
     return result
 
 
-def _get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, int]:
+def get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, int]:
     limit = settings.OFFER_LIST_LIMIT
     offset = 0
 
