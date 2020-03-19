@@ -1,7 +1,6 @@
 from typing import Set
 
 from cian_cache import cached
-
 from my_offers.enums.regions import RealtyRegions
 from my_offers.repositories.monolith_cian_realty import api_geo_get_regions
 from my_offers.services.geo_subdomains.get_subdomain_by_location_id import get_subdomain_map

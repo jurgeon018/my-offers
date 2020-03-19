@@ -5,6 +5,7 @@ from my_offers.entities.get_offers import (
     GetOffersRequest,
     GetOffersResponse,
     GetOffersV2Response,
+    Statistics,
 )
 from my_offers.entities.moderation import ModerationOfferOffence
 from my_offers.entities.offer import Offer, ReindexOffer, ReindexOfferItem

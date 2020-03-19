@@ -2,9 +2,9 @@ from datetime import datetime
 
 import pytest
 import pytz
+
 from freezegun import freeze_time
 from freezegun.api import FakeDatetime
-
 from my_offers import entities, enums, pg
 from my_offers.repositories.postgresql.offer import update_offer
 

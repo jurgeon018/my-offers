@@ -9,7 +9,6 @@ new-codegen version: 4.0.2
 
 """
 from cian_automation.context import LazyImport
-
 from .clients.api_qa_v1_new_user import ApiQaV1NewUser
 
 

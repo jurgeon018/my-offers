@@ -12,6 +12,7 @@ from my_offers.services.offer_view.fields import (
     prepare_geo,
 )
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
+from my_offers.services.offer_view.fields.statistics import get_statistics
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -45,25 +46,27 @@ def v2_build_offer_view(
     )
     geo_urls = enrich_data.get_urls_by_types(deal_type=deal_type, offer_type=offer_type)
 
+    offer_id = object_model.id
     return get_offers.GetOfferV2(
-        id=object_model.id,
+        id=offer_id,
         created_at=object_model.creation_date,
         title=get_title(object_model),
         main_photo_url=main_photo_url,
-        url=get_offer_url(offer_id=object_model.id, offer_type=offer_type, deal_type=deal_type),
+        url=get_offer_url(offer_id=offer_id, offer_type=offer_type, deal_type=deal_type),
         geo=prepare_geo(geo=object_model.geo, geo_urls=geo_urls, jk_urls=enrich_data.jk_urls),
         subagent=subagent,
         price_info=price_info,
         features=features,
         is_manual=is_manual,
-        statistics=get_offers.Statistics(),
+        statistics=get_statistics(coverage=enrich_data.coverage[offer_id], favorites=0),
+        # TODO: https://jira.cian.tech/browse/CD-76582
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=archived),
         available_actions=get_available_actions(
             status=object_model.status,
             is_archived=archived,
             is_manual=is_manual,
-            can_update_edit_date=enrich_data.can_update_edit_dates.get(object_model.id, False),
+            can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
         ),
         page_specific_info=get_page_specific_info(
             object_model=object_model,

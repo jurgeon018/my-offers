@@ -15,11 +15,11 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem,
 from my_offers.services.offers.enrich.load_enrich_data import (
     _load_auctions,
     _load_can_update_edit_dates,
+    _load_coverage,
     _load_geo_urls,
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
-    _load_statistic,
     load_enrich_data,
 )
 
@@ -226,7 +226,7 @@ async def test__load_statistic(mocker):
     expected = EnrichItem(key='statistics', degraded=False, value={})
 
     # act
-    result = await _load_statistic([11, 22])
+    result = await _load_coverage([11, 22])
 
     # assert
     assert result == expected

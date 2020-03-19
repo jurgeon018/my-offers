@@ -11,7 +11,6 @@ new-codegen version: 4.0.2
 from typing import Callable
 
 from cian_automation.web import DecoratedBaseClient
-
 from .. import entities
 
 

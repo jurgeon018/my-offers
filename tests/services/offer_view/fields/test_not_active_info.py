@@ -1,9 +1,9 @@
 from datetime import datetime
 
 import pytest
-from freezegun import freeze_time
 from simple_settings.utils import settings_stub
 
+from freezegun import freeze_time
 from my_offers.entities.get_offers import NotActiveInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 from my_offers.services.offer_view.fields import get_not_active_info

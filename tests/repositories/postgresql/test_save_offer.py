@@ -1,10 +1,10 @@
 from datetime import datetime
 
-import freezegun
 import pytest
 import pytz
-from freezegun.api import FakeDatetime
 
+import freezegun
+from freezegun.api import FakeDatetime
 from my_offers import enums, pg
 from my_offers.entities import Offer
 from my_offers.enums import OfferServices

@@ -2,7 +2,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Dict, List, NamedTuple, Optional, Set
 
-from my_offers import enums
+from my_offers import entities, enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
@@ -88,7 +88,7 @@ class EnrichItem(NamedTuple):
 
 @dataclass
 class EnrichData:
-    statistics: Dict[int, Any]
+    coverage: Dict[int, entities.Coverage]
     auctions: Dict[int, Any]
     jk_urls: Dict[int, str]
     geo_urls: Dict[GeoUrlKey, AddressUrls]

@@ -1,6 +1,8 @@
+from typing import Dict, List
+
 from cian_core.degradation import get_degradation_handler
+
 from my_offers import entities
-from typing import List, Dict
 
 
 async def get_offers_search_coverage(offer_ids: List[int]) -> Dict[int, entities.Coverage]:

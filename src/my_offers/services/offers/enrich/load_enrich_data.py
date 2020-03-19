@@ -8,6 +8,7 @@ from my_offers.repositories.postgresql.offer_import_error import get_last_import
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
+from my_offers.services.search_coverage import get_offers_search_coverage_degradation_handler
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
@@ -15,7 +16,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
     offer_ids = params.get_offer_ids()
     if not offer_ids:
         return EnrichData(
-            statistics={},
+            coverage={},
             auctions={},
             jk_urls={},
             geo_urls={},
@@ -24,7 +25,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         ), {}
 
     data = await asyncio.gather(
-        _load_statistic(offer_ids),
+        _load_coverage(offer_ids),
         _load_auctions(offer_ids),
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
@@ -56,9 +57,10 @@ async def _load_moderation_info(offer_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='moderation_info', degraded=False, value=values)
 
 
-async def _load_statistic(offer_ids: List[int]) -> EnrichItem:
-    # todo: https://jira.cian.tech/browse/CD-74478
-    return EnrichItem(key='statistics', degraded=False, value={})
+async def _load_coverage(offer_ids: List[int]) -> EnrichItem:
+    result = await get_offers_search_coverage_degradation_handler(offer_ids)
+
+    return EnrichItem(key='coverage', degraded=result.degraded, value=result.value)
 
 
 async def _load_auctions(offer_ids: List[int]) -> EnrichItem:
