@@ -88,13 +88,15 @@ async def test_get_offer_offence(mocker):
     # assert
     assert result == [offer_offence_mapper.map_from(offer_offence)]
     pg.get().fetch.assert_called_once_with(
-        '\n        WITH offence_ids AS (\n        SELECT offence_id                                     as offence_id,'
-        '\n               row_number() over (order by created_date desc) as row_number'
-        '\n        from offers_offences\n        WHERE offer_id = ANY ($1::bigint[])'
-        '\n          AND offence_status = $2\n    )'
+        '\n        WITH offence_ids AS ('
+        '\n            SELECT max(offence_id) as offence_id'
+        '\n            from offers_offences'
+        '\n            where offer_id = any ($1::bigint[])'
+        '\n              and offence_status = $2'
+        '\n            group by offer_id\n        )'
         '\n        SELECT *'
-        '\n        FROM offers_offences oo'
-        '\n             JOIN offence_ids oi ON oi.offence_id = oo.offence_id AND oi.row_number = 1\n    ',
+        '\n        from offers_offences oo'
+        '\n             join offence_ids oi on oi.offence_id = oo.offence_id;\n    ',
         [offer_id],
         ModerationOffenceStatus.confirmed.value,
     )
@@ -111,13 +113,15 @@ async def test_get_offer_offence__offence_is_none(mocker):
     # assert
     assert result == []
     pg.get().fetch.assert_called_once_with(
-        '\n        WITH offence_ids AS (\n        SELECT offence_id                                     as offence_id,'
-        '\n               row_number() over (order by created_date desc) as row_number'
-        '\n        from offers_offences\n        WHERE offer_id = ANY ($1::bigint[])'
-        '\n          AND offence_status = $2\n    )'
+        '\n        WITH offence_ids AS ('
+        '\n            SELECT max(offence_id) as offence_id'
+        '\n            from offers_offences'
+        '\n            where offer_id = any ($1::bigint[])'
+        '\n              and offence_status = $2'
+        '\n            group by offer_id\n        )'
         '\n        SELECT *'
-        '\n        FROM offers_offences oo'
-        '\n             JOIN offence_ids oi ON oi.offence_id = oo.offence_id AND oi.row_number = 1\n    ',
+        '\n        from offers_offences oo'
+        '\n             join offence_ids oi on oi.offence_id = oo.offence_id;\n    ',
         [offer_id],
         ModerationOffenceStatus.confirmed.value,
     )
