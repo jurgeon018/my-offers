@@ -140,10 +140,10 @@ CREATE TABLE agents_hierarchy
     id                   bigint primary key       not null,
     row_version          bigint                   not null,
     account_type         account_type,
-    realty_user_id       bigint,
+    realty_user_id       bigint                   not null,
     master_agent_user_id bigint,
     created_at           timestamp with time zone not null,
     updated_at           timestamp with time zone not null
 );
-CREATE INDEX ON agents_hierarchy (realty_user_id);
+CREATE UNIQUE INDEX ON agents_hierarchy (realty_user_id);
 CREATE INDEX ON agents_hierarchy (master_agent_user_id NULLS LAST);

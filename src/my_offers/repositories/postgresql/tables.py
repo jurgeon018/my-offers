@@ -98,7 +98,7 @@ agents_hierarchy = sa.Table(
     _metadata,
     sa.Column('id', sa.BIGINT, primary_key=True),
     sa.Column('account_type', _account_type, nullable=False),
-    sa.Column('realty_user_id', sa.BIGINT, nullable=True),
+    sa.Column('realty_user_id', sa.BIGINT, nullable=False),
     sa.Column('master_agent_user_id', sa.BIGINT, nullable=True),
     sa.Column('row_version', sa.BIGINT, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
