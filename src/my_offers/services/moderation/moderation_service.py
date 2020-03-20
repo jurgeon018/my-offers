@@ -9,10 +9,6 @@ from my_offers.repositories import postgresql
 
 async def save_offer_offence(offer_offence: ModerationOfferOffence) -> None:
     """ Сохранить нарушение по объявлению """
-    if offer_offence.row_version is None:
-        # TODO: https://jira.cian.tech/browse/CD-75712
-        offer_offence.row_version = 0
-
     now = datetime.now(pytz.utc)
     offer_offence = OfferOffence(
         offence_id=offer_offence.offence_id,
