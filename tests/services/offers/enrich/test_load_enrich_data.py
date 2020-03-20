@@ -15,11 +15,11 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem,
 from my_offers.services.offers.enrich.load_enrich_data import (
     _load_auctions,
     _load_can_update_edit_dates,
+    _load_coverage,
     _load_geo_urls,
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
-    _load_statistic,
     load_enrich_data,
 )
 
@@ -41,8 +41,8 @@ async def test_load_enrich_data(mocker):
     )
 
     load_statistic_mock = mocker.patch(
-        f'{PATH}_load_statistic',
-        return_value=future(EnrichItem(key='statistics', degraded=False, value={})),
+        f'{PATH}_load_coverage',
+        return_value=future(EnrichItem(key='coverage', degraded=False, value={})),
     )
     load_auctions_mock = mocker.patch(
         f'{PATH}_load_auctions',
@@ -71,7 +71,7 @@ async def test_load_enrich_data(mocker):
 
     expected = (
         EnrichData(
-            statistics={},
+            coverage={},
             auctions={},
             jk_urls={},
             geo_urls={},
@@ -84,7 +84,7 @@ async def test_load_enrich_data(mocker):
             'can_update_edit_dates': False,
             'geo_urls': False,
             'jk_urls': False,
-            'statistics': False,
+            'coverage': False,
             'import_errors': False,
             'moderation_info': False,
         }
@@ -115,7 +115,7 @@ async def test_load_enrich_data__empty__empty(mocker):
     # arrange
     params = EnrichParams()
     expected = EnrichData(
-        statistics={},
+        coverage={},
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -221,12 +221,12 @@ async def test__load_geo_urls__degradation__empty(mocker):
 
 
 @pytest.mark.gen_test
-async def test__load_statistic(mocker):
+async def test__load_coverage(mocker):
     # arrange
-    expected = EnrichItem(key='statistics', degraded=False, value={})
+    expected = EnrichItem(key='coverage', degraded=True, value={})
 
     # act
-    result = await _load_statistic([11, 22])
+    result = await _load_coverage([11, 22])
 
     # assert
     assert result == expected

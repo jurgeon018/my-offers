@@ -178,7 +178,7 @@ async def test_get_offer_views(mocker):
         'my_offers.services.offers._get_offers.load_enrich_data',
         return_value=future((
             EnrichData(
-                statistics={},
+                coverage={},
                 auctions={},
                 jk_urls={},
                 geo_urls={},

@@ -36,7 +36,7 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 @pytest.fixture(name='enrich_data_mock')
 def enrich_data_fixture():
     return EnrichData(
-        statistics={},
+        coverage={},
         auctions={},
         jk_urls={},
         geo_urls={},

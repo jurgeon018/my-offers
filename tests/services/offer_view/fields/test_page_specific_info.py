@@ -71,7 +71,7 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 def test_get_page_specific_info(mocker, object_model, expected):
     # arrange
     enrich_data = EnrichData(
-        statistics={},
+        coverage={},
         auctions={},
         jk_urls={},
         geo_urls={},
