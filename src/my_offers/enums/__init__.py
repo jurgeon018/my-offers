@@ -1,3 +1,4 @@
+from my_offers.enums.agents import AgentAccountType
 from my_offers.enums.billing import TargetObjectType
 from my_offers.enums.deal_type import DealType
 from my_offers.enums.moderation import ModerationOffenceStatus
