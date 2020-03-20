@@ -26,6 +26,8 @@ class ModerationOfferOffence:
     """Дата отправки"""
     text_for_user: str
     """Текст о нарушении для пользователя"""
+    row_version: int
+    """Версия записи"""
     user_id: Optional[int] = None
     """RealtyUserId объявления"""
     suppose_id: Optional[int] = None
@@ -38,8 +40,6 @@ class ModerationOfferOffence:
     """Категория объявления"""
     changed_by: Optional[int] = None
     """Кто изменил"""
-    row_version: Optional[int] = None
-    """Версия записи"""
 
 
 @dataclass
