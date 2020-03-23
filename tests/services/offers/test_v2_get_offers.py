@@ -93,6 +93,11 @@ async def test_v2_get_offers_public(mocker):
         return_value=future(OfferCounters(active=1, not_active=2, declined=3, archived=4)),
     )
 
+    get_filters_mock = mocker.patch(
+        f'{PATH}get_filters',
+        return_value=future({'status_tab': 'active', 'master_user_id': [777]}),
+    )
+
     # act
     result = await v2_get_offers_public(
         request=request,
@@ -103,12 +108,26 @@ async def test_v2_get_offers_public(mocker):
     assert result == expected_result
     get_offer_views_mock.assert_called_once_with(object_models=[object_model])
     get_offers_by_status_mock.assert_called_once_with(
-        filters={'status_tab': 'active', 'master_user_id': 777},
+        filters={'status_tab': 'active', 'master_user_id': [777]},
         limit=20,
         offset=0,
         sort_type=GetOffersSortType.by_default,
     )
     get_offer_counters_mock.assert_called_once_with(expected_user)
+    get_filters_mock.assert_called_once_with(
+        filters=Filter(
+            status_tab=OfferStatusTab.active,
+            deal_type=None,
+            offer_type=None,
+            services=None,
+            sub_agent_ids=None,
+            has_photo=None,
+            is_manual=None,
+            is_in_hidden_base=None,
+            search_text=None,
+        ),
+        user_id=777,
+    )
 
 
 @pytest.mark.gen_test

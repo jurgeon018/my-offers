@@ -137,20 +137,6 @@ class PageSpecificInfo:
 
 
 @dataclass
-class GetOffer(OfferViewModel):
-    statistics: Optional[Statistics]
-    """Статистика по объявлению"""
-    available_actions: AvailableActions
-    """Доступные действия с объявлениями"""
-    auction: Optional[Auction] = None
-    """Данные об аукционе по объявлению"""
-    moderation: Optional[Moderation] = None
-    """Данные о причине отклонения объявления"""
-    not_active_info: Optional[NotActiveInfo] = None
-    """Доп. информация для вкладки неактивные"""
-
-
-@dataclass
 class GetOfferV2(OfferViewModelV2):
     statistics: Optional[Statistics]
     """Статистика по объявлению"""
@@ -176,18 +162,6 @@ class PageInfo:
     """Это не последняя страница"""
     page_count: int
     """Количество страниц"""
-
-
-@dataclass
-class GetOffersResponse:
-    offers: List[GetOffer]
-    """Список объявлений"""
-    counters: OfferCounters
-    """Счеткики количества объявлений"""
-    page: PageInfo
-    """Информация о странице"""
-    degradation: Dict[str, bool]
-    """Информация о деградации"""
 
 
 @dataclass

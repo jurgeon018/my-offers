@@ -49,14 +49,19 @@ async def set_offer_contract_is_deleted_status(*, contract_id: int, row_version:
 
 
 async def get_offer_contract(offer_id: int) -> Optional[OfferBillingContract]:
-    sql = (
-        select([
-            offers_billing_contracts
-        ]).where(
-            offers_billing_contracts.c.offer_id == offer_id
-        )
-    )
-    query, params = asyncpgsa.compile_query(sql)
-    result = await pg.get().fetchrow(query, *params)
+    query = """
+    select
+        *
+    from
+        offers_billing_contracts
+    where
+        not is_deleted
+        and offer_id = $1
+    order by
+        row_version desc
+    limit 1
+    """
+
+    result = await pg.get().fetchrow(query, offer_id)
 
     return offer_billing_contract_mapper.map_from(dict(result)) if result else None
