@@ -32,6 +32,15 @@ register_consumer(
     dead_queue_enabled=True,
 )
 
+# [announcements] тех. очередь для наполнения базы объявлений
+register_consumer(
+    command=cli.command('process_announcement_consumer_fill'),
+    queue=queues.process_announcements_queue_fill,
+    callback=consumers.process_announcement_callback,
+    schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
+    dead_queue_enabled=True,
+)
+
 # [billing] сохраняет/обновляет контракты по объявлению
 register_consumer(
     command=cli.command('save_announcement_contract_consumer'),
