@@ -39,7 +39,7 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     # шаг 3 - формирование ответа
     return entities.GetOffersV2Response(
         offers=offers,
-        counters=await get_offer_counters(realty_user_id),
+        counters=await get_offer_counters(filters),
         page=get_offers.PageInfo(
             count=total,
             can_load_more=total > offset + limit,

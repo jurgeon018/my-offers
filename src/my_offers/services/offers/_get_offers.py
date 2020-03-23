@@ -9,16 +9,14 @@ from my_offers.repositories.postgresql.agents import get_master_user_id
 
 async def get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
     result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
-    result['master_user_id'] = await get_master_user_filter(user_id)
 
-    return result
-
-
-async def get_master_user_filter(user_id: int) -> List[int]:
-    result = [user_id]
     master_user_id = await get_master_user_id(user_id)
     if master_user_id:
-        result.append(master_user_id)
+        # опубликовал мастер или сотрудник и объявление назначено на сотрудника
+        result['master_user_id'] = [master_user_id, user_id]
+        result['user_id'] = user_id
+    else:
+        result['master_user_id'] = user_id
 
     return result
 

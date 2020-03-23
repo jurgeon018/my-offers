@@ -175,10 +175,6 @@ class TestOfferAction:
             f'{PATH}get_object_model',
             return_value=future(expected)
         )
-        get_master_user_filter_mock = mocker.patch(
-            f'{PATH}get_master_user_filter',
-            return_value=future([123])
-        )
 
         # act
         result = await action._load_object_model()
@@ -187,9 +183,7 @@ class TestOfferAction:
         assert result == expected
         get_object_model_mock.assert_called_once_with({
             'offer_id': 111,
-            'master_user_id': [123],
         })
-        get_master_user_filter_mock.assert_called_once_with(123)
 
     @pytest.mark.gen_test
     async def test__load_object_model__not_found__broken_rule(self, mocker):
@@ -199,10 +193,6 @@ class TestOfferAction:
             f'{PATH}get_object_model',
             return_value=future()
         )
-        get_master_user_filter_mock = mocker.patch(
-            f'{PATH}get_master_user_filter',
-            return_value=future([123])
-        )
 
         # act
         with pytest.raises(BrokenRulesException):
@@ -211,6 +201,4 @@ class TestOfferAction:
         # assert
         get_object_model_mock.assert_called_once_with({
             'offer_id': 111,
-            'master_user_id': [123],
         })
-        get_master_user_filter_mock.assert_called_once_with(123)

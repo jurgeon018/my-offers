@@ -113,7 +113,7 @@ async def test_v2_get_offers_public(mocker):
         offset=0,
         sort_type=GetOffersSortType.by_default,
     )
-    get_offer_counters_mock.assert_called_once_with(expected_user)
+    get_offer_counters_mock.assert_called_once_with({'status_tab': 'active', 'master_user_id': [777]})
     get_filters_mock.assert_called_once_with(
         filters=Filter(
             status_tab=OfferStatusTab.active,

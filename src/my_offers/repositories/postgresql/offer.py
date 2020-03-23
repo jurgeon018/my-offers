@@ -1,17 +1,18 @@
-import copy
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import asyncpgsa
 import pytz
-from sqlalchemy import and_, update
+from sqlalchemy import and_, select, update
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.sql.functions import count
 
 from my_offers import entities, pg
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
 from my_offers.mappers.offer_mapper import offer_mapper, reindex_offer_mapper
 from my_offers.repositories.postgresql import tables
+from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
 
 
 async def save_offer(offer: entities.Offer) -> None:
@@ -86,20 +87,16 @@ async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
     return offer_mapper.map_from(row)
 
 
-async def get_offer_counters(user_id: int) -> OfferCounters:
-    query = """
-        select
-            status_tab,
-            count(*) as cnt
-        from
-            offers
-        where
-            master_user_id = $1
-        group by
-            status_tab
-    """
+async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
+    conditions = prepare_conditions(filters)
+    status_tab = tables.offers.c.status_tab
+    query, params = asyncpgsa.compile_query(
+        select([status_tab, count().label('cnt')])
+        .where(and_(*conditions))
+        .group_by(status_tab)
+    )
 
-    rows = await pg.get().fetch(query, user_id)
+    rows = await pg.get().fetch(query, *params)
     counters = {row['status_tab']: row['cnt'] for row in rows}
 
     return OfferCounters(
