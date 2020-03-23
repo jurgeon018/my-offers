@@ -37,9 +37,14 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     offers, degradation = await v2_get_offer_views(object_models)
 
     # шаг 3 - формирование ответа
+    counter_filters = {
+        'master_user_id': filters.get('master_user_id'),
+        'user_id': filters.get('user_id'),
+    }
+
     return entities.GetOffersV2Response(
         offers=offers,
-        counters=await get_offer_counters(filters),
+        counters=await get_offer_counters(counter_filters),
         page=get_offers.PageInfo(
             count=total,
             can_load_more=total > offset + limit,

@@ -79,7 +79,7 @@ async def test_v2_get_offers_public(mocker):
         degradation={},
     )
 
-    get_offers_by_status_mock = mocker.patch(
+    get_object_models_mock = mocker.patch(
         f'{PATH}postgresql.get_object_models',
         return_value=future(([object_model], 1)),
     )
@@ -107,13 +107,13 @@ async def test_v2_get_offers_public(mocker):
     # assert
     assert result == expected_result
     get_offer_views_mock.assert_called_once_with(object_models=[object_model])
-    get_offers_by_status_mock.assert_called_once_with(
+    get_object_models_mock.assert_called_once_with(
         filters={'status_tab': 'active', 'master_user_id': [777]},
         limit=20,
         offset=0,
         sort_type=GetOffersSortType.by_default,
     )
-    get_offer_counters_mock.assert_called_once_with({'status_tab': 'active', 'master_user_id': [777]})
+    get_offer_counters_mock.assert_called_once_with({'master_user_id': [777], 'user_id': None})
     get_filters_mock.assert_called_once_with(
         filters=Filter(
             status_tab=OfferStatusTab.active,
