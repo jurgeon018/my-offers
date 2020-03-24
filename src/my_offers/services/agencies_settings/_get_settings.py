@@ -1,5 +1,6 @@
-from cian_core.degradation import get_degradation_handler
 from typing import Optional
+
+from cian_core.degradation import get_degradation_handler
 
 from my_offers.repositories.agencies_settings import v1_get_settings
 from my_offers.repositories.agencies_settings.entities import AgencySettings, V1GetSettings

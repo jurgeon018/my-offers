@@ -30,7 +30,7 @@ def test_prepare_enrich_params(mocker):
     ]
 
     # act
-    result = prepare_enrich_params(models)
+    result = prepare_enrich_params(models=models, user_id=11)
 
     # assert
     assert result._jk_ids == {555}

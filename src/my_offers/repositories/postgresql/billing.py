@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
 
 import asyncpgsa
 from sqlalchemy import and_, select, update

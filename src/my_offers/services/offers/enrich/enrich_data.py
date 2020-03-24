@@ -115,9 +115,3 @@ class EnrichData:
             return None
 
         return self.moderation_info.get(offer_id)
-
-    def get_offer_owner(self, offer_id: int) -> Optional[int]:
-        if not self.owners:
-            return None
-
-        return self.owners.get(offer_id)

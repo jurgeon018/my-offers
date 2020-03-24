@@ -30,7 +30,7 @@ PATH = 'my_offers.services.offers.enrich.load_enrich_data.'
 @pytest.mark.gen_test
 async def test_load_enrich_data(mocker):
     # arrange
-    params = EnrichParams()
+    params = EnrichParams(111)
     params.add_offer_id(11)
     params.add_jk_id(44)
     params.add_geo_url_id(
@@ -80,6 +80,7 @@ async def test_load_enrich_data(mocker):
             import_errors={},
         ),
         {
+            'agency_settings': True,
             'auctions': False,
             'can_update_edit_dates': False,
             'geo_urls': False,
@@ -113,7 +114,7 @@ async def test_load_enrich_data(mocker):
 @pytest.mark.gen_test
 async def test_load_enrich_data__empty__empty(mocker):
     # arrange
-    params = EnrichParams()
+    params = EnrichParams(111)
     expected = EnrichData(
         coverage={},
         auctions={},
