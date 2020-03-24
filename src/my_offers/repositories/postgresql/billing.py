@@ -1,7 +1,7 @@
-from typing import Dict, List, Optional
+from typing import Optional
 
 import asyncpgsa
-from sqlalchemy import and_, select, update
+from sqlalchemy import and_, update
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
@@ -65,29 +65,3 @@ async def get_offer_contract(offer_id: int) -> Optional[OfferBillingContract]:
     result = await pg.get().fetchrow(query, offer_id)
 
     return offer_billing_contract_mapper.map_from(dict(result)) if result else None
-
-
-async def get_offer_owners(offer_ids: List[int]) -> Dict[int, int]:
-    query = """
-    with contract_ids as (
-        select
-            max(id) as contract_id
-        from 
-            offers_billing_contracts bc
-        where 
-            offer_id = any ($1::bigint[])
-            and not is_deleted
-        group by 
-            offer_id
-    )
-    select
-        bc.offer_id,
-        bc.publisher_user_id
-    from
-        offers_billing_contracts bc
-        join contract_ids ids on ids.contract_id = bc.id
-    """
-
-    rows = await pg.get().fetch(query, offer_ids)
-
-    return {row['offer_id']: row['publisher_user_id'] for row in rows}
