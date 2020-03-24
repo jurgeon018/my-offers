@@ -4,7 +4,10 @@ from typing import Dict, List, Tuple
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories import postgresql
+from my_offers.repositories.postgresql.agents import get_master_user_id
+from my_offers.repositories.postgresql.billing import get_offer_owners
 from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
+from my_offers.services.agencies_settings._get_settings import get_settings_degradation_handler
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
@@ -31,7 +34,8 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         _load_geo_urls(params.get_geo_url_params()),
         _load_can_update_edit_dates(offer_ids),
         _load_import_errors(offer_ids),
-        _load_moderation_info(offer_ids)
+        _load_moderation_info(offer_ids),
+        _load_agency_settings(params.get_user_id())
         # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
     )
 
@@ -110,3 +114,13 @@ async def _load_import_errors(offer_ids: List[int]) -> EnrichItem:
     result = await get_last_import_errors(offer_ids)
 
     return EnrichItem(key='import_errors', degraded=False, value=result)
+
+
+async def _load_agency_settings(user_id: int) -> EnrichItem:
+    agency_id = get_master_user_id(user_id)
+    if not agency_id:
+        return EnrichItem(key='agency_settings', degraded=False, value=None)
+
+    result = await get_settings_degradation_handler(agency_id)
+
+    return EnrichItem(key='agency_settings', degraded=result.degraded, value=result.value)

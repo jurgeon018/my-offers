@@ -47,6 +47,7 @@ def v2_build_offer_view(
     geo_urls = enrich_data.get_urls_by_types(deal_type=deal_type, offer_type=offer_type)
 
     offer_id = object_model.id
+
     return get_offers.GetOfferV2(
         id=offer_id,
         created_at=object_model.creation_date,
@@ -67,6 +68,7 @@ def v2_build_offer_view(
             is_archived=archived,
             is_manual=is_manual,
             can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
+            agency_settings=enrich_data.agency_settings,
         ),
         page_specific_info=get_page_specific_info(
             object_model=object_model,

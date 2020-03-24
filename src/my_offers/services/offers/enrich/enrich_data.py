@@ -5,6 +5,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set
 from my_offers import entities, enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
+from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 
 
@@ -15,10 +16,14 @@ class GeoUrlKey(NamedTuple):
 
 class EnrichParams:
 
-    def __init__(self) -> None:
+    def __init__(self, user_id: int) -> None:
         self._offer_ids: Set[int] = set()
         self._jk_ids: Set[int] = set()
         self._geo_url_params: Dict[GeoUrlKey, Dict] = defaultdict(dict)
+        self._user_id = user_id
+
+    def get_user_id(self):
+        return self._user_id
 
     def add_offer_id(self, offer_id: int) -> None:
         self._offer_ids.add(offer_id)
@@ -95,6 +100,7 @@ class EnrichData:
     can_update_edit_dates: Dict[int, bool]
     import_errors: Dict[int, str]
     moderation_info: Optional[Dict[int, OfferOffence]] = None
+    agency_settings: Optional[AgencySettings] = None
 
     def get_urls_by_types(
             self,
@@ -109,3 +115,9 @@ class EnrichData:
             return None
 
         return self.moderation_info.get(offer_id)
+
+    def get_offer_owner(self, offer_id: int) -> Optional[int]:
+        if not self.owners:
+            return None
+
+        return self.owners.get(offer_id)
