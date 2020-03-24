@@ -116,7 +116,7 @@ async def _load_import_errors(offer_ids: List[int]) -> EnrichItem:
 
 
 async def _load_agency_settings(user_id: int) -> EnrichItem:
-    agency_id = get_master_user_id(user_id)
+    agency_id = await get_master_user_id(user_id)
     if not agency_id:
         return EnrichItem(key='agency_settings', degraded=False, value=None)
 
