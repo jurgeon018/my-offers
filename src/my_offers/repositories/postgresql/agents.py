@@ -1,3 +1,5 @@
+from typing import Optional
+
 import asyncpgsa
 from sqlalchemy.dialects.postgresql import insert
 
@@ -27,3 +29,11 @@ async def save_agent(agent: Agent) -> None:
     )
 
     await pg.get().execute(query, *params)
+
+
+async def get_master_user_id(user_id: int) -> Optional[int]:
+    query = 'SELECT master_agent_user_id FROM agents_hierarchy WHERE realty_user_id = $1'
+
+    row = await pg.get().fetchrow(query, user_id)
+
+    return row['master_agent_user_id'] if row else None

@@ -25,14 +25,13 @@ async def test_get_offer_counters(mocker):
     pg.get().fetch.return_value = future(rows)
 
     # act
-    result = await get_offer_counters(111)
+    result = await get_offer_counters({'master_user_id': 111})
 
     # assert
     assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        '\n        select\n            status_tab,\n            count(*) as cnt\n        '
-        'from\n            offers\n'
-        '        where\n            master_user_id = $1\n        group by\n            status_tab\n    ',
+        'SELECT offers.status_tab, count(*) AS cnt \nFROM offers \nWHERE offers.master_user_id = $1 '
+        'GROUP BY offers.status_tab',
         111
     )

@@ -7,7 +7,6 @@ from my_offers import entities
 from my_offers.enums.offer_action_status import OfferActionStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql.object_model import get_object_model
-from my_offers.services.get_master_user_id import get_master_user_id
 
 
 logger = logging.getLogger(__name__)
@@ -58,10 +57,8 @@ class OfferAction:
         raise NotImplementedError
 
     async def _load_object_model(self) -> ObjectModel:
-        object_model = await get_object_model({
-            'offer_id': self.offer_id,
-            'master_user_id': await get_master_user_id(self.user_id),
-        })
+        object_model = await get_object_model({'offer_id': self.offer_id})
+        # todo: https://jira.cian.tech/browse/CD-76994 проверить доступ
         if not object_model:
             raise BrokenRulesException([
                 Error(

@@ -87,13 +87,8 @@ async def test_get_offer_contract(mocker):
     # assert
     assert result == offer_billing_contract_mapper.map_from(offer_contract)
     pg.get().fetchrow.assert_called_once_with(
-        'SELECT offers_billing_contracts.id, offers_billing_contracts.user_id, offers_billing_contracts.actor_user_id, '
-        'offers_billing_contracts.publisher_user_id, offers_billing_contracts.offer_id, '
-        'offers_billing_contracts.start_date, offers_billing_contracts.payed_till, '
-        'offers_billing_contracts.row_version, offers_billing_contracts.is_deleted, '
-        'offers_billing_contracts.created_at, offers_billing_contracts.updated_at '
-        '\nFROM offers_billing_contracts '
-        '\nWHERE offers_billing_contracts.offer_id = $1',
+        '\n    select\n        *\n    from\n        offers_billing_contracts\n    where\n        not is_deleted'
+        '\n        and offer_id = $1\n    order by\n        row_version desc\n    limit 1\n    ',
         expected_contract_id
     )
 
@@ -109,13 +104,8 @@ async def test_get_offer_contract__contract_is_none(mocker):
     # assert
     assert result is None
     pg.get().fetchrow.assert_called_once_with(
-        'SELECT offers_billing_contracts.id, offers_billing_contracts.user_id, offers_billing_contracts.actor_user_id, '
-        'offers_billing_contracts.publisher_user_id, offers_billing_contracts.offer_id, '
-        'offers_billing_contracts.start_date, offers_billing_contracts.payed_till, '
-        'offers_billing_contracts.row_version, offers_billing_contracts.is_deleted, '
-        'offers_billing_contracts.created_at, offers_billing_contracts.updated_at '
-        '\nFROM offers_billing_contracts '
-        '\nWHERE offers_billing_contracts.offer_id = $1',
+        '\n    select\n        *\n    from\n        offers_billing_contracts\n    where\n        not is_deleted'
+        '\n        and offer_id = $1\n    order by\n        row_version desc\n    limit 1\n    ',
         expected_contract_id
     )
 

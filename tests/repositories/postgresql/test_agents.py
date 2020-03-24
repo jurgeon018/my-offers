@@ -2,12 +2,13 @@ from datetime import datetime
 
 import pytest
 import pytz
-from cian_test_utils import v
+from cian_test_utils import future, v
 
 from my_offers import pg
 from my_offers.entities.agents import Agent
 from my_offers.enums import AgentAccountType
 from my_offers.repositories import postgresql
+from my_offers.repositories.postgresql.agents import get_master_user_id
 
 
 pytestmark = pytest.mark.gen_test
@@ -48,4 +49,20 @@ async def test_save_agent(mocker):
         agent.row_version,
         agent.row_version,
         agent.updated_at,
+    )
+
+
+@pytest.mark.gen_test
+async def test_get_master_user_id(mocker):
+    # arrange
+    pg.get().fetchrow.return_value = future({'master_agent_user_id': 12})
+
+    # act
+    result = await get_master_user_id(11)
+
+    # assert
+    assert result == 12
+    pg.get().fetchrow.assert_called_once_with(
+        'SELECT master_agent_user_id FROM agents_hierarchy WHERE realty_user_id = $1',
+        11
     )

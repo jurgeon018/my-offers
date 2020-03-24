@@ -183,7 +183,6 @@ class TestOfferAction:
         assert result == expected
         get_object_model_mock.assert_called_once_with({
             'offer_id': 111,
-            'master_user_id': 123,
         })
 
     @pytest.mark.gen_test
@@ -202,5 +201,4 @@ class TestOfferAction:
         # assert
         get_object_model_mock.assert_called_once_with({
             'offer_id': 111,
-            'master_user_id': 123,
         })
