@@ -12,7 +12,6 @@ from my_offers.services.announcement.fields.sort_date import get_sort_date
 from my_offers.services.announcement.fields.street_name import get_street_name
 from my_offers.services.announcement.fields.total_area import get_total_area
 from my_offers.services.announcement.fields.walking_time import get_walking_time
-from my_offers.services.get_master_user_id import get_master_user_id
 
 
 async def process_announcement(object_model: ObjectModel) -> None:
@@ -33,7 +32,7 @@ async def prepare_offer(object_model: ObjectModel) -> entities.Offer:
     geo = object_model.geo
     offer = entities.Offer(
         offer_id=object_model.id,
-        master_user_id=await get_master_user_id(object_model.user_id),
+        master_user_id=object_model.user_id,
         user_id=object_model.published_user_id,
         deal_type=deal_type,
         offer_type=offer_type,

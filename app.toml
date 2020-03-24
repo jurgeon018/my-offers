@@ -20,6 +20,14 @@ instances = 3
 cpu = 2048
 memory = 128
 
+[job.process_announcement_consumer_fill]
+type = "consumer"
+command = "process_announcement_consumer_fill"
+
+[job.process_announcement_consumer_fill.prod]
+instances = 3
+cpu = 2048
+
 [job.save_moderation_offer_offence_consumer]
 type = "consumer"
 command = "save_moderation_offer_offence_consumer"
@@ -38,6 +46,10 @@ memory = 128
 type = "consumer"
 command = "save_offer_unload_error_consumer"
 memory = 128
+
+[job.save_agent_consumer]
+type = "consumer"
+command = "save_agent_consumer"
 
 [job.reindex_offers]
 type = "manage"

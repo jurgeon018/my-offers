@@ -1,10 +1,7 @@
+from my_offers.entities.agents import AgentMessage
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
-from my_offers.entities.get_offers import (
-    GetOffersPrivateRequest,
-    GetOffersRequest,
-    GetOffersResponse,
-    GetOffersV2Response,
-)
+from my_offers.entities.coverage import Coverage
+from my_offers.entities.get_offers import GetOffersPrivateRequest, GetOffersRequest, GetOffersV2Response, Statistics
 from my_offers.entities.moderation import ModerationOfferOffence
 from my_offers.entities.offer import Offer, ReindexOffer, ReindexOfferItem
 from my_offers.entities.offer_action import OfferActionRequest, OfferActionResponse

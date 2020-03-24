@@ -5,6 +5,7 @@ from cian_enum import StrEnum
 
 from my_offers.helpers.queue import get_modified_queue_name
 from my_offers.queue.routing_keys import (
+    AgentsReportingV1RoutingKey,
     AnnouncementReportingV1RoutingKey,
     ModerationOfferOffenceReportingV1RoutingKey,
     ServiceContractsReportingV1RoutingKey,
@@ -32,6 +33,16 @@ def _get_bindings(prefix: str, enum: Type[StrEnum]) -> List[QueueBinding]:
 process_announcements_queue = Queue(
     name=get_modified_queue_name('process_announcement_v2'),
     bindings=_get_bindings('announcement_reporting', AnnouncementReportingV1RoutingKey),
+)
+
+process_announcements_queue_fill = Queue(
+    name=get_modified_queue_name('process_announcement_v2_fill'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('announcements'),
+            routing_key='announcement_reporting_my_offers.fill',
+        )
+    ],
 )
 
 save_announcement_contract_queue = Queue(
@@ -79,5 +90,15 @@ moderation_offence_queue = Queue(
             exchange=Exchange('moderation'),
             routing_key=ModerationOfferOffenceReportingV1RoutingKey.changed.value,
         )
+    ],
+)
+
+update_agents_queue = Queue(
+    name=get_modified_queue_name('save_agent'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('users'),
+            routing_key=AgentsReportingV1RoutingKey.updated.value,
+        ),
     ],
 )

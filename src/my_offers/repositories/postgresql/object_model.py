@@ -1,30 +1,18 @@
 from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpgsa
-import sqlalchemy as sa
 from cian_json import json
-from sqlalchemy import and_, any_, cast, func, over, select
+from sqlalchemy import and_, func, over, select
 
 from my_offers import pg
 from my_offers.enums import GetOffersSortType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import tables
+from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
 
 
 OFFER_TABLE = tables.offers.c
-
-FILTERS_MAP = {
-    'status_tab': OFFER_TABLE.status_tab,
-    'deal_type': OFFER_TABLE.deal_type,
-    'offer_type': OFFER_TABLE.offer_type,
-    'has_photo': OFFER_TABLE.has_photo,
-    'is_manual': OFFER_TABLE.is_manual,
-    'is_in_hidden_base': OFFER_TABLE.is_in_hidden_base,
-    'master_user_id': OFFER_TABLE.master_user_id,
-    'sub_agent_ids': OFFER_TABLE.user_id,
-    'offer_id': OFFER_TABLE.offer_id,
-}
 
 SORT_TYPE_MAP = {
     GetOffersSortType.by_default: OFFER_TABLE.sort_date.desc(),
@@ -84,17 +72,7 @@ async def get_object_models(
 
 
 def _prepare_conditions(filters: Dict[str, Any]) -> List:
-    conditions = []
-    for key, value in filters.items():
-        if key not in FILTERS_MAP:
-            continue
-        if value is None:
-            continue
-        field = FILTERS_MAP[key]
-        if isinstance(value, list):
-            conditions.append(field == any_(cast(value, sa.ARRAY(field.type))))
-        else:
-            conditions.append(field == value)
+    conditions = prepare_conditions(filters)
 
     if services := filters.get('services'):
         conditions.append(OFFER_TABLE.services.overlap(services))

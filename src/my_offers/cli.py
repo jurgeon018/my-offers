@@ -33,6 +33,15 @@ register_consumer(
     dead_queue_enabled=True,
 )
 
+# [announcements] тех. очередь для наполнения базы объявлений
+register_consumer(
+    command=cli.command('process_announcement_consumer_fill'),
+    queue=queues.process_announcements_queue_fill,
+    callback=consumers.process_announcement_callback,
+    schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
+    dead_queue_enabled=True,
+)
+
 # [billing] сохраняет/обновляет контракты по объявлению
 register_consumer(
     command=cli.command('save_announcement_contract_consumer'),
@@ -66,6 +75,15 @@ register_consumer(
     queue=queues.moderation_offence_queue,
     callback=consumers.save_offer_offence_callback,
     schema_cls=schemas.RabbitMQOffenceMessageSchema,
+    dead_queue_enabled=True,
+)
+
+# [agents] сохраняет/обновляет данные об агентах
+register_consumer(
+    command=cli.command('save_agent_consumer'),
+    queue=queues.update_agents_queue,
+    callback=consumers.save_agent_callback,
+    schema_cls=schemas.RabbitMQAgentUpdatedMessageSchema,
     dead_queue_enabled=True,
 )
 

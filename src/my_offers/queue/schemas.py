@@ -22,3 +22,8 @@ class RabbitMQServiceContractCreatedMessageSchema(EntitySchema):
 class RabbitMQSaveUnloadErrorMessageSchema(EntitySchema):
     class Meta:
         entity = mq_entities.SaveUnloadErrorMessage
+
+
+class RabbitMQAgentUpdatedMessageSchema(EntitySchema):
+    class Meta:
+        entity = entities.AgentMessage

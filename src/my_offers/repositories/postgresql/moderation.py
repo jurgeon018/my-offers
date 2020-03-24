@@ -35,15 +35,15 @@ async def save_offer_offence(offer_offence: OfferOffence) -> None:
 async def get_offers_offence(*, offer_ids: List[int], status: ModerationOffenceStatus) -> List[OfferOffence]:
     sql = """
         WITH offence_ids AS (
-        SELECT offence_id                                     as offence_id,
-               row_number() over (order by created_date desc) as row_number
-        from offers_offences
-        WHERE offer_id = ANY ($1::bigint[])
-          AND offence_status = $2
-    )
+            SELECT max(offence_id) as offence_id
+            from offers_offences
+            where offer_id = any ($1::bigint[])
+              and offence_status = $2
+            group by offer_id
+        )
         SELECT *
-        FROM offers_offences oo
-             JOIN offence_ids oi ON oi.offence_id = oo.offence_id AND oi.row_number = 1
+        from offers_offences oo
+             join offence_ids oi on oi.offence_id = oo.offence_id;
     """
     params = [
         offer_ids,
