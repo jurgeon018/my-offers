@@ -7,6 +7,9 @@ from my_offers.services.actions._action import OfferAction
 
 
 class UpdateEditDateOfferAction(OfferAction):
+    def _get_action_code(self) -> str:
+        return 'can_update_edit_date'
+
     async def _run_action(self, object_model: ObjectModel) -> None:
         result = await announcement_api.update_edit_date([object_model.id])
         if not result[object_model.id]:
