@@ -5,6 +5,9 @@ from my_offers.services.actions._action import OfferAction
 
 
 class ArchiveOfferAction(OfferAction):
+    def _get_action_code(self) -> str:
+        return 'can_move_to_archive'
+
     async def _run_action(self, object_model: ObjectModel) -> None:
         await v2_announcements_archive(ArchiveAnnouncementV2Request(announcement_id=object_model.id))
 

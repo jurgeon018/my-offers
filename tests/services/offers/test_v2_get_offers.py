@@ -4,9 +4,9 @@ import pytest
 from cian_test_utils import future
 
 from my_offers.entities import GetOffersPrivateRequest
+from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.get_offers import (
     ActiveInfo,
-    AvailableActions,
     Filter,
     GetOffersRequest,
     GetOffersV2Response,
