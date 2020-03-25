@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import asyncpgsa
 from sqlalchemy.dialects.postgresql import insert
@@ -43,7 +43,17 @@ async def get_master_user_id(user_id: int) -> Optional[int]:
 
 
 async def get_agent_names(user_ids: List[int]) -> List[AgentName]:
-    query = 'SELECT realty_user_id as id, first_name, middle_name, last_name where realty_user_id = any ($1::bigint[])'
+    query = """
+        SELECT
+            realty_user_id as id,
+            first_name,
+            middle_name,
+            last_name
+        FROM
+            agents_hierarchy
+        WHERE
+            realty_user_id = ANY($1::bigint[])
+    """
 
     rows = await pg.get().fetch(query, user_ids)
 

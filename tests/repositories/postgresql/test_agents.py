@@ -5,10 +5,10 @@ import pytz
 from cian_test_utils import future, v
 
 from my_offers import pg
-from my_offers.entities.agents import Agent
+from my_offers.entities.agents import Agent, AgentName
 from my_offers.enums import AgentAccountType
 from my_offers.repositories import postgresql
-from my_offers.repositories.postgresql.agents import get_master_user_id
+from my_offers.repositories.postgresql.agents import get_agent_names, get_master_user_id
 
 
 pytestmark = pytest.mark.gen_test
@@ -62,3 +62,16 @@ async def test_get_master_user_id(mocker):
         'SELECT master_agent_user_id FROM agents_hierarchy WHERE realty_user_id = $1',
         11
     )
+
+
+@pytest.mark.gen_test
+async def test_get_agent_names(mocker):
+    # arrange
+    pg.get().fetch.return_value = future([{'id': 12, 'first_name': 'Zz', 'last_name': 'Yy', 'middle_name': 'Mm'}])
+    expected = [AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm')]
+
+    # act
+    result = await get_agent_names([11])
+
+    # assert
+    assert result == expected

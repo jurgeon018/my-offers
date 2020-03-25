@@ -1,7 +1,8 @@
 import asyncio
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql.agents import get_agent_names, get_master_user_id
@@ -35,7 +36,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         _load_import_errors(offer_ids),
         _load_moderation_info(offer_ids),
         _load_agency_settings(params.get_user_id()),
-        _load_agent_names(params.get_agent_ids()),
+        _load_subagents(params.get_agent_ids()),
         # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
     )
 
@@ -126,9 +127,9 @@ async def _load_agency_settings(user_id: int) -> EnrichItem:
     return EnrichItem(key='agency_settings', degraded=result.degraded, value=result.value)
 
 
-async def _load_agent_names(user_ids: [List[int]]) -> EnrichItem:
+async def _load_subagents(user_ids: List[int]) -> EnrichItem:
     if not user_ids:
-        return EnrichItem(key='agent_names', degraded=False, value=None)
+        return EnrichItem(key='subagents', degraded=False, value=None)
 
     data = await get_agent_names(user_ids)
 
@@ -138,6 +139,6 @@ async def _load_agent_names(user_ids: [List[int]]) -> EnrichItem:
         if not name:
             continue
 
-        result[item.id] = name
+        result[item.id] = Subagent(id=item.id, name=name)
 
-    return EnrichItem(key='agent_names', degraded=False, value=result)
+    return EnrichItem(key='subagents', degraded=False, value=result)

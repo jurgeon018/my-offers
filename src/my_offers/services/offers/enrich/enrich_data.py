@@ -5,6 +5,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set
 from my_offers import entities, enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
+from my_offers.entities.offer_view_model import Subagent
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 
@@ -108,7 +109,7 @@ class EnrichData:
     import_errors: Dict[int, str]
     moderation_info: Optional[Dict[int, OfferOffence]] = None
     agency_settings: Optional[AgencySettings] = None
-    agent_names: Optional[Dict[int, str]] = None
+    subagents: Optional[Dict[int, str]] = None
 
     def get_urls_by_types(
             self,
@@ -124,8 +125,8 @@ class EnrichData:
 
         return self.moderation_info.get(offer_id)
 
-    def get_agent_name(self, user_id) -> Optional[str]:
-        if not self.agent_names:
+    def get_subagent(self, user_id) -> Optional[Subagent]:
+        if not self.subagents:
             return None
 
-        return self.agent_names.get(user_id)
+        return self.subagents.get(user_id)

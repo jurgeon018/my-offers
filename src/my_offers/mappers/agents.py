@@ -13,4 +13,7 @@ agent_mapper = EntityMapper(
     }
 )
 
-agent_name_mapper = EntityMapper(entities.AgentName)
+agent_name_mapper = EntityMapper(
+    entities.AgentName,
+    without_camelcase=True,
+)
