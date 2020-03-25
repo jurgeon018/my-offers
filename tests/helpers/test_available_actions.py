@@ -1,9 +1,9 @@
 import pytest
 
-from my_offers.entities.get_offers import AvailableActions
+from my_offers.entities.available_actions import AvailableActions
+from my_offers.helpers import get_available_actions
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
-from my_offers.services.offer_view.fields import get_available_actions
 
 
 @pytest.mark.parametrize('is_archived, is_manual, status, can_update_edit_date, expected', [
