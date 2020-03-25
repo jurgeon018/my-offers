@@ -58,7 +58,7 @@ class OfferAction:
 
     async def _load_object_model(self) -> ObjectModel:
         object_model = await get_object_model({'offer_id': self.offer_id})
-        # todo: https://jira.cian.tech/browse/CD-76994 проверить доступ
+        # todo: https://jira.cian.tech/browse/CD-74186 проверить доступ
         if not object_model:
             raise BrokenRulesException([
                 Error(

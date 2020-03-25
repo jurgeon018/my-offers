@@ -68,7 +68,13 @@ async def test_v2_get_offers_public(mocker):
         statistics=Statistics(),
         archived_at=None,
         status=None,
-        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False, can_delete=False),
+        available_actions=AvailableActions(
+            can_update_edit_date=False,
+            can_move_to_archive=False,
+            can_delete=False,
+            can_edit=True,
+            can_restore=True,
+        ),
         page_specific_info=PageSpecificInfo(),
     )
 
@@ -106,7 +112,7 @@ async def test_v2_get_offers_public(mocker):
 
     # assert
     assert result == expected_result
-    get_offer_views_mock.assert_called_once_with(object_models=[object_model])
+    get_offer_views_mock.assert_called_once_with(object_models=[object_model], user_id=777)
     get_object_models_mock.assert_called_once_with(
         filters={'status_tab': 'active', 'master_user_id': [777]},
         limit=20,
@@ -213,7 +219,9 @@ async def test_v2_get_offer_views(mocker):
                 available_actions=AvailableActions(
                     can_update_edit_date=False,
                     can_move_to_archive=False,
-                    can_delete=True
+                    can_delete=False,
+                    can_edit=False,
+                    can_restore=False,
                 ),
                 statistics=Statistics(shows=None, views=None, favorites=None),
                 page_specific_info=PageSpecificInfo(
@@ -232,7 +240,7 @@ async def test_v2_get_offer_views(mocker):
     )
 
     # act
-    result = await v2_get_offer_views(object_models=[object_model])
+    result = await v2_get_offer_views(object_models=[object_model], user_id=777)
 
     # assert
     assert result == expected

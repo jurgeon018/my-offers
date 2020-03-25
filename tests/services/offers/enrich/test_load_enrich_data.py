@@ -9,10 +9,12 @@ from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.enums import ModerationOffenceStatus
+from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
 from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem, EnrichParams
 from my_offers.services.offers.enrich.load_enrich_data import (
+    _load_agency_settings,
     _load_auctions,
     _load_can_update_edit_dates,
     _load_coverage,
@@ -30,7 +32,7 @@ PATH = 'my_offers.services.offers.enrich.load_enrich_data.'
 @pytest.mark.gen_test
 async def test_load_enrich_data(mocker):
     # arrange
-    params = EnrichParams()
+    params = EnrichParams(111)
     params.add_offer_id(11)
     params.add_jk_id(44)
     params.add_geo_url_id(
@@ -68,6 +70,10 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_moderation_info',
         return_value=future(EnrichItem(key='moderation_info', degraded=False, value={})),
     )
+    load_agency_settings_mock = mocker.patch(
+        f'{PATH}_load_agency_settings',
+        return_value=future(EnrichItem(key='agency_settings', degraded=False, value=None)),
+    )
 
     expected = (
         EnrichData(
@@ -78,8 +84,10 @@ async def test_load_enrich_data(mocker):
             can_update_edit_dates={},
             moderation_info={},
             import_errors={},
+            agency_settings=None,
         ),
         {
+            'agency_settings': False,
             'auctions': False,
             'can_update_edit_dates': False,
             'geo_urls': False,
@@ -108,12 +116,13 @@ async def test_load_enrich_data(mocker):
     load_can_update_edit_dates_mock.assert_called_once_with([11])
     load_import_errors_mock.assert_called_once_with([11])
     load_moderation_info_mock.assert_called_once_with([11])
+    load_agency_settings_mock.assert_called_once_with(111)
 
 
 @pytest.mark.gen_test
 async def test_load_enrich_data__empty__empty(mocker):
     # arrange
-    params = EnrichParams()
+    params = EnrichParams(111)
     expected = EnrichData(
         coverage={},
         auctions={},
@@ -325,3 +334,80 @@ async def test__load_import_errors(mocker):
     # assert
     assert result == expected
     get_last_import_errors_mock.assert_called_once_with([11])
+
+
+@pytest.mark.gen_test
+async def test__load_agency_settings(mocker):
+    # arrange
+    get_master_user_id_mock = mocker.patch(
+        f'{PATH}get_master_user_id',
+        return_value=future(22)
+    )
+
+    get_settings_degradation_handler_mock = mocker.patch(
+        f'{PATH}get_settings_degradation_handler',
+        return_value=future(DegradationResult(
+            value=AgencySettings(
+                can_sub_agents_edit_offers_from_xml=False,
+                can_sub_agents_publish_offers=False,
+                can_sub_agents_view_agency_balance=False,
+                display_all_agency_offers=False,
+            ),
+            degraded=False,
+        ))
+    )
+
+    expected = EnrichItem(
+        key='agency_settings',
+        degraded=False,
+        value=AgencySettings(
+            can_sub_agents_edit_offers_from_xml=False,
+            can_sub_agents_publish_offers=False,
+            can_sub_agents_view_agency_balance=False,
+            display_all_agency_offers=False,
+        )
+    )
+
+    # act
+    result = await _load_agency_settings(11)
+
+    # assert
+    assert result == expected
+    get_master_user_id_mock.assert_called_once_with(11)
+    get_settings_degradation_handler_mock.assert_called_once_with(22)
+
+
+@pytest.mark.gen_test
+async def test__load_agency_settings__no_ma__empty(mocker):
+    # arrange
+    get_master_user_id_mock = mocker.patch(
+        f'{PATH}get_master_user_id',
+        return_value=future()
+    )
+
+    get_settings_degradation_handler_mock = mocker.patch(
+        f'{PATH}get_settings_degradation_handler',
+        return_value=future(DegradationResult(
+            value=AgencySettings(
+                can_sub_agents_edit_offers_from_xml=False,
+                can_sub_agents_publish_offers=False,
+                can_sub_agents_view_agency_balance=False,
+                display_all_agency_offers=False,
+            ),
+            degraded=False,
+        ))
+    )
+
+    expected = EnrichItem(
+        key='agency_settings',
+        degraded=False,
+        value=None,
+    )
+
+    # act
+    result = await _load_agency_settings(11)
+
+    # assert
+    assert result == expected
+    get_master_user_id_mock.assert_called_once_with(11)
+    get_settings_degradation_handler_mock.assert_not_called()

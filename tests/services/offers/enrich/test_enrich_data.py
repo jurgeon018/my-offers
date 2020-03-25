@@ -10,7 +10,7 @@ from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData
 
 def test_get_geo_url_params(mocker):
     # arrange
-    params = EnrichParams()
+    params = EnrichParams(111)
     params.add_geo_url_id(
         deal_type=enums.DealType.rent,
         offer_type=enums.OfferType.flat,

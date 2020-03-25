@@ -17,8 +17,6 @@ STATUS_TO_TAB_MAP = {
     Status.moderate: enums.OfferStatusTab.declined,
     Status.removed_by_moderator: enums.OfferStatusTab.declined,
     Status.blocked: enums.OfferStatusTab.declined,
-
-    Status.deleted: enums.OfferStatusTab.deleted,
 }
 
 
@@ -39,6 +37,9 @@ def get_status_tab(*, offer_flags: Optional[Flags], offer_status: Status) -> enu
     # флаг из isArchived
     # -- Удаленные
     # 'deleted'
+    if offer_status.is_deleted:
+        return enums.OfferStatusTab.deleted
+
     if is_archived(offer_flags):
         return enums.OfferStatusTab.archived
 

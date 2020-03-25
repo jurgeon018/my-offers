@@ -43,7 +43,13 @@ def test_build_offer_view(enrich_data_mock):
         archived_at=None,
         status='Опубликовано',
         statistics=Statistics(shows=None, views=None, favorites=None),
-        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False, can_delete=True),
+        available_actions=AvailableActions(
+            can_update_edit_date=False,
+            can_move_to_archive=False,
+            can_delete=False,
+            can_edit=False,
+            can_restore=False,
+        ),
         page_specific_info=PageSpecificInfo(
             active_info=ActiveInfo(
                 vas=[],
@@ -51,7 +57,8 @@ def test_build_offer_view(enrich_data_mock):
                 is_autoprolong=False,
                 is_publication_time_ends=False,
                 publish_features=[],
-                auction=None),
+                auction=None,
+            ),
             not_active_info=None,
             declined_info=None
         )

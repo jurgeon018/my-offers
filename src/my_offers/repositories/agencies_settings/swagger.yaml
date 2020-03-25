@@ -1,0 +1,60 @@
+definitions:
+  agencies_settings.web.schemas.AgencySettingsSchema:
+    properties:
+      canSubAgentsEditOffersFromXml:
+        description: Могут ли сотрдуники редактировать объявления из XML
+        title: can_sub_agents_edit_offers_from_xml
+        type: boolean
+      canSubAgentsPublishOffers:
+        description: Могут ли сотрудники публиковать объявления
+        title: can_sub_agents_publish_offers
+        type: boolean
+      canSubAgentsViewAgencyBalance:
+        description: Могут ли сотрдники видеть баланс агентства
+        title: can_sub_agents_view_agency_balance
+        type: boolean
+      displayAllAgencyOffers:
+        description: Показывать ли объявления, оплаченные за личный счет, в моих объявлениях
+        title: display_all_agency_offers
+        type: boolean
+    required:
+    - canSubAgentsEditOffersFromXml
+    - canSubAgentsPublishOffers
+    - canSubAgentsViewAgencyBalance
+    - displayAllAgencyOffers
+    type: object
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items:
+          title: errors
+          type: object
+        title: errors
+        type: array
+      message:
+        title: message
+        type: string
+    type: object
+info:
+  description: Микросервис настроек иерархии для агентств.
+  title: agencies-settings
+  version: 1.0.0
+paths:
+  /v1/get-settings/:
+    get:
+      parameters:
+      - description: ID агентства
+        in: query
+        name: agencyId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/agencies_settings.web.schemas.AgencySettingsSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+swagger: '2.0'

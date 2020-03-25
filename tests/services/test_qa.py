@@ -13,7 +13,7 @@ async def test_get_offer(mocker):
     get_offer_by_id_mock = mocker.patch('my_offers.services.qa.get_offer_by_id', return_value=future(expected))
 
     # act
-    result = await get_offer(QaGetByIdRequest(offer_id=111))
+    result = await get_offer(QaGetByIdRequest(offer_id=111, user_id=55))
 
     # assert
     assert result == expected
@@ -27,7 +27,7 @@ async def test_get_offer__not_found__error(mocker):
 
     # act
     with pytest.raises(BrokenRulesException):
-        await get_offer(QaGetByIdRequest(offer_id=111))
+        await get_offer(QaGetByIdRequest(offer_id=111, user_id=55))
 
     # assert
     get_offer_by_id_mock.assert_called_once_with(111)
@@ -38,7 +38,7 @@ async def test_get_offer_view(mocker):
     # arrange
     object_model = mocker.sentinel.object_model
     offer_view = mocker.sentinel.offer_view
-    build_offer_view_mock = mocker.patch(
+    v2_get_offer_views_mock = mocker.patch(
         'my_offers.services.qa.v2_get_offer_views',
         return_value=future(([offer_view], {}))
     )
@@ -49,12 +49,12 @@ async def test_get_offer_view(mocker):
     )
 
     # act
-    result = await get_offer_view(QaGetByIdRequest(offer_id=111))
+    result = await get_offer_view(QaGetByIdRequest(offer_id=111, user_id=55))
 
     # assert
     assert result == offer_view
     get_object_model_by_id_mock.assert_called_once_with(111)
-    build_offer_view_mock.assert_called_once_with(object_models=[object_model])
+    v2_get_offer_views_mock.assert_called_once_with(object_models=[object_model], user_id=55)
 
 
 @pytest.mark.gen_test
@@ -64,7 +64,7 @@ async def test_get_offer_view__not_found__error(mocker):
 
     # act
     with pytest.raises(BrokenRulesException):
-        await get_offer_view(QaGetByIdRequest(offer_id=111))
+        await get_offer_view(QaGetByIdRequest(offer_id=111, user_id=55))
 
     # assert
     get_object_model_by_id_mock.assert_called_once_with(111)

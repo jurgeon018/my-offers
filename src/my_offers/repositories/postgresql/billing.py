@@ -1,7 +1,7 @@
 from typing import Optional
 
 import asyncpgsa
-from sqlalchemy import and_, select, update
+from sqlalchemy import and_, update
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
