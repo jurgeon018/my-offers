@@ -24,6 +24,9 @@ async def save_agent(agent: Agent) -> None:
                 'master_agent_user_id': insert_query.excluded.master_agent_user_id,
                 'row_version': insert_query.excluded.row_version,
                 'updated_at': insert_query.excluded.updated_at,
+                'first_name': insert_query.excluded.first_name,
+                'middle_name': insert_query.excluded.middle_name,
+                'last_name': insert_query.excluded.last_name,
             }
         )
     )

@@ -85,3 +85,9 @@ class Agent:
     """ID пользователя мастераагента"""
     account_type: Optional[AgentAccountType] = None
     """Тип агента"""
+    middle_name: Optional[str] = None
+    """Отчетсво"""
+    first_name: Optional[str] = None
+    """Имя"""
+    last_name: Optional[str] = None
+    """Фамилия"""

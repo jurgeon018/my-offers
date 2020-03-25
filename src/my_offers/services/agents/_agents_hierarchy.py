@@ -33,6 +33,9 @@ async def update_agents_hierarchy(agent: AgentMessage) -> None:
         account_type=agent.account_type,
         created_at=now,
         updated_at=now,
+        first_name=agent.first_name,
+        middle_name=agent.middle_name,
+        last_name=agent.last_name,
     )
     await postgresql.save_agent(agent=agent)
 
