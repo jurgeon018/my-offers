@@ -81,7 +81,7 @@ class OfferAction:
         available_actions = helpers.get_available_actions(
             status=object_model.status,
             is_archived=helpers.is_archived(object_model.flags),
-            is_manual=helpers.is_manual(object_model.source),
+            is_manual=helpers.is_xml_import(object_model.source),
             can_update_edit_date=True,
             agency_settings=agency_settings.value,
         )

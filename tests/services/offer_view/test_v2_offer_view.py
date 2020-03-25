@@ -39,17 +39,17 @@ def test_build_offer_view(enrich_data_mock):
         subagent=None,
         price_info=PriceInfo(exact=None, range=None),
         features=[],
-        is_manual=False,
+        is_manual=True,
         created_at=None,
         archived_at=None,
         status='Опубликовано',
         statistics=Statistics(shows=None, views=None, favorites=None),
         available_actions=AvailableActions(
             can_update_edit_date=False,
-            can_move_to_archive=False,
-            can_delete=False,
-            can_edit=False,
-            can_restore=False,
+            can_move_to_archive=True,
+            can_delete=True,
+            can_edit=True,
+            can_restore=True,
         ),
         page_specific_info=PageSpecificInfo(
             active_info=ActiveInfo(

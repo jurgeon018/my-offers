@@ -8,5 +8,5 @@ def is_archived(flags: Optional[Flags]) -> bool:
     return bool(flags and flags.is_archived)
 
 
-def is_manual(source: Optional[Source]) -> bool:
-    return bool(source and source.is_upload)
+def is_xml_import(source: Optional[Source]) -> bool:
+    return not bool(source and source.is_upload)

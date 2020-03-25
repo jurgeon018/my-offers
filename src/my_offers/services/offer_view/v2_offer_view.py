@@ -1,7 +1,7 @@
 from my_offers.entities import get_offers
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import is_archived, is_manual
+from my_offers.helpers.fields import is_archived, is_xml_import
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view.fields import (
     get_features,
@@ -25,7 +25,7 @@ def v2_build_offer_view(
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
-    manual = is_manual(object_model.source)
+    manual = is_xml_import(object_model.source)
     archived = is_archived(object_model.flags)
     price_info = get_price_info(
         bargain_terms=object_model.bargain_terms,
