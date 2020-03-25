@@ -1,3 +1,5 @@
+from typing import Optional
+
 from my_offers.entities.get_offers import AvailableActions
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
@@ -13,7 +15,7 @@ def get_available_actions(
         is_manual: bool,
         status: Status,
         can_update_edit_date: bool,
-        agency_settings: AgencySettings,
+        agency_settings: Optional[AgencySettings],
 ) -> AvailableActions:
     if not is_manual:
         return AvailableActions(
