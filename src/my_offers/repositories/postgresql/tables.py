@@ -103,4 +103,7 @@ agents_hierarchy = sa.Table(
     sa.Column('row_version', sa.BIGINT, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('first_name', sa.VARCHAR, nullable=True),
+    sa.Column('middle_name', sa.VARCHAR, nullable=True),
+    sa.Column('last_name', sa.VARCHAR, nullable=True),
 )
