@@ -8,6 +8,7 @@ from my_offers.entities.moderation import OfferOffence
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.mappers.moderation import offer_offence_mapper
 from my_offers.repositories import postgresql
+from my_offers.repositories.postgresql.moderation import delete_offers_offence_by_offer_id
 
 
 pytestmark = pytest.mark.gen_test
@@ -124,4 +125,16 @@ async def test_get_offer_offence__offence_is_none(mocker):
         '\n             join offence_ids oi on oi.offence_id = oo.offence_id;\n    ',
         [offer_id],
         ModerationOffenceStatus.confirmed.value,
+    )
+
+
+@pytest.mark.gen_test
+async def test_delete_offers_offence_by_offer_id(mocker):
+    # arrange & act
+    await delete_offers_offence_by_offer_id([11])
+
+    # assert
+    pg.get().execute.assert_called_once_with(
+        'DELETE FROM offers_offences WHERE offer_id = ANY($1::BIGINT[])',
+        [11]
     )

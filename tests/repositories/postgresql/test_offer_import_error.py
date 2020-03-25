@@ -5,7 +5,11 @@ from cian_test_utils import future
 
 from my_offers import pg
 from my_offers.entities import OfferImportError
-from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors, upsert_offer_import_errors
+from my_offers.repositories.postgresql.offer_import_error import (
+    delete_import_errors_by_offer_id,
+    get_last_import_errors,
+    upsert_offer_import_errors,
+)
 
 
 @pytest.mark.gen_test
@@ -65,4 +69,16 @@ async def test_get_last_import_errors(mocker):
         '\n        SELECT\n            offer_id,\n            message\n        '
         'FROM\n            offers_last_import_error\n        WHERE\n            offer_id = ANY($1::BIGINT[])\n    ',
         [11, 22]
+    )
+
+
+@pytest.mark.gen_test
+async def test_delete_import_errors_by_offer_id(mocker):
+    # arrange & act
+    await delete_import_errors_by_offer_id([11])
+
+    # assert
+    pg.get().execute.assert_called_once_with(
+        'DELETE FROM offers_last_import_error WHERE offer_id = ANY($1::BIGINT[])',
+        [11]
     )

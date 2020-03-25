@@ -7,6 +7,7 @@ from my_offers import pg
 from my_offers.entities import OfferBillingContract
 from my_offers.mappers.billing import offer_billing_contract_mapper
 from my_offers.repositories import postgresql
+from my_offers.repositories.postgresql.billing import delete_contracts_by_offer_id
 
 
 pytestmark = pytest.mark.gen_test
@@ -131,4 +132,15 @@ async def test_set_offer_contract_is_deleted_status(mocker):
         contract_id,
         is_deleted,
         row_version,
+    )
+
+@pytest.mark.gen_test
+async def test_delete_contracts_by_offer_id(mocker):
+    # arrange & act
+    await delete_contracts_by_offer_id([11])
+
+    # assert
+    pg.get().execute.assert_called_once_with(
+        'DELETE FROM offers_billing_contracts WHERE offer_id = ANY($1::BIGINT[])',
+        [11]
     )

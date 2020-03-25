@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 import asyncpgsa
 from sqlalchemy import and_, select, update
@@ -65,3 +65,8 @@ async def get_offer_contract(offer_id: int) -> Optional[OfferBillingContract]:
     result = await pg.get().fetchrow(query, offer_id)
 
     return offer_billing_contract_mapper.map_from(dict(result)) if result else None
+
+
+async def delete_contracts_by_offer_id(offer_ids: List[int]) -> None:
+    query = 'DELETE FROM offers_billing_contracts WHERE offer_id = ANY($1::BIGINT[])'
+    await pg.get().execute(query, offer_ids)

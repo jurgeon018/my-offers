@@ -38,5 +38,4 @@ async def get_reindex_items() -> List[ReindexOfferItem]:
 
 async def delete_reindex_items(offer_ids: List[int]) -> None:
     query = 'DELETE FROM offers_reindex_queue WHERE offer_id = ANY($1::BIGINT[])'
-
     await pg.get().execute(query, offer_ids)

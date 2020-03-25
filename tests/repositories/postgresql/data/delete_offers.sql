@@ -1,1 +1,0 @@
-DELETE FROM offers where status_tab = $1 and updated_at <= $2

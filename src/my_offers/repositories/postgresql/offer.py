@@ -1,13 +1,9 @@
-from datetime import datetime
-from typing import Any, Dict, List, Optional
-import copy
-from typing import List, Optional
 from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 import asyncpgsa
 import pytz
 from sqlalchemy import and_, select, update
-from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.functions import count
 
@@ -119,12 +115,22 @@ async def get_offers_for_reindex(offer_ids: List[int]) -> List[ReindexOffer]:
     return [reindex_offer_mapper.map_from(row) for row in rows]
 
 
-async def delete_offers_older_than(days_count: int = settings.COUNT_DAYS_HOLD_DELETED_OFFERS):
+async def get_offers_id_older_than(days_count: int,
+                                   status_tab: enums.OfferStatusTab,
+                                   limit: int) -> List[int]:
     need_date = datetime.now(tz=pytz.UTC) - timedelta(days=days_count)
-    query = """DELETE FROM offers where status_tab = $1 and updated_at <= $2"""
+    query = """SELECT offer_id FROM offers where status_tab = $1 and updated_at <= $2 limit $3"""
 
-    await pg.get().execute(
+    rows = await pg.get().fetch(
         query,
-        enums.OfferStatusTab.deleted.name,
-        need_date
+        status_tab.name,
+        need_date,
+        limit
     )
+    offer_ids = [row['offer_id'] for row in rows]
+    return offer_ids
+
+
+async def delete_offers_by_id(offer_ids: List[int]) -> None:
+    query = 'DELETE FROM offers WHERE offer_id = ANY($1::BIGINT[])'
+    await pg.get().execute(query, offer_ids)

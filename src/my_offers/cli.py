@@ -6,7 +6,7 @@ from tornado.ioloop import IOLoop
 from my_offers import setup
 from my_offers.queue import consumers, queues, schemas
 from my_offers.services.offers import reindex_offers_command
-from my_offers.repositories.postgresql.offer import delete_offers_older_than
+from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.web.urls import urlpatterns
 
 
@@ -99,4 +99,4 @@ def reindex_offers() -> None:
 def clear_deleted_offer_cron() -> None:
     """Крон удаления офферов"""
     io_loop = IOLoop.current()
-    io_loop.run_sync(delete_offers_older_than)
+    io_loop.run_sync(delete_offers_data)
