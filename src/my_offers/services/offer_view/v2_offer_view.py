@@ -24,7 +24,6 @@ def v2_build_offer_view(
     """ Собирает из шарповой модели компактное представление объявления для выдачи."""
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
-    subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
     is_manual = bool(object_model.source and object_model.source.is_upload)
     archived = is_archived(object_model.flags)
     price_info = get_price_info(
@@ -55,7 +54,7 @@ def v2_build_offer_view(
         main_photo_url=main_photo_url,
         url=get_offer_url(offer_id=offer_id, offer_type=offer_type, deal_type=deal_type),
         geo=prepare_geo(geo=object_model.geo, geo_urls=geo_urls, jk_urls=enrich_data.jk_urls),
-        subagent=subagent,
+        subagent=get_subagent(),
         price_info=price_info,
         features=features,
         is_manual=is_manual,
