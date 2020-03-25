@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from simple_settings import settings
 
@@ -9,16 +9,23 @@ from my_offers.repositories.postgresql.agents import get_master_user_id
 
 async def get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
     result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
-
-    master_user_id = await get_master_user_id(user_id)
-    if master_user_id:
-        # опубликовал мастер или сотрудник и объявление назначено на сотрудника
-        result['master_user_id'] = [master_user_id, user_id]
-        result['user_id'] = user_id
-    else:
-        result['master_user_id'] = user_id
+    user_filter = await get_user_filter(user_id)
+    result.update(user_filter)
 
     return result
+
+
+async def get_user_filter(user_id: int) -> Dict[str, Any]:
+    master_user_id = await get_master_user_id(user_id)
+    user_filter: Dict[str, Any] = {}
+    if master_user_id:
+        # опубликовал мастер или сотрудник и объявление назначено на сотрудника
+        user_filter['master_user_id'] = [master_user_id, user_id]
+        user_filter['user_id'] = user_id
+    else:
+        user_filter['master_user_id'] = user_id
+
+    return user_filter
 
 
 def get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, int]:

@@ -85,3 +85,13 @@ class TestDeleteOfferAction:
                 cian_user_id=222,
             )
         )
+
+    def test__get_action_code(self):
+        # arrange
+        action = DeleteOfferAction(offer_id=111, user_id=222)
+
+        # act
+        result = action._get_action_code()
+
+        # assert
+        assert result == 'can_delete'

@@ -1,9 +1,9 @@
 from my_offers.entities import get_offers
+from my_offers.helpers import get_available_actions
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import is_archived
+from my_offers.helpers.fields import is_archived, is_manual
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view.fields import (
-    get_available_actions,
     get_features,
     get_offer_url,
     get_price_info,
@@ -25,7 +25,7 @@ def v2_build_offer_view(
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
     subagent = None  # TODO: https://jira.cian.tech/browse/CD-73807
-    is_manual = bool(object_model.source and object_model.source.is_upload)
+    manual = is_manual(object_model.source)
     archived = is_archived(object_model.flags)
     price_info = get_price_info(
         bargain_terms=object_model.bargain_terms,
@@ -58,7 +58,7 @@ def v2_build_offer_view(
         subagent=subagent,
         price_info=price_info,
         features=features,
-        is_manual=is_manual,
+        is_manual=manual,
         statistics=get_statistics(coverage=enrich_data.coverage.get(offer_id), favorites=None),
         # TODO: https://jira.cian.tech/browse/CD-76582
         archived_at=object_model.archived_date,
@@ -66,7 +66,7 @@ def v2_build_offer_view(
         available_actions=get_available_actions(
             status=object_model.status,
             is_archived=archived,
-            is_manual=is_manual,
+            is_manual=manual,
             can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
             agency_settings=enrich_data.agency_settings,
         ),

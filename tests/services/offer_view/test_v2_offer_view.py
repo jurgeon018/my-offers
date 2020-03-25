@@ -1,6 +1,7 @@
 import pytest
 
-from my_offers.entities.get_offers import ActiveInfo, AvailableActions, GetOfferV2, PageSpecificInfo, Statistics
+from my_offers.entities.available_actions import AvailableActions
+from my_offers.entities.get_offers import ActiveInfo, GetOfferV2, PageSpecificInfo, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
