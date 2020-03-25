@@ -145,6 +145,15 @@ class TestOfferAction:
             await action._run_action(mocker.sentinel.object_model)
 
     @pytest.mark.gen_test
+    async def test__get_action_code(self, mocker):
+        # arrange
+        action = OfferAction(offer_id=111, user_id=123)
+
+        # act & assert
+        with pytest.raises(NotImplementedError):
+            await action._get_action_code()
+
+    @pytest.mark.gen_test
     async def test__check_rights(self, mocker):
         # arrange
         action = OfferAction(offer_id=111, user_id=123)

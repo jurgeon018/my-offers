@@ -74,3 +74,13 @@ class TestUpdateEditDateOfferAction:
 
         # assert
         update_edit_date_mock.assert_called_once_with([111])
+
+    def test__get_action_code(self):
+        # arrange
+        action = UpdateEditDateOfferAction(offer_id=111, user_id=222)
+
+        # act
+        result = action._get_action_code()
+
+        # assert
+        assert result == 'can_update_edit_date'
