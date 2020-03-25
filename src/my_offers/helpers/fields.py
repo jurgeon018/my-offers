@@ -9,4 +9,4 @@ def is_archived(flags: Optional[Flags]) -> bool:
 
 
 def is_manual(source: Optional[Source]) -> bool:
-    return bool(source and source.is_upload)
+    return not bool(source and source.is_upload)
