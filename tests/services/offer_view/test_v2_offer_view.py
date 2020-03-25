@@ -1,6 +1,7 @@
 import pytest
 
-from my_offers.entities.get_offers import ActiveInfo, AvailableActions, GetOfferV2, PageSpecificInfo, Statistics
+from my_offers.entities.available_actions import AvailableActions
+from my_offers.entities.get_offers import ActiveInfo, GetOfferV2, PageSpecificInfo, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
@@ -38,12 +39,18 @@ def test_build_offer_view(enrich_data_mock):
         subagent=None,
         price_info=PriceInfo(exact=None, range=None),
         features=[],
-        is_manual=False,
+        is_manual=True,
         created_at=None,
         archived_at=None,
         status='Опубликовано',
         statistics=Statistics(shows=None, views=None, favorites=None),
-        available_actions=AvailableActions(can_update_edit_date=False, can_move_to_archive=False, can_delete=True),
+        available_actions=AvailableActions(
+            can_update_edit_date=False,
+            can_move_to_archive=True,
+            can_delete=True,
+            can_edit=True,
+            can_restore=True,
+        ),
         page_specific_info=PageSpecificInfo(
             active_info=ActiveInfo(
                 vas=[],
@@ -51,7 +58,8 @@ def test_build_offer_view(enrich_data_mock):
                 is_autoprolong=False,
                 is_publication_time_ends=False,
                 publish_features=[],
-                auction=None),
+                auction=None,
+            ),
             not_active_info=None,
             declined_info=None
         )

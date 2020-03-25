@@ -3,10 +3,11 @@ import logging
 from cian_http.exceptions import ApiClientException, BadRequestException, TimeoutException
 from cian_web.exceptions import BrokenRulesException, Error
 
-from my_offers import entities
+from my_offers import entities, helpers
 from my_offers.enums.offer_action_status import OfferActionStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql.object_model import get_object_model
+from my_offers.services import agencies_settings, offers
 
 
 logger = logging.getLogger(__name__)
@@ -56,9 +57,14 @@ class OfferAction:
     async def _run_action(self, object_model: ObjectModel) -> None:
         raise NotImplementedError
 
+    def _get_action_code(self) -> str:
+        raise NotImplementedError
+
     async def _load_object_model(self) -> ObjectModel:
-        object_model = await get_object_model({'offer_id': self.offer_id})
-        # todo: https://jira.cian.tech/browse/CD-76994 проверить доступ
+        offer_filter = await offers.get_user_filter(self.user_id)
+        offer_filter['offer_id'] = self.offer_id
+        object_model = await get_object_model(offer_filter)
+
         if not object_model:
             raise BrokenRulesException([
                 Error(
@@ -71,8 +77,16 @@ class OfferAction:
         return object_model
 
     async def _check_rights(self, object_model: ObjectModel) -> None:
-        # todo: https://jira.cian.tech/browse/CD-74186
-        if self.user_id != object_model.user_id:
+        agency_settings = await agencies_settings.get_settings_degradation_handler(self.user_id)
+        available_actions = helpers.get_available_actions(
+            status=object_model.status,
+            is_archived=helpers.is_archived(object_model.flags),
+            is_manual=helpers.is_manual(object_model.source),
+            can_update_edit_date=True,
+            agency_settings=agency_settings.value,
+        )
+
+        if not getattr(available_actions, self._get_action_code()):
             raise BrokenRulesException([
                 Error(
                     message='Не хватает прав для выполнения данной операции',

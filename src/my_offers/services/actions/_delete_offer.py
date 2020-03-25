@@ -13,6 +13,9 @@ class AnnouncementTypeError(Exception):
 
 
 class DeleteOfferAction(OfferAction):
+    def _get_action_code(self) -> str:
+        return 'can_delete'
+
     async def _run_action(self, object_model: ObjectModel) -> None:
         offer_type, deal_type = category.get_types(object_model.category)
         await api_announcement_set_deleted(

@@ -142,6 +142,9 @@ CREATE TABLE agents_hierarchy
     account_type         account_type,
     realty_user_id       bigint                   not null,
     master_agent_user_id bigint,
+    first_name           varchar,
+    middle_name          varchar,
+    last_name            varchar,
     created_at           timestamp with time zone not null,
     updated_at           timestamp with time zone not null
 );

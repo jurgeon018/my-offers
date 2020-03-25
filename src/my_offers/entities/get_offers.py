@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from my_offers import enums
-from my_offers.entities.offer_view_model import OfferViewModel, OfferViewModelV2
+from my_offers.entities.available_actions import AvailableActions
+from my_offers.entities.offer_view_model import OfferViewModelV2
 
 
 @dataclass
@@ -72,16 +73,6 @@ class Auction:
     """Позиция конкуренции по району"""
     home_place: Optional[int] = None
     """Позиция конкуренции по дому"""
-
-
-@dataclass
-class AvailableActions:
-    can_update_edit_date: bool
-    """Можно обновить дату"""
-    can_move_to_archive: bool
-    """Пользователь может перенести объявление в архив"""
-    can_delete: bool
-    """Можно ли удалить объялвение"""
 
 
 @dataclass

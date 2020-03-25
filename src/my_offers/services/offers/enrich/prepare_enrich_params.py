@@ -5,8 +5,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Object
 from my_offers.services.offers.enrich.enrich_data import EnrichParams
 
 
-def prepare_enrich_params(models: List[ObjectModel]) -> EnrichParams:
-    result = EnrichParams()
+def prepare_enrich_params(*, models: List[ObjectModel], user_id: int) -> EnrichParams:
+    result = EnrichParams(user_id)
 
     for model in models:
         result.add_offer_id(model.id)

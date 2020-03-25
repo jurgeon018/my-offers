@@ -31,6 +31,7 @@ cpu = 2048
 [job.save_moderation_offer_offence_consumer]
 type = "consumer"
 command = "save_moderation_offer_offence_consumer"
+memory = 128
 
 [job.save_announcement_contract_consumer]
 type = "consumer"
@@ -50,6 +51,7 @@ memory = 128
 [job.save_agent_consumer]
 type = "consumer"
 command = "save_agent_consumer"
+memory = 128
 
 [job.reindex_offers]
 type = "manage"

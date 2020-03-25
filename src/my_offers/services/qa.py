@@ -23,6 +23,6 @@ async def get_offer_view(request: QaGetByIdRequest) -> GetOfferV2:
     if not object_model:
         raise BrokenRulesException([Error(message='Not found', code='not_found', key='offer_id')])
 
-    offers, _ = await v2_get_offer_views(object_models=[object_model])
+    offers, _ = await v2_get_offer_views(object_models=[object_model], user_id=request.user_id)
 
     return offers[0]

@@ -55,3 +55,13 @@ class TestArchiveOfferAction:
 
         # assert
         v2_announcements_archive_mock.assert_called_once_with(ArchiveAnnouncementV2Request(announcement_id=111))
+
+    def test__get_action_code(self):
+        # arrange
+        action = ArchiveOfferAction(offer_id=111, user_id=222)
+
+        # act
+        result = action._get_action_code()
+
+        # assert
+        assert result == 'can_move_to_archive'
