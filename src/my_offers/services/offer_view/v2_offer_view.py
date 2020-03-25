@@ -54,7 +54,7 @@ def v2_build_offer_view(
         main_photo_url=main_photo_url,
         url=get_offer_url(offer_id=offer_id, offer_type=offer_type, deal_type=deal_type),
         geo=prepare_geo(geo=object_model.geo, geo_urls=geo_urls, jk_urls=enrich_data.jk_urls),
-        subagent=get_subagent(),
+        subagent=enrich_data.get_agent_name(object_model.published_user_id),
         price_info=price_info,
         features=features,
         is_manual=manual,

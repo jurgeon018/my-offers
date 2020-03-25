@@ -19,6 +19,7 @@ class EnrichParams:
     def __init__(self, user_id: int) -> None:
         self._offer_ids: Set[int] = set()
         self._jk_ids: Set[int] = set()
+        self._agent_ids: Set[int] = set()
         self._geo_url_params: Dict[GeoUrlKey, Dict] = defaultdict(dict)
         self._user_id = user_id
 
@@ -30,6 +31,12 @@ class EnrichParams:
 
     def get_offer_ids(self) -> List[int]:
         return list(self._offer_ids)
+
+    def add_agent_id(self, user_id: int) -> None:
+        self._agent_ids.add(user_id)
+
+    def get_agent_ids(self) -> List[int]:
+        return list(self._agent_ids)
 
     def add_jk_id(self, jk_id: int) -> None:
         self._jk_ids.add(jk_id)
@@ -101,6 +108,7 @@ class EnrichData:
     import_errors: Dict[int, str]
     moderation_info: Optional[Dict[int, OfferOffence]] = None
     agency_settings: Optional[AgencySettings] = None
+    agent_names: Optional[Dict[int, str]] = None
 
     def get_urls_by_types(
             self,
@@ -115,3 +123,9 @@ class EnrichData:
             return None
 
         return self.moderation_info.get(offer_id)
+
+    def get_agent_name(self, user_id) -> Optional[str]:
+        if not self.agent_names:
+            return None
+
+        return self.agent_names.get(user_id)
