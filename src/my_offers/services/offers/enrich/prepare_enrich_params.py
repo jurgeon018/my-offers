@@ -12,6 +12,9 @@ def prepare_enrich_params(*, models: List[ObjectModel], user_id: int) -> EnrichP
         result.add_offer_id(model.id)
         offer_type, deal_type = category.get_types(model.category)
 
+        if model.published_user_id != user_id:
+            result.add_agent_id(model.published_user_id)
+
         if geo := model.geo:
             if geo.jk and geo.jk.id:
                 result.add_jk_id(geo.jk.id)
