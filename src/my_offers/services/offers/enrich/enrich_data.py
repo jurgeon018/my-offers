@@ -109,7 +109,7 @@ class EnrichData:
     import_errors: Dict[int, str]
     moderation_info: Optional[Dict[int, OfferOffence]] = None
     agency_settings: Optional[AgencySettings] = None
-    subagents: Optional[Dict[int, str]] = None
+    subagents: Optional[Dict[int, Subagent]] = None
 
     def get_urls_by_types(
             self,

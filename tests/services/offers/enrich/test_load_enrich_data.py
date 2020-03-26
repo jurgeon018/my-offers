@@ -6,8 +6,10 @@ from cian_test_utils import future
 from mock import call
 
 from my_offers import enums
+from my_offers.entities import AgentName
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
+from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
@@ -22,6 +24,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
+    _load_subagents,
     load_enrich_data,
 )
 
@@ -418,3 +421,43 @@ async def test__load_agency_settings__no_ma__empty(mocker):
     assert result == expected
     get_master_user_id_mock.assert_called_once_with(11)
     get_settings_degradation_handler_mock.assert_not_called()
+
+
+@pytest.mark.gen_test
+async def test__load_subagents(mocker):
+    # arrange
+    get_agent_names_mock = mocker.patch(
+        f'{PATH}get_agent_names',
+        return_value=future([
+            AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm'),
+            AgentName(id=14, first_name=None, last_name=None, middle_name=None),
+        ])
+    )
+    expected = EnrichItem(key='subagents', value={12: Subagent(id=12, name='Zz Yy')}, degraded=False)
+
+    # act
+    result = await _load_subagents([1, 2])
+
+    # assert
+    assert result == expected
+    get_agent_names_mock.assert_called_once_with([1, 2])
+
+
+@pytest.mark.gen_test
+async def test__load_subagents__empty__empty(mocker):
+    # arrange
+    get_agent_names_mock = mocker.patch(
+        f'{PATH}get_agent_names',
+        return_value=future([
+            AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm'),
+            AgentName(id=14, first_name=None, last_name=None, middle_name=None),
+        ])
+    )
+    expected = EnrichItem(key='subagents', value=None, degraded=False)
+
+    # act
+    result = await _load_subagents([])
+
+    # assert
+    assert result == expected
+    get_agent_names_mock.assert_not_called()
