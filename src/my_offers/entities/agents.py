@@ -91,3 +91,28 @@ class Agent:
     """Имя"""
     last_name: Optional[str] = None
     """Фамилия"""
+
+
+@dataclass
+class AgentName:
+    id: int
+    """ID пользователя"""
+    middle_name: Optional[str]
+    """Отчетсво"""
+    first_name: Optional[str]
+    """Имя"""
+    last_name: Optional[str]
+    """Фамилия"""
+
+    def get_name(self) -> Optional[str]:
+        result = []
+        if self.first_name:
+            result.append(self.first_name)
+
+        if self.last_name:
+            result.append(self.last_name)
+
+        if not result:
+            return None
+
+        return ' '.join(result)

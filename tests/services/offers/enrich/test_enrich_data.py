@@ -4,6 +4,7 @@ import pytest
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.offer_view_model import Subagent
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, address_info
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams
 
@@ -90,3 +91,47 @@ def test_enrich_data__get_offer_offence(mocker, moderation_info, expected):
 
     # assert
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    ('user_id', 'expected'),
+    (
+        (12, Subagent(id=12, name='Zz Mm')),
+        (14, None),
+    )
+)
+def test_get_subagent(mocker, user_id, expected):
+    # arrange
+    enrich_data = EnrichData(
+        coverage={},
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+        subagents={12: Subagent(id=12, name='Zz Mm')}
+    )
+
+    # act
+    result = enrich_data.get_subagent(user_id)
+
+    # assert
+    assert result == expected
+
+
+def test_get_subagent__none__none(mocker):
+    # arrange
+    enrich_data = EnrichData(
+        coverage={},
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+    )
+
+    # act
+    result = enrich_data.get_subagent(12)
+
+    # assert
+    assert result is None
