@@ -44,3 +44,13 @@ class SaveUnloadErrorMessage:
     """Время изменения"""
     error: SaveUnloadError
     """Произошедшая ошибка"""
+
+
+@dataclass
+class AnnouncementPremoderationReportingMessage:
+    object_id: Optional[int]
+    """Id объявления"""
+    operation_id: str
+    """Operation id"""
+    date: datetime
+    """Время изменения"""
