@@ -58,6 +58,5 @@ type = "manage"
 command = "reindex-offers"
 
 [job.clear_deleted_offer_cron]
-type = "cron"
+type = "consumer"
 command = "clear-deleted-offer-cron"
-cron = "0 2 * * *"
