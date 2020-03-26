@@ -54,3 +54,5 @@ class AnnouncementPremoderationReportingMessage:
     """Operation id"""
     date: datetime
     """Время изменения"""
+    row_version: Optional[int] = None
+    """Версия записи"""

@@ -153,7 +153,9 @@ CREATE INDEX ON agents_hierarchy (master_agent_user_id NULLS LAST);
 
 create table offer_premoderations
 (
-    offer_id    bigint  not null primary key,
-    removed     boolean not null,
-    row_version bigint  not null
+    offer_id    bigint                   not null primary key,
+    removed     boolean                  not null,
+    row_version bigint                   not null,
+    created_at  timestamp with time zone not null,
+    updated_at  timestamp with time zone not null
 )

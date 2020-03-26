@@ -6,8 +6,14 @@ from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
 from my_offers.entities import AgentMessage, ModerationOfferOffence, OfferImportError
-from my_offers.queue.entities import AnnouncementMessage, SaveUnloadErrorMessage, ServiceContractMessage, \
-    AnnouncementPremoderationReportingMessage
+from my_offers.entities.moderation import OfferPremoderation
+from my_offers.queue.entities import (
+    AnnouncementMessage,
+    AnnouncementPremoderationReportingMessage,
+    SaveUnloadErrorMessage,
+    ServiceContractMessage,
+)
+from my_offers.repositories.postgresql.offer_premoderation import save_offer_premoderation
 from my_offers.services.agents import update_agents_hierarchy
 from my_offers.services.announcement import process_announcement
 from my_offers.services.billing.contracts_service import (
@@ -95,3 +101,21 @@ async def save_offer_premoderation_callback(messages: List[Message]) -> None:
     for message in messages:
         premoderation: AnnouncementPremoderationReportingMessage = message.data
 
+        with new_operation_id(premoderation.operation_id):
+            await save_offer_premoderation(OfferPremoderation(
+                offer_id=premoderation.object_id,
+                removed=False,
+                row_version=premoderation.row_version,
+            ))
+
+
+async def remove_offer_premoderation_callback(messages: List[Message]) -> None:
+    for message in messages:
+        premoderation: AnnouncementPremoderationReportingMessage = message.data
+
+        with new_operation_id(premoderation.operation_id):
+            await save_offer_premoderation(OfferPremoderation(
+                offer_id=premoderation.object_id,
+                removed=True,
+                row_version=premoderation.row_version,
+            ))
