@@ -75,3 +75,9 @@ async def test_get_agent_names(mocker):
 
     # assert
     assert result == expected
+    pg.get().fetch.assert_called_once_with(
+        '\n        SELECT\n            realty_user_id as id,\n            first_name,\n            middle_name,'
+        '\n            last_name\n        FROM\n            agents_hierarchy\n        WHERE'
+        '\n            realty_user_id = ANY($1::bigint[])\n    ',
+        [11],
+    )
