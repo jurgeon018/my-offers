@@ -11,18 +11,18 @@ from my_offers.repositories.postgresql import tables
 
 
 async def save_offer_premoderation(offer_premoderation: OfferPremoderation) -> None:
-    values = offer_premoderation_mapper.map_from(offer_premoderation)
+    values = offer_premoderation_mapper.map_to(offer_premoderation)
     now = datetime.now(tz=pytz.UTC)
     values['created_at'] = now
 
-    insert_query = insert(tables.offer_premoderation)
+    insert_query = insert(tables.offers_premoderations)
 
     query, params = asyncpgsa.compile_query(
         insert_query
         .values(values)
         .on_conflict_do_update(
-            index_elements=[tables.offer_premoderation.c.offer_id],
-            where=tables.offer_premoderation.c.row_version < insert_query.excluded.row_version,
+            index_elements=[tables.offers_premoderations.c.offer_id],
+            where=tables.offers_premoderations.c.row_version < insert_query.excluded.row_version,
             set_={
                 'removed': insert_query.excluded.removed,
                 'row_version': insert_query.excluded.row_version,

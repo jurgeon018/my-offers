@@ -97,7 +97,7 @@ register_consumer(
 
 # [moderation] объявление отмодерировано
 register_consumer(
-    command=cli.command('save_offer_premoderation_consumer'),
+    command=cli.command('remove_offer_premoderation_consumer'),
     queue=queues.announcement_premoderation_remove_queue,
     callback=consumers.remove_offer_premoderation_callback,
     schema_cls=schemas.RabbitMQAnnouncementPremoderationReportingMessageSchema,
