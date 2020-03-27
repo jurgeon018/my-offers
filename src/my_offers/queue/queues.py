@@ -6,6 +6,7 @@ from cian_enum import StrEnum
 from my_offers.helpers.queue import get_modified_queue_name
 from my_offers.queue.routing_keys import (
     AgentsReportingV1RoutingKey,
+    AnnouncementPremoderationReportingV1RoutingKey,
     AnnouncementReportingV1RoutingKey,
     ModerationOfferOffenceReportingV1RoutingKey,
     ServiceContractsReportingV1RoutingKey,
@@ -99,6 +100,26 @@ update_agents_queue = Queue(
         QueueBinding(
             exchange=Exchange('users'),
             routing_key=AgentsReportingV1RoutingKey.updated.value,
+        ),
+    ],
+)
+
+announcement_premoderation_sent_queue = Queue(
+    name=get_modified_queue_name('save_offer_premoderation'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('moderation'),
+            routing_key=AnnouncementPremoderationReportingV1RoutingKey.sent.value,
+        ),
+    ],
+)
+
+announcement_premoderation_remove_queue = Queue(
+    name=get_modified_queue_name('remove_offer_premoderation'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('moderation'),
+            routing_key=AnnouncementPremoderationReportingV1RoutingKey.remove.value,
         ),
     ],
 )

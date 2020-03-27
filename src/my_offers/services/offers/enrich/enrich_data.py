@@ -110,6 +110,7 @@ class EnrichData:
     moderation_info: Optional[Dict[int, OfferOffence]] = None
     agency_settings: Optional[AgencySettings] = None
     subagents: Optional[Dict[int, Subagent]] = None
+    premoderation_info: Optional[Set[int]] = None
 
     def get_urls_by_types(
             self,
@@ -130,3 +131,9 @@ class EnrichData:
             return None
 
         return self.subagents.get(user_id)
+
+    def on_premoderation(self, offer_id) -> bool:
+        if not self.premoderation_info:
+            return False
+
+        return offer_id in self.premoderation_info

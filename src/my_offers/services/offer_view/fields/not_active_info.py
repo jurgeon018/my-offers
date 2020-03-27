@@ -24,9 +24,16 @@ STATUSES_FOR_ARCHIVATION = {
 def get_not_active_info(
         *,
         status: Optional[Status],
-        import_error: str,
-        edit_date: Optional[datetime] = None
+        import_error: Optional[str] = None,
+        edit_date: Optional[datetime] = None,
+        on_premoderation: Optional[bool] = False,
 ) -> Optional[NotActiveInfo]:
+    if on_premoderation:
+        return NotActiveInfo(
+            status='На модерации',
+            message='Объявление будет автоматически опубликовано после проверки модератором'
+        )
+
     if import_error:
         return NotActiveInfo(status='Ошибка импорта', message=import_error)
 
