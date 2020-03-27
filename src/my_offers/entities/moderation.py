@@ -64,3 +64,13 @@ class OfferOffence:
     """Время создания нарушения"""
     updated_at: datetime
     """Время изменения нарушения"""
+
+
+@dataclass
+class OfferPremoderation:
+    offer_id: int
+    """Id объявления"""
+    removed: bool
+    """Санкция снята"""
+    row_version: int
+    """Версия записи"""

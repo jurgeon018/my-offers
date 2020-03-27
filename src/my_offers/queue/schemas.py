@@ -27,3 +27,8 @@ class RabbitMQSaveUnloadErrorMessageSchema(EntitySchema):
 class RabbitMQAgentUpdatedMessageSchema(EntitySchema):
     class Meta:
         entity = entities.AgentMessage
+
+
+class RabbitMQAnnouncementPremoderationReportingMessageSchema(EntitySchema):
+    class Meta:
+        entity = mq_entities.AnnouncementPremoderationReportingMessage

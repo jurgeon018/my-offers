@@ -86,6 +86,24 @@ register_consumer(
     dead_queue_enabled=True,
 )
 
+# [moderation] объявление отправлено на премодерацию
+register_consumer(
+    command=cli.command('save_offer_premoderation_consumer'),
+    queue=queues.announcement_premoderation_sent_queue,
+    callback=consumers.save_offer_premoderation_callback,
+    schema_cls=schemas.RabbitMQAnnouncementPremoderationReportingMessageSchema,
+    dead_queue_enabled=True,
+)
+
+# [moderation] объявление отмодерировано
+register_consumer(
+    command=cli.command('remove_offer_premoderation_consumer'),
+    queue=queues.announcement_premoderation_remove_queue,
+    callback=consumers.remove_offer_premoderation_callback,
+    schema_cls=schemas.RabbitMQAnnouncementPremoderationReportingMessageSchema,
+    dead_queue_enabled=True,
+)
+
 
 @cli.command()
 def reindex_offers() -> None:
