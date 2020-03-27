@@ -24,7 +24,7 @@ STATUSES_FOR_ARCHIVATION = {
 def get_not_active_info(
         *,
         status: Optional[Status],
-        import_error: str,
+        import_error: Optional[str] = None,
         edit_date: Optional[datetime] = None,
         on_premoderation: Optional[bool] = False,
 ) -> Optional[NotActiveInfo]:

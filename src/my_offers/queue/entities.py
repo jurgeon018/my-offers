@@ -48,11 +48,11 @@ class SaveUnloadErrorMessage:
 
 @dataclass
 class AnnouncementPremoderationReportingMessage:
-    object_id: Optional[int]
+    object_id: int
     """Id объявления"""
     operation_id: str
     """Operation id"""
     date: datetime
     """Время изменения"""
-    row_version: Optional[int] = None
+    row_version: int
     """Версия записи"""

@@ -24,6 +24,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
+    _load_premoderation_info,
     _load_subagents,
     load_enrich_data,
 )
@@ -468,3 +469,22 @@ async def test__load_subagents__empty__empty(mocker):
     # assert
     assert result == expected
     get_agent_names_mock.assert_not_called()
+
+
+@pytest.mark.gen_test
+async def test__load_premoderation_info(mocker):
+    # arrange
+    expected = EnrichItem(key='premoderation_info', value={11}, degraded=False)
+
+    get_offer_premoderations_mock = mocker.patch(
+        f'{PATH}get_offer_premoderations',
+        return_value=future([11])
+    )
+
+    # act
+    result = await _load_premoderation_info([11, 22])
+
+    # assert
+    assert result == expected
+
+    get_offer_premoderations_mock.assert_called_once_with([11, 22])
