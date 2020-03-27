@@ -1,9 +1,9 @@
 from datetime import datetime
+from typing import List
 
 import asyncpgsa
 import pytz
 from sqlalchemy.dialects.postgresql import insert
-from typing import Dict, List
 
 from my_offers import pg
 from my_offers.entities.moderation import OfferPremoderation

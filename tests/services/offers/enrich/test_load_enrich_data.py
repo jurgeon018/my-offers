@@ -81,6 +81,10 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_subagents',
         return_value=future(EnrichItem(key='subagents', degraded=False, value=None)),
     )
+    load_premoderation_info_mock = mocker.patch(
+        f'{PATH}_load_premoderation_info',
+        return_value=future(EnrichItem(key='premoderation_info', degraded=False, value=None)),
+    )
 
     expected = (
         EnrichData(
@@ -93,6 +97,7 @@ async def test_load_enrich_data(mocker):
             import_errors={},
             agency_settings=None,
             subagents=None,
+            premoderation_info=None,
         ),
         {
             'agency_settings': False,
@@ -104,6 +109,7 @@ async def test_load_enrich_data(mocker):
             'import_errors': False,
             'moderation_info': False,
             'subagents': False,
+            'premoderation_info': False,
         }
     )
 
@@ -127,6 +133,7 @@ async def test_load_enrich_data(mocker):
     load_moderation_info_mock.assert_called_once_with([11])
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
+    load_premoderation_info_mock.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
