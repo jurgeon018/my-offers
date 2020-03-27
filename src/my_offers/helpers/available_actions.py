@@ -13,7 +13,7 @@ def get_available_actions(
         *,
         is_archived: bool,
         is_manual: bool,
-        status: Status,
+        status: Optional[Status],
         can_update_edit_date: bool,
         agency_settings: Optional[AgencySettings],
 ) -> entities.AvailableActions:
@@ -25,11 +25,14 @@ def get_available_actions(
     # Дополнительно доступ для иерархии:
     # https://docs.google.com/spreadsheets/d/1QPcPU4vxK1_PBj1HXcsYsQk9iL07kiF8pC_kcsMLU3k/edit#gid=174751677
 
+    if not status:
+        status = Status.deleted
+
     if not is_manual:
-        can_edit = agency_settings.can_sub_agents_edit_offers_from_xml if agency_settings else False,
+        can_edit = agency_settings.can_sub_agents_edit_offers_from_xml if agency_settings else False
         return entities.AvailableActions(
             can_edit=not is_archived and can_edit,
-            can_raise=status.is_published and can_edit,
+            can_raise=not is_archived and status.is_published and can_edit,
             can_delete=False,
             can_restore=False,
             can_update_edit_date=False,
@@ -38,9 +41,9 @@ def get_available_actions(
 
     return entities.AvailableActions(
         can_edit=not is_archived and not status.is_removed_by_moderator,
-        can_raise=status.is_published,
+        can_raise=not is_archived and status.is_published,
         can_delete=status in CAN_DELETE_STATUSES,
-        can_restore=is_archived,
-        can_update_edit_date=status.is_published and can_update_edit_date,
+        can_restore=is_archived and not status.is_removed_by_moderator,
+        can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
     )

@@ -14,24 +14,37 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_delete=False,
             can_edit=True,
             can_restore=False,
+            can_raise=False,
         )
     ),
     (
         True, True, Status.published, True, AvailableActions(
-            can_update_edit_date=True,
+            can_update_edit_date=False,
             can_move_to_archive=False,
             can_delete=True,
-            can_edit=True,
+            can_edit=False,
             can_restore=True,
+            can_raise=False,
         )
     ),
     (
         True, False, Status.published, True, AvailableActions(
+            can_edit=False,
+            can_restore=False,
             can_update_edit_date=False,
             can_move_to_archive=False,
             can_delete=False,
+            can_raise=False,
+        )
+    ),
+    (
+        False, True, Status.published, True, AvailableActions(
+            can_update_edit_date=True,
+            can_move_to_archive=True,
+            can_delete=True,
             can_edit=True,
             can_restore=False,
+            can_raise=True,
         )
     ),
     (
@@ -40,16 +53,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_move_to_archive=True,
             can_delete=True,
             can_edit=True,
-            can_restore=True,
-        )
-    ),
-    (
-        False, True, Status.published, True, AvailableActions(
-            can_update_edit_date=True,
-            can_move_to_archive=True,
-            can_delete=True,
-            can_edit=True,
-            can_restore=True,
+            can_restore=False,
+            can_raise=True,
         )
     ),
 ])
@@ -80,6 +85,7 @@ def test_get_available_actions__no_settings__actions():
         can_delete=False,
         can_edit=False,
         can_restore=False,
+        can_raise=False,
     )
 
     # act
