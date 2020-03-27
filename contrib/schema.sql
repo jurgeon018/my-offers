@@ -158,4 +158,6 @@ create table offers_premoderations
     row_version bigint                   not null,
     created_at  timestamp with time zone not null,
     updated_at  timestamp with time zone
-)
+);
+
+CREATE INDEX ON offers_premoderations(offer_id, removed);
