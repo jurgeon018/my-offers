@@ -1,94 +1,82 @@
 from datetime import datetime
 
 import pytest
+import pytz
 from freezegun import freeze_time
-from simple_settings.utils import settings_stub
 
 from my_offers.entities.get_offers import NotActiveInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 from my_offers.services.offer_view.fields import get_not_active_info
 
 
-TODAY = datetime(2020, 3, 12, 5)
-EDIT_DAY = datetime(2020, 3, 10, 10)
-CHECK_STR = '28 дней'
-
+@freeze_time('2020-03-01 5:00')
 @pytest.mark.parametrize(
-    ('status', 'import_error', 'edit_date', 'now', 'expected'),
+    ('status', 'import_error', 'archive_date', 'expected'),
     (
-        (None, 'zzzz', None, TODAY, NotActiveInfo(status='Ошибка импорта', message='zzzz')),
-        (None, None, None, TODAY, None),
-        (Status.draft, None, None, TODAY, NotActiveInfo(status='Черновик', message=None)),
-        (Status.deactivated, None, None, TODAY, NotActiveInfo(status='Снято с публикации')),
-        (Status.published, None, None, TODAY, None),
+        (None, 'zzzz', None, NotActiveInfo(status='Ошибка импорта', message='zzzz')),
+        (None, None, None, None),
+        (Status.draft, None, None, NotActiveInfo(status='Черновик', message=None)),
+        (Status.deactivated, None, None, NotActiveInfo(status='Снято с публикации')),
+        (Status.published, None, None, None),
         (
             Status.deactivated,
             None,
-            datetime(2019, 3, 10, 10),
-            TODAY,
+            datetime(2019, 3, 31, 5, tzinfo=pytz.UTC),
             NotActiveInfo(status='Снято с публикации', message=None)
         ),
         (
             Status.deactivated,
             None,
-            EDIT_DAY,
-            TODAY,
-            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_STR}')
+            datetime(2020, 3, 10, 10, tzinfo=pytz.UTC),
+            NotActiveInfo(status='Снято с публикации', message=f'Будет автоматически перенесено в архив через 9 дней')
         ),
         (
             Status.deleted,
             None,
-            EDIT_DAY,
-            TODAY,
-            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_STR}')
+            datetime(2020, 3, 10, 10, tzinfo=pytz.UTC),
+            NotActiveInfo(status='Снято с публикации', message=f'Будет автоматически перенесено в архив через 9 дней')
         ),
         (
             Status.removed_by_moderator,
             None,
-            EDIT_DAY,
-            TODAY,
-            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_STR}')
+            datetime(2020, 3, 10, 10, tzinfo=pytz.UTC),
+            NotActiveInfo(status='Снято с публикации', message=f'Будет автоматически перенесено в архив через 9 дней')
         ),
         (
             Status.refused,
             None,
-            EDIT_DAY,
-            TODAY,
-            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_STR}')
+            datetime(2020, 3, 10, 10, tzinfo=pytz.UTC),
+            NotActiveInfo(status='Снято с публикации', message=f'Будет автоматически перенесено в архив через 9 дней')
         ),
         (
             Status.sold,
             None,
-            EDIT_DAY,
-            TODAY,
-            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_STR}')
+            datetime(2020, 3, 10, 10, tzinfo=pytz.UTC),
+            NotActiveInfo(status='Снято с публикации', message=f'Будет автоматически перенесено в архив через 9 дней')
         ),
         (
             Status.moderate,
             None,
-            EDIT_DAY,
-            TODAY,
-            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_STR}')
+            datetime(2020, 3, 10, 10, tzinfo=pytz.UTC),
+            NotActiveInfo(status='Снято с публикации', message=f'Будет автоматически перенесено в архив через 9 дней')
         ),
         (
             Status.blocked,
             None,
-            EDIT_DAY,
-            TODAY,
-            NotActiveInfo(status='Снято с публикации', message=f'До автоматического удаления осталось {CHECK_STR}')
+            datetime(2020, 3, 10, 10, tzinfo=pytz.UTC),
+            NotActiveInfo(status='Снято с публикации', message=f'Будет автоматически перенесено в архив через 9 дней')
         ),
     )
 )
-def test_get_not_active_info(mocker, status, import_error, edit_date, now, expected):
+def test_get_not_active_info(status, import_error, archive_date, expected):
     # arrange
 
     # act
-    with settings_stub(DAYS_BEFORE_ARCHIVATION=30), freeze_time(now):
-        result = get_not_active_info(
-            status=status,
-            import_error=import_error,
-            edit_date=edit_date
-        )
+    result = get_not_active_info(
+        status=status,
+        import_error=import_error,
+        archive_date=archive_date
+    )
 
     # assert
     assert result == expected

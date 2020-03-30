@@ -1,6 +1,9 @@
 from collections import defaultdict
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import Any, Dict, List, NamedTuple, Optional, Set
+
+from simple_settings import settings
 
 from my_offers import entities, enums
 from my_offers.entities.enrich import AddressUrlParams
@@ -111,6 +114,7 @@ class EnrichData:
     agency_settings: Optional[AgencySettings] = None
     subagents: Optional[Dict[int, Subagent]] = None
     premoderation_info: Optional[Set[int]] = None
+    archive_date: Optional[Dict[int, datetime]] = None
 
     def get_urls_by_types(
             self,
@@ -137,3 +141,13 @@ class EnrichData:
             return False
 
         return offer_id in self.premoderation_info
+
+    def get_archive_date(self, offer_id):
+        if not self.archive_date:
+            return None
+
+        updated_at = self.archive_date.get(offer_id)
+        if not updated_at:
+            return None
+
+        return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
