@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytest
+from cian_helpers.timezone import TIMEZONE
 from cian_test_utils import future
 
 from my_offers.entities import GetOffersPrivateRequest
@@ -213,7 +214,7 @@ async def test_v2_get_offer_views(mocker):
                 price_info=PriceInfo(exact=None, range=None),
                 features=[],
                 is_manual=True,
-                created_at=datetime(2020, 2, 11, 17, 0),
+                created_at=TIMEZONE.localize(datetime(2020, 2, 11, 17, 0)),
                 id=111,
                 archived_at=None,
                 status='Опубликовано',

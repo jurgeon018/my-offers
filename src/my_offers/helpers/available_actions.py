@@ -16,6 +16,7 @@ def get_available_actions(
         status: Optional[Status],
         can_update_edit_date: bool,
         agency_settings: Optional[AgencySettings],
+        is_in_hidden_base: Optional[bool],
 ) -> entities.AvailableActions:
     # Возможные действия
     # Активные: Удалить, Перенести в архив, Редактировать, Поднять
@@ -43,7 +44,24 @@ def get_available_actions(
         can_edit=not is_archived and not status.is_removed_by_moderator,
         can_raise=not is_archived and status.is_published,
         can_delete=status in CAN_DELETE_STATUSES,
-        can_restore=is_archived and not status.is_removed_by_moderator,
+        can_restore=_can_restore(
+            is_archived=is_archived,
+            is_removed_by_moderator=status.is_removed_by_moderator,
+            is_in_hidden_base=is_in_hidden_base,
+        ),
         can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
     )
+
+
+def _can_restore(*, is_archived: bool, is_removed_by_moderator: bool, is_in_hidden_base: Optional[bool]) -> bool:
+    if is_in_hidden_base:
+        return False
+
+    if is_removed_by_moderator:
+        return False
+
+    if not is_archived:
+        return False
+
+    return True
