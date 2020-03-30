@@ -53,8 +53,3 @@ async def get_last_import_errors(offer_ids: List[int]) -> Dict[int, str]:
     rows = await pg.get().fetch(query, offer_ids)
 
     return {row['offer_id']: row['message'] for row in rows}
-
-
-async def delete_import_errors_by_offer_id(offer_ids: List[int]) -> None:
-    query = 'DELETE FROM offers_last_import_error WHERE offer_id = ANY($1::BIGINT[])'
-    await pg.get().execute(query, offer_ids)

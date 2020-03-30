@@ -52,8 +52,3 @@ async def get_offers_offence(*, offer_ids: List[int], status: ModerationOffenceS
     rows = await pg.get().fetch(sql, *params)
 
     return [offer_offence_mapper.map_from(row) for row in rows]
-
-
-async def delete_offers_offence_by_offer_id(offer_ids: List[int]) -> None:
-    query = 'DELETE FROM offers_offences WHERE offer_id = ANY($1::BIGINT[])'
-    await pg.get().execute(query, offer_ids)

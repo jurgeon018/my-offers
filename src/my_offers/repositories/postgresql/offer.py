@@ -131,8 +131,3 @@ async def get_offers_id_older_than(
     )
     offer_ids = [row['offer_id'] for row in rows]
     return offer_ids
-
-
-async def delete_offers_by_id(offer_ids: List[int]) -> None:
-    query = 'DELETE FROM offers WHERE offer_id = ANY($1::BIGINT[])'
-    await pg.get().execute(query, offer_ids)

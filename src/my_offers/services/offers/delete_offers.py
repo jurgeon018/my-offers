@@ -5,20 +5,20 @@ import pytz
 from simple_settings import settings
 
 from my_offers import enums, pg
-from my_offers.repositories.postgresql.billing import delete_contracts_by_offer_id
-from my_offers.repositories.postgresql.moderation import delete_offers_offence_by_offer_id
-from my_offers.repositories.postgresql.offer import delete_offers_by_id, get_offers_id_older_than
-from my_offers.repositories.postgresql.offer_import_error import delete_import_errors_by_offer_id
-from my_offers.repositories.postgresql.offers_reindex_queue import delete_reindex_items
 from my_offers.repositories.postgresql import tables
+from my_offers.repositories.postgresql.delete import delete_rows_by_offer_id
+from my_offers.repositories.postgresql.offer import get_offers_id_older_than
 
-TABLES_TO_DELETE = [
-    tables.offers.name,
-    tables.offers_billing_contracts.name,
-    tables.offers_last_import_error.name,
-    tables.offers_offences.name,
-    tables.offers_
-]
+
+TABLES_TO_DELETE = (
+    tables.offers,
+    tables.offers_billing_contracts,
+    tables.offers_last_import_error,
+    tables.offers_offences,
+    tables.offers_reindex_queue,
+    tables.offers_premoderations,
+)
+
 
 async def delete_offers_data() -> None:
     while True:
@@ -32,10 +32,10 @@ async def delete_offers_data() -> None:
         )
         if offers_to_delete:
             async with pg.get().transaction():
-                await delete_offers_by_id(offers_to_delete)
-                await delete_contracts_by_offer_id(offers_to_delete)
-                await delete_import_errors_by_offer_id(offers_to_delete)
-                await delete_offers_offence_by_offer_id(offers_to_delete)
-                await delete_reindex_items(offers_to_delete)
+                for table in TABLES_TO_DELETE:
+                    await delete_rows_by_offer_id(
+                        table=table,
+                        offer_ids=offers_to_delete
+                    )
         else:
             await asyncio.sleep(settings.TIMEOUT_BETWEEN_DELETE_OFFERS)

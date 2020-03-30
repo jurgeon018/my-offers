@@ -6,6 +6,7 @@ from freezegun.api import FakeDatetime
 from simple_settings.utils import settings_stub
 
 from my_offers import enums
+from my_offers.repositories.postgresql import tables
 from my_offers.services.offers.delete_offers import delete_offers_data
 
 
@@ -46,25 +47,16 @@ class TestDeleteOffersService:
                 Exception(),
             ]
         )
-        delete_offers_by_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_offers_by_id',
-            return_value=future(None)
-        )
-        delete_contracts_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_contracts_by_offer_id',
-            return_value=future(None)
-        )
-        delete_import_errors_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_import_errors_by_offer_id',
-            return_value=future(None)
-        )
-        delete_offers_offence_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_offers_offence_by_offer_id',
-            return_value=future(None)
-        )
-        delete_reindex_items_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_reindex_items',
-            return_value=future(None)
+        delete_rows_by_offer_id_mock = mocker.patch(
+            'my_offers.services.offers.delete_offers.delete_rows_by_offer_id',
+            side_effect=(
+                future(),
+                future(),
+                future(),
+                future(),
+                future(),
+                future(),
+            )
         )
 
         # act
@@ -73,11 +65,32 @@ class TestDeleteOffersService:
 
         # assert
         get_offers_id_older_than_mock.assert_called()
-        delete_contracts_by_offer_id_mock.assert_called_once_with(offers_to_delete)
-        delete_offers_by_id_mock.assert_called_once_with(offers_to_delete)
-        delete_import_errors_by_offer_id_mock.assert_called_once_with(offers_to_delete)
-        delete_offers_offence_by_offer_id_mock.assert_called_once_with(offers_to_delete)
-        delete_reindex_items_mock.assert_called_once_with(offers_to_delete)
+        delete_rows_by_offer_id_mock.assert_has_calls([
+            mocker.call(
+                table=tables.offers,
+                offer_ids=offers_to_delete
+            ),
+            mocker.call(
+                table=tables.offers_billing_contracts,
+                offer_ids=offers_to_delete
+            ),
+            mocker.call(
+                table=tables.offers_last_import_error,
+                offer_ids=offers_to_delete
+            ),
+            mocker.call(
+                table=tables.offers_offences,
+                offer_ids=offers_to_delete
+            ),
+            mocker.call(
+                table=tables.offers_reindex_queue,
+                offer_ids=offers_to_delete
+            ),
+            mocker.call(
+                table=tables.offers_premoderations,
+                offer_ids=offers_to_delete
+            ),
+        ])
 
     @pytest.mark.gen_test
     async def test_no_data__sleep(self, mocker):
@@ -89,24 +102,8 @@ class TestDeleteOffersService:
                 Exception(),
             ]
         )
-        delete_offers_by_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_offers_by_id',
-            return_value=future(None)
-        )
-        delete_contracts_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_contracts_by_offer_id',
-            return_value=future(None)
-        )
-        delete_import_errors_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_import_errors_by_offer_id',
-            return_value=future(None)
-        )
-        delete_offers_offence_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_offers_offence_by_offer_id',
-            return_value=future(None)
-        )
-        delete_reindex_items_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_reindex_items',
+        delete_rows_by_offer_id_mock = mocker.patch(
+            'my_offers.services.offers.delete_offers.delete_rows_by_offer_id',
             return_value=future(None)
         )
 
@@ -121,9 +118,5 @@ class TestDeleteOffersService:
 
         # assert
         get_offers_id_older_than_mock.assert_called()
-        delete_offers_by_id_mock.assert_not_called()
-        delete_contracts_by_offer_id_mock.assert_not_called()
-        delete_import_errors_by_offer_id_mock.assert_not_called()
-        delete_offers_offence_by_offer_id_mock.assert_not_called()
-        delete_reindex_items_mock.assert_not_called()
+        delete_rows_by_offer_id_mock.assert_not_called()
         sleep_mock.assert_called_with(77)
