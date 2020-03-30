@@ -1,11 +1,41 @@
+import freezegun
 import pytest
+import pytz
 from cian_test_utils import future
+from freezegun.api import FakeDatetime
 from simple_settings.utils import settings_stub
 
+from my_offers import enums
 from my_offers.services.offers.delete_offers import delete_offers_data
 
 
 class TestDeleteOffersService:
+    @pytest.mark.gen_test
+    @freezegun.freeze_time('2020-03-05 09:00:00.303690+00:00')
+    async def test_right_params_in_get_offers_id_older_than(self, mocker):
+
+        get_offers_id_older_than_mock = mocker.patch(
+            'my_offers.services.offers.delete_offers.get_offers_id_older_than',
+            side_effect=[
+                future([888, 999]),
+                Exception(),
+            ]
+        )
+
+        # act
+        with settings_stub(
+                COUNT_DAYS_HOLD_DELETED_OFFERS=10,
+                COUNT_OFFERS_DELETE_IN_ONE_TIME=50
+        ), pytest.raises(Exception):
+            await delete_offers_data()
+
+        # assert
+        get_offers_id_older_than_mock.assert_called_with(
+            date=FakeDatetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
+            status_tab=enums.OfferStatusTab.deleted,
+            limit=50,
+        )
+
     @pytest.mark.gen_test
     async def test_has_data__process(self, mocker):
         offers_to_delete = [888, 999]

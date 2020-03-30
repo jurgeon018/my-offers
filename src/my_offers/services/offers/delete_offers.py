@@ -1,5 +1,7 @@
 import asyncio
+from datetime import datetime, timedelta
 
+import pytz
 from simple_settings import settings
 
 from my_offers import enums, pg
@@ -12,8 +14,11 @@ from my_offers.repositories.postgresql.offers_reindex_queue import delete_reinde
 
 async def delete_offers_data() -> None:
     while True:
+        need_date = datetime.now(tz=pytz.UTC) - timedelta(
+            days=settings.COUNT_DAYS_HOLD_DELETED_OFFERS
+        )
         offers_to_delete = await get_offers_id_older_than(
-            days_count=settings.COUNT_DAYS_HOLD_DELETED_OFFERS,
+            date=need_date,
             status_tab=enums.OfferStatusTab.deleted,
             limit=settings.COUNT_OFFERS_DELETE_IN_ONE_TIME
         )

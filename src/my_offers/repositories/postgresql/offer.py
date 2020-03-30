@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import asyncpgsa
@@ -117,17 +117,16 @@ async def get_offers_for_reindex(offer_ids: List[int]) -> List[ReindexOffer]:
 
 async def get_offers_id_older_than(
         *,
-        days_count: int,
+        date: datetime,
         status_tab: enums.OfferStatusTab,
         limit: int
 ) -> List[int]:
-    need_date = datetime.now(tz=pytz.UTC) - timedelta(days=days_count)
     query = """SELECT offer_id FROM offers where status_tab = $1 and updated_at <= $2 limit $3"""
 
     rows = await pg.get().fetch(
         query,
         status_tab.name,
-        need_date,
+        date,
         limit
     )
     offer_ids = [row['offer_id'] for row in rows]

@@ -1,10 +1,8 @@
 from datetime import datetime
 
-import freezegun
 import pytest
 import pytz
 from cian_test_utils import future
-from freezegun.api import FakeDatetime
 
 from my_offers import enums, pg
 from my_offers.entities import Offer
@@ -56,7 +54,6 @@ async def test_get_offer_by_id(mocker, row, expected):
 
 
 @pytest.mark.gen_test
-@freezegun.freeze_time('2020-03-05 09:00:00.303690+00:00')
 async def test_get_offers_id_older_than(mocker):
     # arrange
     pg.get().fetch.return_value = future([
@@ -67,7 +64,7 @@ async def test_get_offers_id_older_than(mocker):
 
     # act
 
-    result = await get_offers_id_older_than(days_count=10,
+    result = await get_offers_id_older_than(date=datetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
                                             status_tab=enums.OfferStatusTab.deleted,
                                             limit=5)
 
@@ -76,6 +73,6 @@ async def test_get_offers_id_older_than(mocker):
     pg.get().fetch.assert_called_once_with(
         'SELECT offer_id FROM offers where status_tab = $1 and updated_at <= $2 limit $3',
         'deleted',
-        FakeDatetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
+        datetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
         5,
     )
