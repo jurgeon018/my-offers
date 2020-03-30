@@ -113,3 +113,11 @@ async def get_offers_for_reindex(offer_ids: List[int]) -> List[ReindexOffer]:
     rows = await pg.get().fetch(query, offer_ids)
 
     return [reindex_offer_mapper.map_from(row) for row in rows]
+
+
+async def get_offers_update_at(offer_ids: List[int]) -> Dict[int, datetime]:
+    query = 'SELECT offer_id, updated_at FROM offers WHERE offer_id = ANY($1::BIGINT[])'
+
+    rows = await pg.get().fetch(query, offer_ids)
+
+    return {row['offer_id']: row['updated_at'] for row in rows}

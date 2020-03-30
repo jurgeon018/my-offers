@@ -17,7 +17,7 @@ def get_page_specific_info(*, object_model: ObjectModel, enrich_data: EnrichData
         result.not_active_info = get_not_active_info(
             status=object_model.status,
             import_error=enrich_data.import_errors.get(offer_id),
-            edit_date=object_model.edit_date,
+            archive_date=enrich_data.get_archive_date(offer_id),
             on_premoderation=enrich_data.on_premoderation(offer_id)
         )
     elif status_tab.is_declined:
