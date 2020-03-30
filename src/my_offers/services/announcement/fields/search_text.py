@@ -9,6 +9,7 @@ def get_search_text(object_model: ObjectModel) -> str:
     result.append(object_model.description)
 
     for phone in object_model.phones:
+        # TODO: https://jira.cian.tech/browse/CD-77625
         if phone.country_code and phone.number:
             result.append(phone.country_code + phone.number)
         if source_phone := phone.source_phone:
