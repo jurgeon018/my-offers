@@ -10,7 +10,15 @@ from my_offers.repositories.postgresql.moderation import delete_offers_offence_b
 from my_offers.repositories.postgresql.offer import delete_offers_by_id, get_offers_id_older_than
 from my_offers.repositories.postgresql.offer_import_error import delete_import_errors_by_offer_id
 from my_offers.repositories.postgresql.offers_reindex_queue import delete_reindex_items
+from my_offers.repositories.postgresql import tables
 
+TABLES_TO_DELETE = [
+    tables.offers.name,
+    tables.offers_billing_contracts.name,
+    tables.offers_last_import_error.name,
+    tables.offers_offences.name,
+    tables.offers_
+]
 
 async def delete_offers_data() -> None:
     while True:
