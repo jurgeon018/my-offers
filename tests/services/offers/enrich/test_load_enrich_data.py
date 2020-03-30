@@ -17,6 +17,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.address_info 
 from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem, EnrichParams
 from my_offers.services.offers.enrich.load_enrich_data import (
     _load_agency_settings,
+    _load_archive_date,
     _load_auctions,
     _load_can_update_edit_dates,
     _load_coverage,
@@ -86,6 +87,10 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_premoderation_info',
         return_value=future(EnrichItem(key='premoderation_info', degraded=False, value=None)),
     )
+    load_archive_date_mock = mocker.patch(
+        f'{PATH}_load_archive_date',
+        return_value=future(EnrichItem(key='archive_date', degraded=False, value=None)),
+    )
 
     expected = (
         EnrichData(
@@ -99,6 +104,7 @@ async def test_load_enrich_data(mocker):
             agency_settings=None,
             subagents=None,
             premoderation_info=None,
+            archive_date=None,
         ),
         {
             'agency_settings': False,
@@ -111,6 +117,7 @@ async def test_load_enrich_data(mocker):
             'moderation_info': False,
             'subagents': False,
             'premoderation_info': False,
+            'archive_date': False,
         }
     )
 
@@ -135,6 +142,7 @@ async def test_load_enrich_data(mocker):
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_premoderation_info_mock.assert_called_once_with([11])
+    load_archive_date_mock.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -488,3 +496,20 @@ async def test__load_premoderation_info(mocker):
     assert result == expected
 
     get_offer_premoderations_mock.assert_called_once_with([11, 22])
+
+
+@pytest.mark.gen_test
+async def test__load_archive_date(mocker):
+    # arrange
+    get_offers_update_at_mock = mocker.patch(
+        f'{PATH}get_offers_update_at',
+        return_value=future({1: datetime(2020, 3, 30)})
+    )
+    expected = EnrichItem(key='archive_date', value={1: datetime(2020, 3, 30)}, degraded=False)
+
+    # act
+    result = await _load_archive_date([1])
+
+    # assert
+    assert result == expected
+    get_offers_update_at_mock.assert_called_once_with([1])
