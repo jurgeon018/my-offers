@@ -74,6 +74,7 @@ async def test_v2_get_offers_public(mocker):
             can_delete=False,
             can_edit=True,
             can_restore=True,
+            can_raise=True,
         ),
         page_specific_info=PageSpecificInfo(),
     )
@@ -217,11 +218,12 @@ async def test_v2_get_offer_views(mocker):
                 archived_at=None,
                 status='Опубликовано',
                 available_actions=AvailableActions(
+                    can_edit=True,
+                    can_restore=False,
                     can_update_edit_date=False,
                     can_move_to_archive=True,
                     can_delete=True,
-                    can_edit=True,
-                    can_restore=True,
+                    can_raise=True
                 ),
                 statistics=Statistics(shows=None, views=None, favorites=None),
                 page_specific_info=PageSpecificInfo(
