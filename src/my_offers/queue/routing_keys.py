@@ -73,3 +73,10 @@ class AgentsReportingV1RoutingKey(StrEnum):
 
     updated = 'agent-reporting.v1.changed'
     """Агент изменен"""
+
+
+class AnnouncementPremoderationReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    sent = 'announcement-premoderation-reporting.v1.sent'
+    remove = 'announcement-premoderation-reporting.v1.remove'

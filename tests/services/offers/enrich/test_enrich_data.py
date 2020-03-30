@@ -135,3 +135,29 @@ def test_get_subagent__none__none(mocker):
 
     # assert
     assert result is None
+
+
+@pytest.mark.parametrize(
+    ('offer_id', 'expected'),
+    (
+        (12, True),
+        (14, False),
+    )
+)
+def test_on_premoderation(mocker, offer_id, expected):
+    # arrange
+    enrich_data = EnrichData(
+        coverage={},
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+        premoderation_info={12, 55}
+    )
+
+    # act
+    result = enrich_data.on_premoderation(offer_id)
+
+    # assert
+    assert result == expected

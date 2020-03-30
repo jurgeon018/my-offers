@@ -83,13 +83,26 @@ def test_get_not_active_info(mocker, status, import_error, edit_date, now, expec
     # arrange
 
     # act
-    with settings_stub(DAYS_BEFORE_ARCHIVATION=30):
-        with freeze_time(now):
-            result = get_not_active_info(
-                status=status,
-                import_error=import_error,
-                edit_date=edit_date
-            )
+    with settings_stub(DAYS_BEFORE_ARCHIVATION=30), freeze_time(now):
+        result = get_not_active_info(
+            status=status,
+            import_error=import_error,
+            edit_date=edit_date
+        )
+
+    # assert
+    assert result == expected
+
+
+def test_get_not_active_info__premoderation__premoderation():
+    # arrange
+    expected = NotActiveInfo(
+        status='На модерации',
+        message='Объявление будет автоматически опубликовано после проверки модератором'
+    )
+
+    # act
+    result = get_not_active_info(status=None, on_premoderation=True)
 
     # assert
     assert result == expected

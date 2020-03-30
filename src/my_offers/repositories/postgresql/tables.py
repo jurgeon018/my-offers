@@ -107,3 +107,13 @@ agents_hierarchy = sa.Table(
     sa.Column('middle_name', sa.VARCHAR, nullable=True),
     sa.Column('last_name', sa.VARCHAR, nullable=True),
 )
+
+offers_premoderations = sa.Table(
+    'offers_premoderations',
+    _metadata,
+    sa.Column('offer_id', sa.BIGINT, primary_key=True),
+    sa.Column('removed', sa.BOOLEAN, nullable=False),
+    sa.Column('row_version', sa.BIGINT, nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP, nullable=True),
+)

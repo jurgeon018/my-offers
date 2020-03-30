@@ -150,3 +150,14 @@ CREATE TABLE agents_hierarchy
 );
 CREATE UNIQUE INDEX ON agents_hierarchy (realty_user_id);
 CREATE INDEX ON agents_hierarchy (master_agent_user_id NULLS LAST);
+
+create table offers_premoderations
+(
+    offer_id    bigint                   not null primary key,
+    removed     boolean                  not null,
+    row_version bigint                   not null,
+    created_at  timestamp with time zone not null,
+    updated_at  timestamp with time zone
+);
+
+CREATE INDEX ON offers_premoderations(offer_id, removed);
