@@ -1,6 +1,9 @@
+from datetime import datetime
 from unittest import mock
 
 import pytest
+import pytz
+from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
@@ -158,6 +161,34 @@ def test_on_premoderation(mocker, offer_id, expected):
 
     # act
     result = enrich_data.on_premoderation(offer_id)
+
+    # assert
+    assert result == expected
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize(
+    ('offer_id', 'expected'),
+    (
+        (1, datetime(2020, 4, 29, tzinfo=pytz.UTC)),
+        (4, None),
+    )
+)
+async def test_get_archive_date(mocker, offer_id, expected):
+    # arrange
+    enrich_data = EnrichData(
+        coverage={},
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+        archive_date={1: datetime(2020, 3, 30, tzinfo=pytz.UTC)}
+    )
+
+    # act
+    with settings_stub(DAYS_BEFORE_ARCHIVATION=30):
+        result = enrich_data.get_archive_date(offer_id)
 
     # assert
     assert result == expected

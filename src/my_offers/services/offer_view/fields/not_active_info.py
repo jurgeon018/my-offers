@@ -25,7 +25,7 @@ def get_not_active_info(
         *,
         status: Optional[Status],
         import_error: Optional[str] = None,
-        edit_date: Optional[datetime] = None,
+        archive_date: Optional[datetime] = None,
         on_premoderation: Optional[bool] = False,
 ) -> Optional[NotActiveInfo]:
     if on_premoderation:
@@ -46,14 +46,11 @@ def get_not_active_info(
     if status in STATUSES_FOR_ARCHIVATION:
         message: Optional[str] = None
 
-        if edit_date:
+        if archive_date:
             now = datetime.now(tz=pytz.UTC)
-            if timezone.is_naive(edit_date):
-                edit_date = date_time.localize(edit_date)
-
-            archive_date = edit_date + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)  # type: ignore[operator]
-            if archive_date > now:  # type: ignore[operator]
-                message = 'До автоматического удаления осталось {}'.format(
+            if archive_date > now:
+                # обсуждение: https://cianru.slack.com/archives/CNYSG64UD/p1585559101117800
+                message = 'Будет автоматически перенесено в архив через {}'.format(
                     get_left_time_display(current=now, end=archive_date)
                 )
 
