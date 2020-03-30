@@ -115,9 +115,12 @@ async def get_offers_for_reindex(offer_ids: List[int]) -> List[ReindexOffer]:
     return [reindex_offer_mapper.map_from(row) for row in rows]
 
 
-async def get_offers_id_older_than(days_count: int,
-                                   status_tab: enums.OfferStatusTab,
-                                   limit: int) -> List[int]:
+async def get_offers_id_older_than(
+        *,
+        days_count: int,
+        status_tab: enums.OfferStatusTab,
+        limit: int
+) -> List[int]:
     need_date = datetime.now(tz=pytz.UTC) - timedelta(days=days_count)
     query = """SELECT offer_id FROM offers where status_tab = $1 and updated_at <= $2 limit $3"""
 

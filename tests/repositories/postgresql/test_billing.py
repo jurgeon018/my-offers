@@ -134,6 +134,7 @@ async def test_set_offer_contract_is_deleted_status(mocker):
         row_version,
     )
 
+
 @pytest.mark.gen_test
 async def test_delete_contracts_by_offer_id(mocker):
     # arrange & act
