@@ -84,6 +84,7 @@ class OfferAction:
             is_manual=helpers.is_manual(object_model.source),
             can_update_edit_date=True,
             agency_settings=agency_settings.value,
+            is_in_hidden_base=object_model.is_in_hidden_base,
         )
 
         if not getattr(available_actions, self._get_action_code()):
