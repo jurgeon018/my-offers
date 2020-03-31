@@ -2,7 +2,7 @@ import pytest
 
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.helpers import get_available_actions
-from my_offers.helpers.available_actions import _can_restore
+from my_offers.helpers.available_actions import _can_raise, _can_restore
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
@@ -105,19 +105,40 @@ def test_get_available_actions__no_settings__actions():
 
 
 @pytest.mark.parametrize(
-    ('is_in_hidden_base', 'is_removed_by_moderator', 'is_archived', 'expected'),
+    ('is_removed_by_moderator', 'is_archived', 'expected'),
     (
-        (True, False, False, False),
-        (False, True, False, False),
-        (False, False, True, True),
-        (False, False, False, False),
+        (False, False, False),
+        (True, False, False),
+        (False, True, True),
+        (True, True, False),
     )
 )
-def test__can_restore(mocker, is_archived, is_removed_by_moderator, is_in_hidden_base, expected):
+def test__can_restore(mocker, is_archived, is_removed_by_moderator, expected):
     # arrange & act
     result = _can_restore(
         is_archived=is_archived,
         is_removed_by_moderator=is_removed_by_moderator,
+    )
+
+    # assert
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    ('is_in_hidden_base', 'is_published', 'is_archived', 'expected'),
+    (
+        (True, False, False, False),
+        (False, True, False, True),
+        (True, True, False, False),
+        (False, False, True, False),
+        (False, False, False, False),
+    )
+)
+def test__can_raise(mocker, is_archived, is_published, is_in_hidden_base, expected):
+    # arrange & act
+    result = _can_raise(
+        is_archived=is_archived,
+        is_published=is_published,
         is_in_hidden_base=is_in_hidden_base,
     )
 

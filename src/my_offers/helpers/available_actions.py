@@ -42,26 +42,36 @@ def get_available_actions(
 
     return entities.AvailableActions(
         can_edit=not is_archived and not status.is_removed_by_moderator,
-        can_raise=not is_archived and status.is_published,
-        can_delete=status in CAN_DELETE_STATUSES,
-        can_restore=_can_restore(
+        can_raise=_can_raise(
             is_archived=is_archived,
-            is_removed_by_moderator=status.is_removed_by_moderator,
-            is_in_hidden_base=is_in_hidden_base,
+            is_published=status.is_published,
+            is_in_hidden_base=is_in_hidden_base
         ),
+        can_delete=status in CAN_DELETE_STATUSES,
+        can_restore=_can_restore(is_archived=is_archived, is_removed_by_moderator=status.is_removed_by_moderator),
         can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
     )
 
 
-def _can_restore(*, is_archived: bool, is_removed_by_moderator: bool, is_in_hidden_base: Optional[bool]) -> bool:
-    if is_in_hidden_base:
-        return False
-
+def _can_restore(*, is_archived: bool, is_removed_by_moderator: bool) -> bool:
     if is_removed_by_moderator:
         return False
 
     if not is_archived:
+        return False
+
+    return True
+
+
+def _can_raise(*, is_archived: bool, is_published: bool, is_in_hidden_base: Optional[bool]) -> bool:
+    if is_archived:
+        return False
+
+    if not is_published:
+        return False
+
+    if is_in_hidden_base:
         return False
 
     return True
