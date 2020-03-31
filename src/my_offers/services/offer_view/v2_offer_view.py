@@ -13,6 +13,7 @@ from my_offers.services.offer_view.fields import (
 )
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
 from my_offers.services.offer_view.fields.statistics import get_statistics
+from my_offers.services.offer_view.helpers.time import get_aware_date
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -49,7 +50,7 @@ def v2_build_offer_view(
 
     return get_offers.GetOfferV2(
         id=offer_id,
-        created_at=object_model.creation_date,
+        created_at=get_aware_date(object_model.creation_date),
         title=get_title(object_model),
         main_photo_url=main_photo_url,
         url=get_offer_url(offer_id=offer_id, offer_type=offer_type, deal_type=deal_type),
@@ -68,6 +69,7 @@ def v2_build_offer_view(
             is_manual=manual,
             can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
             agency_settings=enrich_data.agency_settings,
+            is_in_hidden_base=object_model.is_in_hidden_base,
         ),
         page_specific_info=get_page_specific_info(
             object_model=object_model,
