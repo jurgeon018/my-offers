@@ -7,6 +7,7 @@ from my_offers import pg
 from my_offers.entities import OfferBillingContract
 from my_offers.mappers.billing import offer_billing_contract_mapper
 from my_offers.repositories import postgresql
+from my_offers.repositories.postgresql.billing import get_offers_payed_till
 
 
 pytestmark = pytest.mark.gen_test
@@ -131,4 +132,24 @@ async def test_set_offer_contract_is_deleted_status(mocker):
         contract_id,
         is_deleted,
         row_version,
+    )
+
+
+@pytest.mark.gen_test
+async def test_get_offers_payed_till(mocker):
+    # arrange
+    pg.get().fetch.return_value = future([{'offer_id': 1, 'payed_till': datetime(2020, 3, 30)}])
+
+    expected = {1: datetime(2020, 3, 30)}
+
+    # act
+    result = await get_offers_payed_till([1, 2])
+
+    # assert
+    assert result == expected
+    pg.get().fetch.assert_called_once_with(
+        '\n    select\n        offer_id,\n        max(payed_till) as payed_till\n    '
+        'from\n        offers_billing_contracts\n    where\n        not is_deleted\n        '
+        'and offer_id = any($1::bigint[])\n    group by\n        offer_id\n    ',
+        [1, 2],
     )
