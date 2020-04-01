@@ -121,5 +121,7 @@ class OfferViewModelV2:
     """Дата подачи объявления"""
     archived_at: Optional[datetime]
     """Дата архивации"""
+    display_date: Optional[datetime]
+    """Дата для отображения в карточке"""
     status: Optional[str]
     """Строка статуса"""
