@@ -11,7 +11,9 @@ CHECK_SERVICES: List[str] = []
 
 DEFAULT_LOCATION_ID: int = 1
 
-CiAN_BASE_URL: str = 'https://cian.ru'
+DB_TIMEOUT: int = 2
+
+CIAN_BASE_URL: str = 'https://cian.ru'
 
 OFFER_LIST_LIMIT: int = 20
 

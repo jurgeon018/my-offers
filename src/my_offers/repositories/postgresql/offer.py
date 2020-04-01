@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from simple_settings import settings
 from typing import Any, Dict, List, Optional
 
 import asyncpgsa
@@ -96,7 +98,7 @@ async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
         .group_by(status_tab)
     )
 
-    rows = await pg.get().fetch(query, *params)
+    rows = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
     counters = {row['status_tab']: row['cnt'] for row in rows}
 
     return OfferCounters(

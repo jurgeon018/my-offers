@@ -1,3 +1,4 @@
+from simple_settings import settings
 from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpgsa
@@ -60,7 +61,7 @@ async def get_object_models(
     )
 
     query, params = asyncpgsa.compile_query(sql)
-    result = await pg.get().fetch(query, *params)
+    result = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
 
     if not result:
         return [], 0

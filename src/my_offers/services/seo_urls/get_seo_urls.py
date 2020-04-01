@@ -45,7 +45,7 @@ async def get_query_strings_for_address(
         SerializeToQueryStringsRequest(query_params=address_query_params),
     )
 
-    return ['{}/cat.php?{}'.format(settings.CiAN_BASE_URL, url) for url in query_strings.data.query_strings]
+    return ['{}/cat.php?{}'.format(settings.CIAN_BASE_URL, url) for url in query_strings.data.query_strings]
 
 
 get_query_strings_for_address_degradation_handler = get_degradation_handler(
