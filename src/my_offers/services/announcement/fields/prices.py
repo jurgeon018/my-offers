@@ -16,15 +16,22 @@ def get_prices(
     if not price_type:
         return price, price_per_meter
 
-    if price_type.is_all:
-        price = bargain_terms.price
-        if total_area and price:
-            price_per_meter = round(price / total_area, 2)
-    else:
-        kf = price_type_to_meters_kf(price_type)
+    if bargain_terms.price:
+        if price_type.is_all:
+            price = bargain_terms.price
 
-        price_per_meter = round(bargain_terms.price / kf, 2)
-        if total_area and price_per_meter:
-            price = price_per_meter * total_area
+            if total_area and price:
+                price_per_meter = round(price / total_area, 2)
+
+        else:
+            kf = price_type_to_meters_kf(price_type)
+            price_per_meter = (
+                round(bargain_terms.price / kf, 2)
+                if bargain_terms.price
+                else None
+            )
+
+            if total_area and price_per_meter:
+                price = price_per_meter * total_area
 
     return price, price_per_meter

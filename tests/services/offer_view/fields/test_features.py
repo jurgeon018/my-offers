@@ -40,6 +40,19 @@ from my_offers.services.offer_view.fields.features import get_features
             enums.DealType.rent,
             ['120 000 ₽ за м² в год'],
         ),
+        (
+            BargainTerms(
+                price=None,
+                currency=Currency.rur,
+                price_type=PriceType.square_meter,
+                payment_period=PaymentPeriod.monthly,
+            ),
+            Category.office_sale,
+            10,
+            enums.OfferType.commercial,
+            enums.DealType.rent,
+            [],
+        ),
     ),
 )
 def test_get_features(bargain_terms, category, total_area, offer_type, deal_type, expected):
