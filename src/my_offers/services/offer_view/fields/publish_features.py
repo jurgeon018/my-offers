@@ -2,21 +2,26 @@ from datetime import timedelta
 from typing import List, Optional
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerms
-from my_offers.services.offer_view.fields.autoprolong import is_autoprolong
+from my_offers.services.offer_view.helpers.terms import is_daily_charge
 
 
 def get_publish_features(publish_terms: Optional[PublishTerms], payed_remain: Optional[timedelta]) -> List[str]:
     if payed_remain and payed_remain.days > 365:
         return ['бессрочно']
 
-    result = []
+    if not publish_terms:
+        return []
+
+    if is_daily_charge(publish_terms.terms):
+        return []
+
+    if publish_terms.autoprolong:
+        return['автопродление']
+
     if payed_remain:
-        result.append('осталось {}'.format(_get_remain(payed_remain)))
+        return ['осталось {}'.format(_get_remain(payed_remain))]
 
-    if is_autoprolong(publish_terms=publish_terms):
-        result.append('автопродление')
-
-    return result
+    return []
 
 
 def _get_remain(delta: timedelta):

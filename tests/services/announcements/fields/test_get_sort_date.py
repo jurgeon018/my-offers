@@ -4,9 +4,9 @@ import pytest
 import pytz
 
 from my_offers.enums import OfferStatusTab
+from my_offers.helpers.fields import get_sort_date
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
-from my_offers.services.announcement.fields.sort_date import get_sort_date
 
 
 @pytest.mark.parametrize(

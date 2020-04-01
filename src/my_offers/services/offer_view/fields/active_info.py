@@ -24,6 +24,8 @@ def get_active_info(publish_terms: Optional[PublishTerms], payed_till: Optional[
 
 
 def _get_payed_remain(payed_till: Optional[datetime]) -> Optional[timedelta]:
+    return None  # todo: https://jira.cian.tech/browse/CD-77838  - будем реализовывать во втором этапе
+
     if not payed_till:
         return None
 
