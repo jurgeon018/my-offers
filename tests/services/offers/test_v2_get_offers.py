@@ -65,6 +65,7 @@ async def test_v2_get_offers_public(mocker):
         features=[],
         is_manual=False,
         created_at=datetime(2020, 2, 11, 17, 00),
+        display_date=datetime(2020, 2, 11, 17, 00),
         id=111,
         statistics=Statistics(),
         archived_at=None,
@@ -215,6 +216,7 @@ async def test_v2_get_offer_views(mocker):
                 features=[],
                 is_manual=True,
                 created_at=TIMEZONE.localize(datetime(2020, 2, 11, 17, 0)),
+                display_date=TIMEZONE.localize(datetime(2020, 2, 11, 17, 0)),
                 id=111,
                 archived_at=None,
                 status='Опубликовано',
@@ -231,7 +233,6 @@ async def test_v2_get_offer_views(mocker):
                     active_info=ActiveInfo(
                         vas=[],
                         is_from_package=False,
-                        is_autoprolong=False,
                         is_publication_time_ends=False,
                         publish_features=[],
                         auction=None

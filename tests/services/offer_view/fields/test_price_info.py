@@ -68,7 +68,24 @@ from my_offers.services.offer_view.fields.price_info import get_price_info
             enums.DealType.rent,
             PriceInfo(exact=None, range=['от 100 000', 'до 1 000 000 ₽/мес']),
         ),
-    )
+        (
+            BargainTerms(
+                price=None,
+                currency=Currency.rur,
+                price_type=PriceType.square_meter,
+                payment_period=PaymentPeriod.monthly
+            ),
+            Category.office_sale,
+            True,
+            10,
+            100,
+            100,
+            enums.OfferType.commercial,
+            enums.DealType.rent,
+            PriceInfo(exact=None, range=None),
+        ),
+    ),
+
 )
 def test_get_price_info(
         bargain_terms,

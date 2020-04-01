@@ -23,10 +23,12 @@ def get_features(
     is_all = bargain_terms.price_type and bargain_terms.price_type.is_all
     sale_type = bargain_terms.sale_type
     lease_type = bargain_terms.lease_type
+    price = bargain_terms.price
 
     features = []
 
     # TODO: https://jira.cian.tech/browse/CD-74195
+    # TODO: восстановить тесты https://jira.cian.tech/browse/CD-77783
     if deal_type.is_sale:
         if bargain_terms.mortgage_allowed:
             features.append('Возможна ипотека')
@@ -37,15 +39,15 @@ def get_features(
         if sale_type and sale_type.is_alternative:
             features.append('Альтернативная продажа')
 
-        if (is_commercial or is_newobject) and is_square_meter and currency:
-            pretty_price = get_pretty_number(number=int(bargain_terms.price))
+        if (is_commercial or is_newobject) and is_square_meter and currency and price:
+            pretty_price = get_pretty_number(number=int(price))
             features.append(f'{pretty_price} {currency} {SQUARE_METER_SYMBOL}')
 
         if not is_commercial and sale_type and sale_type.is_dupt:
             features.append('Переуступка')
 
-        if is_all and currency and total_area:
-            pretty_price = get_pretty_number(number=int(bargain_terms.price / total_area))
+        if is_all and currency and total_area and price:
+            pretty_price = get_pretty_number(number=int(price / total_area))
             features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
     else:
         if bargain_terms.agent_fee:
@@ -59,12 +61,12 @@ def get_features(
 
         if is_commercial:
 
-            if is_square_meter and currency:
+            if is_square_meter and currency and price:
                 if bargain_terms.payment_period and bargain_terms.payment_period.is_monthly:
                     months_count = 12
                 else:
                     months_count = 1
-                pretty_price = get_pretty_number(int(bargain_terms.price * months_count))
+                pretty_price = get_pretty_number(int(price * months_count))
                 features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL} в год')
 
             if lease_type and lease_type.is_sublease:

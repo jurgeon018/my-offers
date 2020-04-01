@@ -6,6 +6,7 @@ from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql.agents import get_agent_names, get_master_user_id
+from my_offers.repositories.postgresql.billing import get_offers_payed_till
 from my_offers.repositories.postgresql.offer import get_offers_update_at
 from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
@@ -41,6 +42,7 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         _load_agency_settings(params.get_user_id()),
         _load_subagents(params.get_agent_ids()),
         _load_archive_date(offer_ids),
+        _load_payed_till(offer_ids),
         # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
     )
 
@@ -162,3 +164,9 @@ async def _load_archive_date(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_update_at(offer_ids)
 
     return EnrichItem(key='archive_date', degraded=False, value=result)
+
+
+async def _load_payed_till(offer_ids: List[int]) -> EnrichItem:
+    result = await get_offers_payed_till(offer_ids)
+
+    return EnrichItem(key='payed_till', degraded=False, value=result)

@@ -1,4 +1,5 @@
-from typing import Optional
+from datetime import datetime
+from typing import Dict, List, Optional
 
 import asyncpgsa
 from sqlalchemy import and_, update
@@ -65,3 +66,22 @@ async def get_offer_contract(offer_id: int) -> Optional[OfferBillingContract]:
     result = await pg.get().fetchrow(query, offer_id)
 
     return offer_billing_contract_mapper.map_from(dict(result)) if result else None
+
+
+async def get_offers_payed_till(offer_ids: List[int]) -> Dict[int, datetime]:
+    query = """
+    select
+        offer_id,
+        max(payed_till) as payed_till
+    from
+        offers_billing_contracts
+    where
+        not is_deleted
+        and offer_id = any($1::bigint[])
+    group by
+        offer_id
+    """
+
+    rows = await pg.get().fetch(query, offer_ids)
+
+    return {row['offer_id']: row['payed_till'] for row in rows}

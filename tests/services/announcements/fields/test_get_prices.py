@@ -125,7 +125,17 @@ from my_offers.services.announcement.fields.prices import get_prices
             (7200000.0, 360000.0),
         ),
         (
+            BargainTerms(price=None, price_type=PriceType.all),
+            90.7,
+            (None, None),
+        ),
+        (
             BargainTerms(price=77),
+            90.7,
+            (None, None),
+        ),
+        (
+            BargainTerms(price=None),
             90.7,
             (None, None),
         ),

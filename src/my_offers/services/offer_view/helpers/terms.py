@@ -24,3 +24,9 @@ def get_main_term(terms: Optional[List[PublishTerm]]) -> Optional[PublishTerm]:
                 return term
 
     return None
+
+
+def is_daily_charge(terms: Optional[List[PublishTerm]]):
+    main_term = get_main_term(terms)
+
+    return main_term and main_term.days == 1

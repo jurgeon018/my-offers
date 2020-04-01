@@ -62,42 +62,6 @@ class OfferGeo:
 
 
 @dataclass
-class OfferViewModel:
-    main_photo_url: Optional[str]
-    """Основаная фотография объекта"""
-    title: Optional[str]
-    """Заголовок объявления"""
-    url: str
-    """URL объявления"""
-    geo: OfferGeo
-    """Гео"""
-    subagent: Optional[Subagent]
-    """Сабагент"""
-    price_info: PriceInfo
-    """Инофрмация о цене"""
-    features: List[str]
-    """Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека"""
-    publish_features: Optional[List[str]]
-    """Параметры публикации: сколько осталось, автопродление"""
-    vas: List[enums.OfferVas]
-    """Список VAS'ов"""
-    is_from_package: bool
-    """ Флаг 'из пакета'"""
-    is_manual: bool
-    """ Флаг 'из импорта'"""
-    is_publication_time_ends: bool
-    """ Флаг 'меньше суток до конца публикации'"""
-    created_at: datetime
-    """Дата подачи объявления"""
-    id: int
-    """ID объявления"""
-    archived_at: Optional[datetime]
-    """Дата архивации"""
-    status: Optional[str]
-    """Строка статуса"""
-
-
-@dataclass
 class OfferViewModelV2:
     id: int
     """ID объявления"""
@@ -121,5 +85,7 @@ class OfferViewModelV2:
     """Дата подачи объявления"""
     archived_at: Optional[datetime]
     """Дата архивации"""
+    display_date: Optional[datetime]
+    """Дата для отображения в карточке"""
     status: Optional[str]
     """Строка статуса"""

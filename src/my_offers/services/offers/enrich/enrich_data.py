@@ -115,6 +115,7 @@ class EnrichData:
     subagents: Optional[Dict[int, Subagent]] = None
     premoderation_info: Optional[Set[int]] = None
     archive_date: Optional[Dict[int, datetime]] = None
+    payed_till: Optional[Dict[int, datetime]] = None
 
     def get_urls_by_types(
             self,
@@ -142,7 +143,7 @@ class EnrichData:
 
         return offer_id in self.premoderation_info
 
-    def get_archive_date(self, offer_id):
+    def get_archive_date(self, offer_id: int) -> Optional[datetime]:
         if not self.archive_date:
             return None
 
@@ -151,3 +152,9 @@ class EnrichData:
             return None
 
         return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
+
+    def get_payed_till(self, offer_id: int) -> Optional[datetime]:
+        if not self.payed_till:
+            return None
+
+        return self.payed_till.get(offer_id)
