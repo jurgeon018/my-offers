@@ -41,6 +41,7 @@ def test_build_offer_view(enrich_data_mock):
         features=[],
         is_manual=True,
         created_at=None,
+        display_date=None,
         archived_at=None,
         status='Опубликовано',
         statistics=Statistics(shows=None, views=None, favorites=None),
