@@ -2,7 +2,7 @@ import pytest
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerm
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
-from my_offers.services.offer_view.helpers.get_main_term import get_main_term
+from my_offers.services.offer_view.helpers.terms import get_main_term
 
 
 @pytest.mark.parametrize(
