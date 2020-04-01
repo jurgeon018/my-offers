@@ -15,13 +15,13 @@ def get_publish_features(publish_terms: Optional[PublishTerms], payed_remain: Op
     if is_daily_charge(publish_terms.terms):
         return []
 
-    if publish_terms.autoprolong:
-        return['автопродление']
-
+    result = []
     if payed_remain:
-        return ['осталось {}'.format(_get_remain(payed_remain))]
+        result.append('осталось {}'.format(_get_remain(payed_remain)))
+    if publish_terms.autoprolong:
+        result.append('автопродление')
 
-    return []
+    return result
 
 
 def _get_remain(delta: timedelta):
