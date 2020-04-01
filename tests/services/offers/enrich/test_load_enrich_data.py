@@ -25,6 +25,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
+    _load_payed_till,
     _load_premoderation_info,
     _load_subagents,
     load_enrich_data,
@@ -520,3 +521,20 @@ async def test__load_archive_date(mocker):
     # assert
     assert result == expected
     get_offers_update_at_mock.assert_called_once_with([1])
+
+
+@pytest.mark.gen_test
+async def test__load_payed_till(mocker):
+    # arrange
+    get_offers_payed_till_mock = mocker.patch(
+        f'{PATH}get_offers_payed_till',
+        return_value=future({1: datetime(2020, 3, 30)})
+    )
+    expected = EnrichItem(key='payed_till', value={1: datetime(2020, 3, 30)}, degraded=False)
+
+    # act
+    result = await _load_payed_till([1])
+
+    # assert
+    assert result == expected
+    get_offers_payed_till_mock.assert_called_once_with([1])

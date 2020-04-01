@@ -11,7 +11,7 @@ def get_publish_features(publish_terms: Optional[PublishTerms], payed_remain: Op
 
     result = []
     if payed_remain:
-        result.append('Осталось {}'.format(_get_remain(payed_remain)))
+        result.append('осталось {}'.format(_get_remain(payed_remain)))
 
     if is_autoprolong(publish_terms=publish_terms):
         result.append('автопродление')
@@ -26,4 +26,4 @@ def _get_remain(delta: timedelta):
     if delta.seconds > 60 * 60:
         return '{} ч.'.format(delta.seconds // (60 * 60))
 
-    return ' {} м.'.format(delta.seconds // 60)
+    return '{} м.'.format(delta.seconds // 60)
