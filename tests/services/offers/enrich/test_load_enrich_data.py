@@ -25,6 +25,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
+    _load_payed_till,
     _load_premoderation_info,
     _load_subagents,
     load_enrich_data,
@@ -91,6 +92,10 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_archive_date',
         return_value=future(EnrichItem(key='archive_date', degraded=False, value=None)),
     )
+    load_payed_till_mock = mocker.patch(
+        f'{PATH}_load_payed_till',
+        return_value=future(EnrichItem(key='payed_till', degraded=False, value=None)),
+    )
 
     expected = (
         EnrichData(
@@ -105,6 +110,7 @@ async def test_load_enrich_data(mocker):
             subagents=None,
             premoderation_info=None,
             archive_date=None,
+            payed_till=None,
         ),
         {
             'agency_settings': False,
@@ -118,6 +124,7 @@ async def test_load_enrich_data(mocker):
             'subagents': False,
             'premoderation_info': False,
             'archive_date': False,
+            'payed_till': False,
         }
     )
 
@@ -143,6 +150,7 @@ async def test_load_enrich_data(mocker):
     load_subagents_mock.assert_called_once_with([])
     load_premoderation_info_mock.assert_called_once_with([11])
     load_archive_date_mock.assert_called_once_with([11])
+    load_payed_till_mock.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -513,3 +521,20 @@ async def test__load_archive_date(mocker):
     # assert
     assert result == expected
     get_offers_update_at_mock.assert_called_once_with([1])
+
+
+@pytest.mark.gen_test
+async def test__load_payed_till(mocker):
+    # arrange
+    get_offers_payed_till_mock = mocker.patch(
+        f'{PATH}get_offers_payed_till',
+        return_value=future({1: datetime(2020, 3, 30)})
+    )
+    expected = EnrichItem(key='payed_till', value={1: datetime(2020, 3, 30)}, degraded=False)
+
+    # act
+    result = await _load_payed_till([1])
+
+    # assert
+    assert result == expected
+    get_offers_payed_till_mock.assert_called_once_with([1])

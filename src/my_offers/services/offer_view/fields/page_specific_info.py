@@ -12,7 +12,7 @@ def get_page_specific_info(*, object_model: ObjectModel, enrich_data: EnrichData
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
     offer_id = object_model.id
     if status_tab.is_active:
-        result.active_info = get_active_info(object_model.publish_terms)
+        result.active_info = get_active_info(object_model.publish_terms, enrich_data.get_payed_till(offer_id))
     elif status_tab.is_not_active:
         result.not_active_info = get_not_active_info(
             status=object_model.status,

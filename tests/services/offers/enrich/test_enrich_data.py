@@ -192,3 +192,30 @@ async def test_get_archive_date(mocker, offer_id, expected):
 
     # assert
     assert result == expected
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize(
+    ('offer_id', 'expected'),
+    (
+        (1, datetime(2020, 4, 29, tzinfo=pytz.UTC)),
+        (4, None),
+    )
+)
+async def test_get_payed_till(mocker, offer_id, expected):
+    # arrange
+    enrich_data = EnrichData(
+        coverage={},
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+        payed_till={1: datetime(2020, 4, 29, tzinfo=pytz.UTC)}
+    )
+
+    # act
+    result = enrich_data.get_payed_till(offer_id)
+
+    # assert
+    assert result == expected
