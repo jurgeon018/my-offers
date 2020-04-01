@@ -4,7 +4,8 @@ import pytest
 import pytz
 from cian_helpers.timezone import TIMEZONE
 
-from my_offers.services.offer_view.helpers.time import get_aware_date, get_left_time_display
+from my_offers.helpers.time import get_aware_date
+from my_offers.services.offer_view.helpers.time import get_left_time_display
 
 
 @pytest.mark.parametrize(

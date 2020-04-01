@@ -54,7 +54,7 @@ def test_get_active_info(mocker):
     ('payed_till', 'expected'),
     (
         (None, None),
-        (datetime(2020, 5, 10, tzinfo=pytz.utc), timedelta(days=38, seconds=43200)),
+        (datetime(2020, 5, 10, tzinfo=pytz.utc), None),
     )
 )
 @freeze_time('2020-04-01 12:00:00')
