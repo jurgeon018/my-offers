@@ -41,6 +41,7 @@ def test_build_offer_view(enrich_data_mock):
         features=[],
         is_manual=True,
         created_at=None,
+        display_date=None,
         archived_at=None,
         status='Опубликовано',
         statistics=Statistics(shows=None, views=None, favorites=None),
@@ -56,10 +57,10 @@ def test_build_offer_view(enrich_data_mock):
             active_info=ActiveInfo(
                 vas=[],
                 is_from_package=False,
-                is_autoprolong=False,
                 is_publication_time_ends=False,
                 publish_features=[],
                 auction=None,
+                payed_till=None,
             ),
             not_active_info=None,
             declined_info=None

@@ -11,9 +11,9 @@ from my_offers.services.offer_view.fields import (
     get_title,
     prepare_geo,
 )
+from my_offers.services.offer_view.fields.display_date import get_display_date
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
 from my_offers.services.offer_view.fields.statistics import get_statistics
-from my_offers.services.offer_view.helpers.time import get_aware_date
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -47,10 +47,12 @@ def v2_build_offer_view(
     geo_urls = enrich_data.get_urls_by_types(deal_type=deal_type, offer_type=offer_type)
 
     offer_id = object_model.id
+    display_date = get_display_date(created_at=object_model.creation_date, edited_at=object_model.edit_date)
 
     return get_offers.GetOfferV2(
         id=offer_id,
-        created_at=get_aware_date(object_model.creation_date),
+        created_at=display_date,  # todo: https://jira.cian.tech/browse/CD-77805 - выпилить или вернуть creation_date
+        display_date=display_date,
         title=get_title(object_model),
         main_photo_url=main_photo_url,
         url=get_offer_url(offer_id=offer_id, offer_type=offer_type, deal_type=deal_type),
