@@ -31,14 +31,13 @@ def test_get_active_info(mocker):
     expected = ActiveInfo(
         vas=[OfferVas.payed],
         is_from_package=True,
-        is_autoprolong=False,
         is_publication_time_ends=False,
         publish_features=[],
         auction=None,
     )
 
     # act
-    result = get_active_info(publish_terms)
+    result = get_active_info(publish_terms=publish_terms, payed_till=None)
 
     # assert
     assert result == expected

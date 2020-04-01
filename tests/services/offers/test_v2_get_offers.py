@@ -231,7 +231,6 @@ async def test_v2_get_offer_views(mocker):
                     active_info=ActiveInfo(
                         vas=[],
                         is_from_package=False,
-                        is_autoprolong=False,
                         is_publication_time_ends=False,
                         publish_features=[],
                         auction=None

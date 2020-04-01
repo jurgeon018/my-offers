@@ -101,14 +101,14 @@ class ActiveInfo:
     """Список VAS'ов"""
     is_from_package: bool
     """ Флаг 'из пакета'"""
-    is_autoprolong: bool
-    """Автопродление"""
     is_publication_time_ends: bool
     """ Флаг 'меньше суток до конца публикации'"""
     publish_features: Optional[List[str]]
     """Параметры публикации: сколько осталось"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
+    payed_till: Optional[datetime] = None
+    """Дата, до которой оплачено размещение"""
 
 
 @dataclass

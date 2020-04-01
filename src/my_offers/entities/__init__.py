@@ -7,5 +7,4 @@ from my_offers.entities.moderation import ModerationOfferOffence
 from my_offers.entities.offer import Offer, ReindexOffer, ReindexOfferItem
 from my_offers.entities.offer_action import OfferActionRequest, OfferActionResponse
 from my_offers.entities.offer_import_error import OfferImportError
-from my_offers.entities.offer_view_model import OfferViewModel
 from my_offers.entities.update_offer import UpdateOfferRequest

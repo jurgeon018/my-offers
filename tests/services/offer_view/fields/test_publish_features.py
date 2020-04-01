@@ -19,7 +19,7 @@ from my_offers.services.offer_view.fields.publish_features import get_publish_fe
 )
 def test_get_publish_features(mocker, terms, expected):
     # arrange & act
-    result = get_publish_features(terms)
+    result = get_publish_features(publish_terms=terms, payed_remain=None)
 
     # assert
     assert result == expected

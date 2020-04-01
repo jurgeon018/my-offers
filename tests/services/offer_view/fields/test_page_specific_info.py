@@ -22,7 +22,6 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
                 active_info=ActiveInfo(
                     vas=[],
                     is_from_package=False,
-                    is_autoprolong=False,
                     is_publication_time_ends=False,
                     publish_features=[],
                     auction=None
