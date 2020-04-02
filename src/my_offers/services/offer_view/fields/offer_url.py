@@ -9,4 +9,4 @@ def get_offer_url(
         offer_type: enums.OfferType,
         deal_type: enums.DealType
 ) -> str:
-    return f'{settings.CiAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{offer_id}'
+    return f'{settings.CIAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{offer_id}'

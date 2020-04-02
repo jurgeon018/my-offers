@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import asyncpgsa
 import pytz
+from simple_settings import settings
 from sqlalchemy import and_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.functions import count
@@ -10,6 +11,7 @@ from sqlalchemy.sql.functions import count
 from my_offers import entities, enums, pg
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
+from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.offer_mapper import offer_mapper, reindex_offer_mapper
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
@@ -87,6 +89,7 @@ async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
     return offer_mapper.map_from(row)
 
 
+@async_statsd_timer('psql.get_offer_counters')
 async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
     conditions = prepare_conditions(filters)
     status_tab = tables.offers.c.status_tab
@@ -96,7 +99,7 @@ async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
         .group_by(status_tab)
     )
 
-    rows = await pg.get().fetch(query, *params)
+    rows = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
     counters = {row['status_tab']: row['cnt'] for row in rows}
 
     return OfferCounters(
@@ -136,6 +139,6 @@ async def get_offers_id_older_than(
 async def get_offers_update_at(offer_ids: List[int]) -> Dict[int, datetime]:
     query = 'SELECT offer_id, updated_at FROM offers WHERE offer_id = ANY($1::BIGINT[])'
 
-    rows = await pg.get().fetch(query, offer_ids)
+    rows = await pg.get().fetch(query, offer_ids, timeout=settings.DB_TIMEOUT)
 
     return {row['offer_id']: row['updated_at'] for row in rows}

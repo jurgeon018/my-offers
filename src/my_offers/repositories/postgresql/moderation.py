@@ -1,6 +1,7 @@
 from typing import List
 
 import asyncpgsa
+from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
@@ -49,6 +50,6 @@ async def get_offers_offence(*, offer_ids: List[int], status: ModerationOffenceS
         offer_ids,
         status.value
     ]
-    rows = await pg.get().fetch(sql, *params)
+    rows = await pg.get().fetch(sql, *params, timeout=settings.DB_TIMEOUT)
 
     return [offer_offence_mapper.map_from(row) for row in rows]

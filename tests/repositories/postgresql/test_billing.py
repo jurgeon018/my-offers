@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 from cian_test_utils import future
+from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities import OfferBillingContract
@@ -143,7 +144,8 @@ async def test_get_offers_payed_till(mocker):
     expected = {1: datetime(2020, 3, 30)}
 
     # act
-    result = await get_offers_payed_till([1, 2])
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_offers_payed_till([1, 2])
 
     # assert
     assert result == expected
@@ -152,4 +154,5 @@ async def test_get_offers_payed_till(mocker):
         'from\n        offers_billing_contracts\n    where\n        not is_deleted\n        '
         'and offer_id = any($1::bigint[])\n    group by\n        offer_id\n    ',
         [1, 2],
+        timeout=3,
     )

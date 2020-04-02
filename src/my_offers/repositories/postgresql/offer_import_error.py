@@ -1,6 +1,7 @@
 from typing import Dict, List
 
 import asyncpgsa
+from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, pg
@@ -50,6 +51,6 @@ async def get_last_import_errors(offer_ids: List[int]) -> Dict[int, str]:
             offer_id = ANY($1::BIGINT[])
     """
 
-    rows = await pg.get().fetch(query, offer_ids)
+    rows = await pg.get().fetch(query, offer_ids, timeout=settings.DB_TIMEOUT)
 
     return {row['offer_id']: row['message'] for row in rows}
