@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 import pytz
 from cian_test_utils import future, v
+from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities.agents import Agent, AgentName
@@ -71,7 +72,8 @@ async def test_get_agent_names(mocker):
     expected = [AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm')]
 
     # act
-    result = await get_agent_names([11])
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_agent_names([11])
 
     # assert
     assert result == expected
@@ -80,4 +82,5 @@ async def test_get_agent_names(mocker):
         '\n            last_name\n        FROM\n            agents_hierarchy\n        WHERE'
         '\n            realty_user_id = ANY($1::bigint[])\n    ',
         [11],
+        timeout=3,
     )

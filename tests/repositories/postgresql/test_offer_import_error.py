@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 from cian_test_utils import future
+from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities import OfferImportError
@@ -57,12 +58,14 @@ async def test_get_last_import_errors(mocker):
     expected = {11: 'fff', 22: 'bb'}
 
     # act
-    result = await get_last_import_errors([11, 22])
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_last_import_errors([11, 22])
 
     # assert
     assert result == expected
     pg.get().fetch.assert_called_once_with(
         '\n        SELECT\n            offer_id,\n            message\n        '
         'FROM\n            offers_last_import_error\n        WHERE\n            offer_id = ANY($1::BIGINT[])\n    ',
-        [11, 22]
+        [11, 22],
+        timeout=3,
     )
