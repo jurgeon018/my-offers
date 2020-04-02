@@ -305,7 +305,7 @@ async def test__load_can_update_edit_date(mocker):
 
 
 @pytest.mark.gen_test
-async def test___load_moderation_info(mocker):
+async def test__load_moderation_info(mocker):
     # arrange
     offers_ids = [11, 22]
     offer_offence_1 = OfferOffence(
@@ -317,8 +317,8 @@ async def test___load_moderation_info(mocker):
         created_by=888,
         created_date=datetime(2020, 1, 1),
         row_version=0,
-        updated_at=None,
-        created_at=None,
+        updated_at=datetime(2020, 1, 1),
+        created_at=datetime(2020, 1, 1),
     )
     offer_offence_2 = OfferOffence(
         offence_id=555,
@@ -329,8 +329,8 @@ async def test___load_moderation_info(mocker):
         created_by=888,
         created_date=datetime(2020, 1, 1),
         row_version=0,
-        updated_at=None,
-        created_at=None,
+        updated_at=datetime(2020, 1, 1),
+        created_at=datetime(2020, 1, 1),
     )
 
     expected = EnrichItem(
@@ -339,8 +339,8 @@ async def test___load_moderation_info(mocker):
         value={11: offer_offence_1, 22: offer_offence_2}
     )
     get_offer_offence_mock = mocker.patch(
-        f'{PATH}postgresql.get_offers_offence',
-        return_value=future([offer_offence_1, offer_offence_2])
+        f'{PATH}get_offers_offence_degradation_handler',
+        return_value=future(DegradationResult(value=[offer_offence_1, offer_offence_2], degraded=False))
     )
 
     # act
@@ -357,8 +357,8 @@ async def test___load_moderation_info(mocker):
 async def test__load_import_errors(mocker):
     # arrange
     get_last_import_errors_mock = mocker.patch(
-        f'{PATH}get_last_import_errors',
-        return_value=future({11: 'zzz'})
+        f'{PATH}get_last_import_errors_degradation_handler',
+        return_value=future(DegradationResult(value={11: 'zzz'}, degraded=False))
     )
     expected = EnrichItem(key='import_errors', degraded=False, value={11: 'zzz'})
 
@@ -451,11 +451,14 @@ async def test__load_agency_settings__no_ma__empty(mocker):
 async def test__load_subagents(mocker):
     # arrange
     get_agent_names_mock = mocker.patch(
-        f'{PATH}get_agent_names',
-        return_value=future([
-            AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm'),
-            AgentName(id=14, first_name=None, last_name=None, middle_name=None),
-        ])
+        f'{PATH}get_agent_names_degradation_handler',
+        return_value=future(DegradationResult(
+            value=[
+                AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm'),
+                AgentName(id=14, first_name=None, last_name=None, middle_name=None),
+            ],
+            degraded=False,
+        ))
     )
     expected = EnrichItem(key='subagents', value={12: Subagent(id=12, name='Zz Yy')}, degraded=False)
 
@@ -471,11 +474,14 @@ async def test__load_subagents(mocker):
 async def test__load_subagents__empty__empty(mocker):
     # arrange
     get_agent_names_mock = mocker.patch(
-        f'{PATH}get_agent_names',
-        return_value=future([
-            AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm'),
-            AgentName(id=14, first_name=None, last_name=None, middle_name=None),
-        ])
+        f'{PATH}get_agent_names_degradation_handler',
+        return_value=future(DegradationResult(
+            value=[
+                AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm'),
+                AgentName(id=14, first_name=None, last_name=None, middle_name=None),
+            ],
+            degraded=False,
+        ))
     )
     expected = EnrichItem(key='subagents', value=None, degraded=False)
 
@@ -493,8 +499,8 @@ async def test__load_premoderation_info(mocker):
     expected = EnrichItem(key='premoderation_info', value={11}, degraded=False)
 
     get_offer_premoderations_mock = mocker.patch(
-        f'{PATH}get_offer_premoderations',
-        return_value=future([11])
+        f'{PATH}get_offer_premoderations_degradation_handler',
+        return_value=future(DegradationResult(value=[11], degraded=False))
     )
 
     # act
@@ -510,8 +516,8 @@ async def test__load_premoderation_info(mocker):
 async def test__load_archive_date(mocker):
     # arrange
     get_offers_update_at_mock = mocker.patch(
-        f'{PATH}get_offers_update_at',
-        return_value=future({1: datetime(2020, 3, 30)})
+        f'{PATH}get_offers_update_at_degradation_handler',
+        return_value=future(DegradationResult(value={1: datetime(2020, 3, 30)}, degraded=False))
     )
     expected = EnrichItem(key='archive_date', value={1: datetime(2020, 3, 30)}, degraded=False)
 
@@ -527,8 +533,8 @@ async def test__load_archive_date(mocker):
 async def test__load_payed_till(mocker):
     # arrange
     get_offers_payed_till_mock = mocker.patch(
-        f'{PATH}get_offers_payed_till',
-        return_value=future({1: datetime(2020, 3, 30)})
+        f'{PATH}get_offers_payed_till_degradation_handler',
+        return_value=future(DegradationResult(value={1: datetime(2020, 3, 30)}, degraded=False))
     )
     expected = EnrichItem(key='payed_till', value={1: datetime(2020, 3, 30)}, degraded=False)
 

@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 import asyncpgsa
+from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
@@ -55,6 +56,6 @@ async def get_agent_names(user_ids: List[int]) -> List[AgentName]:
             realty_user_id = ANY($1::bigint[])
     """
 
-    rows = await pg.get().fetch(query, user_ids)
+    rows = await pg.get().fetch(query, user_ids, timeout=settings.DB_TIMEOUT)
 
     return [agent_name_mapper.map_from(row) for row in rows]

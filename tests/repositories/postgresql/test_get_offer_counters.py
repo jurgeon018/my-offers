@@ -1,5 +1,6 @@
 import pytest
 from cian_test_utils import future
+from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities.get_offers import OfferCounters
@@ -28,10 +29,12 @@ async def test_get_offer_counters(mocker):
     result = await get_offer_counters({'master_user_id': 111})
 
     # assert
-    assert result == expected
+    with settings_stub(DB_TIMEOUT=3):
+        assert result == expected
 
     pg.get().fetch.assert_called_once_with(
         'SELECT offers.status_tab, count(*) AS cnt \nFROM offers \nWHERE offers.master_user_id = $1 '
         'GROUP BY offers.status_tab',
-        111
+        111,
+        timeout=3,
     )

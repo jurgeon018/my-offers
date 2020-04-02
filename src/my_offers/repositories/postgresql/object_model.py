@@ -2,10 +2,12 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import asyncpgsa
 from cian_json import json
+from simple_settings import settings
 from sqlalchemy import and_, func, over, select
 
 from my_offers import pg
 from my_offers.enums import GetOffersSortType
+from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import tables
@@ -41,6 +43,7 @@ async def get_object_model(filters: Dict[str, Any]) -> Optional[ObjectModel]:
     return object_models[0]
 
 
+@async_statsd_timer('psql.get_object_models')
 async def get_object_models(
         *,
         filters: Dict[str, Any],
@@ -60,7 +63,7 @@ async def get_object_models(
     )
 
     query, params = asyncpgsa.compile_query(sql)
-    result = await pg.get().fetch(query, *params)
+    result = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
 
     if not result:
         return [], 0

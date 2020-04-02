@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 from cian_test_utils import future
+from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities.moderation import OfferOffence
@@ -83,7 +84,8 @@ async def test_get_offer_offence(mocker):
     pg.get().fetch.return_value = future([offer_offence])
 
     # act
-    result = await postgresql.get_offers_offence(offer_ids=[offer_id], status=ModerationOffenceStatus.confirmed)
+    with settings_stub(DB_TIMEOUT=3):
+        result = await postgresql.get_offers_offence(offer_ids=[offer_id], status=ModerationOffenceStatus.confirmed)
 
     # assert
     assert result == [offer_offence_mapper.map_from(offer_offence)]
@@ -99,6 +101,7 @@ async def test_get_offer_offence(mocker):
         '\n             join offence_ids oi on oi.offence_id = oo.offence_id;\n    ',
         [offer_id],
         ModerationOffenceStatus.confirmed.value,
+        timeout=3,
     )
 
 
@@ -108,7 +111,8 @@ async def test_get_offer_offence__offence_is_none(mocker):
     pg.get().fetch.return_value = future([])
 
     # act
-    result = await postgresql.get_offers_offence(offer_ids=[offer_id], status=ModerationOffenceStatus.confirmed)
+    with settings_stub(DB_TIMEOUT=3):
+        result = await postgresql.get_offers_offence(offer_ids=[offer_id], status=ModerationOffenceStatus.confirmed)
 
     # assert
     assert result == []
@@ -124,4 +128,5 @@ async def test_get_offer_offence__offence_is_none(mocker):
         '\n             join offence_ids oi on oi.offence_id = oo.offence_id;\n    ',
         [offer_id],
         ModerationOffenceStatus.confirmed.value,
+        timeout=3,
     )

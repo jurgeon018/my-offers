@@ -1,5 +1,6 @@
 import pytest
 from cian_test_utils import future
+from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.enums import GetOffersSortType
@@ -22,12 +23,13 @@ async def test_get_object_models__empty_filter__result(mocker):
     expected = ([object_model], 1)
 
     # act
-    result = await get_object_models(filters=filters, limit=20, offset=0, sort_type=GetOffersSortType.by_default)
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_object_models(filters=filters, limit=20, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == expected
 
-    pg.get().fetch.assert_called_once_with(query, 20, 0)
+    pg.get().fetch.assert_called_once_with(query, 20, 0, timeout=3)
 
 
 @pytest.mark.gen_test
@@ -51,7 +53,8 @@ async def test_get_object_models__full_filter__result(mocker):
     expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == expected
@@ -73,6 +76,7 @@ async def test_get_object_models__full_filter__result(mocker):
         'active',
         'russian',
         '+79112318015',
+        timeout=3,
     )
 
 
@@ -88,7 +92,8 @@ async def test_get_object_models__filter_none__result(mocker):
     expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == expected
@@ -98,6 +103,7 @@ async def test_get_object_models__filter_none__result(mocker):
         'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         40,
         0,
+        timeout=3,
     )
 
 
@@ -114,7 +120,8 @@ async def test_get_object_models___wrong_filter__result(mocker):
     expected = ([], 0)
 
     # act
-    result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == expected
@@ -123,5 +130,6 @@ async def test_get_object_models___wrong_filter__result(mocker):
         'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers '
         'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         40,
-        0
+        0,
+        timeout=3,
     )
