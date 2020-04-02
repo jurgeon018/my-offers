@@ -3,6 +3,7 @@ from typing import List
 
 import asyncpgsa
 import pytz
+from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
@@ -38,6 +39,6 @@ async def save_offer_premoderation(offer_premoderation: OfferPremoderation) -> N
 async def get_offer_premoderations(offer_ids: List[int]) -> List[int]:
     query = 'SELECT offer_id FROM offers_premoderations WHERE offer_id = ANY($1::BIGINT[]) AND NOT removed'
 
-    rows = await pg.get().fetch(query, offer_ids)
+    rows = await pg.get().fetch(query, offer_ids, timeout=settings.DB_TIMEOUT)
 
     return [row['offer_id'] for row in rows]

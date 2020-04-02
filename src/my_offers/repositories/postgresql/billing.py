@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 import asyncpgsa
+from simple_settings import settings
 from sqlalchemy import and_, update
 from sqlalchemy.dialects.postgresql import insert
 
@@ -82,6 +83,6 @@ async def get_offers_payed_till(offer_ids: List[int]) -> Dict[int, datetime]:
         offer_id
     """
 
-    rows = await pg.get().fetch(query, offer_ids)
+    rows = await pg.get().fetch(query, offer_ids, timeout=settings.DB_TIMEOUT)
 
     return {row['offer_id']: row['payed_till'] for row in rows}
