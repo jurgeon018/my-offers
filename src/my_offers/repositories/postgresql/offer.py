@@ -8,7 +8,7 @@ from sqlalchemy import and_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.functions import count
 
-from my_offers import entities, pg
+from my_offers import entities, enums, pg
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
 from my_offers.helpers.statsd import async_statsd_timer
@@ -116,6 +116,24 @@ async def get_offers_for_reindex(offer_ids: List[int]) -> List[ReindexOffer]:
     rows = await pg.get().fetch(query, offer_ids)
 
     return [reindex_offer_mapper.map_from(row) for row in rows]
+
+
+async def get_offers_id_older_than(
+        *,
+        date: datetime,
+        status_tab: enums.OfferStatusTab,
+        limit: int
+) -> List[int]:
+    query = """SELECT offer_id FROM offers where status_tab = $1 and updated_at <= $2 limit $3"""
+
+    rows = await pg.get().fetch(
+        query,
+        status_tab.name,
+        date,
+        limit
+    )
+    offer_ids = [row['offer_id'] for row in rows]
+    return offer_ids
 
 
 async def get_offers_update_at(offer_ids: List[int]) -> Dict[int, datetime]:

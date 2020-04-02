@@ -66,3 +66,7 @@ memory = 128
 [job.reindex_offers]
 type = "manage"
 command = "reindex-offers"
+
+[job.clear_deleted_offer_cron]
+type = "consumer"
+command = "clear-deleted-offer-cron"

@@ -117,3 +117,11 @@ offers_premoderations = sa.Table(
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=True),
 )
+
+offers_reindex_queue = sa.Table(
+    'offers_reindex_queue',
+    _metadata,
+    sa.Column('offer_id', sa.BIGINT, primary_key=True),
+    sa.Column('in_process', sa.BOOLEAN, nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
+)
