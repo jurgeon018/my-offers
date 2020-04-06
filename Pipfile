@@ -12,7 +12,7 @@ cian-enum = "~=1.1"
 cian-http = "~=0.20"
 cian-schemas = "~=2.6"
 cian-web = "~=2.1"
-click = "~=7.0"
+click = "~=7.1"
 simple-settings = "~=0.19"
 tornado = "~=6.0"
 cian-rabbitmq = {version = "~=3.1", index = "cian"}

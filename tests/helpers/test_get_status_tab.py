@@ -3,6 +3,7 @@ import pytest
 from my_offers.enums import OfferStatusTab
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.repositories.monolith_cian_announcementapi.entities import Flags
+from my_offers.repositories.monolith_cian_announcementapi.entities.flags import DraftReason
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
 
@@ -19,6 +20,12 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
         (Flags(is_archived=False), Status.moderate, OfferStatusTab.declined),
         (Flags(is_archived=False), Status.removed_by_moderator, OfferStatusTab.declined),
         (Flags(is_archived=False), Status.blocked, OfferStatusTab.declined),
+        (
+            Flags(is_archived=False, draft_reason=DraftReason.ready_for_upload_delete),
+            Status.published,
+            OfferStatusTab.deleted,
+        ),
+        (None, Status.published, OfferStatusTab.active)
     )
 )
 def test_get_status_tab(mocker, flags, offer_status, expected):
