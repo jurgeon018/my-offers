@@ -40,6 +40,9 @@ def get_status_tab(*, offer_flags: Optional[Flags], offer_status: Status) -> enu
     if offer_status.is_deleted:
         return enums.OfferStatusTab.deleted
 
+    if offer_flags and offer_flags.draft_reason and offer_flags.draft_reason.is_ready_for_upload_delete:
+        return enums.OfferStatusTab.deleted
+
     if is_archived(offer_flags):
         return enums.OfferStatusTab.archived
 
