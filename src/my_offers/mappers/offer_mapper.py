@@ -27,3 +27,8 @@ reindex_offer_mapper = EntityMapper(
         'updated_at': ValueMapper(),
     }
 )
+
+offers_creation_date_offer_mapper = EntityMapper(
+    entities.OfferCreationDate,
+    without_camelcase=True,
+)

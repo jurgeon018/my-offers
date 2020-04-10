@@ -73,6 +73,17 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
 
+    # public API
+    url(
+        r'/v1/get-offers-creation-date/$',
+        get_handler(
+            service=offers.get_offers_creation_date,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.OffersCreationDateRequest,
+            response_schema=entities.OffersCreationDateResponse,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
 
     # QA
     url(
