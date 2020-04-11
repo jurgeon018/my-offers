@@ -22,6 +22,15 @@ from tests.utils import load_json_data
             '22/22 этаж 22 22 Офисно  деловой центр с торговыми помещениями и апартаментами,         '
             '2-сан.узла. подземный паркинг 900000р. машиноместо.'
         ),
+        (
+            object_model_mapper.map_from(load_json_data(__file__, 'announcement_jk.json')),
+            '227177044 +74991165117 Россия, Москва, Михневская улица, 8 Москва Михневская '
+            '8 д8 д 8 8д Царицыно ЮАО Бирюлево Восточное Бирюлёво-Пассажирская '
+            'Бирюлёво-Пассажирская Булатниково Булатниково Бирюлёво-Товарная '
+            'Бирюлёво-Товарная Загорье 3-комн. кв., 110 м², 9/15 этаж Просторная трёшка в '
+            'ЖК "Загорье"! 9 15 Продается просторная 3х-комнатная квартира 2483 площадью '
+            '110,0 кв.м. в ЖК Загорье на 9 этаже 15 этажного дома.'
+        ),
     )
 )
 def test__get_search_text(announcement, expected):
@@ -41,9 +50,25 @@ def test__get_search_text(announcement, expected):
         ('17к12', ['д17', 'д', '17', '17д', 'к12', 'к', '12', '12к']),
     )
 )
-def test___get_house(house, expected):
+def test__get_house(house, expected):
     # arrange & act
     result = _get_house([AddressInfo(name=house, type=Type.house)])
 
     # assert
     assert result == expected
+
+
+def test__get_house__not_adrress__empty():
+    # arrange & act
+    result = _get_house(None)
+
+    # assert
+    assert result == []
+
+
+def test__get_house__wrong_format__empty():
+    # arrange & act
+    result = _get_house([AddressInfo(name='ZZZ', type=Type.house)])
+
+    # assert
+    assert result == []
