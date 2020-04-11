@@ -1,6 +1,5 @@
 import logging
 import re
-
 from typing import List, Optional, Union
 
 from my_offers.helpers.title import get_title

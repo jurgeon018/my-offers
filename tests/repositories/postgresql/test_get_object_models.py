@@ -60,23 +60,24 @@ async def test_get_object_models__full_filter__result(mocker):
     assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers \nWHERE offers.status_tab = $8 '
+        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers \nWHERE offers.status_tab = $10 '
         'AND offers.deal_type = $1 AND offers.offer_type = $3 AND offers.user_id = ANY (CAST($4 AS BIGINT[])) '
         'AND offers.has_photo = true AND offers.is_manual = false AND offers.is_in_hidden_base = false '
-        'AND offers.master_user_id = $2 AND offers.services && $7 '
-        'AND to_tsvector($9, offers.search_text) @@ to_tsquery(\'russian\', $10) '
-        'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $5 OFFSET $6',
+        'AND offers.master_user_id = $2 AND offers.services && $9 '
+        'AND (to_tsvector($11, offers.search_text) @@ plainto_tsquery($7, $8)) ORDER BY offers.sort_date '
+        'DESC NULLS LAST, offers.offer_id \n LIMIT $5 OFFSET $6',
         'sale',
         12478339,
         'suburban',
         [46610424],
         40,
         0,
+        'russian',
+        '+79112318015',
         ['paid'],
         'active',
         'russian',
-        '+79112318015',
-        timeout=3,
+        timeout=3
     )
 
 

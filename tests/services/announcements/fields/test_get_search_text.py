@@ -3,7 +3,7 @@ import pytest
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
-from my_offers.services.announcement.fields.search_text import get_search_text, _get_house
+from my_offers.services.announcement.fields.search_text import _get_house, get_search_text
 from tests.utils import load_json_data
 
 
@@ -35,7 +35,7 @@ def test__get_search_text(announcement, expected):
 @pytest.mark.parametrize(
     ('house', 'expected'),
     (
-        ('17/3к2бс5а', ['д17/3', 'д', '17/3',  '17/3д', 'к2б', 'к', '2б', '2бк', 'с5а', 'с', '5а', '5ас']),
+        ('17/3к2бс5а', ['д17/3', 'д', '17/3', '17/3д', 'к2б', 'к', '2б', '2бк', 'с5а', 'с', '5а', '5ас']),
         ('вл56Б', ['вл56Б', 'вл', '56Б', '56Бвл']),
         ('17', ['д17', 'д', '17', '17д']),
         ('17к12', ['д17', 'д', '17', '17д', 'к12', 'к', '12', '12к']),
