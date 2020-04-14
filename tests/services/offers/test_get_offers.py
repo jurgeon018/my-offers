@@ -87,9 +87,6 @@ def test_get_counter_filters__search_text__search_text():
     assert result == expected
 
 
-
-
-
 @pytest.mark.gen_test
 async def test_get_filters__sub_agent__filters(mocker):
     # arrange
