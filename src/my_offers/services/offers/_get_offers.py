@@ -99,7 +99,7 @@ async def get_user_filter(user_id: int) -> Dict[str, Any]:
     return user_filter
 
 
-async def get_counter_filters(filters):
+def get_counter_filters(filters):
     counter_filters = {
         'master_user_id': filters.get('master_user_id'),
         'user_id': filters.get('user_id'),
