@@ -35,6 +35,8 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
         'master_user_id': filters.get('master_user_id'),
         'user_id': filters.get('user_id'),
     }
+    if request.filters.search_text:
+        counter_filters['search_text'] = request.filters.search_text
 
     # шаг 2 - получение object models и счетчиков
     object_models_result, offer_counters_result = await asyncio.gather(

@@ -77,6 +77,9 @@ get_offers_payed_till_degradation_handler = get_degradation_handler(
 
 async def get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
     result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
+    if filters.status_tab.is_all:
+        del result['status_tab']
+
     user_filter = await get_user_filter(user_id)
     result.update(user_filter)
 
