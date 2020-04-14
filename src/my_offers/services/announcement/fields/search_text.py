@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import List, Optional, Union, Pattern
+from typing import List, Optional, Pattern, Union
 
 from my_offers.helpers.title import get_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import (

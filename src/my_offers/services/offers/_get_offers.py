@@ -14,6 +14,7 @@ from my_offers.repositories.postgresql.offer_import_error import get_last_import
 from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
 from my_offers.services.offers.helpers.search_text import prepare_search_text
 
+
 get_object_models_degradation_handler = get_degradation_handler(
     func=get_object_models,
     key='psql.get_object_models',
