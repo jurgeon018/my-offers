@@ -12,7 +12,7 @@ from my_offers.services.offers._get_offers import (
     get_filters,
     get_object_models_degradation_handler,
     get_offer_counters_degradation_handler,
-    get_pagination,
+    get_pagination, get_counter_filters,
 )
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
@@ -30,13 +30,8 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     """ Получить объявления для пользователя. Для м/а с учетом иерархии. """
     # шаг 1 - подготовка параметров запроса
     filters = await get_filters(filters=request.filters, user_id=realty_user_id)
+    counter_filters = await get_counter_filters(filters)
     limit, offset = get_pagination(request.pagination)
-    counter_filters = {
-        'master_user_id': filters.get('master_user_id'),
-        'user_id': filters.get('user_id'),
-    }
-    if request.filters.search_text:
-        counter_filters['search_text'] = request.filters.search_text
 
     # шаг 2 - получение object models и счетчиков
     object_models_result, offer_counters_result = await asyncio.gather(

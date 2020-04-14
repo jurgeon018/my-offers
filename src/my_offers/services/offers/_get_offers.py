@@ -99,6 +99,17 @@ async def get_user_filter(user_id: int) -> Dict[str, Any]:
     return user_filter
 
 
+async def get_counter_filters(filters):
+    counter_filters = {
+        'master_user_id': filters.get('master_user_id'),
+        'user_id': filters.get('user_id'),
+    }
+    if search_text := filters.get('search_text'):
+        counter_filters['search_text'] = search_text
+
+    return counter_filters
+
+
 def get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, int]:
     limit = settings.OFFER_LIST_LIMIT
     offset = 0
