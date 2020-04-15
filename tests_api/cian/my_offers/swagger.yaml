@@ -11,15 +11,45 @@ definitions:
         title: message
         type: string
     type: object
+  my_offers.entities.available_actions.AvailableActionsSchema:
+    properties:
+      canDelete:
+        description: Можно ли удалить объялвение
+        title: can_delete
+        type: boolean
+      canEdit:
+        description: Можно редактировать
+        title: can_edit
+        type: boolean
+      canMoveToArchive:
+        description: Пользователь может перенести объявление в архив
+        title: can_move_to_archive
+        type: boolean
+      canRaise:
+        description: Можно ли поднять в размещении
+        title: can_raise
+        type: boolean
+      canRestore:
+        description: Можно восстановить
+        title: can_restore
+        type: boolean
+      canUpdateEditDate:
+        description: Можно обновить дату
+        title: can_update_edit_date
+        type: boolean
+    required:
+    - canDelete
+    - canEdit
+    - canMoveToArchive
+    - canRaise
+    - canRestore
+    - canUpdateEditDate
+    type: object
   my_offers.entities.get_offers.ActiveInfoSchema:
     properties:
       auction:
         $ref: '#/definitions/my_offers.entities.get_offers.AuctionSchema'
         description: Данные об аукционе по объявлению
-      isAutoprolong:
-        description: Автопродление
-        title: is_autoprolong
-        type: boolean
       isFromPackage:
         description: ' Флаг ''из пакета'''
         title: is_from_package
@@ -28,6 +58,11 @@ definitions:
         description: ' Флаг ''меньше суток до конца публикации'''
         title: is_publication_time_ends
         type: boolean
+      payedTill:
+        description: Дата, до которой оплачено размещение
+        format: date-time
+        title: payed_till
+        type: string
       publishFeatures:
         description: 'Параметры публикации: сколько осталось'
         items:
@@ -53,7 +88,6 @@ definitions:
         title: vas
         type: array
     required:
-    - isAutoprolong
     - isFromPackage
     - isPublicationTimeEnds
     - vas
@@ -75,25 +109,6 @@ definitions:
         format: int64
         title: home_place
         type: integer
-    type: object
-  my_offers.entities.get_offers.AvailableActionsSchema:
-    properties:
-      canDelete:
-        description: Можно ли удалить объялвение
-        title: can_delete
-        type: boolean
-      canMoveToArchive:
-        description: Пользователь может перенести объявление в архив
-        title: can_move_to_archive
-        type: boolean
-      canUpdateEditDate:
-        description: Можно обновить дату
-        title: can_update_edit_date
-        type: boolean
-    required:
-    - canDelete
-    - canMoveToArchive
-    - canUpdateEditDate
     type: object
   my_offers.entities.get_offers.DeclinedInfoSchema:
     properties:
@@ -144,19 +159,17 @@ definitions:
         items:
           enum:
           - auction
-          - calltracking
           - free
-          - highlight
           - paid
           - premium
+          - premium+highlight
           - top3
           type: string
           x-auction: ''
-          x-calltracking: ''
           x-free: ''
-          x-highlight: ''
           x-paid: ''
           x-premium: ''
+          x-premium+highlight: ''
           x-top3: ''
         title: services
         type: array
@@ -164,16 +177,18 @@ definitions:
         description: Вкладка
         enum:
         - active
+        - all
         - archived
         - declined
         - deleted
-        - not_active
+        - notActive
         type: string
         x-active: Активные
+        x-all: По всем вкладкам
         x-archived: Архив
         x-declined: Отклоненные
         x-deleted: Удалено
-        x-not_active: Неактивные
+        x-notActive: Неактивные
       subAgentIds:
         description: Список сотрудников (только для мастрер аккаунтов)
         items:
@@ -185,119 +200,6 @@ definitions:
     required:
     - statusTab
     type: object
-  my_offers.entities.get_offers.GetOfferSchema:
-    properties:
-      archivedAt:
-        description: Дата архивации
-        format: date-time
-        title: archived_at
-        type: string
-      auction:
-        $ref: '#/definitions/my_offers.entities.get_offers.AuctionSchema'
-        description: Данные об аукционе по объявлению
-      availableActions:
-        $ref: '#/definitions/my_offers.entities.get_offers.AvailableActionsSchema'
-        description: Доступные действия с объявлениями
-      createdAt:
-        description: Дата подачи объявления
-        format: date-time
-        title: created_at
-        type: string
-      features:
-        description: 'Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека'
-        items:
-          title: features
-          type: string
-        title: features
-        type: array
-      geo:
-        $ref: '#/definitions/my_offers.entities.offer_view_model.OfferGeoSchema'
-        description: Гео
-      id:
-        description: ID объявления
-        format: int64
-        title: id
-        type: integer
-      isFromPackage:
-        description: ' Флаг ''из пакета'''
-        title: is_from_package
-        type: boolean
-      isManual:
-        description: ' Флаг ''из импорта'''
-        title: is_manual
-        type: boolean
-      isPublicationTimeEnds:
-        description: ' Флаг ''меньше суток до конца публикации'''
-        title: is_publication_time_ends
-        type: boolean
-      mainPhotoUrl:
-        description: Основаная фотография объекта
-        title: main_photo_url
-        type: string
-      moderation:
-        $ref: '#/definitions/my_offers.entities.get_offers.ModerationSchema'
-        description: Данные о причине отклонения объявления
-      notActiveInfo:
-        $ref: '#/definitions/my_offers.entities.get_offers.NotActiveInfoSchema'
-        description: Доп. информация для вкладки неактивные
-      priceInfo:
-        $ref: '#/definitions/my_offers.entities.offer_view_model.PriceInfoSchema'
-        description: Инофрмация о цене
-      publishFeatures:
-        description: 'Параметры публикации: сколько осталось, автопродление'
-        items:
-          title: publish_features
-          type: string
-        title: publish_features
-        type: array
-      statistics:
-        $ref: '#/definitions/my_offers.entities.get_offers.StatisticsSchema'
-        description: Статистика по объявлению
-      status:
-        description: Строка статуса
-        title: status
-        type: string
-      subagent:
-        $ref: '#/definitions/my_offers.entities.offer_view_model.SubagentSchema'
-        description: Сабагент
-      title:
-        description: Заголовок объявления
-        title: title
-        type: string
-      url:
-        description: URL объявления
-        title: url
-        type: string
-      vas:
-        description: Список VAS'ов
-        items:
-          enum:
-          - auction
-          - colorized
-          - payed
-          - premium
-          - top3
-          type: string
-          x-auction: ''
-          x-colorized: ''
-          x-payed: ''
-          x-premium: ''
-          x-top3: ''
-        title: vas
-        type: array
-    required:
-    - availableActions
-    - createdAt
-    - features
-    - geo
-    - id
-    - isFromPackage
-    - isManual
-    - isPublicationTimeEnds
-    - priceInfo
-    - url
-    - vas
-    type: object
   my_offers.entities.get_offers.GetOfferV2Schema:
     properties:
       archivedAt:
@@ -306,12 +208,17 @@ definitions:
         title: archived_at
         type: string
       availableActions:
-        $ref: '#/definitions/my_offers.entities.get_offers.AvailableActionsSchema'
+        $ref: '#/definitions/my_offers.entities.available_actions.AvailableActionsSchema'
         description: Доступные действия с объявлениями
       createdAt:
         description: Дата подачи объявления
         format: date-time
         title: created_at
+        type: string
+      displayDate:
+        description: Дата для отображения в карточке
+        format: date-time
+        title: display_date
         type: string
       features:
         description: 'Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека'
@@ -403,29 +310,6 @@ definitions:
     required:
     - filters
     type: object
-  my_offers.entities.get_offers.GetOffersResponseSchema:
-    properties:
-      counters:
-        $ref: '#/definitions/my_offers.entities.get_offers.OfferCountersSchema'
-        description: Счеткики количества объявлений
-      degradation:
-        description: Информация о деградации
-        title: degradation
-        type: object
-      offers:
-        description: Список объявлений
-        items:
-          $ref: '#/definitions/my_offers.entities.get_offers.GetOfferSchema'
-        type: array
-      page:
-        $ref: '#/definitions/my_offers.entities.get_offers.PageInfoSchema'
-        description: Информация о странице
-    required:
-    - counters
-    - degradation
-    - offers
-    - page
-    type: object
   my_offers.entities.get_offers.GetOffersV2ResponseSchema:
     properties:
       counters:
@@ -476,7 +360,7 @@ definitions:
         title: message
         type: string
       status:
-        description: Статус для некативных
+        description: Статус для неактивных
         title: status
         type: string
     required:
@@ -758,25 +642,6 @@ paths:
         '400':
           schema:
             $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
-  /public/v1/get-offers/:
-    post:
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/my_offers.entities.get_offers.GetOffersRequestSchema'
-      produces:
-      - application/json
-      responses:
-        '200':
-          schema:
-            $ref: '#/definitions/my_offers.entities.get_offers.GetOffersResponseSchema'
-        '400':
-          schema:
-            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
-      summary: 'DEPRECATED: use V2 Получить объявления для пользователя. Для м/а с
-        учетом иерархии.'
   /public/v2/get-offers/:
     post:
       parameters:

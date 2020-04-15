@@ -42,7 +42,7 @@ async def test_reindex_offers_command(mocker):
         deal_type=enums.DealType.rent,
         offer_type=enums.OfferType.flat,
         status_tab=enums.OfferStatusTab.active,
-        search_text='165456885 zzzzzzzzz выапывапвыапыпыпвыапывапывапыап +79994606004 +79982276978 '
+        search_text='165456885 zzzzzzzzz выапывапвыапыпыпвыапывапывапыап 9994606004 9982276978 '
                     'Россия, Ростов-на-Дону, Большая Садовая улица, 73',
         row_version=222,
         raw_data={'offerId': 11},

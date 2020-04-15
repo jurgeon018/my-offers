@@ -12,6 +12,7 @@ from my_offers.repositories.postgresql.billing import get_offers_payed_till
 from my_offers.repositories.postgresql.offer import get_offer_counters, get_offers_update_at
 from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
+from my_offers.services.offers.helpers.search_text import prepare_search_text
 
 
 get_object_models_degradation_handler = get_degradation_handler(
@@ -82,6 +83,9 @@ async def get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, 
 
     user_filter = await get_user_filter(user_id)
     result.update(user_filter)
+
+    if search_text := result.get('search_text'):
+        result['search_text'] = prepare_search_text(search_text)
 
     return result
 

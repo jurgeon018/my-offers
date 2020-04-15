@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import List, Optional, Union
+from typing import List, Optional, Pattern, Union
 
 from my_offers.helpers.title import get_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
@@ -16,18 +16,20 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
 logger = logging.getLogger(__name__)
 
 
+HOME_PATTERN: Pattern = re.compile(r'(([двлкс]+)([\d\/]+[^кс]?))', re.IGNORECASE)
+
+
 def get_search_text(object_model: ObjectModel) -> str:
     result = [str(object_model.id)]  # ID объявления
 
     # Номер телефона в объявлении (оригинальный): независимо от того, как ты вводишь номер телефона,
     # убираются все знаки препинания и пробелы и ищется последовательность цифр.
-    # На данном этапе не делаем обработку кейса +7... и 8... .
     for phone in object_model.phones:
         # TODO: https://jira.cian.tech/browse/CD-77625
-        if phone.country_code and phone.number:
-            result.append(phone.country_code + phone.number)
+        if phone.number:
+            result.append(phone.number)
         if source_phone := phone.source_phone:
-            result.append(source_phone.country_code + source_phone.number)
+            result.append(source_phone.number)
 
     if geo := object_model.geo:
         if address := geo.user_input:
@@ -87,7 +89,7 @@ def _get_house(address: Optional[List[AddressInfo]]) -> List[str]:
             if house := item.name:
                 if not house.startswith('вл'):
                     house = 'д' + house
-                if parts := re.findall(r'(([двлкс]+)([\d\/]+[^кс]?))', house):
+                if parts := re.findall(HOME_PATTERN, house):
                     for part in parts:
                         result += part
                         result.append(part[2] + part[1])

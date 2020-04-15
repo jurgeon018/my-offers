@@ -33,7 +33,7 @@ async def test_process_announcement(mocker, announcement):
         deal_type=enums.DealType.rent,
         offer_type=enums.OfferType.flat,
         status_tab=enums.OfferStatusTab.active,
-        search_text='165456885 +79994606004 +79982276978 Россия, Ростов-на-Дону, Большая Садовая улица, 73 Ростовская '
+        search_text='165456885 9994606004 9982276978 Россия, Ростов-на-Дону, Большая Садовая улица, 73 Ростовская '
                     'Ростов-на-Дону Большая Садовая 73 д73 д 73 73д Кировский Центр 1-комн. кв., 123 м², '
                     '1/3 этаж zzzzzzzzz 1 3 выапывапвыапыпыпвыапывапывапыап',
         row_version=announcement.row_version,

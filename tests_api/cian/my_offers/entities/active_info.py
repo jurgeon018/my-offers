@@ -9,6 +9,7 @@ new-codegen version: 4.0.2
 
 """
 from dataclasses import dataclass
+from datetime import datetime
 from typing import List, Optional
 
 from cian_enum import NoFormat, StrEnum
@@ -27,8 +28,6 @@ class Vas(StrEnum):
 
 @dataclass
 class ActiveInfo:
-    isAutoprolong: bool
-    """Автопродление"""
     isFromPackage: bool
     """ Флаг 'из пакета'"""
     isPublicationTimeEnds: bool
@@ -37,5 +36,7 @@ class ActiveInfo:
     """Список VAS'ов"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
+    payedTill: Optional[datetime] = None
+    """Дата, до которой оплачено размещение"""
     publishFeatures: Optional[List[str]] = None
     """Параметры публикации: сколько осталось"""
