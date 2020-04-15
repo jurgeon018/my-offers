@@ -9,6 +9,7 @@ from my_offers.entities import get_offers
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view import v2_build_offer_view
 from my_offers.services.offers._get_offers import (
+    get_counter_filters,
     get_filters,
     get_object_models_degradation_handler,
     get_offer_counters_degradation_handler,
@@ -30,11 +31,8 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     """ Получить объявления для пользователя. Для м/а с учетом иерархии. """
     # шаг 1 - подготовка параметров запроса
     filters = await get_filters(filters=request.filters, user_id=realty_user_id)
+    counter_filters = get_counter_filters(filters)
     limit, offset = get_pagination(request.pagination)
-    counter_filters = {
-        'master_user_id': filters.get('master_user_id'),
-        'user_id': filters.get('user_id'),
-    }
 
     # шаг 2 - получение object models и счетчиков
     object_models_result, offer_counters_result = await asyncio.gather(

@@ -77,6 +77,9 @@ get_offers_payed_till_degradation_handler = get_degradation_handler(
 
 async def get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
     result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
+    if filters.status_tab.is_all:
+        del result['status_tab']
+
     user_filter = await get_user_filter(user_id)
     result.update(user_filter)
 
@@ -94,6 +97,17 @@ async def get_user_filter(user_id: int) -> Dict[str, Any]:
         user_filter['master_user_id'] = user_id
 
     return user_filter
+
+
+def get_counter_filters(filters):
+    counter_filters = {
+        'master_user_id': filters.get('master_user_id'),
+        'user_id': filters.get('user_id'),
+    }
+    if search_text := filters.get('search_text'):
+        counter_filters['search_text'] = search_text
+
+    return counter_filters
 
 
 def get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, int]:
