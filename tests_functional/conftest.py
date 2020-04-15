@@ -1,11 +1,13 @@
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture(autouse=True, scope='session')
-async def start(runner, pg):
-    await pg.execute_scripts(Path('contrib') / 'schema.sql')
+async def start(runner, pg, queue_service):
+    await pg.execute_scripts((Path('contrib') / 'postgresql' / 'migrations').glob('*.sql'))
     await runner.start_background_python_web()
+    await runner.start_background_python_command('process_announcement_consumer')
 
 
 @pytest.fixture(name='pg', scope='session')

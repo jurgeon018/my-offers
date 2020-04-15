@@ -1,11 +1,3 @@
--- SET ROLE my_offers_admin;
-
--- drop table offers;
--- drop type deal_type;
--- drop type offer_type;
--- drop type offer_status;
--- drop type service;
-
 create type deal_type as enum (
     'rent',
     'sale'
