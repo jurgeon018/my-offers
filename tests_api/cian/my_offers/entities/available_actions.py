@@ -15,7 +15,13 @@ from dataclasses import dataclass
 class AvailableActions:
     canDelete: bool
     """Можно ли удалить объялвение"""
+    canEdit: bool
+    """Можно редактировать"""
     canMoveToArchive: bool
     """Пользователь может перенести объявление в архив"""
+    canRaise: bool
+    """Можно ли поднять в размещении"""
+    canRestore: bool
+    """Можно восстановить"""
     canUpdateEditDate: bool
     """Можно обновить дату"""

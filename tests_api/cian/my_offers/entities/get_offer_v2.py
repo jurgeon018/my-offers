@@ -42,6 +42,8 @@ class GetOfferV2:
     """Дата архивации"""
     createdAt: Optional[datetime] = None
     """Дата подачи объявления"""
+    displayDate: Optional[datetime] = None
+    """Дата для отображения в карточке"""
     mainPhotoUrl: Optional[str] = None
     """Основаная фотография объекта"""
     statistics: Optional[Statistics] = None

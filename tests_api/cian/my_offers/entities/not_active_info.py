@@ -15,6 +15,6 @@ from typing import Optional
 @dataclass
 class NotActiveInfo:
     status: str
-    """Статус для некативных"""
+    """Статус для неактивных"""
     message: Optional[str] = None
     """Доп. сообщение"""

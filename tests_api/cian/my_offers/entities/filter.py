@@ -37,11 +37,10 @@ class OfferType(StrEnum):
 class Services(StrEnum):
     __value_format__ = NoFormat
     auction = 'auction'
-    calltracking = 'calltracking'
     free = 'free'
-    highlight = 'highlight'
     paid = 'paid'
     premium = 'premium'
+    premium_highlight = 'premium+highlight'
     top3 = 'top3'
 
 
@@ -49,13 +48,15 @@ class StatusTab(StrEnum):
     __value_format__ = NoFormat
     active = 'active'
     """Активные"""
+    all = 'all'
+    """По всем вкладкам"""
     archived = 'archived'
     """Архив"""
     declined = 'declined'
     """Отклоненные"""
     deleted = 'deleted'
     """Удалено"""
-    not_active = 'not_active'
+    not_active = 'notActive'
     """Неактивные"""
 
 
