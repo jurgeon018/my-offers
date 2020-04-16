@@ -2,7 +2,7 @@ import asyncio
 
 import pytest
 
-from .utils import load_json_data
+from tests_functional.utils import load_json_data
 
 
 @pytest.mark.asyncio
