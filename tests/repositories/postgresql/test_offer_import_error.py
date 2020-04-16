@@ -6,8 +6,11 @@ from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities import OfferImportError
-from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors, upsert_offer_import_errors, \
-    delete_offer_import_error
+from my_offers.repositories.postgresql.offer_import_error import (
+    delete_offer_import_error,
+    get_last_import_errors,
+    upsert_offer_import_errors,
+)
 
 
 @pytest.mark.gen_test
