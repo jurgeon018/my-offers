@@ -6,7 +6,8 @@ from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities import OfferImportError
-from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors, upsert_offer_import_errors
+from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors, upsert_offer_import_errors, \
+    delete_offer_import_error
 
 
 @pytest.mark.gen_test
@@ -68,4 +69,16 @@ async def test_get_last_import_errors(mocker):
         'FROM\n            offers_last_import_error\n        WHERE\n            offer_id = ANY($1::BIGINT[])\n    ',
         [11, 22],
         timeout=3,
+    )
+
+
+@pytest.mark.gen_test
+async def test_delete_offer_import_error(mocker):
+    # arrange & act
+    await delete_offer_import_error(11)
+
+    # assert
+    pg.get().execute.assert_called_once_with(
+        'DELETE FROM offers_last_import_error WHERE offer_id = $1',
+        11
     )
