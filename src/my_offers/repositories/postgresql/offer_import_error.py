@@ -35,7 +35,7 @@ async def upsert_offer_import_errors(errors: List[entities.OfferImportError]) ->
 
 
 async def delete_offer_import_error(offer_id: int) -> None:
-    query = 'DELETE FROM my_offers.public.offers_last_import_error WHERE offer_id = $1'
+    query = 'DELETE FROM offers_last_import_error WHERE offer_id = $1'
 
     await pg.get().execute(query, offer_id)
 

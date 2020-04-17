@@ -5,6 +5,17 @@ team = "happiness"
 name = "python"
 version = "3.8"
 
+[[dependency]]
+type = "postgres"
+alias = "my_offers"
+
+[[dependency]]
+type = "rabbitmq"
+
+[[dependency]]
+type = "redis"
+alias = "default"
+
 [job.web]
 type = "web"
 memory = 128
