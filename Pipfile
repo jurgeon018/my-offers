@@ -24,6 +24,7 @@ pytils  = "~=0.3"
 
 [dev-packages]
 cian-lint = "*"
+cian-functional-test-utils = {version = "*", extras = ["python", "postgres", "rabbitmq", "cache"]}
 cian-test-utils = "*"
 diff-cover = "*"
 isort = "*"
