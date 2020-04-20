@@ -51,7 +51,7 @@ async def get_object_models(
         offset: int,
         sort_type: GetOffersSortType,
 ) -> Tuple[List[ObjectModel], int]:
-    conditions = _prepare_conditions(filters)
+    conditions = prepare_conditions(filters)
     sort = _prepare_sort_order(sort_type)
 
     sql = (
@@ -72,19 +72,6 @@ async def get_object_models(
     total = result[0]['total_count']
 
     return models, total
-
-
-def _prepare_conditions(filters: Dict[str, Any]) -> List:
-    conditions = prepare_conditions(filters)
-
-    if services := filters.get('services'):
-        conditions.append(OFFER_TABLE.services.overlap(services))
-    if search_text := filters.get('search_text'):
-        tsquery = func.plainto_tsquery('russian', search_text)
-        tsvector = func.to_tsvector('russian', OFFER_TABLE.search_text)
-        conditions.append(tsvector.op('@@')(tsquery))
-
-    return conditions
 
 
 def _prepare_sort_order(sort_type: GetOffersSortType):

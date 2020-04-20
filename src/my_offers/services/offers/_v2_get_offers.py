@@ -3,10 +3,12 @@ import math
 from typing import Dict, List, Tuple
 
 from cian_web.exceptions import BrokenRulesException, Error
+from simple_settings import settings
 
 from my_offers import entities, enums
 from my_offers.entities import get_offers
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
+from my_offers.repositories.postgresql.offers_search_log import save_offers_search_log
 from my_offers.services.offer_view import v2_build_offer_view
 from my_offers.services.offers._get_offers import (
     get_counter_filters,
@@ -54,6 +56,9 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
         ])
 
     object_models, total = object_models_result.value
+    if settings.LOG_SEARCH_QUERIES and filters.get('search_text'):
+        await save_offers_search_log(filters=filters, found_cnt=total, is_error=object_models_result.degraded)
+
     offers, degradation = await v2_get_offer_views(object_models=object_models, user_id=realty_user_id)
 
     degradation['offer_counters'] = offer_counters_result.degraded
