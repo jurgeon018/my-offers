@@ -52,7 +52,7 @@ def get_search_text(object_model: ObjectModel) -> str:
     if object_model.title:
         result.append(object_model.title)
     if object_model.rooms_count and object_model.rooms_count < 6:
-        result += [object_model.rooms_count, 'комн', 'комнатная']
+        result += [str(object_model.rooms_count), 'комн', 'комнатная']
 
     # этаж раздельно
     if floor_number := object_model.floor_number:
