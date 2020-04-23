@@ -43,7 +43,7 @@ def get_search_text(object_model: ObjectModel) -> str:
         result += _collect_names(geo.railways, 'станиция')   # Жд
 
         if jk := geo.jk:                            # ЖК
-            result.append(jk.name)
+            result.append(jk.name + ' ЖК жилой комплекс')
 
     # Заголовок
     # количество комнат: 1, 2, 3, 4, 5, 6+, студия, свободная планировка
