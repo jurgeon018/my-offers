@@ -35,8 +35,8 @@ def get_search_text(object_model: ObjectModel) -> str:
         if address := geo.user_input:
             result.append(address)
 
-        result += _collect_names(geo.address)       # Адрес (город, улица, дом)
-        result += _get_house(geo.address)           # доп. варианты для дома
+        result += _collect_full_names(geo.address)           # Адрес (город, улица, дом)
+        result += _get_house(geo.address)                    # доп. варианты для дома
         result += _collect_names(geo.undergrounds, 'метро')  # Метро
         result += _collect_names(geo.district, 'район')      # Район
         result += _collect_names(geo.highways, 'шоссе')      # Шоссе
@@ -68,8 +68,15 @@ def get_search_text(object_model: ObjectModel) -> str:
     return ' '.join(result)
 
 
+def _collect_full_names(address: List[AddressInfo]):
+    if not address:
+        return []
+
+    return [item.full_name for item in address if item.full_name]
+
+
 def _collect_names(
-        geo_items: Optional[List[Union[AddressInfo, DistrictInfo, HighwayInfo, RailwayInfo, UndergroundInfo]]],
+        geo_items: Optional[List[Union[DistrictInfo, HighwayInfo, RailwayInfo, UndergroundInfo]]],
         name: Optional[str] = None
 ) -> List[str]:
     if not geo_items:
