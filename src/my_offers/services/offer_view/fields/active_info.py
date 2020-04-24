@@ -14,18 +14,22 @@ def get_active_info(publish_terms: Optional[PublishTerms], payed_till: Optional[
     terms = publish_terms.terms if publish_terms else None
     payed_remain = _get_payed_remain(payed_till)
 
+    is_autoprolong = bool(publish_terms and publish_terms.autoprolong)
+    is_publication_time_ends = bool(payed_remain and payed_remain.days < 1)
+
     return get_offers.ActiveInfo(
-        publish_features=get_publish_features(publish_terms=publish_terms, payed_remain=payed_remain),
+        publish_features=get_publish_features(
+            publish_terms=publish_terms,
+            payed_remain=payed_remain
+        ),
         vas=get_vas(terms),
         is_from_package=is_from_package(terms),
-        is_publication_time_ends=bool(payed_remain and payed_remain.days < 1),
+        is_publication_time_ends=is_publication_time_ends and not is_autoprolong,
         payed_till=payed_till,
     )
 
 
 def _get_payed_remain(payed_till: Optional[datetime]) -> Optional[timedelta]:
-    return None  # todo: https://jira.cian.tech/browse/CD-77838  - будем реализовывать во втором этапе
-
     if not payed_till:
         return None
 
