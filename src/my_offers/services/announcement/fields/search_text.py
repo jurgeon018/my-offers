@@ -42,7 +42,7 @@ def get_search_text(object_model: ObjectModel) -> str:
         result += _collect_names(geo.highways, 'шоссе')      # Шоссе
         result += _collect_names(geo.railways, 'станиция')   # Жд
 
-        if jk := geo.jk:                            # ЖК
+        if jk := geo.jk:                                     # ЖК
             result.append(jk.name + ' ЖК жилой комплекс')
 
     # Заголовок
