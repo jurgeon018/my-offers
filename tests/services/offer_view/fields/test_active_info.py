@@ -50,22 +50,17 @@ def test_get_active_info(mocker):
     assert result == expected
 
 
-@pytest.mark.parametrize('autoprolong, publish_features,now_date, expected', [
-    (True, ['автопродление'], datetime(2020, 5, 10, tzinfo=pytz.utc), False),
-    (True, ['осталось 0 м.', 'автопродление'], datetime(2020, 5, 11, tzinfo=pytz.utc), False),
-    (False, ['осталось 0 м.'], datetime(2020, 5, 11, tzinfo=pytz.utc), True),
+@pytest.mark.parametrize('autoprolong, publish_features, now_date, terms, expected', [
+    (True, ['автопродление'], datetime(2020, 5, 10, tzinfo=pytz.utc), [], False),
+    (True, ['осталось 0 м.', 'автопродление'], datetime(2020, 5, 11, tzinfo=pytz.utc), [], False),
+    (False, ['осталось 0 м.'], datetime(2020, 5, 11, tzinfo=pytz.utc), [], True),
+    (False, [], datetime(2020, 5, 10, tzinfo=pytz.utc), [PublishTerm(days=7)], False),
 ])
-def test_get_active_info__is_publication_time_ends(mocker, autoprolong, publish_features, now_date, expected):
+def test_get_active_info__is_publication_time_ends(mocker, autoprolong, publish_features, now_date, terms, expected):
     # arrange
     payed_till = datetime(2020, 5, 10, tzinfo=pytz.utc)
     publish_terms = PublishTerms(
-        terms=[
-            PublishTerm(
-                days=14,
-                type=Type.periodical,
-                services=[Services.calltracking]
-            )
-        ],
+        terms=terms,
         autoprolong=autoprolong,
     )
     expected = ActiveInfo(

@@ -8,6 +8,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Publis
 from my_offers.services.offer_view.fields.from_package import is_from_package
 from my_offers.services.offer_view.fields.publish_features import get_publish_features
 from my_offers.services.offer_view.fields.vas import get_vas
+from my_offers.services.offer_view.helpers.terms import is_daily_charge
 
 
 def get_active_info(publish_terms: Optional[PublishTerms], payed_till: Optional[datetime]) -> get_offers.ActiveInfo:
@@ -15,7 +16,14 @@ def get_active_info(publish_terms: Optional[PublishTerms], payed_till: Optional[
     payed_remain = _get_payed_remain(payed_till)
 
     is_autoprolong = bool(publish_terms and publish_terms.autoprolong)
-    is_publication_time_ends = bool(payed_remain and payed_remain.days < 1)
+    is_time_ends = bool(payed_remain and payed_remain.days < 1)
+    daily_charge = is_daily_charge(publish_terms.terms) if publish_terms else False
+
+    is_publication_time_ends = (
+        not is_autoprolong
+        and not daily_charge
+        and is_time_ends
+    )
 
     return get_offers.ActiveInfo(
         publish_features=get_publish_features(
@@ -24,7 +32,7 @@ def get_active_info(publish_terms: Optional[PublishTerms], payed_till: Optional[
         ),
         vas=get_vas(terms),
         is_from_package=is_from_package(terms),
-        is_publication_time_ends=is_publication_time_ends and not is_autoprolong,
+        is_publication_time_ends=is_publication_time_ends,
         payed_till=payed_till,
     )
 
