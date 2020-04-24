@@ -24,7 +24,7 @@ def get_publish_features(publish_terms: Optional[PublishTerms], payed_remain: Op
     return result
 
 
-def _get_remain(delta: timedelta):
+def _get_remain(delta: timedelta) -> str:
     if delta.days > 0:
         return '{} д.'.format(delta.days)
 
