@@ -50,11 +50,41 @@ def test_get_active_info(mocker):
     assert result == expected
 
 
+@pytest.mark.parametrize('autoprolong, publish_features, now_date, terms, expected', [
+    (True, ['автопродление'], datetime(2020, 5, 10, tzinfo=pytz.utc), [], False),
+    (True, ['осталось 0 м.', 'автопродление'], datetime(2020, 5, 11, tzinfo=pytz.utc), [], False),
+    (False, ['осталось 0 м.'], datetime(2020, 5, 11, tzinfo=pytz.utc), [], True),
+    (False, [], datetime(2020, 5, 10, tzinfo=pytz.utc), [PublishTerm(days=7)], False),
+])
+def test_get_active_info__is_publication_time_ends(mocker, autoprolong, publish_features, now_date, terms, expected):
+    # arrange
+    payed_till = datetime(2020, 5, 10, tzinfo=pytz.utc)
+    publish_terms = PublishTerms(
+        terms=terms,
+        autoprolong=autoprolong,
+    )
+    expected = ActiveInfo(
+        vas=[],
+        is_from_package=False,
+        is_publication_time_ends=expected,
+        publish_features=publish_features,
+        auction=None,
+        payed_till=payed_till
+    )
+
+    # act
+    with freeze_time(now_date):
+        result = get_active_info(publish_terms=publish_terms, payed_till=payed_till)
+
+    # assert
+    assert result == expected
+
+
 @pytest.mark.parametrize(
     ('payed_till', 'expected'),
     (
         (None, None),
-        (datetime(2020, 5, 10, tzinfo=pytz.utc), None),
+        (datetime(2020, 5, 10, tzinfo=pytz.utc), timedelta(days=38, seconds=43200)),
     )
 )
 @freeze_time('2020-04-01 12:00:00')
