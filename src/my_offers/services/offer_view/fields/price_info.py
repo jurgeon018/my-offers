@@ -19,6 +19,13 @@ def get_price_info(
         offer_type: enums.OfferType,
         deal_type: enums.DealType
 ) -> PriceInfo:
+    currency = CURRENCY.get(bargain_terms.currency)
+    if not currency:
+        return PriceInfo(exact=None, range=None)
+    price = bargain_terms.price
+    if not price:
+        return PriceInfo(exact=None, range=None)
+
     max_area = max_area if max_area else total_area
     is_rent = deal_type.is_rent
     is_daily_rent = category in [
@@ -28,44 +35,34 @@ def get_price_info(
         Category.daily_house_rent,
     ]
     is_square_meter = bargain_terms.price_type and bargain_terms.price_type.is_square_meter
-    can_calc_parts = all([is_square_meter, offer_type.is_commercial, can_parts])
-
-    currency = CURRENCY.get(bargain_terms.currency)
+    can_calc_parts = all([is_square_meter, offer_type.is_commercial, can_parts, max_area, min_area])
 
     price_exact = None
     price_range = None
-
-    if not currency:
-        return PriceInfo(exact=price_exact, range=price_range)
-
-    price = int(bargain_terms.price) if bargain_terms.price else None
-
-    if price:
-        pretty_price = get_pretty_number(number=price)
-
-        if is_daily_rent:
-            price_exact = f'{pretty_price} {currency}/сут.'
-        elif is_rent:
-            # mypy не понимает вычисления в all([..., max_area, min_area])
-            if can_calc_parts and max_area and min_area:
-                if bargain_terms.payment_period and bargain_terms.payment_period.is_monthly:
-                    months_count = 1
-                else:
-                    months_count = 12
-
-                min_price = get_pretty_number(int(price / months_count * min_area))
-                max_price = get_pretty_number(int(price / months_count * max_area))
-                price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']
-            else:
-                price = int(price * total_area) if is_square_meter and total_area else price
-                pretty_price = get_pretty_number(price)
-                price_exact = f'{pretty_price} {currency}/мес.'
+    pretty_price = get_pretty_number(int(price))
+    if is_daily_rent:
+        price_exact = f'{pretty_price} {currency}/сут.'
+    elif is_rent:
+        if bargain_terms.payment_period and bargain_terms.payment_period.is_monthly:
+            price_per_month = price
         else:
-            if can_parts and max_area and min_area:
-                min_price = get_pretty_number(int(price * min_area / max_area))
-                max_price = get_pretty_number(price)
-                price_range = [f'от {min_price}', f'до {max_price} {currency}']
-            else:
-                price_exact = f'{pretty_price} {currency}'
+            price_per_month = price / 12
+
+        if can_calc_parts:
+            min_price = get_pretty_number(int(price_per_month * min_area))
+            max_price = get_pretty_number(int(price_per_month * max_area))
+            price_range = [f'от {min_price}', f'до {max_price} {currency}/мес']
+        else:
+            if is_square_meter and total_area:
+                price_per_month *= total_area
+
+            pretty_price = get_pretty_number(int(price_per_month))
+            price_exact = f'{pretty_price} {currency}/мес.'
+    elif can_parts:
+        min_price = get_pretty_number(int(price * min_area / max_area))
+        max_price = get_pretty_number(price)
+        price_range = [f'от {min_price}', f'до {max_price} {currency}']
+    else:
+        price_exact = f'{pretty_price} {currency}'
 
     return PriceInfo(exact=price_exact, range=price_range)
