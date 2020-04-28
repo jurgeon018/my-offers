@@ -35,15 +35,15 @@ def get_search_text(object_model: ObjectModel) -> str:
         if address := geo.user_input:
             result.append(address)
 
-        result += _collect_names(geo.address)       # Адрес (город, улица, дом)
-        result += _get_house(geo.address)           # доп. варианты для дома
-        result += _collect_names(geo.undergrounds)  # Метро
-        result += _collect_names(geo.district)      # Район
-        result += _collect_names(geo.highways)      # Шоссе
-        result += _collect_names(geo.railways)      # Жд
+        result += _collect_full_names(geo.address)           # Адрес (город, улица, дом)
+        result += _get_house(geo.address)                    # доп. варианты для дома
+        result += _collect_names(geo.undergrounds, 'метро')  # Метро
+        result += _collect_names(geo.district, 'район')      # Район
+        result += _collect_names(geo.highways, 'шоссе')      # Шоссе
+        result += _collect_names(geo.railways, 'станиция')   # Жд
 
-        if jk := geo.jk:                            # ЖК
-            result.append(jk.name)
+        if jk := geo.jk:                                     # ЖК
+            result.append(jk.name + ' ЖК жилой комплекс')
 
     # Заголовок
     # количество комнат: 1, 2, 3, 4, 5, 6+, студия, свободная планировка
@@ -51,6 +51,8 @@ def get_search_text(object_model: ObjectModel) -> str:
     result.append(get_title(object_model))
     if object_model.title:
         result.append(object_model.title)
+    if object_model.rooms_count and object_model.rooms_count < 6:
+        result += [str(object_model.rooms_count), 'комн', 'комнатная']
 
     # этаж раздельно
     if floor_number := object_model.floor_number:
@@ -66,13 +68,25 @@ def get_search_text(object_model: ObjectModel) -> str:
     return ' '.join(result)
 
 
+def _collect_full_names(address: List[AddressInfo]):
+    if not address:
+        return []
+
+    return [item.full_name for item in address if item.full_name]
+
+
 def _collect_names(
-        geo_items: Optional[List[Union[AddressInfo, DistrictInfo, HighwayInfo, RailwayInfo, UndergroundInfo]]]
+        geo_items: Optional[List[Union[DistrictInfo, HighwayInfo, RailwayInfo, UndergroundInfo]]],
+        name: Optional[str] = None
 ) -> List[str]:
     if not geo_items:
         return []
 
-    return [item.name for item in geo_items]
+    result = [item.name for item in geo_items]
+    if name:
+        result.append(name)
+
+    return result
 
 
 def _get_house(address: Optional[List[AddressInfo]]) -> List[str]:
