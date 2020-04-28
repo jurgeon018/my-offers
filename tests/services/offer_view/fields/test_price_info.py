@@ -64,7 +64,7 @@ from my_offers.services.offer_view.fields.price_info import get_price_info
             100,
             enums.OfferType.commercial,
             enums.DealType.rent,
-            PriceInfo(exact=None, range=['от 8 333', 'до 83 333 ₽/мес']),
+            PriceInfo(exact=None, range=['от 8 334', 'до 83 334 ₽/мес']),
         ),
         (
             BargainTerms(
