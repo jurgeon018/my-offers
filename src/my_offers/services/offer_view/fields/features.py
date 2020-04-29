@@ -40,14 +40,14 @@ def get_features(
             features.append('Альтернативная продажа')
 
         if (is_commercial or is_newobject) and is_square_meter and currency and price:
-            pretty_price = get_pretty_number(number=int(price))
+            pretty_price = get_pretty_number(price)
             features.append(f'{pretty_price} {currency} {SQUARE_METER_SYMBOL}')
 
         if not is_commercial and sale_type and sale_type.is_dupt:
             features.append('Переуступка')
 
         if is_all and currency and total_area and price:
-            pretty_price = get_pretty_number(number=int(price / total_area))
+            pretty_price = get_pretty_number(price / total_area)
             features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL}')
     else:
         if bargain_terms.agent_fee:
@@ -66,7 +66,7 @@ def get_features(
                     months_count = 12
                 else:
                     months_count = 1
-                pretty_price = get_pretty_number(int(price * months_count))
+                pretty_price = get_pretty_number(price * months_count)
                 features.append(f'{pretty_price} {currency} за {SQUARE_METER_SYMBOL} в год')
 
             if lease_type and lease_type.is_sublease:
