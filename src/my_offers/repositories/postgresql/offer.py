@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 import asyncpgsa
 import pytz
@@ -167,7 +167,7 @@ async def get_offers_creation_date(master_user_id: int, offer_ids: List[int]) ->
     return [offers_creation_date_mapper.map_from(row) for row in rows]
 
 
-async def get_offers_row_version(offer_ids: Set[int]) -> List[OfferRowVersion]:
+async def get_offers_row_version(offer_ids: List[int]) -> List[OfferRowVersion]:
     query = """
     SELECT
         offer_id,
@@ -175,7 +175,7 @@ async def get_offers_row_version(offer_ids: Set[int]) -> List[OfferRowVersion]:
     FROM
         offers
     WHERE
-        offer_id = ANY($2::BIGINT[])
+        offer_id = ANY($1::BIGINT[])
     """
 
     rows = await pg.get().fetch(query, offer_ids)

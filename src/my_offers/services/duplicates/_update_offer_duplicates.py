@@ -1,4 +1,4 @@
-from typing import Set
+from typing import List
 
 from my_offers.repositories import postgresql
 from my_offers.repositories.offers_duplicates import v1_get_offers_duplicates_by_ids
@@ -6,7 +6,7 @@ from my_offers.repositories.offers_duplicates.entities import GetOffersDuplicate
 from my_offers.repositories.postgresql.offer import get_offers_row_version
 
 
-async def update_offers_duplicates(offer_ids: Set[int]) -> None:
+async def update_offers_duplicates(offer_ids: List[int]) -> None:
     if not offer_ids:
         return
 

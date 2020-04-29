@@ -130,4 +130,4 @@ async def update_offer_duplicates_callback(messages: List[Message]) -> None:
         offer_ids.add(data.id)
 
     with new_operation_id():
-        await update_offers_duplicates(offer_ids)
+        await update_offers_duplicates(list(offer_ids))
