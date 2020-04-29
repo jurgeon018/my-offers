@@ -9,6 +9,7 @@ from my_offers.entities.offer_action import OfferActionRequest, OfferActionRespo
 from my_offers.entities.offer_import_error import OfferImportError
 from my_offers.entities.offers_creation_date import (
     OfferCreationDate,
+    OfferRowVersion,
     OffersCreationDateRequest,
     OffersCreationDateResponse,
 )

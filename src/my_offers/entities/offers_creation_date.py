@@ -23,3 +23,11 @@ class OfferCreationDate:
 class OffersCreationDateResponse:
     offers: List[OfferCreationDate]
     """Список объявлений"""
+
+
+@dataclass
+class OfferRowVersion:
+    offer_id: int
+    """id объявления"""
+    row_version: int
+    """Версия записи"""

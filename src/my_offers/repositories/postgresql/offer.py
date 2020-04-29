@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 import asyncpgsa
 import pytz
@@ -9,10 +9,16 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.functions import count
 
 from my_offers import entities, enums, pg
+from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
 from my_offers.helpers.statsd import async_statsd_timer
-from my_offers.mappers.offer_mapper import offer_mapper, offers_creation_date_offer_mapper, reindex_offer_mapper
+from my_offers.mappers.offer_mapper import (
+    offer_mapper,
+    offer_row_version_mapper,
+    offers_creation_date_mapper,
+    reindex_offer_mapper,
+)
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
 
@@ -158,4 +164,20 @@ async def get_offers_creation_date(master_user_id: int, offer_ids: List[int]) ->
 
     rows = await pg.get().fetch(query, master_user_id, offer_ids, timeout=settings.DB_TIMEOUT)
 
-    return [offers_creation_date_offer_mapper.map_from(row) for row in rows]
+    return [offers_creation_date_mapper.map_from(row) for row in rows]
+
+
+async def get_offers_row_version(offer_ids: Set[int]) -> List[OfferRowVersion]:
+    query = """
+    SELECT
+        offer_id,
+        row_version
+    FROM
+        offers
+    WHERE
+        offer_id = ANY($2::BIGINT[])
+    """
+
+    rows = await pg.get().fetch(query, offer_ids)
+
+    return [offer_row_version_mapper.map_from(row) for row in rows]

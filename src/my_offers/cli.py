@@ -105,6 +105,15 @@ register_consumer(
     dead_queue_enabled=True,
 )
 
+# [duplicates] обновление дублей
+register_consumer(
+    command=cli.command('update_offer_duplicates_consumer'),
+    queue=queues.update_offer_duplicates_queue,
+    callback=consumers.update_offer_duplicates_callback,
+    schema_cls=schemas.RabbitMQNeedUpdateDuplicateMessageSchema,
+    dead_queue_enabled=True,
+)
+
 
 @cli.command()
 def reindex_offers() -> None:

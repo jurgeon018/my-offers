@@ -28,7 +28,12 @@ reindex_offer_mapper = EntityMapper(
     }
 )
 
-offers_creation_date_offer_mapper = EntityMapper(
+offers_creation_date_mapper = EntityMapper(
     entities.OfferCreationDate,
+    without_camelcase=True,
+)
+
+offer_row_version_mapper = EntityMapper(
+    entities.OfferRowVersion,
     without_camelcase=True,
 )
