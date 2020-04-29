@@ -32,3 +32,8 @@ class RabbitMQAgentUpdatedMessageSchema(EntitySchema):
 class RabbitMQAnnouncementPremoderationReportingMessageSchema(EntitySchema):
     class Meta:
         entity = mq_entities.AnnouncementPremoderationReportingMessage
+
+
+class RabbitMQNeedUpdateDuplicateMessageSchema(EntitySchema):
+    class Meta:
+        entity = mq_entities.NeedUpdateDuplicateMessage

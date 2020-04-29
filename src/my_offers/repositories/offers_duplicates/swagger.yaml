@@ -1,0 +1,57 @@
+definitions:
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items: {title: errors, type: object}
+        title: errors
+        type: array
+      message: {title: message, type: string}
+    type: object
+  offers_duplicates.entities.offers_duplicates.DuplicateSchema:
+    properties:
+      duplicateGroupId: {description: Группа обьявления, format: int64, title: duplicate_group_id,
+        type: integer}
+      offerId: {description: Id обьявления, format: int64, title: offer_id, type: integer}
+    required: [duplicateGroupId, offerId]
+    type: object
+  offers_duplicates.entities.offers_duplicates.GetOffersDuplicatesByIdsRequestSchema:
+    properties:
+      offers:
+        description: Список обьявлений
+        items: {$ref: '#/definitions/offers_duplicates.entities.offers_duplicates.OfferSchema'}
+        type: array
+    required: [offers]
+    type: object
+  offers_duplicates.entities.offers_duplicates.GetOffersDuplicatesByIdsResponseSchema:
+    properties:
+      duplicates:
+        description: Список дубликатов
+        items: {$ref: '#/definitions/offers_duplicates.entities.offers_duplicates.DuplicateSchema'}
+        type: array
+    required: [duplicates]
+    type: object
+  offers_duplicates.entities.offers_duplicates.OfferSchema:
+    properties:
+      id: {description: Id обьявления, format: int64, title: id, type: integer}
+      rowVersion: {description: Версия обьявления, format: int64, title: row_version,
+        type: integer}
+    required: [id, rowVersion]
+    type: object
+info: {description: My short description, title: offers-duplicates, version: 1.0.0}
+paths:
+  /v1/get-offers-duplicates-by-ids/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema: {$ref: '#/definitions/offers_duplicates.entities.offers_duplicates.GetOffersDuplicatesByIdsRequestSchema'}
+      produces: [application/json]
+      responses:
+        '200':
+          schema: {$ref: '#/definitions/offers_duplicates.entities.offers_duplicates.GetOffersDuplicatesByIdsResponseSchema'}
+        '400':
+          schema: {$ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'}
+      summary: "Получить все дубликаты обьявок по id и row_version,\n    если в группе\
+        \ больше одного объявления."
+swagger: '2.0'

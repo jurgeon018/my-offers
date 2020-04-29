@@ -56,3 +56,13 @@ class AnnouncementPremoderationReportingMessage:
     """Время изменения"""
     row_version: int
     """Версия записи"""
+
+
+@dataclass
+class NeedUpdateDuplicateMessage:
+    id: int
+    """Id объявления"""
+    force: bool
+    """Принудительное обновление"""
+    date: datetime
+    """Время изменения"""

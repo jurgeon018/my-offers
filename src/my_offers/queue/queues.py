@@ -123,3 +123,13 @@ announcement_premoderation_remove_queue = Queue(
         ),
     ],
 )
+
+update_offer_duplicates_queue = Queue(
+    name=get_modified_queue_name('update_offer_duplicates'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('ml-ranking-dubli'),
+            routing_key='offer.v1.need-update-duplicate',
+        ),
+    ],
+)
