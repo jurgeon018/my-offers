@@ -1,5 +1,8 @@
 import asyncio
+from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
+
+import pytz
 
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.offer_view_model import Subagent
@@ -11,11 +14,14 @@ from my_offers.services.announcement_api import can_update_edit_date_degradation
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offers._get_offers import (
     get_agent_names_degradation_handler,
+    get_favorites_counts_degradation_handler,
     get_last_import_errors_degradation_handler,
     get_offer_premoderations_degradation_handler,
     get_offers_offence_degradation_handler,
     get_offers_payed_till_degradation_handler,
     get_offers_update_at_degradation_handler,
+    get_searches_counts_degradation_handler,
+    get_views_counts_degradation_handler,
 )
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
 from my_offers.services.search_coverage import get_offers_search_coverage_degradation_handler
@@ -32,10 +38,16 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
             geo_urls={},
             can_update_edit_dates={},
             import_errors={},
+            favorites_counts={},
+            searches_counts={},
+            views_counts={},
         ), {}
 
     data = await asyncio.gather(
-        _load_coverage(offer_ids),
+        _load_favorites_counts(offer_ids),
+        _load_searches_counts(offer_ids),
+        _load_views_counts(offer_ids),
+        _load_coverage(offer_ids),  # TODO: remove
         _load_auctions(offer_ids),
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
@@ -50,13 +62,13 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
     )
 
-    params = {}
+    loaded_data = {}
     degradation = {}
     for item in data:
-        params[item.key] = item.value
+        loaded_data[item.key] = item.value
         degradation[item.key] = item.degraded
 
-    return EnrichData(**params), degradation
+    return EnrichData(**loaded_data), degradation
 
 
 @async_statsd_timer('enrich.load_moderation_info')
@@ -186,3 +198,36 @@ async def _load_payed_till(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_payed_till_degradation_handler(offer_ids)
 
     return EnrichItem(key='payed_till', degraded=result.degraded, value=result.value)
+
+
+@async_statsd_timer('enrich.load_views_counts')
+async def _load_views_counts(offer_ids: List[int]) -> EnrichItem:
+    date_to = datetime.now(tz=pytz.utc)
+    date_from = date_to - timedelta(days=10)
+    result = await get_views_counts_degradation_handler(
+        offer_ids=offer_ids,
+        date_from=date_from,
+        date_to=date_to
+    )
+
+    return EnrichItem(key='views_counts', degraded=result.degraded, value=result.value)
+
+
+@async_statsd_timer('enrich.load_searches_counts')
+async def _load_searches_counts(offer_ids: List[int]) -> EnrichItem:
+    date_to = datetime.now(tz=pytz.utc)
+    date_from = date_to - timedelta(days=10)
+    result = await get_searches_counts_degradation_handler(
+        offer_ids=offer_ids,
+        date_from=date_from,
+        date_to=date_to
+    )
+
+    return EnrichItem(key='searches_counts', degraded=result.degraded, value=result.value)
+
+
+@async_statsd_timer('enrich.load_favorites_counts')
+async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
+    result = await get_favorites_counts_degradation_handler(offer_ids)
+
+    return EnrichItem(key='favorites_counts', degraded=result.degraded, value=result.value)

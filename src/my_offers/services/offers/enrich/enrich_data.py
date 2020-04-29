@@ -1,5 +1,5 @@
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, NamedTuple, Optional, Set
 
@@ -116,6 +116,11 @@ class EnrichData:
     premoderation_info: Optional[Set[int]] = None
     archive_date: Optional[Dict[int, datetime]] = None
     payed_till: Optional[Dict[int, datetime]] = None
+
+    # statistics
+    views_counts: Dict[int, int] = field(default_factory=dict)
+    searches_counts: Dict[int, int] = field(default_factory=dict)
+    favorites_counts: Dict[int, int] = field(default_factory=dict)
 
     def get_urls_by_types(
             self,
