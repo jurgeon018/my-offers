@@ -10,11 +10,12 @@ from my_offers.helpers.numbers import get_pretty_number
     (10000, '10 000'),
     (100000, '100 000'),
     (1000000, '1 000 000'),
-    (1000.5, '1 000'),
+    (1000.5, '1 001'),
+    (1000.2, '1 001'),
 ])
 def test_get_pretty_number(number, expected):
     # act
-    result = get_pretty_number(number=number)
+    result = get_pretty_number(number)
 
     # assert
     assert result == expected

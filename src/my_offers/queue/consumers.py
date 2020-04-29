@@ -10,6 +10,7 @@ from my_offers.entities.moderation import OfferPremoderation
 from my_offers.queue.entities import (
     AnnouncementMessage,
     AnnouncementPremoderationReportingMessage,
+    NeedUpdateDuplicateMessage,
     SaveUnloadErrorMessage,
     ServiceContractMessage,
 )
@@ -20,6 +21,7 @@ from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
     save_announcement_contract,
 )
+from my_offers.services.duplicates import update_offers_duplicates
 from my_offers.services.moderation.moderation_service import save_offer_offence
 from my_offers.services.offers_import import save_offers_import_error
 
@@ -119,3 +121,13 @@ async def remove_offer_premoderation_callback(messages: List[Message]) -> None:
                 removed=True,
                 row_version=premoderation.row_version,
             ))
+
+
+async def update_offer_duplicates_callback(messages: List[Message]) -> None:
+    offer_ids = set()
+    for message in messages:
+        data: NeedUpdateDuplicateMessage = message.data
+        offer_ids.add(data.id)
+
+    with new_operation_id():
+        await update_offers_duplicates(list(offer_ids))

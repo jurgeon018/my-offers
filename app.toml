@@ -74,6 +74,11 @@ type = "consumer"
 command = "remove_offer_premoderation_consumer"
 memory = 128
 
+[job.update_offer_duplicates_consumer]
+type = "consumer"
+command = "update_offer_duplicates_consumer"
+memory = 128
+
 [job.reindex_offers]
 type = "manage"
 command = "reindex-offers"
