@@ -28,6 +28,7 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> None:
         .values(data)
         .on_conflict_do_nothing()
         # todo: добавить логику https://jira.cian.tech/browse/CD-80218
+        # обновлять group_id
     )
 
     await pg.get().execute(query, *params)

@@ -21,4 +21,8 @@ async def update_offers_duplicates(offer_ids: List[int]) -> None:
         GetOffersDuplicatesByIdsRequest(request)
     )
 
-    await postgresql.update_offers_duplicates(new_duplicates.duplicates)
+    if new_duplicates.duplicates:
+        await postgresql.update_offers_duplicates(new_duplicates.duplicates)
+
+    # todo: добавить логику https://jira.cian.tech/browse/CD-80218
+    # удалить из дублей если не дубль
