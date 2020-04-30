@@ -4,17 +4,37 @@ from typing import Dict, List, Optional
 
 from my_offers import enums
 from my_offers.entities.get_offers import PageInfo, Pagination
-from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
+from my_offers.entities.offer_view_model import Underground
 
 
 @dataclass
 class GetOfferDuplicatesRequest:
     offer_id: int
     """Id объявления"""
-    type: Optional[enums.DuplicateTabType]
+    type: enums.DuplicateTabType
     """Вкладка дубликатов"""
     pagination: Optional[Pagination]
     """Параметры страницы"""
+
+
+@dataclass
+class PriceInfo:
+    exact: Optional[str]
+    """Цена"""
+    range: Optional[List[str]]
+    """Диапазон цен"""
+    trend: Optional[enums.PriceTrend]
+    """Тенденция цены"""
+
+
+@dataclass
+class DuplicateOfferGeo:
+    address: List[str]
+    """Адрес"""
+    newbuilding: Optional[str]
+    """Новостройки"""
+    underground: Optional[Underground]
+    """Метро"""
 
 
 @dataclass
@@ -25,7 +45,7 @@ class OfferDuplicate:
     """Основаная фотография объекта"""
     properties: List[str]
     """Свойства: комнаты, площадь и т.д."""
-    geo: OfferGeo
+    geo: DuplicateOfferGeo
     """Гео"""
     display_date: Optional[datetime]
     """Дата для отображения в карточке"""
