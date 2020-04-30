@@ -88,12 +88,17 @@ async def get_searches_counts(offer_ids: List[int], date_from: datetime, date_to
     chained_stats = repo_results['daily'] + repo_results['current']
 
     offers_dict = dict.fromkeys(offer_ids, 0)
-
     for row in chained_stats:
         offers_dict[row.offer_id] += row.searches_count or 0
 
+    offers_dict_v2 = {}
     for v2_row in repo_results.get('v2', []):
-        offers_dict[v2_row.offer_id] += v2_row.searches_count or 0
+        if offers_dict_v2.get(v2_row.offer_id):
+            offers_dict_v2[v2_row.offer_id] += v2_row.searches_count or 0
+        else:
+            offers_dict_v2[v2_row.offer_id] = v2_row.searches_count or 0
+
+    offers_dict.update(offers_dict_v2)
 
     return offers_dict
 

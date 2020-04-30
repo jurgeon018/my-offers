@@ -166,6 +166,9 @@ async def test_get_searches_counts__search_coverage_is_enabled(mocker, fake_sett
         StatisticsCoverageRow(offer_id=2, favorite_added=0, searches_count=20),
         StatisticsCoverageRow(offer_id=2, favorite_added=0, searches_count=15),
     ]
+    coverage_counters = [
+        StatisticsCoverageRow(offer_id=2, favorite_added=0, searches_count=7),
+    ]
 
     await fake_settings.set(SEARCH_COVERAGE_NEW_TABLE_DATE_FROM=str(new_table_date_from))
     mocker.patch(
@@ -182,7 +185,7 @@ async def test_get_searches_counts__search_coverage_is_enabled(mocker, fake_sett
     )
     get_offers_counters = mocker.patch(
         'my_offers.services.statistics._statistics.search_coverage_cs_repo.get_offers_counters',
-        return_value=future(coverage_current)
+        return_value=future(coverage_counters)
     )
 
     # act
@@ -195,7 +198,7 @@ async def test_get_searches_counts__search_coverage_is_enabled(mocker, fake_sett
     # assert
     assert result == {
         1: 10,
-        2: 70,
+        2: 7,
         3: 0
     }
     get_offers_coverage_daily.assert_called_once_with(
