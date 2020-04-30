@@ -213,7 +213,7 @@ async def test_get_searches_counts__search_coverage_is_enabled(mocker, fake_sett
     )
     get_offers_counters.assert_called_once_with(
         offers_ids=offer_ids,
-        date_from=new_table_date_from,
+        date_from=date_from.date(),
         date_to=date_to.date()
     )
 

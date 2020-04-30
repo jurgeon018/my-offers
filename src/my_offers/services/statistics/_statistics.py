@@ -80,7 +80,7 @@ async def get_searches_counts(offer_ids: List[int], date_from: datetime, date_to
         if new_table_date_from <= date_to.date():
             futures['v2'] = search_coverage_cs_repo.get_offers_counters(
                 offers_ids=offer_ids,
-                date_from=new_table_date_from,
+                date_from=date_from.date(),
                 date_to=date_to.date(),
             )
 
@@ -126,10 +126,10 @@ async def get_views_counts(offer_ids: List[int], date_from: datetime, date_to: d
 
 
 async def _get_views_by_date_range(
-        offer_id: int,
-        date_from: datetime,
-        date_to: datetime,
-        completed_date: datetime,
+    offer_id: int,
+    date_from: datetime,
+    date_to: datetime,
+    completed_date: datetime,
 ) -> int:
     # views_daily stat
     intervals = get_months_intervals(date_from=datetime.combine(date_from, time.min), date_to=completed_date)
