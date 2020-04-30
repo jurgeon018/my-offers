@@ -52,11 +52,6 @@ async def test_load_enrich_data(mocker):
         geo_type=Type.location,
         geo_id=1,
     )
-
-    load_statistic_mock = mocker.patch(
-        f'{PATH}_load_coverage',
-        return_value=future(EnrichItem(key='coverage', degraded=False, value={})),
-    )
     load_auctions_mock = mocker.patch(
         f'{PATH}_load_auctions',
         return_value=future(EnrichItem(key='auctions', degraded=False, value={})),
@@ -135,7 +130,6 @@ async def test_load_enrich_data(mocker):
             'can_update_edit_dates': False,
             'geo_urls': False,
             'jk_urls': False,
-            'coverage': False,
             'import_errors': False,
             'moderation_info': False,
             'subagents': False,
@@ -153,7 +147,6 @@ async def test_load_enrich_data(mocker):
 
     # assert
     assert result == expected
-    load_statistic_mock.assert_called_once_with([11])
     load_auctions_mock.assert_called_once_with([11])
     load_jk_urls_mock.assert_called_once_with([44])
     load_geo_urls_mock.assert_called_once_with([

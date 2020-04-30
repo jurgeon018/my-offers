@@ -104,7 +104,6 @@ class EnrichItem(NamedTuple):
 
 @dataclass
 class EnrichData:
-    coverage: Dict[int, entities.Coverage]
     auctions: Dict[int, Any]
     jk_urls: Dict[int, str]
     geo_urls: Dict[GeoUrlKey, AddressUrls]
@@ -121,6 +120,9 @@ class EnrichData:
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)
     favorites_counts: Dict[int, int] = field(default_factory=dict)
+
+    # not used
+    coverage: Dict[int, entities.Coverage] = field(default_factory=dict)
 
     def get_urls_by_types(
             self,

@@ -15,6 +15,9 @@ from my_offers.services.statistics._cassandra_statistics import (
 from my_offers.services.statistics._helpers import get_months_intervals
 
 
+# TODO: https://jira.cian.tech/browse/CD-80277
+#   Этот код запрещено использовать внутри микросервиса! (исключения: /public/v2/get-offers/, /v2/get-offers/)
+#   Подробности в задаче CD-80277
 
 
 async def get_favorites_counts(offer_ids: List[int]) -> Dict[int, int]:
@@ -62,7 +65,7 @@ async def get_searches_counts(offer_ids: List[int], date_from: datetime, date_to
     futures = {
         'daily': coverage_cs_repo.get_offers_coverage_daily(
             offers_ids=offer_ids,
-            date_from=date_from,
+            date_from=date_from.date(),
             date_to=completed_date.date(),
         ),
         'current': coverage_cs_repo.get_offers_coverage_current(
@@ -103,19 +106,26 @@ async def get_views_counts(offer_ids: List[int], date_from: datetime, date_to: d
         https://bitbucket.org/cianmedia/cian/src/4b50768fa34f87ecaca5f35966c48cd442e43b79/cian/search_coverage/services/get_offer_periods_stats_desktop/service.py#lines-21
     """
     completed_date = await base_cs_repo.get_completed_date()
-    date_to = completed_date if date_to.replace(tzinfo=None) > completed_date else date_to
 
     futures = {
-        offer_id: _get_views_by_date_range(offer_id=offer_id, date_from=date_from, date_to=date_to)
+        offer_id: _get_views_by_date_range(
+            offer_id=offer_id,
+            date_from=date_from,
+            date_to=date_to,
+            completed_date=completed_date
+        )
         for offer_id in offer_ids
     }
 
     return await gen.multi(futures)  # type: ignore
 
 
-async def _get_views_by_date_range(offer_id: int, date_from: datetime, date_to: datetime) -> int:
-    completed_date = await base_cs_repo.get_completed_date()
-
+async def _get_views_by_date_range(
+        offer_id: int,
+        date_from: datetime,
+        date_to: datetime,
+        completed_date: datetime,
+) -> int:
     # views_daily stat
     intervals = get_months_intervals(date_from=datetime.combine(date_from, time.min), date_to=completed_date)
     views_daily_futures = []

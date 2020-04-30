@@ -32,7 +32,6 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
     offer_ids = params.get_offer_ids()
     if not offer_ids:
         return EnrichData(
-            coverage={},
             auctions={},
             jk_urls={},
             geo_urls={},
@@ -47,7 +46,6 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
         _load_favorites_counts(offer_ids),
         _load_searches_counts(offer_ids),
         _load_views_counts(offer_ids),
-        _load_coverage(offer_ids),  # TODO: remove
         _load_auctions(offer_ids),
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),

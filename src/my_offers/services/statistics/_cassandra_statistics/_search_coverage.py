@@ -4,7 +4,6 @@ from typing import List
 
 from cian_cassandra.statement import CassandraStatement
 from cian_entities import EntityMapper
-from simple_settings import settings
 
 from .._helpers import cassandra_execute
 
