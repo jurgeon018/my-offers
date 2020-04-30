@@ -57,7 +57,7 @@ def test_address_urls__none__none(mocker):
 def test_enrich_data__get_offer_offence__moderation_info_is_none(mocker):
     # arrange
     enrich_data = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -80,7 +80,7 @@ def test_enrich_data__get_offer_offence__moderation_info_is_none(mocker):
 def test_enrich_data__get_offer_offence(mocker, moderation_info, expected):
     # arrange
     enrich_data = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -106,7 +106,7 @@ def test_enrich_data__get_offer_offence(mocker, moderation_info, expected):
 def test_get_subagent(mocker, user_id, expected):
     # arrange
     enrich_data = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -125,7 +125,7 @@ def test_get_subagent(mocker, user_id, expected):
 def test_get_subagent__none__none(mocker):
     # arrange
     enrich_data = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -150,7 +150,7 @@ def test_get_subagent__none__none(mocker):
 def test_on_premoderation(mocker, offer_id, expected):
     # arrange
     enrich_data = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -177,7 +177,7 @@ def test_on_premoderation(mocker, offer_id, expected):
 async def test_get_archive_date(mocker, offer_id, expected):
     # arrange
     enrich_data = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -205,7 +205,7 @@ async def test_get_archive_date(mocker, offer_id, expected):
 async def test_get_payed_till(mocker, offer_id, expected):
     # arrange
     enrich_data = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},

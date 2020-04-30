@@ -1,11 +1,11 @@
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, NamedTuple, Optional, Set
 
 from simple_settings import settings
 
-from my_offers import entities, enums
+from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent
@@ -104,7 +104,6 @@ class EnrichItem(NamedTuple):
 
 @dataclass
 class EnrichData:
-    coverage: Dict[int, entities.Coverage]
     auctions: Dict[int, Any]
     jk_urls: Dict[int, str]
     geo_urls: Dict[GeoUrlKey, AddressUrls]
@@ -116,6 +115,11 @@ class EnrichData:
     premoderation_info: Optional[Set[int]] = None
     archive_date: Optional[Dict[int, datetime]] = None
     payed_till: Optional[Dict[int, datetime]] = None
+
+    # statistics
+    views_counts: Dict[int, int] = field(default_factory=dict)
+    searches_counts: Dict[int, int] = field(default_factory=dict)
+    favorites_counts: Dict[int, int] = field(default_factory=dict)
 
     def get_urls_by_types(
             self,

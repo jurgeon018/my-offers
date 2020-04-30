@@ -5,15 +5,15 @@ from my_offers.services.offer_view.fields.statistics import get_statistics
 
 
 @pytest.mark.parametrize(
-    ('coverage', 'favorites', 'expected'),
+    ('views', 'searches', 'favorites', 'expected'),
     (
-        (Coverage(searches_count=10, shows_count=20, coverage=50), 20, Statistics(views=20, shows=10, favorites=20)),
-        (None, 20, Statistics(views=None, shows=None, favorites=20)),
+        (10, 20, 30, Statistics(views=10, shows=20, favorites=30)),
+        (None, None, None, Statistics(views=None, shows=None, favorites=None)),
     )
 )
-def test_get_statistics(coverage, favorites, expected):
+def test_get_statistics(views, searches, favorites, expected):
     # arrange & act
-    result = get_statistics(coverage=coverage, favorites=favorites)
+    result = get_statistics(searches=searches, views=views, favorites=favorites)
 
     # assert
     assert result == expected

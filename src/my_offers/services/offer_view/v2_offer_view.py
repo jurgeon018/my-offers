@@ -56,7 +56,11 @@ def v2_build_offer_view(
         price_info=price_info,
         features=features,
         is_manual=manual,
-        statistics=get_statistics(coverage=enrich_data.coverage.get(offer_id), favorites=None),
+        statistics=get_statistics(
+            views=enrich_data.views_counts.get(offer_id),
+            favorites=enrich_data.favorites_counts.get(offer_id),
+            searches=enrich_data.searches_counts.get(offer_id),
+        ),
         # TODO: https://jira.cian.tech/browse/CD-76582
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=archived),

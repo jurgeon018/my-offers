@@ -1,8 +1,10 @@
 from datetime import datetime
 
 import pytest
+import pytz
 from cian_core.degradation import DegradationResult
 from cian_test_utils import future
+from freezegun import freeze_time
 from mock import call
 
 from my_offers import enums
@@ -21,13 +23,16 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_auctions,
     _load_can_update_edit_dates,
     _load_coverage,
+    _load_favorites_counts,
     _load_geo_urls,
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
     _load_payed_till,
     _load_premoderation_info,
+    _load_searches_counts,
     _load_subagents,
+    _load_views_counts,
     load_enrich_data,
 )
 
@@ -46,11 +51,6 @@ async def test_load_enrich_data(mocker):
         offer_type=enums.OfferType.flat,
         geo_type=Type.location,
         geo_id=1,
-    )
-
-    load_statistic_mock = mocker.patch(
-        f'{PATH}_load_coverage',
-        return_value=future(EnrichItem(key='coverage', degraded=False, value={})),
     )
     load_auctions_mock = mocker.patch(
         f'{PATH}_load_auctions',
@@ -96,10 +96,22 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_payed_till',
         return_value=future(EnrichItem(key='payed_till', degraded=False, value=None)),
     )
+    load_views_counts_mock = mocker.patch(
+        f'{PATH}_load_views_counts',
+        return_value=future(EnrichItem(key='views_counts', degraded=False, value={})),
+    )
+    load_searches_counts_mock = mocker.patch(
+        f'{PATH}_load_searches_counts',
+        return_value=future(EnrichItem(key='searches_counts', degraded=False, value={})),
+    )
+    load_favorites_counts_mock = mocker.patch(
+        f'{PATH}_load_favorites_counts',
+        return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
+    )
 
     expected = (
         EnrichData(
-            coverage={},
+
             auctions={},
             jk_urls={},
             geo_urls={},
@@ -118,13 +130,15 @@ async def test_load_enrich_data(mocker):
             'can_update_edit_dates': False,
             'geo_urls': False,
             'jk_urls': False,
-            'coverage': False,
             'import_errors': False,
             'moderation_info': False,
             'subagents': False,
             'premoderation_info': False,
             'archive_date': False,
             'payed_till': False,
+            'favorites_counts': False,
+            'views_counts': False,
+            'searches_counts': False,
         }
     )
 
@@ -133,7 +147,6 @@ async def test_load_enrich_data(mocker):
 
     # assert
     assert result == expected
-    load_statistic_mock.assert_called_once_with([11])
     load_auctions_mock.assert_called_once_with([11])
     load_jk_urls_mock.assert_called_once_with([44])
     load_geo_urls_mock.assert_called_once_with([
@@ -151,6 +164,9 @@ async def test_load_enrich_data(mocker):
     load_premoderation_info_mock.assert_called_once_with([11])
     load_archive_date_mock.assert_called_once_with([11])
     load_payed_till_mock.assert_called_once_with([11])
+    load_views_counts_mock.assert_called_once_with([11])
+    load_searches_counts_mock.assert_called_once_with([11])
+    load_favorites_counts_mock.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -158,7 +174,7 @@ async def test_load_enrich_data__empty__empty(mocker):
     # arrange
     params = EnrichParams(111)
     expected = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -544,3 +560,79 @@ async def test__load_payed_till(mocker):
     # assert
     assert result == expected
     get_offers_payed_till_mock.assert_called_once_with([1])
+
+
+async def test__load_views_counts(mocker):
+    # arrange
+    offer_ids = [1, 2, 3]
+    date_to = datetime(2020, 4, 20, tzinfo=pytz.utc)
+    date_from = datetime(2020, 4, 10, tzinfo=pytz.utc)
+
+    get_offers_payed_till_mock = mocker.patch(
+        f'{PATH}get_views_counts_degradation_handler',
+        return_value=future(DegradationResult(value={1: 1, 2: 2, 3: 3}, degraded=False))
+    )
+    expected = EnrichItem(key='views_counts', value={1: 1, 2: 2, 3: 3}, degraded=False)
+
+    # act
+    with freeze_time(date_to):
+        result = await _load_views_counts(
+            offer_ids=offer_ids
+        )
+
+    # assert
+    assert result == expected
+    get_offers_payed_till_mock.assert_called_once_with(
+        offer_ids=offer_ids,
+        date_from=date_from,
+        date_to=date_to
+    )
+
+
+async def test__load_searches_counts(mocker):
+    # arrange
+    offer_ids = [1, 2, 3]
+    date_to = datetime(2020, 4, 20, tzinfo=pytz.utc)
+    date_from = datetime(2020, 4, 10, tzinfo=pytz.utc)
+
+    get_offers_payed_till_mock = mocker.patch(
+        f'{PATH}get_searches_counts_degradation_handler',
+        return_value=future(DegradationResult(value={1: 1, 2: 2, 3: 3}, degraded=False))
+    )
+    expected = EnrichItem(key='searches_counts', value={1: 1, 2: 2, 3: 3}, degraded=False)
+
+    # act
+    with freeze_time(date_to):
+        result = await _load_searches_counts(
+            offer_ids=offer_ids
+        )
+
+    # assert
+    assert result == expected
+    get_offers_payed_till_mock.assert_called_once_with(
+        offer_ids=offer_ids,
+        date_from=date_from,
+        date_to=date_to
+    )
+
+
+async def test__load_favorites_counts(mocker):
+    # arrange
+    offer_ids = [1, 2, 3]
+
+    get_offers_payed_till_mock = mocker.patch(
+        f'{PATH}get_favorites_counts_degradation_handler',
+        return_value=future(DegradationResult(value={1: 1, 2: 2, 3: 3}, degraded=False))
+    )
+    expected = EnrichItem(key='favorites_counts', value={1: 1, 2: 2, 3: 3}, degraded=False)
+
+    # act
+    result = await _load_favorites_counts(
+        offer_ids=offer_ids
+    )
+
+    # assert
+    assert result == expected
+    get_offers_payed_till_mock.assert_called_once_with(
+        offer_ids=offer_ids,
+    )

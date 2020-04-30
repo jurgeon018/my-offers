@@ -289,7 +289,7 @@ async def test_v2_get_offer_views(mocker):
         f'{PATH}load_enrich_data',
         return_value=future((
             EnrichData(
-                coverage={},
+
                 auctions={},
                 jk_urls={},
                 geo_urls={},
