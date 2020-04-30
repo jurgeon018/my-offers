@@ -1,6 +1,7 @@
 from my_offers.enums.agents import AgentAccountType
 from my_offers.enums.billing import TargetObjectType
 from my_offers.enums.deal_type import DealType
+from my_offers.enums.duplicate import DuplicateType
 from my_offers.enums.moderation import ModerationOffenceStatus
 from my_offers.enums.offer_address import AddressType
 from my_offers.enums.offer_services import OfferServices

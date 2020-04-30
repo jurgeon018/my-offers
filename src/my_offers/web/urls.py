@@ -6,7 +6,7 @@ from tornado.web import url
 from my_offers import entities
 from my_offers.entities.get_offers import GetOfferV2
 from my_offers.entities.qa import QaGetByIdRequest
-from my_offers.services import actions, offers, qa
+from my_offers.services import actions, duplicates, offers, qa
 from my_offers.web.handlers import PublicHandler
 
 
@@ -29,6 +29,16 @@ urlpatterns = base_urls.urlpatterns + [
             request_schema=entities.GetOffersPrivateRequest,
             response_schema=entities.GetOffersV2Response,
             base_handler_cls=RequestContextHandler,
+        )
+    ),
+    url(
+        r'/public/v1/get-offer-duplicates/$',
+        get_handler(
+            service=duplicates.v1_get_offer_duplicates_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOfferDuplicatesRequest,
+            response_schema=entities.GetOfferDuplicatesResponse,
+            base_handler_cls=PublicHandler,
         )
     ),
     url(
