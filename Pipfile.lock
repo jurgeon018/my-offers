@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7a3eba9557c4eac8856a4ae3aa8643b079ca49b049e0671bf5ee5ee2a35310b0"
+            "sha256": "fee76eecbc226cac3307daa4fca15419b0b004ca7944be3cd81d4f459ccda550"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -145,6 +145,14 @@
             ],
             "version": "==1.5.1"
         },
+        "cassandra-driver": {
+            "hashes": [
+                "sha256:a97271736cb5de8496c91b5e1195e2641866dfbc14d594708e49b0d4f4f7c9ef",
+                "sha256:e1b4f0eeb06cca5c9abc0a0cb09dd4d2f811def9c10d8cace84cfa4156903e65",
+                "sha256:e60efcae02053362d402e77e949c761cd53913e9c479e18aaf845b3430e08f98"
+            ],
+            "version": "==3.19.0"
+        },
         "certifi": {
             "hashes": [
                 "sha256:1d987a998c75633c40847cc966fcf5904906c920a7f17ef374f5aa4282abd304",
@@ -166,9 +174,17 @@
             ],
             "version": "==1.1.0"
         },
+        "cian-cassandra": {
+            "hashes": [
+                "sha256:5207d00cc6d8ca524eab13c7398539cee6d095300f5ea0fef2703bf61d25b64e",
+                "sha256:ecd6e630a0d4b14138a84f302e31498dcf424a25ad6e0bd94f354eda314184b0"
+            ],
+            "version": "==0.7.0"
+        },
         "cian-core": {
             "extras": [
                 "cache",
+                "cassandra",
                 "postgres",
                 "rabbitmq_consumer_cli"
             ],
@@ -491,10 +507,10 @@
         },
         "python-dateutil": {
             "hashes": [
-                "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c",
-                "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"
+                "sha256:7e6584c74aeed623791615e26efd690f29817a27c73085b78e4bad02493df2fb",
+                "sha256:c89805f6f4d64db21ed966fda138f8a5ed7a4fdbc1a8ee329ce1b74e3c74da9e"
             ],
-            "version": "==2.8.1"
+            "version": "==2.8.0"
         },
         "python-rapidjson": {
             "hashes": [
@@ -771,6 +787,13 @@
         }
     },
     "develop": {
+        "aiocassandra": {
+            "hashes": [
+                "sha256:82a91c8766d9e23b23775ed14eb6322a6f0bc22ddcc2babb17a69e31b46467a9",
+                "sha256:bd9b95c60e0c729266041c4f5407ccf07c647f945bf2bfdb889989222ba14578"
+            ],
+            "version": "==2.0.1"
+        },
         "aiohttp": {
             "hashes": [
                 "sha256:1e984191d1ec186881ffaed4581092ba04f7c61582a177b187d3a2f07ed9719e",
@@ -911,6 +934,14 @@
             ],
             "version": "==1.5.1"
         },
+        "cassandra-driver": {
+            "hashes": [
+                "sha256:a97271736cb5de8496c91b5e1195e2641866dfbc14d594708e49b0d4f4f7c9ef",
+                "sha256:e1b4f0eeb06cca5c9abc0a0cb09dd4d2f811def9c10d8cace84cfa4156903e65",
+                "sha256:e60efcae02053362d402e77e949c761cd53913e9c479e18aaf845b3430e08f98"
+            ],
+            "version": "==3.19.0"
+        },
         "certifi": {
             "hashes": [
                 "sha256:1d987a998c75633c40847cc966fcf5904906c920a7f17ef374f5aa4282abd304",
@@ -935,6 +966,7 @@
         "cian-core": {
             "extras": [
                 "cache",
+                "cassandra",
                 "postgres",
                 "rabbitmq_consumer_cli"
             ],
@@ -961,6 +993,7 @@
         "cian-functional-test-utils": {
             "extras": [
                 "cache",
+                "cassandra",
                 "postgres",
                 "python",
                 "rabbitmq"
@@ -1130,6 +1163,13 @@
                 "sha256:f4d6f1e5479c376a5b7bdc62795d736d8c1b2a754f366a2ad2816e46e946e22e"
             ],
             "version": "==2.1.0"
+        },
+        "geomet": {
+            "hashes": [
+                "sha256:0d639b3c302e2dfbdcb8e53348a72bb00c797481a9d5d2cf08de77b7310c2042",
+                "sha256:cef6c73cfc0c4ea3961e16a6979dce75ef0298f0023cbd482855134dcdf7c010"
+            ],
+            "version": "==0.1.2"
         },
         "hiredis": {
             "hashes": [
@@ -1580,10 +1620,10 @@
         },
         "python-dateutil": {
             "hashes": [
-                "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c",
-                "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"
+                "sha256:7e6584c74aeed623791615e26efd690f29817a27c73085b78e4bad02493df2fb",
+                "sha256:c89805f6f4d64db21ed966fda138f8a5ed7a4fdbc1a8ee329ce1b74e3c74da9e"
             ],
-            "version": "==2.8.1"
+            "version": "==2.8.0"
         },
         "python-rapidjson": {
             "hashes": [

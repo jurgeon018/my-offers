@@ -16,6 +16,14 @@ type = "rabbitmq"
 type = "redis"
 alias = "default"
 
+[[dependency]]
+type = "cassandra"
+alias = "statistics"
+
+[[dependency]]
+type = "cassandra"
+alias = "search_coverage"
+
 [job.web]
 type = "web"
 memory = 128
