@@ -74,7 +74,7 @@ from tests_api.cian.my_offers.entities.filter import StatusTab
 def test_get_page_specific_info(object_model, status_tab, expected):
     # arrange
     enrich_data = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},

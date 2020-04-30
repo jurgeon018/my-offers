@@ -4,7 +4,10 @@ import pytest
 
 
 @pytest.fixture(autouse=True, scope='session')
-async def start(runner, pg, queue_service):
+async def start(runner, pg, queue_service, cassandra_service):
+    await cassandra_service.get_keyspace(alias='statistics', keyspace='statistics')
+    await cassandra_service.get_keyspace(alias='search_coverage', keyspace='search_coverage')
+
     await pg.execute_scripts((Path('contrib') / 'postgresql' / 'migrations').glob('*.sql'))
     await runner.start_background_python_web()
     await runner.start_background_python_command('process_announcement_consumer')

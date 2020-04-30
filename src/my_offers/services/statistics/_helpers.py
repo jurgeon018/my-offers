@@ -24,7 +24,7 @@ async def cassandra_execute(
 
 
 def get_months_intervals(date_from: datetime, date_to: datetime) -> List[Tuple[datetime, datetime]]:
-    """ Монолиьгая функция получения интервалов по месяцам (см. тесты).
+    """ Монолитная функция получения интервалов по месяцам (см. тесты).
 
         Перенесена как есть со всеми тестами.
     """

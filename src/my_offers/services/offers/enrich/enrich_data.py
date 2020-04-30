@@ -5,7 +5,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set
 
 from simple_settings import settings
 
-from my_offers import entities, enums
+from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent
@@ -120,9 +120,6 @@ class EnrichData:
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)
     favorites_counts: Dict[int, int] = field(default_factory=dict)
-
-    # not used
-    coverage: Dict[int, entities.Coverage] = field(default_factory=dict)
 
     def get_urls_by_types(
             self,

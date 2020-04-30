@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 
 import pytz
+from simple_settings import settings
 
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.offer_view_model import Subagent
@@ -201,7 +202,7 @@ async def _load_payed_till(offer_ids: List[int]) -> EnrichItem:
 @async_statsd_timer('enrich.load_views_counts')
 async def _load_views_counts(offer_ids: List[int]) -> EnrichItem:
     date_to = datetime.now(tz=pytz.utc)
-    date_from = date_to - timedelta(days=10)
+    date_from = date_to - timedelta(days=settings.DAYS_FOR_STATISTICS)
     result = await get_views_counts_degradation_handler(
         offer_ids=offer_ids,
         date_from=date_from,
@@ -214,7 +215,7 @@ async def _load_views_counts(offer_ids: List[int]) -> EnrichItem:
 @async_statsd_timer('enrich.load_searches_counts')
 async def _load_searches_counts(offer_ids: List[int]) -> EnrichItem:
     date_to = datetime.now(tz=pytz.utc)
-    date_from = date_to - timedelta(days=10)
+    date_from = date_to - timedelta(days=settings.DAYS_FOR_STATISTICS)
     result = await get_searches_counts_degradation_handler(
         offer_ids=offer_ids,
         date_from=date_from,

@@ -111,7 +111,7 @@ async def test_load_enrich_data(mocker):
 
     expected = (
         EnrichData(
-            coverage={},
+
             auctions={},
             jk_urls={},
             geo_urls={},
@@ -174,7 +174,7 @@ async def test_load_enrich_data__empty__empty(mocker):
     # arrange
     params = EnrichParams(111)
     expected = EnrichData(
-        coverage={},
+
         auctions={},
         jk_urls={},
         geo_urls={},
