@@ -11,7 +11,7 @@ from .._helpers import cassandra_execute
 stmts = CassandraStatement('search_coverage')
 stmts.select_counters = """
 SELECT
-  offer_id, searches_count
+  offer_id, shows_count as searches_count
 FROM
   search_coverage.counters
 WHERE
