@@ -1,5 +1,4 @@
 import asyncio
-import math
 from typing import Dict, List, Tuple
 
 from cian_web.exceptions import BrokenRulesException, Error
@@ -15,6 +14,7 @@ from my_offers.services.offers._get_offers import (
     get_filters,
     get_object_models_degradation_handler,
     get_offer_counters_degradation_handler,
+    get_page_info,
     get_pagination,
 )
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
@@ -67,11 +67,7 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     return entities.GetOffersV2Response(
         offers=offers,
         counters=offer_counters_result.value,
-        page=get_offers.PageInfo(
-            count=total,
-            can_load_more=total > offset + limit,
-            page_count=math.ceil(total / limit)
-        ),
+        page=get_page_info(limit=limit, offset=offset, total=total),
         degradation=degradation,
     )
 

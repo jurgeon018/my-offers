@@ -19,9 +19,8 @@ class TestOfferAction:
         # arrange
         object_model = mocker.sentinel.object_model
         expected = entities.OfferActionResponse(status=OfferActionStatus.ok)
-        load_object_model_mock = mocker.patch.object(
-            OfferAction,
-            '_load_object_model',
+        load_object_model_mock = mocker.patch(
+            f'{PATH}load_object_model',
             return_value=future(object_model)
         )
         check_rights_mock = mocker.patch.object(
@@ -49,9 +48,8 @@ class TestOfferAction:
     async def test_execute__timeout__broken_rules(self, mocker):
         # arrange
         object_model = mocker.sentinel.object_model
-        load_object_model_mock = mocker.patch.object(
-            OfferAction,
-            '_load_object_model',
+        load_object_model_mock = mocker.patch(
+            f'{PATH}load_object_model',
             return_value=future(object_model)
         )
         check_rights_mock = mocker.patch.object(
@@ -79,9 +77,8 @@ class TestOfferAction:
     async def test_execute__exception__broken_rules(self, mocker):
         # arrange
         object_model = mocker.sentinel.object_model
-        load_object_model_mock = mocker.patch.object(
-            OfferAction,
-            '_load_object_model',
+        load_object_model_mock = mocker.patch(
+            f'{PATH}load_object_model',
             return_value=future(object_model)
         )
         check_rights_mock = mocker.patch.object(
@@ -109,9 +106,8 @@ class TestOfferAction:
     async def test_execute__api_exception__broken_rules(self, mocker):
         # arrange
         object_model = mocker.sentinel.object_model
-        load_object_model_mock = mocker.patch.object(
-            OfferAction,
-            '_load_object_model',
+        load_object_model_mock = mocker.patch(
+            f'{PATH}load_object_model',
             return_value=future(object_model)
         )
         check_rights_mock = mocker.patch.object(
@@ -176,58 +172,3 @@ class TestOfferAction:
 
         # assert
         get_action_code_mock.assert_called_once()
-
-    @pytest.mark.gen_test
-    async def test__load_object_model(self, mocker):
-        # arrange
-        action = OfferAction(offer_id=111, user_id=123)
-        expected = ObjectModel(
-            id=111,
-            bargain_terms=BargainTerms(price=123),
-            category=Category.flat_rent,
-            phones=[Phone(country_code='1', number='12312')],
-            user_id=222,
-        )
-        get_object_model_mock = mocker.patch(
-            f'{PATH}get_object_model',
-            return_value=future(expected)
-        )
-        get_user_filter_mock = mocker.patch(
-            f'{PATH}offers.get_user_filter',
-            return_value=future({'master_user_id': 123})
-        )
-
-        # act
-        result = await action._load_object_model()
-
-        # assert
-        assert result == expected
-        get_object_model_mock.assert_called_once_with({
-            'offer_id': 111,
-            'master_user_id': 123,
-        })
-        get_user_filter_mock.assert_called_once_with(123)
-
-    @pytest.mark.gen_test
-    async def test__load_object_model__not_found__broken_rule(self, mocker):
-        # arrange
-        action = OfferAction(offer_id=111, user_id=123)
-        get_object_model_mock = mocker.patch(
-            f'{PATH}get_object_model',
-            return_value=future()
-        )
-        get_user_filter_mock = mocker.patch(
-            f'{PATH}offers.get_user_filter',
-            return_value=future({'master_user_id': 123})
-        )
-
-        # act
-        with pytest.raises(BrokenRulesException):
-            await action._load_object_model()
-
-        # assert
-        get_object_model_mock.assert_called_once_with({
-            'offer_id': 111,
-            'master_user_id': 123,
-        })
-        get_user_filter_mock.assert_called_once_with(123)

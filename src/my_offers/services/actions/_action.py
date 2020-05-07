@@ -6,8 +6,8 @@ from cian_web.exceptions import BrokenRulesException, Error
 from my_offers import entities, helpers
 from my_offers.enums.offer_action_status import OfferActionStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.repositories.postgresql.object_model import get_object_model
-from my_offers.services import agencies_settings, offers
+from my_offers.services import agencies_settings
+from my_offers.services.offers import load_object_model
 
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class OfferAction:
         self.user_id = user_id
 
     async def execute(self) -> entities.OfferActionResponse:
-        object_model = await self._load_object_model()
+        object_model = await load_object_model(user_id=self.user_id, offer_id=self.offer_id)
         await self._check_rights(object_model)
 
         try:
@@ -59,22 +59,6 @@ class OfferAction:
 
     def _get_action_code(self) -> str:
         raise NotImplementedError
-
-    async def _load_object_model(self) -> ObjectModel:
-        offer_filter = await offers.get_user_filter(self.user_id)
-        offer_filter['offer_id'] = self.offer_id
-        object_model = await get_object_model(offer_filter)
-
-        if not object_model:
-            raise BrokenRulesException([
-                Error(
-                    message='Объявление не найдено',
-                    code='not_found',
-                    key='offer_id'
-                )
-            ])
-
-        return object_model
 
     async def _check_rights(self, object_model: ObjectModel) -> None:
         agency_settings = await agencies_settings.get_settings_degradation_handler(self.user_id)

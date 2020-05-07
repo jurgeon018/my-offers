@@ -1,3 +1,4 @@
+import math
 from typing import Any, Dict, Optional, Tuple
 
 from cian_core.degradation import get_degradation_handler
@@ -142,3 +143,11 @@ def get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, in
         offset = limit * (pagination.page - 1)
 
     return limit, offset
+
+
+def get_page_info(*, limit: int, offset: int, total: int) -> get_offers.PageInfo:
+    return get_offers.PageInfo(
+        count=total,
+        can_load_more=total > offset + limit,
+        page_count=math.ceil(total / limit)
+    )
