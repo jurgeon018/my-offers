@@ -60,9 +60,9 @@ async def get_offer_duplicates(offer_id: int, limit: int, offset: int) -> Tuple[
         query,
         offer_id,
         offer_id,
+        enums.OfferStatusTab.active.value,
         limit,
         offset,
-        enums.OfferStatusTab.active.value,
         timeout=settings.DB_TIMEOUT
     )
 

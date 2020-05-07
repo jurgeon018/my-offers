@@ -8,7 +8,7 @@ from my_offers import entities, enums
 from my_offers.entities import get_offers
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql.offers_search_log import save_offers_search_log
-from my_offers.services.offer_view import v2_build_offer_view
+from my_offers.services import offer_view
 from my_offers.services.offers._get_offers import (
     get_counter_filters,
     get_filters,
@@ -85,7 +85,7 @@ async def v2_get_offer_views(
 
     # шаг 3 - подготовка моделей для ответа
     offers = [
-        v2_build_offer_view(object_model=object_model, enrich_data=enrich_data)
+        offer_view.v2_build_offer_view(object_model=object_model, enrich_data=enrich_data)
         for object_model in object_models
     ]
 

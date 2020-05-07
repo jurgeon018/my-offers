@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from my_offers import enums
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import PublishTerm, Services
@@ -13,7 +13,7 @@ SERVICE_VAS_MAP = {
 }
 
 
-def get_vas(terms: List[PublishTerm]) -> List[enums.OfferVas]:
+def get_vas(terms: Optional[List[PublishTerm]]) -> List[enums.OfferVas]:
     result: List[enums.OfferVas] = []
 
     if not terms:

@@ -1,5 +1,6 @@
-from my_offers import entities
+from my_offers import entities, enums
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
+from my_offers.services import offer_view
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
 
 
@@ -16,9 +17,22 @@ async def v1_get_offer_duplicates_public(
         offset=offset,
     )
 
+    offers = [offer_view.build_duplicate_view(object_model) for object_model in object_models]
+
     return entities.GetOfferDuplicatesResponse(
-        offers=[],
-        tabs=[],
+        offers=offers,
+        tabs=[
+            entities.Tab(
+                type=enums.DuplicateTabType.all,
+                title='Все',
+                count=total,
+            ),
+            entities.Tab(
+                type=enums.DuplicateTabType.duplicate,
+                title='Дубли',
+                count=total,
+            ),
+        ],
         page=get_page_info(limit=limit, offset=offset, total=total),
         degradation={}
     )
