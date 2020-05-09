@@ -2,9 +2,9 @@ from my_offers import entities, enums
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_sort_date
 from my_offers.helpers.status_tab import get_status_tab
+from my_offers.helpers.title import get_properties
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.services.offer_view.fields import get_main_photo_url, get_price_info, prepare_geo_for_mobile
-from my_offers.services.offer_view.fields.vas import get_vas
+from my_offers.services.offer_view.fields import get_main_photo_url, get_price_info, get_vas, prepare_geo_for_mobile
 
 
 def build_duplicate_view(object_model: ObjectModel) -> entities.OfferDuplicate:
@@ -14,7 +14,7 @@ def build_duplicate_view(object_model: ObjectModel) -> entities.OfferDuplicate:
     return entities.OfferDuplicate(
         offer_id=object_model.id,
         main_photo_url=get_main_photo_url(object_model.photos),
-        properties=[],
+        properties=get_properties(object_model),
         geo=prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),
         price_info=get_price_info(

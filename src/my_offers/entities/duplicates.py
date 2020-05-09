@@ -87,5 +87,3 @@ class GetOfferDuplicatesResponse:
     """Информация о вкладках"""
     page: PageInfo
     """Информация о странице"""
-    degradation: Dict[str, bool]
-    """Информация о деградации"""

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.agent_bonus import Currency
@@ -79,7 +79,7 @@ OFFER_TITLES = {
 }
 
 
-def get_title(object_model: ObjectModel) -> str:
+def get_properties(object_model: ObjectModel) -> List[str]:
     min_area = object_model.min_area and int(object_model.min_area)
     total_area = object_model.total_area and int(object_model.total_area)
     floor_number = object_model.floor_number
@@ -111,9 +111,12 @@ def get_title(object_model: ObjectModel) -> str:
             title = FLAT_TITLE[flat_type]
 
     floors = _get_floors(floor_number=floor_number, floors_count=floors_count)
-    title = ', '.join(filter(None, [title, area, floors]))
 
-    return title
+    return list(filter(None, [title, area, floors]))
+
+
+def get_title(object_model: ObjectModel) -> str:
+    return ', '.join(get_properties(object_model))
 
 
 def _get_floors(floor_number: Optional[int], floors_count: Optional[int]) -> Optional[str]:

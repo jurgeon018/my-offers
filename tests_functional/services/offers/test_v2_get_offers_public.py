@@ -1,3 +1,5 @@
+import os
+
 from tests_functional.utils import load_data
 
 
@@ -18,12 +20,12 @@ async def test_v2_get_offers_public__not_found__200(http_client):
     )
 
     # assert
-    assert response.status == 200
+    assert len(response.data['offers']) == 0
 
 
 async def test_v2_get_offers_public__search_text__result(http_client, pg):
     # arrange
-    await pg.execute(load_data(__file__, 'offers.sql'))
+    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers.sql'))
 
     # act
     response = await http_client.request(
@@ -41,5 +43,4 @@ async def test_v2_get_offers_public__search_text__result(http_client, pg):
     )
 
     # assert
-    assert response.status == 200
     assert response.data['offers'][0]['id'] == 209194477
