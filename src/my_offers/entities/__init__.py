@@ -3,9 +3,9 @@ from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.entities.coverage import Coverage
 from my_offers.entities.duplicates import (
-    DuplicateOfferGeo,
     GetOfferDuplicatesRequest,
     GetOfferDuplicatesResponse,
+    MobileOfferGeo,
     OfferDuplicate,
     Tab,
 )

@@ -28,12 +28,22 @@ class PriceInfo:
 
 
 @dataclass
-class DuplicateOfferGeo:
+class MobileUnderground:
+    region_id: int
+    """ID региона"""
+    line_color: str
+    """Цвет линии метро"""
+    name: str
+    """Название метро"""
+
+
+@dataclass
+class MobileOfferGeo:
     address: List[str]
     """Адрес"""
     newbuilding: Optional[str]
     """Новостройки"""
-    underground: Optional[Underground]
+    underground: Optional[MobileUnderground]
     """Метро"""
 
 
@@ -45,7 +55,7 @@ class OfferDuplicate:
     """Основаная фотография объекта"""
     properties: List[str]
     """Свойства: комнаты, площадь и т.д."""
-    geo: DuplicateOfferGeo
+    geo: MobileOfferGeo
     """Гео"""
     display_date: Optional[datetime]
     """Дата для отображения в карточке"""
