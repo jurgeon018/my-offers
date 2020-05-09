@@ -1,6 +1,5 @@
 from my_offers import entities, enums
-from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
 from my_offers.services import offer_view
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
@@ -21,7 +20,7 @@ async def v1_get_offer_duplicates_public(
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
     limit, offset = get_pagination(request.pagination)
 
-    if not validate_offer(object_model):
+    if not validate_offer(status=object_model.status, category=object_model.category):
         return entities.GetOfferDuplicatesResponse(
             offers=[],
             tabs=[],
@@ -54,12 +53,12 @@ async def v1_get_offer_duplicates_public(
     )
 
 
-def validate_offer(object_model: ObjectModel) -> bool:
+def validate_offer(*, status: Status, category: Category) -> bool:
     """
     Дубли делаем только для квартир и комнат во вторичке.
     Длительная аренда и продажа (без посуточной)
     """
-    if not object_model.status.is_published:
+    if not status.is_published:
         return False
 
-    return object_model.category in CATEGORY_FOR_DUPLICATE
+    return category in CATEGORY_FOR_DUPLICATE
