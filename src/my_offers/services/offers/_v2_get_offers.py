@@ -1,5 +1,4 @@
 import asyncio
-import math
 from typing import Dict, List, Tuple
 
 from cian_web.exceptions import BrokenRulesException, Error
@@ -9,12 +8,13 @@ from my_offers import entities, enums
 from my_offers.entities import get_offers
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql.offers_search_log import save_offers_search_log
-from my_offers.services.offer_view import v2_build_offer_view
+from my_offers.services import offer_view
 from my_offers.services.offers._get_offers import (
     get_counter_filters,
     get_filters,
     get_object_models_degradation_handler,
     get_offer_counters_degradation_handler,
+    get_page_info,
     get_pagination,
 )
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
@@ -67,11 +67,7 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     return entities.GetOffersV2Response(
         offers=offers,
         counters=offer_counters_result.value,
-        page=get_offers.PageInfo(
-            count=total,
-            can_load_more=total > offset + limit,
-            page_count=math.ceil(total / limit)
-        ),
+        page=get_page_info(limit=limit, offset=offset, total=total),
         degradation=degradation,
     )
 
@@ -89,7 +85,7 @@ async def v2_get_offer_views(
 
     # шаг 3 - подготовка моделей для ответа
     offers = [
-        v2_build_offer_view(object_model=object_model, enrich_data=enrich_data)
+        offer_view.v2_build_offer_view(object_model=object_model, enrich_data=enrich_data)
         for object_model in object_models
     ]
 

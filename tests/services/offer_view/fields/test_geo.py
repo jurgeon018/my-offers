@@ -1,10 +1,20 @@
 import pytest
 
+from my_offers.entities import MobileOfferGeo
+from my_offers.entities.duplicates import MobileUnderground
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, Underground
 from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo, Jk, UndergroundInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
-from my_offers.services.offer_view.fields.geo import _get_address, _get_newbuilding, _get_underground, prepare_geo
+from my_offers.services.offer_view.fields.geo import (
+    _get_address,
+    _get_address_for_mobile,
+    _get_newbuilding,
+    _get_underground,
+    _get_underground_for_mobile,
+    prepare_geo,
+    prepare_geo_for_mobile,
+)
 from my_offers.services.offers.enrich.enrich_data import AddressUrls
 
 
@@ -150,6 +160,43 @@ def test__get_underground(mocker, undergrounds_info, address_info, expected):
 def test__get_newbuilding(mocker, jk, urls, expected):
     # arrange & act
     result = _get_newbuilding(jk=jk, urls=urls)
+
+    # assert
+    assert result == expected
+
+
+def test_prepare_geo_for_mobile__empty_geo__empty():
+    # arrange & act
+    result = prepare_geo_for_mobile(Geo())
+
+    # assert
+    assert result == MobileOfferGeo(address=[], newbuilding=None, underground=None)
+
+
+def test__get_address_for_mobile__empty_address_info__empty():
+    # arrange & act
+    result = _get_address_for_mobile([])
+
+    # assert
+    assert result == []
+
+
+@pytest.mark.parametrize(
+    ('undergrounds', 'addresses', 'expected'),
+    (
+        ([], [], None),
+        ([UndergroundInfo(is_default=True)], [], None),
+        ([UndergroundInfo(is_default=True)], [AddressInfo()], None),
+        (
+            [UndergroundInfo(is_default=True, line_color='red', name='ZZZ')],
+            [AddressInfo(type=Type.location, id=77)],
+            MobileUnderground(region_id=77, line_color='red', name='ZZZ')
+        ),
+    )
+)
+def test__get_underground_for_mobile(undergrounds, addresses, expected):
+    # arrange & act
+    result = _get_underground_for_mobile(undergrounds=undergrounds, addresses=addresses)
 
     # assert
     assert result == expected

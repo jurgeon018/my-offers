@@ -13,8 +13,12 @@ class DuplicateTabType(StrEnum):
     """Все сразу"""
     duplicate = 'duplicate'
     """Дубликат объявления"""
+    same_building = 'same_building'
+    """"В этом же доме"""
 
 
 class DuplicateType(StrEnum):
     duplicate = 'duplicate'
     """Дубликат объявления"""
+    same_building = 'same_building'
+    """"В этом же доме"""

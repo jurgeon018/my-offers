@@ -1,1 +1,2 @@
+from my_offers.services.offer_view.duplicate_view import build_duplicate_view
 from my_offers.services.offer_view.v2_offer_view import v2_build_offer_view

@@ -91,7 +91,7 @@ async def get_searches_counts(offer_ids: List[int], date_from: datetime, date_to
     for row in chained_stats:
         offers_dict[row.offer_id] += row.searches_count or 0
 
-    offers_dict_v2 = {}
+    offers_dict_v2: Dict[int, int] = {}
     for v2_row in repo_results.get('v2', []):
         if offers_dict_v2.get(v2_row.offer_id):
             offers_dict_v2[v2_row.offer_id] += v2_row.searches_count or 0

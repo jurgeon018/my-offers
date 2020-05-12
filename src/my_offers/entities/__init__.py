@@ -2,7 +2,13 @@ from my_offers.entities.agents import Agent, AgentMessage, AgentName
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.entities.coverage import Coverage
-from my_offers.entities.duplicates import GetOfferDuplicatesRequest, GetOfferDuplicatesResponse
+from my_offers.entities.duplicates import (
+    GetOfferDuplicatesRequest,
+    GetOfferDuplicatesResponse,
+    MobileOfferGeo,
+    OfferDuplicate,
+    Tab,
+)
 from my_offers.entities.get_offers import GetOffersPrivateRequest, GetOffersRequest, GetOffersV2Response, Statistics
 from my_offers.entities.moderation import ModerationOfferOffence
 from my_offers.entities.offer import Offer, ReindexOffer, ReindexOfferItem

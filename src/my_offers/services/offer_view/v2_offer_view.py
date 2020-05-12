@@ -5,7 +5,14 @@ from my_offers.helpers.fields import get_sort_date, is_archived, is_manual
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.services.offer_view.fields import get_features, get_offer_url, get_price_info, get_status, prepare_geo
+from my_offers.services.offer_view.fields import (
+    get_features,
+    get_main_photo_url,
+    get_offer_url,
+    get_price_info,
+    get_status,
+    prepare_geo,
+)
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
 from my_offers.services.offer_view.fields.statistics import get_statistics
 from my_offers.services.offers.enrich.enrich_data import EnrichData
@@ -18,7 +25,7 @@ def v2_build_offer_view(
 ) -> get_offers.GetOfferV2:
     """ Собирает из шарповой модели компактное представление объявления для выдачи."""
     offer_type, deal_type = get_types(object_model.category)
-    main_photo_url = object_model.photos[0].mini_url if object_model.photos else None
+    main_photo_url = get_main_photo_url(object_model.photos)
     manual = is_manual(object_model.source)
     archived = is_archived(object_model.flags)
     price_info = get_price_info(

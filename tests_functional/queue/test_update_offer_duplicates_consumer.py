@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 import pytest
 from cian_functional_test_utils.pytest_plugin import MockResponse
@@ -9,7 +10,7 @@ from tests_functional.utils import load_data
 @pytest.mark.asyncio
 async def test_update_offer_duplicates_consumer(queue_service, pg, offers_duplicates_mock):
     # arrange
-    await pg.execute(load_data(__file__, 'offers.sql'))
+    await pg.execute(load_data(os.path.dirname(__file__) + '/../', 'offers.sql'))
     await offers_duplicates_mock.add_stub(
         method='POST',
         path='/v1/get-offers-duplicates-by-ids/',

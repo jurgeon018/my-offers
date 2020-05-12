@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional
 
+from my_offers import entities
+from my_offers.entities.duplicates import MobileUnderground
 from my_offers.entities.offer_view_model import Address, Newbuilding, OfferGeo, Underground
 from my_offers.enums.offer_address import AddressType
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo, Jk, UndergroundInfo
@@ -26,6 +28,20 @@ def prepare_geo(*, geo: Optional[Geo], geo_urls: AddressUrls, jk_urls: Dict[int,
     )
 
     return geo
+
+
+def prepare_geo_for_mobile(geo: Optional[Geo]) -> entities.MobileOfferGeo:
+    if not geo or not geo.address:
+        return entities.MobileOfferGeo(address=[], newbuilding=None, underground=None)
+
+    return entities.MobileOfferGeo(
+        address=_get_address_for_mobile(geo.address),
+        newbuilding=_get_jk_name(geo.jk) if geo.jk else None,
+        underground=_get_underground_for_mobile(
+            undergrounds=geo.undergrounds,
+            addresses=geo.address,
+        ),
+    )
 
 
 def _get_underground(
@@ -61,8 +77,12 @@ def _get_newbuilding(jk: Optional[Jk], urls: Dict[int, str]) -> Optional[Newbuil
 
     return Newbuilding(
         search_url=urls.get(jk.id),
-        name='ЖК "{}"'.format(jk.name),
+        name=_get_jk_name(jk),
     )
+
+
+def _get_jk_name(jk: Jk) -> str:
+    return 'ЖК "{}"'.format(jk.name)
 
 
 def _get_address(
@@ -85,3 +105,42 @@ def _get_address(
             )
 
     return result
+
+
+def _get_address_for_mobile(address_info: Optional[List[AddressInfo]]) -> List[str]:
+    result: List[str] = []
+
+    if not address_info:
+        return result
+
+    for address in address_info:
+        if address.type and address.full_name and address.type in ADDRESS_TYPES_MAP:
+            result.append(address.full_name)
+
+    return result
+
+
+def _get_underground_for_mobile(
+        *,
+        undergrounds: List[UndergroundInfo],
+        addresses: List[AddressInfo],
+) -> Optional[MobileUnderground]:
+    for underground in undergrounds:
+        if underground.is_default:
+            default_underground = underground
+            break
+    else:
+        return None
+
+    for address in addresses:
+        if address.type and address.type.is_location:
+            region_id = address.id
+            break
+    else:
+        return None
+
+    return MobileUnderground(
+        region_id=region_id,
+        line_color=default_underground.line_color,
+        name=default_underground.name,
+    )
