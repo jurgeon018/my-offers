@@ -1,0 +1,106 @@
+definitions:
+  Common.Models.AnnouncementsBetModel:
+    description: Модель ставки по объявлению
+    properties:
+      announcementCategory:
+        description: Категория объявления
+        enum: [bedRent, buildingRent, buildingSale, businessRent, businessSale, carServiceRent,
+          carServiceSale, commercialLandRent, commercialLandSale, cottageRent, cottageSale,
+          dailyBedRent, dailyFlatRent, dailyHouseRent, dailyRoomRent, domesticServicesRent,
+          domesticServicesSale, flatRent, flatSale, flatShareSale, freeAppointmentObjectRent,
+          freeAppointmentObjectSale, garageRent, garageSale, houseRent, houseSale,
+          houseShareRent, houseShareSale, industryRent, industrySale, landSale, newBuildingFlatSale,
+          officeRent, officeSale, publicCateringRent, publicCateringSale, roomRent,
+          roomSale, shoppingAreaRent, shoppingAreaSale, townhouseRent, townhouseSale,
+          warehouseRent, warehouseSale]
+        type: string
+        x-bedRent: Койко-место = 0
+        x-buildingRent: Здание = 1
+        x-buildingSale: Здание = 2
+        x-businessRent: Готовый бизнес = 3
+        x-businessSale: Готовый бизнес = 4
+        x-carServiceRent: Аренда автосервис = 5
+        x-carServiceSale: Продажа автосервиса = 6
+        x-commercialLandRent: Коммерческая земля = 7
+        x-commercialLandSale: Коммерческая земля = 8
+        x-cottageRent: Коттедж = 9
+        x-cottageSale: Коттедж = 10
+        x-dailyBedRent: Посуточная аренда койко-места = 11
+        x-dailyFlatRent: Посуточная аренда квартиры = 12
+        x-dailyHouseRent: Посуточная аренда дома, дачи, коттеджа = 13
+        x-dailyRoomRent: Посуточная аренда комнаты = 14
+        x-domesticServicesRent: Аренда помещения под бытовые услуги = 15
+        x-domesticServicesSale: Продажа помещения под бытовые услуги = 16
+        x-flatRent: Квартира = 17
+        x-flatSale: Квартира = 18
+        x-flatShareSale: Доля в квартире = 19
+        x-freeAppointmentObjectRent: Помещение свободного назначения = 20
+        x-freeAppointmentObjectSale: Помещение свободного назначения = 21
+        x-garageRent: Гараж = 22
+        x-garageSale: Гараж = 23
+        x-houseRent: Дом/дача = 24
+        x-houseSale: Дом/дача = 25
+        x-houseShareRent: Часть дома = 26
+        x-houseShareSale: Часть дома = 27
+        x-industryRent: Производство = 28
+        x-industrySale: Производство = 29
+        x-landSale: Участок = 30
+        x-newBuildingFlatSale: Квартира в новостройке = 31
+        x-officeRent: Офис = 32
+        x-officeSale: Офис = 33
+        x-publicCateringRent: Аренда общепита = 34
+        x-publicCateringSale: Продажа общепита = 35
+        x-roomRent: Комната = 36
+        x-roomSale: Комната = 37
+        x-shoppingAreaRent: Торговая площадь = 38
+        x-shoppingAreaSale: Торговая площадь = 39
+        x-townhouseRent: Таунхаус = 40
+        x-townhouseSale: Таунхаус = 41
+        x-warehouseRent: Склад = 42
+        x-warehouseSale: Склад = 43
+      announcementId: {description: Id объявления, format: int32, type: integer}
+      bet: {description: Значение ставки, format: double, type: number}
+      countyId: {description: Id округа, format: int64, type: integer}
+      districtId: {description: Id района, format: int64, type: integer}
+      isFromOrder: {description: 'Флаг, показывающий установлена ли ставка через xml
+          заказа', type: boolean}
+      regionId: {description: Id региона, format: int32, type: integer}
+      rowVersion: {description: 'Версия объявления, к которой применена ставка.',
+        format: int64, type: integer}
+    required: [announcementId, bet]
+    type: object
+  WebApi.Models.AnnouncementsBetResponse:
+    properties:
+      bets:
+        description: Список ставок по объявлениям
+        items: {$ref: '#/definitions/Common.Models.AnnouncementsBetModel'}
+        type: array
+    type: object
+  WebApi.Models.GetAnnouncementsBetsRequest:
+    properties:
+      announcementsIds:
+        description: Набор Id объявлений
+        items: {format: int32, type: integer}
+        type: array
+    required: [announcementsIds]
+    type: object
+host: master.auction.dev3.cian.ru
+info: {title: auction, version: v1}
+paths:
+  /v1/get-bets-by-announcements:
+    post:
+      consumes: [application/json, text/json, application/x-www-form-urlencoded]
+      operationId: AnnouncementsBet_GetBetsByAnnouncementsAsync
+      parameters:
+      - in: body
+        name: request
+        required: true
+        schema: {$ref: '#/definitions/WebApi.Models.GetAnnouncementsBetsRequest'}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/WebApi.Models.AnnouncementsBetResponse'}
+      tags: [AnnouncementsBet]
+schemes: [http]
+swagger: '2.0'
