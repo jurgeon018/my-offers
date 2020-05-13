@@ -1,9 +1,11 @@
-from typing import List, Dict
+from typing import Dict, List
 
 from my_offers import entities, enums
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status, ObjectModel
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel, Status
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
 from my_offers.services import offer_view
+from my_offers.services.auctions import get_auction_bets_degradation_handler
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
 
 
@@ -75,5 +77,21 @@ def validate_offer(*, status: Status, category: Category) -> bool:
     return category in CATEGORY_FOR_DUPLICATE
 
 
-def load_auction_bets(object_models: List[ObjectModel]) -> Dict[int, int]:
-    pass
+async def load_auction_bets(object_models: List[ObjectModel]) -> Dict[int, int]:
+    offer_ids = []
+    for object_model in object_models:
+        if not (publish_terms := object_model.publish_terms):
+            continue
+
+        if not (terms := publish_terms.terms):
+            continue
+
+        for term in terms:
+            if term.services and Services.auction in term.services:
+                offer_ids.append(object_model.id)
+                break
+
+    if not offer_ids:
+        return {}
+
+    return await get_auction_bets_degradation_handler(offer_ids)
