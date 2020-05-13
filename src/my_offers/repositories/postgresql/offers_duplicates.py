@@ -31,9 +31,9 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> None:
         insert_query
         .values(data)
         .on_conflict_do_update(
-            index_elements=[tables.offers_duplicates.offer_id],
+            index_elements=[tables.offers_duplicates.c.offer_id],
             set_={
-                'group_id': insert_query.excluded.duplicate_group_id,
+                'group_id': insert_query.excluded.group_id,
                 'updated_at': insert_query.excluded.created_at,
             }
         )
