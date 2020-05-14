@@ -22,7 +22,7 @@ def get_names(enum: EnumMeta) -> List[str]:
 _deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
 _offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type', )
 _offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type', )
-_service = psa.ENUM(*get_names(Services), name='service', )
+_service = psa.ENUM(*get_names(Services), name='offer_service', )
 
 offers = sa.Table(
     'offers',

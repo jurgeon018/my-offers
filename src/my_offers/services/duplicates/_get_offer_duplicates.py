@@ -38,7 +38,7 @@ async def v1_get_offer_duplicates_public(
 
     auction_bets = await load_auction_bets(object_models)
 
-    offers = [offer_view.build_duplicate_view(object_model) for object_model in object_models]
+    offers = [offer_view.build_duplicate_view(object_model, auction_bets) for object_model in object_models]
 
     return entities.GetOfferDuplicatesResponse(
         offers=offers,
@@ -80,10 +80,8 @@ def validate_offer(*, status: Status, category: Category) -> bool:
 async def load_auction_bets(object_models: List[ObjectModel]) -> Dict[int, int]:
     offer_ids = []
     for object_model in object_models:
-        if not (publish_terms := object_model.publish_terms):
-            continue
-
-        if not (terms := publish_terms.terms):
+        terms = object_model.publish_terms.terms if object_model.publish_terms else None
+        if not terms:
             continue
 
         for term in terms:

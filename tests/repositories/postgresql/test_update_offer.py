@@ -42,9 +42,9 @@ async def test_update_offer(mocker):
     # assert
     pg.get().execute.assert_called_once_with(
         'UPDATE offers SET offer_id=$7, master_user_id=$6, user_id=$22, deal_type=$1, offer_type=$9, status_tab=$18, '
-        'services=$16, search_text=$15, is_manual=$4, is_in_hidden_base=$3, has_photo=$2, row_version=$13, '
-        'raw_data=$12, updated_at=$21, total_area=$20, price=$10, price_per_meter=$11, walking_time=$23, '
-        'street_name=$19, sort_date=$17, is_test=$5 '
+        'services=CAST($16 AS offer_service[]), search_text=$15, is_manual=$4, is_in_hidden_base=$3, has_photo=$2, '
+        'row_version=$13, raw_data=$12, updated_at=$21, total_area=$20, price=$10, price_per_meter=$11, '
+        'walking_time=$23, street_name=$19, sort_date=$17, is_test=$5 '
         'WHERE offers.offer_id = $8 AND offers.row_version <= $14',
         'rent',
         False,
