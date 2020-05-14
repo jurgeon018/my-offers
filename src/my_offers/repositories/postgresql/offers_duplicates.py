@@ -30,9 +30,13 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> None:
     query, params = asyncpgsa.compile_query(
         insert_query
         .values(data)
-        .on_conflict_do_nothing()
-        # todo: добавить логику https://jira.cian.tech/browse/CD-80218
-        # обновлять group_id
+        .on_conflict_do_update(
+            index_elements=[tables.offers_duplicates.c.offer_id],
+            set_={
+                'group_id': insert_query.excluded.group_id,
+                'updated_at': insert_query.excluded.created_at,
+            }
+        )
     )
 
     await pg.get().execute(query, *params)
@@ -73,3 +77,9 @@ async def get_offer_duplicates(offer_id: int, limit: int, offset: int) -> Tuple[
     total = result[0]['total_count']
 
     return models, total
+
+
+async def delete_offers_duplicates(offer_ids: List[int]) -> None:
+    query = 'DELETE FROM offers_duplicates WHERE offer_id = ANY($1::BIGINT[])'
+
+    await pg.get().execute(query, offer_ids)
