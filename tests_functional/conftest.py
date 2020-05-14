@@ -22,3 +22,8 @@ async def pg_fixture(postgres_service):
 @pytest.fixture(scope='session')
 async def offers_duplicates_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('offers-duplicates')
+
+
+@pytest.fixture(scope='session')
+async def auction_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('auction')

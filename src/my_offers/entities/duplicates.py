@@ -63,7 +63,7 @@ class OfferDuplicate:
     """Инофрмация о цене"""
     vas: List[enums.OfferVas]
     """Список VAS'ов"""
-    auction_bet: Optional[int]
+    auction_bet: Optional[str]
     """Текущая ставка аукциона"""
     type: enums.DuplicateType
     """Тип дубликатов"""

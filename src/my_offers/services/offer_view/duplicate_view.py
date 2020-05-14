@@ -7,6 +7,7 @@ from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_properties
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view.fields import get_main_photo_url, get_price_info, get_vas, prepare_geo_for_mobile
+from my_offers.services.offer_view.fields.auction import get_auction_bet
 
 
 def build_duplicate_view(object_model: ObjectModel, auction_bets: Dict[int, float]) -> entities.OfferDuplicate:
@@ -31,6 +32,6 @@ def build_duplicate_view(object_model: ObjectModel, auction_bets: Dict[int, floa
             deal_type=deal_type,
         ),
         vas=get_vas(object_model.publish_terms.terms if object_model.publish_terms else None),
-        auction_bet=auction_bets.get(offer_id),
+        auction_bet=get_auction_bet(auction_bets.get(offer_id)),
         type=enums.DuplicateType.duplicate,
     )

@@ -92,4 +92,6 @@ async def load_auction_bets(object_models: List[ObjectModel]) -> Dict[int, int]:
     if not offer_ids:
         return {}
 
-    return await get_auction_bets_degradation_handler(offer_ids)
+    result = await get_auction_bets_degradation_handler(offer_ids)
+
+    return result.value

@@ -25,7 +25,7 @@ async def update_offers_duplicates(offer_ids: List[int]) -> None:
         await postgresql.update_offers_duplicates(new_duplicates.duplicates)
 
     duplicate_ids = {d.offer_id for d in new_duplicates.duplicates}
-    not_duplicates = list(filter(lambda offer_id: offer_id not in duplicate_ids, offer_ids))
+    not_duplicates = list(set(offer_ids) - duplicate_ids)
     if not_duplicates:
         # удалить из дублей если не дубль
         await postgresql.delete_offers_duplicates(not_duplicates)
