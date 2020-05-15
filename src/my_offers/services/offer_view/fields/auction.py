@@ -8,4 +8,4 @@ def get_auction_bet(bet: Optional[float]) -> Optional[str]:
     if not bet:
         return None
 
-    return '+{}\xa0{}'.format(int(bet), CURRENCY[Currency.rur])
+    return '+\xa0{}\xa0{}'.format(int(bet), CURRENCY[Currency.rur])

@@ -91,7 +91,7 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
                 },
                 'properties': ['Квартира-студия', '28 м²', '9/14 этаж'],
                 'offerId': 173975523,
-                'auctionBet': '+12\xa0₽',
+                'auctionBet': '+\xa012\xa0₽',
                 'type': 'duplicate',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/1/644/244/'
                                 'kvartira-tula-prospekt-lenina-442446187-3.jpg',
