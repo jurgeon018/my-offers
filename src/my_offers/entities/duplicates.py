@@ -11,10 +11,10 @@ from my_offers.entities.offer_view_model import Underground
 class GetOfferDuplicatesRequest:
     offer_id: int
     """Id объявления"""
-    type: enums.DuplicateTabType
-    """Вкладка дубликатов"""
     pagination: Optional[Pagination]
     """Параметры страницы"""
+    type: Optional[enums.DuplicateTabType] = None
+    """Вкладка дубликатов"""
 
 
 @dataclass
