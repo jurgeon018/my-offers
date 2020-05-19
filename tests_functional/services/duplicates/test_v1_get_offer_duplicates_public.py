@@ -85,12 +85,13 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
             {
                 'priceInfo': {'exact': '1 200\xa0₽/сут.', 'range': None},
                 'geo': {
-                    'newbuilding': 'ЖК "Зеленстрой"',
                     'address': ['Тульская область', 'Тула', 'проспект Ленина', '130'],
                     'underground': None,
                 },
                 'properties': ['Квартира-студия', '28\xa0м²', '9/14\xa0этаж'],
                 'offerId': 173975523,
+                'dealType': 'rent',
+                'offerType': 'flat',
                 'auctionBet': '+\xa012\xa0₽',
                 'type': 'duplicate',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/1/644/244/'
@@ -104,10 +105,11 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
                 'properties': ['2-комн.\xa0кв.', '59\xa0м²', '3/3\xa0этаж'],
                 'geo': {
                     'underground': None,
-                    'newbuilding': None,
                     'address': ['Свердловская область', 'Нижний Тагил', 'улица Циолковского', '37/50']
                 },
                 'offerId': 231659418,
+                'dealType': 'sale',
+                'offerType': 'flat',
                 'type': 'duplicate',
                 'displayDate': '2020-05-09T10:06:29.159746+00:00',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/6/179/378/'
@@ -121,3 +123,21 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
 
     request = await auction_stub.get_request()
     assert request.data == {'announcementsIds': [173975523]}
+
+
+async def test_v2_get_offers_public__whithout_type_parameter(http_client, pg, auction_mock):
+    # arrange
+    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers.sql'))
+    await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
+    await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 231655140},
+        headers={'X-Real-UserId': 47135244},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 1
