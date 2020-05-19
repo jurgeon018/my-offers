@@ -39,8 +39,8 @@ async def test_process_announcement(mocker, announcement):
         offer_type=enums.OfferType.flat,
         status_tab=enums.OfferStatusTab.active,
         search_text='165456885 9994606004 9982276978 Россия, Ростов-на-Дону, Большая Садовая улица, 73 Ростовская '
-                    'область Ростов-на-Дону Большая Садовая улица 73 д73 д 73 73д Кировский Центр район 1-комн. кв., '
-                    '123 м², 1/3 этаж zzzzzzzzz 1 комн комнатная 1 3 выапывапвыапыпыпвыапывапывапыап',
+                    'область Ростов-на-Дону Большая Садовая улица 73 д73 д 73 73д Кировский Центр район 1-комн.\xa0'
+                    'кв., 123\xa0м², 1/3\xa0этаж zzzzzzzzz 1 комн комнатная 1 3 выапывапвыапыпыпвыапывапывапыап',
         row_version=announcement.row_version,
         raw_data=object_model_mapper.map_to(announcement),
         services=[enums.OfferServices.premium, enums.OfferServices.premium_highlight],

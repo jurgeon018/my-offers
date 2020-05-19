@@ -105,7 +105,7 @@ def get_properties(object_model: ObjectModel) -> List[str]:
         area = f'{total_area}\xa0{SQUARE_METER_SYMBOL}' if total_area else None
 
         if rooms_count:
-            title = f'{rooms_count}-комн.\xa0кв.' if 1 <= rooms_count <= 5 else f'Многокомн.\xa0кв.'
+            title = f'{rooms_count}-комн.\xa0кв.' if 1 <= rooms_count <= 5 else 'Многокомн.\xa0кв.'
 
         if flat_type and (flat_type.is_studio or flat_type.is_open_plan):
             title = FLAT_TITLE[flat_type]
