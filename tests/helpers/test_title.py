@@ -9,8 +9,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 @pytest.mark.parametrize(
     ('floor_number', 'floors_count', 'expected'),
     (
-        (1, 2, '1/2 этаж'),
-        (3, None, '3 этаж'),
+        (1, 2, '1/2\xa0этаж'),
+        (3, None, '3\xa0этаж'),
         (None, 10, None),
         (-1, 10, 'полуподвал')
     )
@@ -35,7 +35,7 @@ def test__get_floors(floor_number, floors_count, expected):
                 user_id=222,
                 total_area=100,
             ),
-            'Офис, 100 м²'
+            'Офис, 100\xa0м²'
         ),
         (
             ObjectModel(
@@ -48,7 +48,7 @@ def test__get_floors(floor_number, floors_count, expected):
                 can_parts=True,
                 min_area=7,
             ),
-            'Офис, от 7 до 100 м²'
+            'Офис, от\xa07\xa0до\xa0100\xa0м²'
         ),
         (
             ObjectModel(
@@ -60,7 +60,7 @@ def test__get_floors(floor_number, floors_count, expected):
                 total_area=100,
                 land=Land(area=77, area_unit_type=AreaUnitType.sotka),
             ),
-            'Земельный участок, 77 сот.'
+            'Земельный участок, 77\xa0сот.'
         ),
         (
             ObjectModel(
