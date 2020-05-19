@@ -41,8 +41,6 @@ class MobileUnderground:
 class MobileOfferGeo:
     address: List[str]
     """Адрес"""
-    newbuilding: Optional[str]
-    """Новостройки"""
     underground: Optional[MobileUnderground]
     """Метро"""
 
@@ -51,6 +49,10 @@ class MobileOfferGeo:
 class OfferDuplicate:
     offer_id: int
     """Id объявления"""
+    deal_type: enums.DealType
+    """Тип сделки"""
+    offer_type: enums.OfferType
+    """Тип объекта недвижимости"""
     main_photo_url: Optional[str]
     """Основаная фотография объекта"""
     properties: List[str]
