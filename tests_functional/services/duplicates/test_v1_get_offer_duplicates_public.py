@@ -83,13 +83,13 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
     assert response.data == {
         'offers': [
             {
-                'priceInfo': {'exact': '1 200 ₽/сут.', 'range': None},
+                'priceInfo': {'exact': '1 200\xa0₽/сут.', 'range': None},
                 'geo': {
                     'newbuilding': 'ЖК "Зеленстрой"',
                     'address': ['Тульская область', 'Тула', 'проспект Ленина', '130'],
                     'underground': None,
                 },
-                'properties': ['Квартира-студия', '28 м²', '9/14 этаж'],
+                'properties': ['Квартира-студия', '28\xa0м²', '9/14\xa0этаж'],
                 'offerId': 173975523,
                 'auctionBet': '+\xa012\xa0₽',
                 'type': 'duplicate',
@@ -100,8 +100,8 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
             },
             {
                 'vas': ['payed'],
-                'priceInfo': {'range': None, 'exact': '1 550 000 ₽'},
-                'properties': ['2-комн. кв.', '59 м²', '3/3 этаж'],
+                'priceInfo': {'range': None, 'exact': '1 550 000\xa0₽'},
+                'properties': ['2-комн.\xa0кв.', '59\xa0м²', '3/3\xa0этаж'],
                 'geo': {
                     'underground': None,
                     'newbuilding': None,
