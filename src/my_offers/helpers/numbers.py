@@ -20,4 +20,4 @@ def get_pretty_number(number: Union[int, float]) -> str:
         result.append(number_str[-3:])
         number_str = number_str[:-3]
 
-    return ' '.join(reversed(list(filter(None, result))))
+    return '\xa0'.join(reversed(list(filter(None, result))))

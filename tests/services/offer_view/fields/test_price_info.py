@@ -37,7 +37,7 @@ from my_offers.services.offer_view.fields.price_info import get_price_info
             100,
             enums.OfferType.commercial,
             enums.DealType.sale,
-            PriceInfo(exact=None, range=['от\xa01 000', 'до\xa010 000\xa0₽']),
+            PriceInfo(exact=None, range=['от\xa01\xa0000', 'до\xa010\xa0000\xa0₽']),
         ),
         (
             BargainTerms(price=10000.0, currency=Currency.rur, price_type=PriceType.all),
@@ -48,7 +48,7 @@ from my_offers.services.offer_view.fields.price_info import get_price_info
             100,
             enums.OfferType.flat,
             enums.DealType.rent,
-            PriceInfo(exact='10 000\xa0₽/сут.', range=None),
+            PriceInfo(exact='10\xa0000\xa0₽/сут.', range=None),
         ),
         (
             BargainTerms(
@@ -64,7 +64,7 @@ from my_offers.services.offer_view.fields.price_info import get_price_info
             100,
             enums.OfferType.commercial,
             enums.DealType.rent,
-            PriceInfo(exact=None, range=['от\xa08 334', 'до\xa083 334\xa0₽/мес']),
+            PriceInfo(exact=None, range=['от\xa08\xa0334', 'до\xa083\xa0334\xa0₽/мес']),
         ),
         (
             BargainTerms(
@@ -80,7 +80,7 @@ from my_offers.services.offer_view.fields.price_info import get_price_info
             100,
             enums.OfferType.commercial,
             enums.DealType.rent,
-            PriceInfo(exact=None, range=['от\xa0100 000', 'до\xa01 000 000\xa0₽/мес']),
+            PriceInfo(exact=None, range=['от\xa0100\xa0000', 'до\xa01\xa0000\xa0000\xa0₽/мес']),
         ),
         (
             BargainTerms(
@@ -119,7 +119,7 @@ from my_offers.services.offer_view.fields.price_info import get_price_info
             100,
             enums.OfferType.commercial,
             enums.DealType.rent,
-            PriceInfo(exact='150 000\xa0₽/мес.', range=None),
+            PriceInfo(exact='150\xa0000\xa0₽/мес.', range=None),
         ),
     ),
 

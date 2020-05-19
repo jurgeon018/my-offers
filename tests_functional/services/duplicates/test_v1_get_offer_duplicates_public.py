@@ -83,7 +83,7 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
     assert response.data == {
         'offers': [
             {
-                'priceInfo': {'exact': '1 200\xa0₽/сут.', 'range': None},
+                'priceInfo': {'exact': '1\xa0200\xa0₽/сут.', 'range': None},
                 'geo': {
                     'address': ['Тульская область', 'Тула', 'проспект Ленина', '130'],
                     'underground': None,
@@ -101,7 +101,7 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
             },
             {
                 'vas': ['payed'],
-                'priceInfo': {'range': None, 'exact': '1 550 000\xa0₽'},
+                'priceInfo': {'range': None, 'exact': '1\xa0550\xa0000\xa0₽'},
                 'properties': ['2-комн.\xa0кв.', '59\xa0м²', '3/3\xa0этаж'],
                 'geo': {
                     'underground': None,
