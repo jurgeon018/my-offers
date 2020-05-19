@@ -17,6 +17,8 @@ def build_duplicate_view(object_model: ObjectModel, auction_bets: Dict[int, floa
     offer_id = object_model.id
     return entities.OfferDuplicate(
         offer_id=offer_id,
+        deal_type=deal_type,
+        offer_type=offer_type,
         main_photo_url=get_main_photo_url(object_model.photos),
         properties=get_properties(object_model),
         geo=prepare_geo_for_mobile(object_model.geo),

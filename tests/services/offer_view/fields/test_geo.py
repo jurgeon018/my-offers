@@ -170,7 +170,7 @@ def test_prepare_geo_for_mobile__empty_geo__empty():
     result = prepare_geo_for_mobile(Geo())
 
     # assert
-    assert result == MobileOfferGeo(address=[], newbuilding=None, underground=None)
+    assert result == MobileOfferGeo(address=[], underground=None)
 
 
 def test__get_address_for_mobile__empty_address_info__empty():

@@ -32,11 +32,10 @@ def prepare_geo(*, geo: Optional[Geo], geo_urls: AddressUrls, jk_urls: Dict[int,
 
 def prepare_geo_for_mobile(geo: Optional[Geo]) -> entities.MobileOfferGeo:
     if not geo or not geo.address:
-        return entities.MobileOfferGeo(address=[], newbuilding=None, underground=None)
+        return entities.MobileOfferGeo(address=[], underground=None)
 
     return entities.MobileOfferGeo(
         address=_get_address_for_mobile(geo.address),
-        newbuilding=_get_jk_name(geo.jk) if geo.jk else None,
         underground=_get_underground_for_mobile(
             undergrounds=geo.undergrounds,
             addresses=geo.address,

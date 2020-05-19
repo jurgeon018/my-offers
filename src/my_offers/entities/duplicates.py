@@ -11,10 +11,10 @@ from my_offers.entities.offer_view_model import Underground
 class GetOfferDuplicatesRequest:
     offer_id: int
     """Id объявления"""
-    type: enums.DuplicateTabType
-    """Вкладка дубликатов"""
     pagination: Optional[Pagination]
     """Параметры страницы"""
+    type: Optional[enums.DuplicateTabType] = None
+    """Вкладка дубликатов"""
 
 
 @dataclass
@@ -41,8 +41,6 @@ class MobileUnderground:
 class MobileOfferGeo:
     address: List[str]
     """Адрес"""
-    newbuilding: Optional[str]
-    """Новостройки"""
     underground: Optional[MobileUnderground]
     """Метро"""
 
@@ -51,6 +49,10 @@ class MobileOfferGeo:
 class OfferDuplicate:
     offer_id: int
     """Id объявления"""
+    deal_type: enums.DealType
+    """Тип сделки"""
+    offer_type: enums.OfferType
+    """Тип объекта недвижимости"""
     main_photo_url: Optional[str]
     """Основаная фотография объекта"""
     properties: List[str]
