@@ -9,6 +9,7 @@ from my_offers.entities.billing import AnnouncementBillingContract, OfferBilling
 from my_offers.enums import TargetObjectType
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
+    post_save_contract,
     save_announcement_contract,
 )
 
@@ -46,6 +47,10 @@ async def test_save_announcement_contract(mocker):
     )
     save_offer_contract_mock = mocker.patch(
         'my_offers.services.billing.contracts_service.postgresql.save_offer_contract',
+        return_value=future(1)
+    )
+    post_save_contract_mock = mocker.patch(
+        'my_offers.services.billing.contracts_service.post_save_contract',
         return_value=future()
     )
 
@@ -55,6 +60,7 @@ async def test_save_announcement_contract(mocker):
 
     # assert
     save_offer_contract_mock.assert_called_with(offer_contract=offer_contract)
+    post_save_contract_mock.assert_called_with(offer_contract)
 
 
 async def test_save_announcement_contract__row_version_is_none(mocker):
@@ -218,3 +224,34 @@ async def test__mark_to_delete_announcement_contract__ignore_types(mocker, targe
 
     # assert
     set_offer_contract_is_deleted_status_mock.assert_not_called()
+
+
+async def test_post_save_contract(mocker):
+    # arrange
+    offer_contract = OfferBillingContract(
+        id=1,
+        user_id=555,
+        actor_user_id=777,
+        publisher_user_id=888,
+        start_date=datetime(2020, 1, 2),
+        payed_till=datetime(2020, 2, 2),
+        offer_id=999999,
+        row_version=0,
+        is_deleted=False,
+        created_at=datetime(2020, 2, 2),
+        updated_at=datetime(2020, 2, 2),
+    )
+
+    update_offer_master_user_id_mock = mocker.patch(
+        'my_offers.services.billing.contracts_service.postgresql.update_offer_master_user_id',
+        return_value=future()
+    )
+
+    # act
+    await post_save_contract(offer_contract)
+
+    # assert
+    update_offer_master_user_id_mock.assert_called_once_with(
+        offer_id=999999,
+        master_user_id=888,
+    )

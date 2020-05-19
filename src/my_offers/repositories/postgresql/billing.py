@@ -12,7 +12,7 @@ from my_offers.mappers.billing import offer_billing_contract_mapper
 from my_offers.repositories.postgresql.tables import offers_billing_contracts
 
 
-async def save_offer_contract(offer_contract: OfferBillingContract) -> None:
+async def save_offer_contract(offer_contract: OfferBillingContract) -> Optional[int]:
     insert_values = offer_billing_contract_mapper.map_to(offer_contract)
 
     # меняем только дату обновления контракта для update
@@ -28,10 +28,14 @@ async def save_offer_contract(offer_contract: OfferBillingContract) -> None:
             index_elements=[offers_billing_contracts.c.id],
             where=offers_billing_contracts.c.row_version < offer_contract.row_version,
             set_=update_values
+        ).returning(
+            offers_billing_contracts.c.id
         )
     )
 
-    await pg.get().execute(query, *params)
+    row = await pg.get().fetchrow(query, *params)
+
+    return row['id'] if row else None
 
 
 async def set_offer_contract_is_deleted_status(*, contract_id: int, row_version: int) -> None:
@@ -48,25 +52,6 @@ async def set_offer_contract_is_deleted_status(*, contract_id: int, row_version:
     query, params = asyncpgsa.compile_query(sql)
 
     await pg.get().execute(query, *params)
-
-
-async def get_offer_contract(offer_id: int) -> Optional[OfferBillingContract]:
-    query = """
-    select
-        *
-    from
-        offers_billing_contracts
-    where
-        not is_deleted
-        and offer_id = $1
-    order by
-        row_version desc
-    limit 1
-    """
-
-    result = await pg.get().fetchrow(query, offer_id)
-
-    return offer_billing_contract_mapper.map_from(dict(result)) if result else None
 
 
 async def get_offers_payed_till(offer_ids: List[int]) -> Dict[int, datetime]:
@@ -86,3 +71,22 @@ async def get_offers_payed_till(offer_ids: List[int]) -> Dict[int, datetime]:
     rows = await pg.get().fetch(query, offer_ids, timeout=settings.DB_TIMEOUT)
 
     return {row['offer_id']: row['payed_till'] for row in rows}
+
+
+async def get_offer_publisher_user_id(offer_id: int) -> Optional[int]:
+    query = """
+    select
+        publisher_user_id
+    from
+        offers_billing_contracts
+    where
+        offer_id = $1
+    order by
+        row_version desc
+    limit
+        1
+    """
+
+    row = await pg.get().fetchrow(query, offer_id)
+
+    return row['publisher_user_id'] if row else None

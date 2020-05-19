@@ -34,7 +34,17 @@ async def save_announcement_contract(billing_contract: AnnouncementBillingContra
         created_at=now,
         updated_at=now
     )
-    await postgresql.save_offer_contract(offer_contract=contract)
+    contract_id = await postgresql.save_offer_contract(offer_contract=contract)
+    if contract_id:
+        await post_save_contract(contract)
+
+
+async def post_save_contract(contract: OfferBillingContract) -> None:
+    if contract.publisher_user_id != contract.user_id:
+        await postgresql.update_offer_master_user_id(
+            offer_id=contract.offer_id,
+            master_user_id=contract.publisher_user_id
+        )
 
 
 async def mark_to_delete_announcement_contract(billing_contract: AnnouncementBillingContract) -> None:
@@ -52,8 +62,3 @@ async def mark_to_delete_announcement_contract(billing_contract: AnnouncementBil
         contract_id=billing_contract.id,
         row_version=billing_contract.row_version
     )
-
-
-async def delete_announcement_contract(service_contract: AnnouncementBillingContract) -> None:
-    """ Удалить контракт на услуги по объялвению """
-    # TODO: https://jira.cian.tech/browse/CD-75463
