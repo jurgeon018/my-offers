@@ -6,12 +6,12 @@ from freezegun import freeze_time
 from freezegun.api import FakeDatetime
 
 from my_offers import entities, enums, pg
-from my_offers.repositories.postgresql.offer import update_offer
+from my_offers.repositories.postgresql.offer import update_offer, update_offer_master_user_id
 
 
 @pytest.mark.gen_test
 @freeze_time('2020-03-12')
-async def test_update_offer(mocker):
+async def test_update_offer():
     # arrange
     offer = entities.Offer(
         offer_id=1111,
@@ -66,4 +66,17 @@ async def test_update_offer(mocker):
         FakeDatetime(2020, 3, 12, 0, 0, tzinfo=pytz.UTC),
         3333,
         15.0
+    )
+
+
+async def test_update_offer_master_user_id():
+    # arrange & act
+    await update_offer_master_user_id(offer_id=1, master_user_id=2)
+
+    # assert
+    pg.get().execute.assert_called_once_with(
+        '\n    update offers set master_user_id = $1 where offer_id = $2 and master_user_id <> $3\n    ',
+        2,
+        1,
+        2,
     )

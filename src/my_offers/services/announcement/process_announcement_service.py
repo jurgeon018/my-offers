@@ -5,6 +5,7 @@ from my_offers.helpers.status_tab import get_status_tab
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
+from my_offers.repositories.postgresql.billing import get_offer_publisher_user_id
 from my_offers.services.announcement.fields.is_test import get_is_test
 from my_offers.services.announcement.fields.prices import get_prices
 from my_offers.services.announcement.fields.search_text import get_search_text
@@ -32,7 +33,7 @@ async def prepare_offer(object_model: ObjectModel) -> entities.Offer:
     geo = object_model.geo
     offer = entities.Offer(
         offer_id=object_model.id,
-        master_user_id=object_model.user_id,
+        master_user_id=await _get_master_user_id(offer_id=object_model.id, user_id=object_model.user_id),
         user_id=object_model.published_user_id,
         deal_type=deal_type,
         offer_type=offer_type,
@@ -59,3 +60,9 @@ async def prepare_offer(object_model: ObjectModel) -> entities.Offer:
 async def post_process_announcement(object_model: ObjectModel) -> None:
     if not object_model.status.is_draft:
         await postgresql.delete_offer_import_error(object_model.id)
+
+
+async def _get_master_user_id(*, offer_id: int, user_id: int) -> int:
+    publisher_user_id = await get_offer_publisher_user_id(offer_id)
+
+    return publisher_user_id if publisher_user_id else user_id

@@ -181,3 +181,11 @@ async def get_offers_row_version(offer_ids: List[int]) -> List[OfferRowVersion]:
     rows = await pg.get().fetch(query, offer_ids)
 
     return [offer_row_version_mapper.map_from(row) for row in rows]
+
+
+async def update_offer_master_user_id(*, offer_id: int, master_user_id: int) -> None:
+    query = """
+    update offers set master_user_id = $1 where offer_id = $2 and master_user_id <> $3
+    """
+
+    await pg.get().execute(query, master_user_id, offer_id, master_user_id)
