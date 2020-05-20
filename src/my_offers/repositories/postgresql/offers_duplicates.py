@@ -109,7 +109,7 @@ async def get_offers_duplicates_count(offer_ids: List[int]) -> List[entities.Off
         entities.OfferDuplicatesCount(
             offer_id=row['offer_id'],
             competitors_count=0,
-            duplicates_count=row['count']
+            duplicates_count=row['cnt']
         )
         for row in rows
     ]
