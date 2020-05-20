@@ -89,3 +89,24 @@ class GetOfferDuplicatesResponse:
     """Информация о вкладках"""
     page: PageInfo
     """Информация о странице"""
+
+
+@dataclass
+class GetOffersDuplicatesCountRequest:
+    offer_ids: List[int]
+    """Id объявлений"""
+
+
+@dataclass
+class OfferDuplicatesCount:
+    offer_id: int
+    """Id объявления"""
+    competitors_count: int
+    """Кол-во похожих"""
+    duplicates_count: int
+    """Кол-во дублей"""
+
+
+@dataclass
+class GetOffersDuplicatesCountResponse:
+    data: List[OfferDuplicatesCount]
