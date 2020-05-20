@@ -25,7 +25,7 @@ from my_offers.services.offer_view.fields.features import get_features
             10,
             enums.OfferType.commercial,
             enums.DealType.rent,
-            ['10 000 ₽ за м² в год'],
+            ['10\xa0000 ₽ за м² в год'],
         ),
         (
             BargainTerms(
@@ -38,7 +38,7 @@ from my_offers.services.offer_view.fields.features import get_features
             10,
             enums.OfferType.commercial,
             enums.DealType.rent,
-            ['120 000 ₽ за м² в год'],
+            ['120\xa0000 ₽ за м² в год'],
         ),
         (
             BargainTerms(

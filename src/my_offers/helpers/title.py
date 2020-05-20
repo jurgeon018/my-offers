@@ -93,19 +93,19 @@ def get_properties(object_model: ObjectModel) -> List[str]:
 
     if title := OFFER_TITLES.get(category):
         if object_model.can_parts and total_area and min_area:
-            area: Optional[str] = f'от {min_area} до {total_area} {SQUARE_METER_SYMBOL}'
+            area: Optional[str] = f'от\xa0{min_area}\xa0до\xa0{total_area}\xa0{SQUARE_METER_SYMBOL}'
         elif is_land:
             unit_type = UNIT_TYPE[object_model.land.area_unit_type]
-            area = f'{object_model.land.area} {unit_type}'
+            area = f'{object_model.land.area}\xa0{unit_type}'
         else:
-            area = f'{total_area} {SQUARE_METER_SYMBOL}'
+            area = f'{total_area}\xa0{SQUARE_METER_SYMBOL}'
     else:
         flat_type = object_model.flat_type
         rooms_count = object_model.rooms_count
-        area = f'{total_area} {SQUARE_METER_SYMBOL}' if total_area else None
+        area = f'{total_area}\xa0{SQUARE_METER_SYMBOL}' if total_area else None
 
         if rooms_count:
-            title = f'{rooms_count}-комн. кв.' if 1 <= rooms_count <= 5 else f'Многокомн. кв.'
+            title = f'{rooms_count}-комн.\xa0кв.' if 1 <= rooms_count <= 5 else 'Многокомн.\xa0кв.'
 
         if flat_type and (flat_type.is_studio or flat_type.is_open_plan):
             title = FLAT_TITLE[flat_type]
@@ -127,8 +127,8 @@ def _get_floors(floor_number: Optional[int], floors_count: Optional[int]) -> Opt
         return BASEMENT_FLOOR[floor_number]
 
     if floors_count:
-        floors_name = f'{floor_number}/{floors_count} этаж'
+        floors_name = f'{floor_number}/{floors_count}\xa0этаж'
     else:
-        floors_name = f'{floor_number} этаж'
+        floors_name = f'{floor_number}\xa0этаж'
 
     return floors_name
