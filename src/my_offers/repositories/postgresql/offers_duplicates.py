@@ -7,7 +7,7 @@ import pytz
 from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
-from my_offers import enums, pg
+from my_offers import entities, enums, pg
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.offers_duplicates.entities import Duplicate
@@ -83,3 +83,33 @@ async def delete_offers_duplicates(offer_ids: List[int]) -> None:
     query = 'DELETE FROM offers_duplicates WHERE offer_id = ANY($1::BIGINT[])'
 
     await pg.get().execute(query, offer_ids)
+
+
+async def get_offers_duplicates_count(offer_ids: List[int]) -> List[entities.OfferDuplicatesCount]:
+    query = """
+    select
+        d1.offer_id,
+        count(*) - 1 as cnt
+    from
+        offers_duplicates d1
+        join offers_duplicates d2 on d2.group_id = d1.group_id
+        join offers o on o.offer_id = d2.offer_id
+    where
+        o.status_tab = 'active'
+        and d1.offer_id = any($1::bigint[])
+    group by
+        d1.offer_id
+    having
+        count(*) > 1
+    """
+
+    rows = await pg.get().fetch(query, offer_ids)
+
+    return [
+        entities.OfferDuplicatesCount(
+            offer_id=row['offer_id'],
+            competitors_count=0,
+            duplicates_count=row['cnt']
+        )
+        for row in rows
+    ]

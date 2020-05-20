@@ -42,6 +42,16 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
     url(
+        r'/v1/get-offers-duplicates-count/$',
+        get_handler(
+            service=duplicates.v1_get_offers_duplicates_count,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersDuplicatesCountRequest,
+            response_schema=entities.GetOffersDuplicatesCountResponse,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
+    url(
         r'/v1/update-offer/',
         get_handler(
             service=offers.update_offer,
