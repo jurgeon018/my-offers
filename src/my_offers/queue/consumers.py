@@ -1,12 +1,15 @@
 import logging
+from datetime import datetime
 from typing import List
 
+import pytz
 from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer import Message
 from cian_core.statsd import statsd
 
 from my_offers.entities import AgentMessage, ModerationOfferOffence, OfferImportError
 from my_offers.entities.moderation import OfferPremoderation
+from my_offers.helpers.time import get_aware_date
 from my_offers.queue.entities import (
     AnnouncementMessage,
     AnnouncementPremoderationReportingMessage,
@@ -41,6 +44,8 @@ async def process_announcement_callback(messages: List[Message]) -> None:
             except:
                 logger.exception('Process announcement error id: %s, key: %s', object_model.id, routing_key)
                 raise
+            finally:
+                statsd.timing(stat='', delta=datetime.now(pytz.utc) - get_aware_date(announcement_message.date))
 
 
 async def save_announcement_contract_callback(messages: List[Message]) -> None:
