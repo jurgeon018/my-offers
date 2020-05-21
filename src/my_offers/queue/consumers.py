@@ -45,7 +45,10 @@ async def process_announcement_callback(messages: List[Message]) -> None:
                 logger.exception('Process announcement error id: %s, key: %s', object_model.id, routing_key)
                 raise
             finally:
-                statsd.timing(stat='', delta=datetime.now(pytz.utc) - get_aware_date(announcement_message.date))
+                statsd.timing(
+                    stat='process_announcement_delta',
+                    delta=datetime.now(pytz.utc) - get_aware_date(announcement_message.date)
+                )
 
 
 async def save_announcement_contract_callback(messages: List[Message]) -> None:
