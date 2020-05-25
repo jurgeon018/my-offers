@@ -6,15 +6,9 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term 
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
 from my_offers.services import offer_view
 from my_offers.services.auctions import get_auction_bets_degradation_handler
+from my_offers.services.duplicates.helpers.tabs import get_tabs
+from my_offers.services.duplicates.helpers.validation_offer import validate_offer
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
-
-
-CATEGORY_FOR_DUPLICATE = (
-    Category.flat_sale,
-    Category.room_sale,
-    Category.flat_rent,
-    Category.room_rent,
-)
 
 
 async def v1_get_offer_duplicates_public(
@@ -45,18 +39,7 @@ async def v1_get_offer_duplicates_public(
 
     return entities.GetOfferDuplicatesResponse(
         offers=offers,
-        tabs=[
-            entities.Tab(
-                type=enums.DuplicateTabType.all,
-                title='Все',
-                count=total,
-            ),
-            entities.Tab(
-                type=enums.DuplicateTabType.duplicate,
-                title='Дубли',
-                count=total,
-            ),
-        ],
+        tabs=get_tabs(total),
         page=get_page_info(limit=limit, offset=offset, total=total),
     )
 
@@ -67,17 +50,6 @@ def get_empty_response(limit: int, offset: int) -> entities.GetOfferDuplicatesRe
         tabs=[],
         page=get_page_info(limit=limit, offset=offset, total=0),
     )
-
-
-def validate_offer(*, status: Status, category: Category) -> bool:
-    """
-    Дубли делаем только для квартир и комнат во вторичке.
-    Длительная аренда и продажа (без посуточной)
-    """
-    if not status.is_published:
-        return False
-
-    return category in CATEGORY_FOR_DUPLICATE
 
 
 async def load_auction_bets(object_models: List[ObjectModel]) -> Dict[int, int]:
