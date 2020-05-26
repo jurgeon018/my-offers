@@ -1,5 +1,3 @@
-
-
 from my_offers import entities
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates_count
 from my_offers.services.duplicates.helpers.tabs import get_tabs
