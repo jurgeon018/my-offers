@@ -17,7 +17,7 @@ async def test_update_offers_duplicates(mocker):
     # arrange
     duplicates = [Duplicate(1, 2), Duplicate(2, 2)]
     pg.get().fetch.return_value = future([{
-        'offer_id': 11,
+        'offer_id': 1,
         'updated_at': datetime(2020, 3, 12),
     }])
 
