@@ -39,14 +39,6 @@ instances = 3
 cpu = 2048
 memory = 128
 
-[job.process_announcement_consumer_fill]
-type = "consumer"
-command = "process_announcement_consumer_fill"
-
-[job.process_announcement_consumer_fill.prod]
-instances = 3
-cpu = 2048
-
 [job.save_moderation_offer_offence_consumer]
 type = "consumer"
 command = "save_moderation_offer_offence_consumer"
@@ -87,10 +79,11 @@ type = "consumer"
 command = "update_offer_duplicates_consumer"
 memory = 128
 
-[job.reindex_offers]
-type = "manage"
-command = "reindex-offers"
-
 [job.clear_deleted_offer_cron]
 type = "consumer"
 command = "clear-deleted-offer-cron"
+memory = 128
+
+[job.reindex_offers]
+type = "manage"
+command = "reindex-offers"

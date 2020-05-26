@@ -80,3 +80,9 @@ class AnnouncementPremoderationReportingV1RoutingKey(StrEnum):
 
     sent = 'announcement-premoderation-reporting.v1.sent'
     remove = 'announcement-premoderation-reporting.v1.remove'
+
+
+class OfferDuplicateV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    new = 'my-offers.offer-duplicate.v1.new'

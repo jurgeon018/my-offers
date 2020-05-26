@@ -14,7 +14,7 @@ from my_offers.repositories.offers_duplicates.entities import Duplicate
 from my_offers.repositories.postgresql import tables
 
 
-async def update_offers_duplicates(duplicates: List[Duplicate]) -> None:
+async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
     now = datetime.now(tz=pytz.UTC)
 
     data = [
@@ -36,10 +36,17 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> None:
                 'group_id': insert_query.excluded.group_id,
                 'updated_at': insert_query.excluded.created_at,
             }
+        ).returning(
+            tables.offers_duplicates.c.offer_id,
+            tables.offers_duplicates.c.updated_at,
         )
     )
 
-    await pg.get().execute(query, *params)
+    rows = await pg.get().fetch(query, *params)
+    if not rows:
+        return []
+
+    return [row['offer_id'] for row in rows if row['updated_at'] is None]
 
 
 async def get_offer_duplicates(offer_id: int, limit: int, offset: int) -> Tuple[List[ObjectModel], int]:

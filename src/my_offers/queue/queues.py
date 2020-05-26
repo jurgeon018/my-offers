@@ -36,16 +36,6 @@ process_announcements_queue = Queue(
     bindings=_get_bindings('announcement_reporting', AnnouncementReportingV1RoutingKey),
 )
 
-process_announcements_queue_fill = Queue(
-    name=get_modified_queue_name('process_announcement_v2_fill'),
-    bindings=[
-        QueueBinding(
-            exchange=Exchange('announcements'),
-            routing_key='announcement_reporting_my_offers.fill',
-        )
-    ],
-)
-
 save_announcement_contract_queue = Queue(
     name=get_modified_queue_name('save_announcement_contract'),
     bindings=[

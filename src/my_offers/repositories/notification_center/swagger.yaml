@@ -1,0 +1,103 @@
+definitions:
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items: {title: errors, type: object}
+        title: errors
+        type: array
+      message: {title: message, type: string}
+    type: object
+  notification_center.web.entities.notifications.RegisterNotificationV2RequestSchema:
+    properties:
+      emailPayload: {description: Данные для email, title: email_payload, type: object}
+      entityId: {description: 'Идентификатор сущности, по которому формируется уведомление',
+        format: int64, title: entity_id, type: integer}
+      isAuthenticated: {description: Анонимный/Зарегистрированный пользователь, title: is_authenticated,
+        type: boolean}
+      mediaUrl: {description: Ссылка на фото в уведомлении, title: media_url, type: string}
+      mobilePushPayload: {description: 'Обязательный параметр, эти данные используются
+          для отображения уведомлений в ЦУ на моб. приложении', title: mobile_push_payload,
+        type: object}
+      notificationType:
+        description: Тип уведомления
+        enum: [abandonedAddform, chatsMany, chatsOne, cianServices, deactivatedAnnouncement,
+          dealRentScoringCompleted, dealRentScoringFailed, demand, demandMessagePackage,
+          demandNew, favoritePriceChanged, lastSearch, newProfileForOfferInDeal, offersFavoriteHouse,
+          onbording, priceEstimator, recommendedOffers, reviewSpecialist, reviews,
+          rosreestrCheckCompleted, safeRentScoring, savedSearchNewOffer, sumsubCheckCompleted,
+          switchAccountType, universalNotification, zendesk]
+        type: string
+        x-abandonedAddform: Напоминание о брошеной форме подачи
+        x-chatsMany: Пуш о новых сообщениях за прошлый день в чате
+        x-chatsOne: Пуш о новом сообщении в чате
+        x-cianServices: Пуши по сервисам и возможностям ЦИАН
+        x-deactivatedAnnouncement: Истек срок публикации объявления
+        x-dealRentScoringCompleted: Пуши об успешном прохождении скоринга арендатором
+        x-dealRentScoringFailed: Пуши о проваленном прохождении скоринга арендатором
+        x-demand: Пуши по спросу
+        x-demandMessagePackage: Пуш по пакетам заявок спроса
+        x-demandNew: Новая версия пушей по спросу
+        x-favoritePriceChanged: Цена изменилась в избранном объявлении
+        x-lastSearch: Пуш по последнему поиску
+        x-newProfileForOfferInDeal: Пуши о новых анкетах для обьявления в сделке
+        x-offersFavoriteHouse: Пуш объявлений в домах из избранного
+        x-onbording: Пуши для онбординга-книжки
+        x-priceEstimator: Пуш об оценке на калькулятор недвижимости
+        x-recommendedOffers: Рекомендованные обхявления
+        x-reviewSpecialist: Оценка специалиста
+        x-reviews: Пуш при новой информации в отзывах
+        x-rosreestrCheckCompleted: Закончилась проверка собственника в Росреестре
+        x-safeRentScoring: Пуши о прохождении проверки арендатора в безопасной аренде
+          (успешное или неуспешное)
+        x-savedSearchNewOffer: Новое объявление в сохраненном поиске
+        x-sumsubCheckCompleted: Закончилась проверка пользователя в SumSub
+        x-switchAccountType: Смена типа аккаунта
+        x-universalNotification: Универсальные уведомления
+        x-zendesk: Пуши от zendesk
+      plannedSendDatetime: {description: Желаемое плановое время отправки уведомления,
+        format: date-time, title: planned_send_datetime, type: string}
+      text: {description: Текст уведомления, title: text, type: string}
+      title: {description: Название уведомления, title: title, type: string}
+      transportsToSend:
+        description: Список транспортов для отправки (по умолчанию - выберутся все
+          доступные у пользователя каналы связи)
+        items:
+          enum: [email, mailruNotify, mobilePush, webPush]
+          type: string
+          x-email: Email
+          x-mailruNotify: ' Уведомления в vk и одноклассники '
+          x-mobilePush: Мобильный пуш
+          x-webPush: Веб пуш
+        title: transports_to_send
+        type: array
+      userId: {description: Идентификатор пользователя, title: user_id, type: string}
+      webPushPayload: {description: 'Обязательный параметр, эти данные используются
+          для отображения уведомлений в ЦУ на вебе', title: web_push_payload, type: object}
+      webUrl: {description: Веб ссылка для перехода по уведомлению на вебе, title: web_url,
+        type: string}
+    required: [isAuthenticated, mobilePushPayload, notificationType, text, title,
+      userId, webUrl]
+    type: object
+  notification_center.web.entities.notifications.RegisterNotificationsV2RequestSchema:
+    properties:
+      notifications:
+        description: Список уведомлений
+        items: {$ref: '#/definitions/notification_center.web.entities.notifications.RegisterNotificationV2RequestSchema'}
+        type: array
+    required: [notifications]
+    type: object
+info: {description: Notification Center, title: notification-center, version: 1.0.0}
+paths:
+  /v2/register-notifications/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema: {$ref: '#/definitions/notification_center.web.entities.notifications.RegisterNotificationsV2RequestSchema'}
+      produces: [application/json]
+      responses:
+        '400':
+          schema: {$ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'}
+      summary: Регистрирует новое уведомление
+swagger: '2.0'
