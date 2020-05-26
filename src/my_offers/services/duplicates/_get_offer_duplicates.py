@@ -15,7 +15,6 @@ async def v1_get_offer_duplicates_public(
         request: entities.GetOfferDuplicatesRequest,
         realty_user_id: int
 ) -> entities.GetOfferDuplicatesResponse:
-
     if not request.type:
         request.type = enums.DuplicateTabType.all
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)

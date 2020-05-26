@@ -19,7 +19,7 @@ def build_duplicate_view(object_model: ObjectModel, auction_bets: Dict[int, floa
         offer_id=offer_id,
         deal_type=deal_type,
         offer_type=offer_type,
-        main_photo_url=get_main_photo_url(object_model.photos),
+        main_photo_url=get_main_photo_url(object_model.photos, better_quality=True),
         properties=get_properties(object_model),
         geo=prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),
