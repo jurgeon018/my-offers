@@ -4,7 +4,10 @@ from cian_core.web import Application
 from tornado.ioloop import IOLoop
 
 from my_offers import setup
-from my_offers.queue import consumers, queues, schemas
+from my_offers.helpers.schemas import get_entity_schema
+from my_offers.queue import consumers
+from my_offers.queue import entities as mq_entities
+from my_offers.queue import queues, schemas
 from my_offers.services.offers import reindex_offers_command
 from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.web.urls import urlpatterns
@@ -102,6 +105,15 @@ register_consumer(
     queue=queues.update_offer_duplicates_queue,
     callback=consumers.update_offer_duplicates_callback,
     schema_cls=schemas.RabbitMQNeedUpdateDuplicateMessageSchema,
+    dead_queue_enabled=True,
+)
+
+# [duplicates] рассылка пушей по новым дубликатам
+register_consumer(
+    command=cli.command('new_offer_duplicate_notification_consumer'),
+    queue=queues.new_offer_duplicate_notification_queue,
+    callback=consumers.new_offer_duplicate_notification_callback,
+    schema_cls=get_entity_schema(mq_entities.OfferNewDuplicateMessage),
     dead_queue_enabled=True,
 )
 

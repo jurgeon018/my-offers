@@ -14,6 +14,7 @@ from my_offers.queue.entities import (
     AnnouncementMessage,
     AnnouncementPremoderationReportingMessage,
     NeedUpdateDuplicateMessage,
+    OfferNewDuplicateMessage,
     SaveUnloadErrorMessage,
     ServiceContractMessage,
 )
@@ -25,6 +26,7 @@ from my_offers.services.billing.contracts_service import (
     save_announcement_contract,
 )
 from my_offers.services.duplicates import update_offers_duplicates
+from my_offers.services.duplicates._send_new_offer_duplicate_notifications import send_new_offer_duplicate_notifications
 from my_offers.services.moderation.moderation_service import save_offer_offence
 from my_offers.services.offers_import import save_offers_import_error
 
@@ -139,3 +141,11 @@ async def update_offer_duplicates_callback(messages: List[Message]) -> None:
 
     with new_operation_id():
         await update_offers_duplicates(list(offer_ids))
+
+
+async def new_offer_duplicate_notification_callback(messages: List[Message]) -> None:
+    for message in messages:
+        offer_duplicate: OfferNewDuplicateMessage = message.data
+
+        with new_operation_id(offer_duplicate.operation_id):
+            await send_new_offer_duplicate_notifications(offer_duplicate.duplicate_offer_id)

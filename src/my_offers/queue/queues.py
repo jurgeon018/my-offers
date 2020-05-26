@@ -9,6 +9,7 @@ from my_offers.queue.routing_keys import (
     AnnouncementPremoderationReportingV1RoutingKey,
     AnnouncementReportingV1RoutingKey,
     ModerationOfferOffenceReportingV1RoutingKey,
+    OfferDuplicateV1RoutingKey,
     ServiceContractsReportingV1RoutingKey,
     UnloadOrderReportingV1RoutingKey,
 )
@@ -120,6 +121,16 @@ update_offer_duplicates_queue = Queue(
         QueueBinding(
             exchange=Exchange('ml-ranking-dubli'),
             routing_key='offer.v1.need-update-duplicate',
+        ),
+    ],
+)
+
+new_offer_duplicate_notification_queue = Queue(
+    name=get_modified_queue_name('new_offer_duplicate_notification'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('my-offers'),
+            routing_key=OfferDuplicateV1RoutingKey.new.value,
         ),
     ],
 )
