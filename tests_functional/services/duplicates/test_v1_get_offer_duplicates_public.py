@@ -95,7 +95,7 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
                 'auctionBet': '+\xa012\xa0₽',
                 'type': 'duplicate',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/1/644/244/'
-                                'kvartira-tula-prospekt-lenina-442446187-3.jpg',
+                                'kvartira-tula-prospekt-lenina-442446187-2.jpg',
                 'vas': ['auction', 'top3'],
                 'displayDate': '2020-05-14T03:06:16.493000+00:00'
             },
@@ -113,7 +113,7 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
                 'type': 'duplicate',
                 'displayDate': '2020-05-09T10:06:29.159746+00:00',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/6/179/378/'
-                                'kvartira-nizhniy-tagil-ulica-ciolkovskogo-873971625-3.jpg',
+                                'kvartira-nizhniy-tagil-ulica-ciolkovskogo-873971625-2.jpg',
                 'auctionBet': None
             }
         ],
