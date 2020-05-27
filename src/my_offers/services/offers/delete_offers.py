@@ -17,6 +17,7 @@ TABLES_TO_DELETE = (
     tables.offers_offences,
     tables.offers_reindex_queue,
     tables.offers_premoderations,
+    tables.offers_duplicates,
 )
 
 
