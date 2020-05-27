@@ -5,9 +5,12 @@ from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
 from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
+from my_offers.repositories.postgresql.tables import metadata
 
 
 offers_duplicate_notification = sa.Table(
+    'offers_duplicate_notification',
+    metadata,
     sa.Column('offer_id', sa.BIGINT, nullable=False),
     sa.Column('duplicate_offer_id', sa.BIGINT, nullable=False),
     sa.Column('send_at', sa.TIMESTAMP, nullable=False),

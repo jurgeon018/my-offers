@@ -5,7 +5,7 @@ import pytz
 from simple_settings import settings
 
 from my_offers import enums, pg
-from my_offers.repositories.postgresql import tables
+from my_offers.repositories.postgresql import tables, offers_duplicates
 from my_offers.repositories.postgresql.delete import delete_rows_by_offer_id
 from my_offers.repositories.postgresql.offer import get_offers_id_older_than
 
@@ -17,7 +17,7 @@ TABLES_TO_DELETE = (
     tables.offers_offences,
     tables.offers_reindex_queue,
     tables.offers_premoderations,
-    tables.offers_duplicates,
+    offers_duplicates,
 )
 
 
