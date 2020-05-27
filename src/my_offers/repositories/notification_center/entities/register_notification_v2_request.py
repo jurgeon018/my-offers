@@ -43,6 +43,8 @@ class NotificationType(StrEnum):
     """Пуш по последнему поиску"""
     new_profile_for_offer_in_deal = 'newProfileForOfferInDeal'
     """Пуши о новых анкетах для обьявления в сделке"""
+    offer_new_duplicate_found = 'offerNewDuplicateFound'
+    """Пуш найден новый дубль объявления"""
     offers_favorite_house = 'offersFavoriteHouse'
     """Пуш объявлений в домах из избранного"""
     onbording = 'onbording'

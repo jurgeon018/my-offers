@@ -22,10 +22,10 @@ definitions:
         description: Тип уведомления
         enum: [abandonedAddform, chatsMany, chatsOne, cianServices, deactivatedAnnouncement,
           dealRentScoringCompleted, dealRentScoringFailed, demand, demandMessagePackage,
-          demandNew, favoritePriceChanged, lastSearch, newProfileForOfferInDeal, offersFavoriteHouse,
-          onbording, priceEstimator, recommendedOffers, reviewSpecialist, reviews,
-          rosreestrCheckCompleted, safeRentScoring, savedSearchNewOffer, sumsubCheckCompleted,
-          switchAccountType, universalNotification, zendesk]
+          demandNew, favoritePriceChanged, lastSearch, newProfileForOfferInDeal, offerNewDuplicateFound,
+          offersFavoriteHouse, onbording, priceEstimator, recommendedOffers, reviewSpecialist,
+          reviews, rosreestrCheckCompleted, safeRentScoring, savedSearchNewOffer,
+          sumsubCheckCompleted, switchAccountType, universalNotification, zendesk]
         type: string
         x-abandonedAddform: Напоминание о брошеной форме подачи
         x-chatsMany: Пуш о новых сообщениях за прошлый день в чате
@@ -40,6 +40,7 @@ definitions:
         x-favoritePriceChanged: Цена изменилась в избранном объявлении
         x-lastSearch: Пуш по последнему поиску
         x-newProfileForOfferInDeal: Пуши о новых анкетах для обьявления в сделке
+        x-offerNewDuplicateFound: Пуш найден новый дубль объявления
         x-offersFavoriteHouse: Пуш объявлений в домах из избранного
         x-onbording: Пуши для онбординга-книжки
         x-priceEstimator: Пуш об оценке на калькулятор недвижимости

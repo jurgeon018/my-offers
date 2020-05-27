@@ -17,6 +17,10 @@ ADDRESS_TYPES_MAP = {
 }
 
 
+def get_address(address: Optional[List[AddressInfo]]) -> str:
+    ...
+
+
 def prepare_geo(*, geo: Optional[Geo], geo_urls: AddressUrls, jk_urls: Dict[int, str]) -> OfferGeo:
     if not geo:
         return OfferGeo()
