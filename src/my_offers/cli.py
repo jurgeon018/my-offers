@@ -115,6 +115,7 @@ register_consumer(
     callback=consumers.new_offer_duplicate_notification_callback,
     schema_cls=get_entity_schema(mq_entities.OfferNewDuplicateMessage),
     dead_queue_enabled=True,
+    default_prefetch_count=1,
 )
 
 

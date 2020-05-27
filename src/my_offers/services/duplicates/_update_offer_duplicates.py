@@ -1,5 +1,7 @@
 from typing import List
 
+from simple_settings import settings
+
 from my_offers.queue.producers import offer_new_duplicate_producers
 from my_offers.repositories import postgresql
 from my_offers.repositories.offers_duplicates import v1_get_offers_duplicates_by_ids
@@ -21,8 +23,9 @@ async def update_offers_duplicates(offer_ids: List[int]) -> None:
 
     if duplicates:
         new_duplicates = await postgresql.update_offers_duplicates(duplicates)
-        for offer_id in new_duplicates:
-            await offer_new_duplicate_producers(offer_id)
+        if settings.SEND_PUSH_ON_NEW_DUPLICATE:
+            for offer_id in new_duplicates:
+                await offer_new_duplicate_producers(offer_id)
 
     duplicate_ids = {d.offer_id for d in duplicates}
     not_duplicates = list(set(offer_ids) - duplicate_ids)

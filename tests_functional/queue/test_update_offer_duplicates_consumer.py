@@ -8,8 +8,9 @@ from tests_functional.utils import load_data
 
 
 @pytest.mark.asyncio
-async def test_update_offer_duplicates_consumer(queue_service, pg, offers_duplicates_mock):
+async def test_update_offer_duplicates_consumer(queue_service, pg, runtime_settings, offers_duplicates_mock):
     # arrange
+    await runtime_settings.set({'SEND_PUSH_ON_NEW_DUPLICATE': True})
     await pg.execute(load_data(os.path.dirname(__file__) + '/../', 'offers.sql'))
     await offers_duplicates_mock.add_stub(
         method='POST',
@@ -23,6 +24,7 @@ async def test_update_offer_duplicates_consumer(queue_service, pg, offers_duplic
             },
         ),
     )
+    queue = await queue_service.make_tmp_queue(routing_key='my-offers.offer-duplicate.v1.new')
 
     message = {
         'force': True,
@@ -33,11 +35,15 @@ async def test_update_offer_duplicates_consumer(queue_service, pg, offers_duplic
     # act
     await queue_service.wait_consumer('my-offers.update_offer_duplicates')
     await queue_service.publish('offer.v1.need-update-duplicate', message, exchange='ml-ranking-dubli')
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(1)
 
     # assert
     row = await pg.fetchrow('SELECT * FROM offers_duplicates WHERE offer_id = 209194477')
     assert row['group_id'] == 1
+
+    messages = await queue.get_messages()
+    assert len(messages) == 1
+    assert messages[0].payload['duplicateOfferId'] == 209194477
 
 
 @pytest.mark.asyncio
