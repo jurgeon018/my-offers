@@ -1,4 +1,48 @@
 definitions:
+  Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.RestoreRequest:
+    properties:
+      announcementIds:
+        description: Список id объявлений для восстановления.
+        items: {format: int32, type: integer}
+        type: array
+      userId: {description: Realty id пользователя., format: int64, type: integer}
+    required: [userId, announcementIds]
+    type: object
+  Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.RestoreResponse:
+    properties:
+      jobId: {description: Id задачи., format: int64, type: integer}
+    required: [jobId]
+    type: object
+  Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.AnnouncementProgressDto:
+    description: Результат обработки объявления.
+    properties:
+      errorMessage: {description: Сообщение об ошибке., type: string}
+      id: {description: ID объявления., format: int32, type: integer}
+      state:
+        description: Статус обработки.
+        enum: [New, InProgress, Completed, Error]
+        type: string
+        x-Completed: Запрос обработан.
+        x-Error: Произошла ошибка.
+        x-InProgress: Запрос обрабатывается.
+        x-New: Новый запрос.
+    type: object
+  Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.GetJobStatusResponse:
+    properties:
+      announcementsProgress:
+        description: Статусы объявлений.
+        items: {$ref: '#/definitions/Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.AnnouncementProgressDto'}
+        type: array
+      state:
+        description: Статус задачи.
+        enum: [New, InProgress, Completed, Error]
+        type: string
+        x-Completed: Завершено
+        x-Error: Завершено с ошибками
+        x-InProgress: В обработке
+        x-New: Новое
+    required: [state]
+    type: object
   RealtyApi.Models.Announcements.Swagger.AddressInfoSchema:
     description: Адрес
     properties:
@@ -2674,6 +2718,36 @@ info:
   title: monolith-cian-announcementapi
   version: v1
 paths:
+  /announcements-actions/restore/:
+    post:
+      consumes: [application/json, text/json, application/x-www-form-urlencoded]
+      operationId: AnnouncementsActions_Restore
+      parameters:
+        - in: body
+          name: request
+          required: true
+          schema: {$ref: '#/definitions/Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.RestoreRequest'}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.RestoreResponse'}
+      tags: [AnnouncementsActions]
+  /announcements-actions/get-job-status/:
+    get:
+      consumes: []
+      operationId: AnnouncementsActions_GetJobStatus
+      parameters:
+      - {description: Realty id пользователя., format: int64, in: query, name: userId,
+        required: true, type: integer}
+      - {description: Id задачи., format: int32, in: query, name: jobId, required: true,
+        type: integer}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.GetJobStatusResponse'}
+      tags: [AnnouncementsActions]
   /v1/get-announcement/:
     get:
       consumes: []

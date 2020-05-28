@@ -8,9 +8,10 @@ To re-generate, run `codegen generate-client monolith-cian-announcementapi`
 cian-codegen version: 1.4.1
 
 """
-from ._repo import (
-    announcements_actions_get_job_status,
-    announcements_actions_restore,
-    v1_get_announcement,
-    v2_announcements_archive,
-)
+from dataclasses import dataclass
+
+
+@dataclass
+class RestoreResponse:
+    job_id: int
+    """Id задачи."""
