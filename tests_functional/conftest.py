@@ -9,9 +9,13 @@ async def start(runner, pg, queue_service, cassandra_service):
     await cassandra_service.get_keyspace(alias='search_coverage', keyspace='search_coverage')
 
     await pg.execute_scripts((Path('contrib') / 'postgresql' / 'migrations').glob('*.sql'))
+
     await runner.start_background_python_web()
     await runner.start_background_python_command('process_announcement_consumer')
     await runner.start_background_python_command('update_offer_duplicates_consumer')
+    await runner.start_background_python_command('new_offer_duplicate_notification_consumer')
+
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
 
 @pytest.fixture(name='pg', scope='session')

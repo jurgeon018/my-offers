@@ -32,7 +32,7 @@ async def test_process_announcement_consumer(queue_service, pg, offer, expected)
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
     await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
-    await asyncio.sleep(0.5)
+    await asyncio.sleep(1)
 
     # assert
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')

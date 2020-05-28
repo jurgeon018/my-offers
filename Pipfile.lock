@@ -189,10 +189,10 @@
                 "rabbitmq_consumer_cli"
             ],
             "hashes": [
-                "sha256:7cfb2798fc5ebe57463d35b8aad96598015674c7855afbd46dcac3b51bce1c47",
-                "sha256:c4360be6ba36cf6ac2fe575600daf6f2d8c71fcc73f5dfb58cf1048ad630cc4b"
+                "sha256:c3989c72fbd5611eded0a3225dbf7cd4923e23576637eb71c305564a15af6107",
+                "sha256:dd55ed31f22446ae7e5d56bc8ee3f292b5a169a8612223bda260313099a95051"
             ],
-            "version": "==1.12.2"
+            "version": "==1.13.1"
         },
         "cian-entities": {
             "hashes": [
@@ -492,6 +492,7 @@
                 "sha256:a0c62dbc66b9b947832307d6cf7bdb5e4da906ce7b3efe6f74292e8f3dc5abe3",
                 "sha256:a6966e8d9ccda31c6d077c4f8673aaa88141cc73d50e110e93e627b816d17fd1",
                 "sha256:beadfa7f052626864d70eb33cec8f2aeece12dfb483c2424cc07b057f83b7d35",
+                "sha256:c1d022a3cd893718fdb2c08dd63cd9f57ba8cb9a7f0497382ad5c0d24e538a50",
                 "sha256:c5c379c8cc777dda397f86f0d0049480250ae84a82a9d99d668f461d368fb39c",
                 "sha256:ec7dd291545842295b7b56c12c90ffad2976cc7070c98d7b1517b7b6cd5994b3"
             ],
@@ -979,10 +980,10 @@
                 "rabbitmq_consumer_cli"
             ],
             "hashes": [
-                "sha256:7cfb2798fc5ebe57463d35b8aad96598015674c7855afbd46dcac3b51bce1c47",
-                "sha256:c4360be6ba36cf6ac2fe575600daf6f2d8c71fcc73f5dfb58cf1048ad630cc4b"
+                "sha256:c3989c72fbd5611eded0a3225dbf7cd4923e23576637eb71c305564a15af6107",
+                "sha256:dd55ed31f22446ae7e5d56bc8ee3f292b5a169a8612223bda260313099a95051"
             ],
-            "version": "==1.12.2"
+            "version": "==1.13.1"
         },
         "cian-entities": {
             "hashes": [
@@ -1007,10 +1008,10 @@
                 "rabbitmq"
             ],
             "hashes": [
-                "sha256:5798a64e233e06a5087ca0c0c9dd9ff612532f8cd1c835dd5a976aa90f764121",
-                "sha256:bfa88650e03d72ba77ff8e268e24a016c46b1bf8641ab369c7c1e9fafce421e7"
+                "sha256:4bfc1bc97a80901208a81a73a205f2f963902a80655f878be9d04e4f572c1894",
+                "sha256:c8246755abf5be38c46410833b501bf0006ad2326eea741b499a78f565ed614d"
             ],
-            "version": "==0.34.1"
+            "version": "==0.34.2"
         },
         "cian-helpers": {
             "hashes": [
@@ -1525,6 +1526,7 @@
                 "sha256:a0c62dbc66b9b947832307d6cf7bdb5e4da906ce7b3efe6f74292e8f3dc5abe3",
                 "sha256:a6966e8d9ccda31c6d077c4f8673aaa88141cc73d50e110e93e627b816d17fd1",
                 "sha256:beadfa7f052626864d70eb33cec8f2aeece12dfb483c2424cc07b057f83b7d35",
+                "sha256:c1d022a3cd893718fdb2c08dd63cd9f57ba8cb9a7f0497382ad5c0d24e538a50",
                 "sha256:c5c379c8cc777dda397f86f0d0049480250ae84a82a9d99d668f461d368fb39c",
                 "sha256:ec7dd291545842295b7b56c12c90ffad2976cc7070c98d7b1517b7b6cd5994b3"
             ],
