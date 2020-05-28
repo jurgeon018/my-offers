@@ -5,6 +5,8 @@ from my_offers.entities.coverage import Coverage
 from my_offers.entities.duplicates import (
     GetOfferDuplicatesRequest,
     GetOfferDuplicatesResponse,
+    GetOfferDuplicatesTabsRequest,
+    GetOfferDuplicatesTabsResponse,
     GetOffersDuplicatesCountRequest,
     GetOffersDuplicatesCountResponse,
     MobileOfferGeo,

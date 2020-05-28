@@ -86,6 +86,27 @@ async def get_offer_duplicates(offer_id: int, limit: int, offset: int) -> Tuple[
     return models, total
 
 
+async def get_offer_duplicates_count(offer_id: int) -> int:
+    query = """
+    select
+        count(*) as cnt
+    from
+        offers_duplicates od
+        join offers o on o.offer_id = od.offer_id
+    where
+        od.group_id = (select group_id from offers_duplicates where offer_id = $1)
+        and od.offer_id <> $2
+        and o.status_tab = $3;
+    """
+    row = await pg.get().fetchrow(
+        query,
+        offer_id,
+        offer_id,
+        enums.OfferStatusTab.active.value
+    )
+    return row['cnt']
+
+
 async def delete_offers_duplicates(offer_ids: List[int]) -> None:
     query = 'DELETE FROM offers_duplicates WHERE offer_id = ANY($1::BIGINT[])'
 

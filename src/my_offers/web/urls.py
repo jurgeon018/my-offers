@@ -42,6 +42,16 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
     url(
+        r'/public/v1/get-offer-duplicates-tabs/$',
+        get_handler(
+            service=duplicates.v1_get_offer_duplicates_tabs_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOfferDuplicatesTabsRequest,
+            response_schema=entities.GetOfferDuplicatesTabsResponse,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
         r'/v1/get-offers-duplicates-count/$',
         get_handler(
             service=duplicates.v1_get_offers_duplicates_count,
