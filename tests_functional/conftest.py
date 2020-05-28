@@ -27,3 +27,8 @@ async def offers_duplicates_mock(http_mock_service):
 @pytest.fixture(scope='session')
 async def auction_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('auction')
+
+
+@pytest.fixture(scope='session')
+async def notification_center_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('notification-center')

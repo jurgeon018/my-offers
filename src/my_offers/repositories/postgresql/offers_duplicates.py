@@ -4,8 +4,8 @@ from typing import List, Tuple
 
 import asyncpgsa
 import pytz
-from simple_settings import settings
 import sqlalchemy as sa
+from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, enums, pg

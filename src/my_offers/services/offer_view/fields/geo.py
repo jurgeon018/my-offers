@@ -17,8 +17,16 @@ ADDRESS_TYPES_MAP = {
 }
 
 
-def get_address(address: Optional[List[AddressInfo]]) -> str:
-    ...
+def get_address_for_push(geo: Optional[Geo]) -> str:
+    if not geo:
+        return ''
+
+    address = _get_address_for_mobile(geo.address)
+    underground = _get_default_underground(geo.undergrounds)
+    if underground:
+        address.insert(0, 'м. {}'.format(underground.name))
+
+    return ', '.join(address)
 
 
 def prepare_geo(*, geo: Optional[Geo], geo_urls: AddressUrls, jk_urls: Dict[int, str]) -> OfferGeo:
@@ -125,14 +133,11 @@ def _get_address_for_mobile(address_info: Optional[List[AddressInfo]]) -> List[s
 
 def _get_underground_for_mobile(
         *,
-        undergrounds: List[UndergroundInfo],
+        undergrounds: Optional[List[UndergroundInfo]],
         addresses: List[AddressInfo],
 ) -> Optional[MobileUnderground]:
-    for underground in undergrounds:
-        if underground.is_default:
-            default_underground = underground
-            break
-    else:
+    default_underground = _get_default_underground(undergrounds)
+    if not default_underground:
         return None
 
     for address in addresses:
@@ -147,3 +152,14 @@ def _get_underground_for_mobile(
         line_color=default_underground.line_color,
         name=default_underground.name,
     )
+
+
+def _get_default_underground(undergrounds: Optional[List[UndergroundInfo]]) -> Optional[UndergroundInfo]:
+    if not undergrounds:
+        return None
+
+    for underground in undergrounds:
+        if underground.is_default:
+            return underground
+
+    return undergrounds[0]

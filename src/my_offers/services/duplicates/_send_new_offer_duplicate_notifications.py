@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytz
+from asyncpg import UniqueViolationError
 
 from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
 from my_offers.helpers.category import get_types
@@ -21,7 +22,7 @@ from my_offers.repositories.postgresql.offers_duplicate_notification import (
 )
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
 from my_offers.services.offer_view.fields import get_main_photo_url, get_offer_url
-from my_offers.services.offer_view.fields.geo import get_address
+from my_offers.services.offer_view.fields.geo import get_address_for_push
 
 
 async def send_new_offer_duplicate_notifications(duplicate_offer_id: int) -> None:
@@ -46,7 +47,7 @@ async def send_new_offer_duplicate_notifications(duplicate_offer_id: int) -> Non
             if offer.published_user_id == duplicate_offer.published_user_id:
                 continue
 
-            process_notification(offer=offer, duplicate_offer=duplicate_offer)
+            await process_notification(offer=offer, duplicate_offer=duplicate_offer)
 
 
 async def process_notification(*, offer: ObjectModel, duplicate_offer: ObjectModel) -> None:
@@ -58,12 +59,12 @@ async def process_notification(*, offer: ObjectModel, duplicate_offer: ObjectMod
 
     try:
         await save_offers_duplicate_notification(notification)
-    except:
+    except UniqueViolationError:
         # уже отправляли
         return
 
     try:
-        await _send_notification(offer=offer, duplicate_offer=duplicate_offer)
+        await _send_notification(offer)
     except:
         # неполучилось отправить
         await delete_offers_duplicate_notification(notification)
@@ -77,23 +78,17 @@ async def _send_notification(offer: ObjectModel):
 
     await v2_register_notifications(RegisterNotificationsV2Request(
         notifications=[RegisterNotificationV2Request(
-            is_authenticated=True,
-            mobile_push_payload={
-
-            },
-            web_push_payload={
-
-            },
             notification_type=NotificationType.offer_new_duplicate_found,
-            text=get_address(offer.geo.address if offer.geo else None),
-            title='Новый дубль вашего объекта',
+            is_authenticated=True,
             user_id=str(offer.published_user_id),
-            web_url=get_offer_url(
-                offer_id=offer.id,
-                offer_type=offer_type,
-                deal_type=deal_type,
-            ),
             entity_id=offer.id,
+            mobile_push_payload={
+                'dealType': deal_type.value,
+                'offerType': offer_type.value,
+            },
+            text=get_address_for_push(offer.geo),
+            title='Новый дубль вашего объекта',
+            web_url=get_offer_url(offer_id=offer.id, offer_type=offer_type, deal_type=deal_type),
             media_url=get_main_photo_url(offer.photos),
             transports_to_send=[TransportsToSend.mobile_push],
         )]

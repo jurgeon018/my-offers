@@ -5,7 +5,7 @@ import pytz
 from simple_settings import settings
 
 from my_offers import enums, pg
-from my_offers.repositories.postgresql import tables, offers_duplicates
+from my_offers.repositories.postgresql import offers_duplicates, tables
 from my_offers.repositories.postgresql.delete import delete_rows_by_offer_id
 from my_offers.repositories.postgresql.offer import get_offers_id_older_than
 
