@@ -18,6 +18,12 @@ class GetOfferDuplicatesRequest:
 
 
 @dataclass
+class GetOfferDuplicatesTabsRequest:
+    offer_id: int
+    """Id объявления"""
+
+
+@dataclass
 class PriceInfo:
     exact: Optional[str]
     """Цена"""
@@ -89,6 +95,12 @@ class GetOfferDuplicatesResponse:
     """Информация о вкладках"""
     page: PageInfo
     """Информация о странице"""
+
+
+@dataclass
+class GetOfferDuplicatesTabsResponse:
+    tabs: List[Tab]
+    """Информация о вкладках"""
 
 
 @dataclass
