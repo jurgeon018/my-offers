@@ -1,15 +1,13 @@
 from my_offers.entities import GetOffersCountByTabRequest, GetOffersCountByTabResponse
 from my_offers.repositories.postgresql import offer
-from my_offers.repositories.postgresql.agents import get_master_user_id
+from my_offers.services.offers import get_user_filter
 
 
 async def get_offers_count_by_tab(request: GetOffersCountByTabRequest) -> GetOffersCountByTabResponse:
-    filters = {}
+    filters = await get_user_filter(request.user_id)
 
-    if request.with_subs and (master_user_id := await get_master_user_id(request.user_id)):
-        filters['master_user_id'] = master_user_id
-    else:
-        filters['user_id'] = request.user_id
+    if request.with_subs:
+        filters.pop('user_id', None)
 
     if not request.status_tab.is_all:
         filters['status_tab'] = request.status_tab.value

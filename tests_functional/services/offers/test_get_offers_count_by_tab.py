@@ -23,9 +23,13 @@ async def test_get_offers_count_by_tab(pg, http_client, status_tab, with_subs, u
             updated_at
         )
         VALUES
-            ($1, $2, $3, $4, $5, $6)
+            ($1, $2, $3, $4, $5, $6),
+            ($7, $8, $9, $10, $11, $12)
         """,
-        [1, 123, 2, 2, now, now],
+        [
+            1, 123, 2, 2, now, now,
+            2, 123, 3, 2, now, now,
+        ]
     )
     await pg.execute(
         """
