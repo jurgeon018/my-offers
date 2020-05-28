@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import freezegun
 import pytest
 import pytz
@@ -18,11 +16,11 @@ async def test_update_offers_duplicates(mocker):
     duplicates = [Duplicate(1, 2), Duplicate(2, 2)]
     pg.get().fetch.return_value = future([{
         'offer_id': 1,
-        'updated_at': datetime(2020, 3, 12),
+        'updated_at': None,
     }])
 
     # act
-    await update_offers_duplicates(duplicates)
+    result = await update_offers_duplicates(duplicates)
 
     # assert
     pg.get().fetch.assert_called_once_with(
@@ -36,6 +34,33 @@ async def test_update_offers_duplicates(mocker):
         2,
         2,
     )
+
+    assert result == [1]
+
+
+@freezegun.freeze_time('2020-05-13')
+async def test_update_offers_duplicates__not_update__empty(mocker):
+    # arrange
+    duplicates = [Duplicate(1, 2), Duplicate(2, 2)]
+    pg.get().fetch.return_value = future([])
+
+    # act
+    result = await update_offers_duplicates(duplicates)
+
+    # assert
+    pg.get().fetch.assert_called_once_with(
+        'INSERT INTO offers_duplicates (offer_id, group_id, created_at) VALUES ($5, $3, $1), ($6, $4, $2) '
+        'ON CONFLICT (offer_id) DO UPDATE SET group_id = excluded.group_id, updated_at = excluded.created_at '
+        'RETURNING offers_duplicates.offer_id, offers_duplicates.updated_at',
+        FakeDatetime(2020, 5, 13, 0, 0, tzinfo=pytz.UTC),
+        FakeDatetime(2020, 5, 13, 0, 0, tzinfo=pytz.UTC),
+        1,
+        2,
+        2,
+        2,
+    )
+
+    assert result == []
 
 
 @pytest.mark.gen_test

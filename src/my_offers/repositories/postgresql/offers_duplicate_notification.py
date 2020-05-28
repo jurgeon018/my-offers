@@ -1,6 +1,6 @@
 import asyncpgsa
 import sqlalchemy as sa
-from sqlalchemy import delete
+from sqlalchemy import and_, delete
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
@@ -32,10 +32,12 @@ async def save_offers_duplicate_notification(notification: OfferDuplicateNotific
 
 async def delete_offers_duplicate_notification(notification: OfferDuplicateNotification) -> None:
     query, params = asyncpgsa.compile_query(
-        delete(offers_duplicate_notification).values({
-            'offer_id': notification.offer_id,
-            'duplicate_offer_id': notification.duplicate_offer_id,
-        })
+        delete(offers_duplicate_notification).where(
+            and_(
+                offers_duplicate_notification.c.offer_id == notification.offer_id,
+                offers_duplicate_notification.c.duplicate_offer_id == notification.duplicate_offer_id,
+            )
+        )
     )
 
     await pg.get().execute(query, *params)
