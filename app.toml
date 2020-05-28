@@ -79,6 +79,11 @@ type = "consumer"
 command = "update_offer_duplicates_consumer"
 memory = 128
 
+[job.new_offer_duplicate_notification_consumer]
+type = "consumer"
+command = "new_offer_duplicate_notification_consumer"
+memory = 128
+
 [job.clear_deleted_offer_cron]
 type = "consumer"
 command = "clear-deleted-offer-cron"
