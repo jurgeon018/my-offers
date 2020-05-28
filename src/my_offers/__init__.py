@@ -16,5 +16,6 @@ def setup() -> None:
         options=cian_core.Options(
             setup_postgres=True,
             setup_redis=True,
+            setup_kafka=True,
         )
     )
