@@ -191,14 +191,14 @@ async def update_offer_master_user_id(*, offer_id: int, master_user_id: int) -> 
     await pg.get().execute(query, master_user_id, offer_id, master_user_id)
 
 
-@async_statsd_timer('psql.get_offers_count_by_tab')
-async def get_offers_count_by_tab(filters: Dict[str, Any]) -> int:
+@async_statsd_timer('psql.get_offers_ids_by_tab')
+async def get_offers_ids_by_tab(filters: Dict[str, Any]) -> List[int]:
     conditions = prepare_conditions(filters)
     query, params = asyncpgsa.compile_query(
-        select([count()])
+        select([tables.offers.c.offer_id])
         .where(and_(*conditions))
     )
 
-    offers_count = await pg.get().fetchval(query, *params, timeout=settings.DB_TIMEOUT)
+    rows = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
 
-    return offers_count
+    return [row['offer_id'] for row in rows]

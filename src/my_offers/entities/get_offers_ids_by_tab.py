@@ -1,10 +1,11 @@
 from dataclasses import dataclass
+from typing import List
 
 from my_offers.enums import OfferStatusTab
 
 
 @dataclass
-class GetOffersCountByTabRequest:
+class GetOffersIdsByTabRequest:
     status_tab: OfferStatusTab
     """Статус оффера"""
     user_id: int
@@ -17,5 +18,5 @@ class GetOffersCountByTabRequest:
 
 
 @dataclass
-class GetOffersCountByTabResponse:
-    count: int
+class GetOffersIdsByTabResponse:
+    ids: List[int]

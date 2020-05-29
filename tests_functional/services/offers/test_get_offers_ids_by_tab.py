@@ -4,12 +4,12 @@ import pytest
 
 
 @pytest.mark.parametrize('status_tab, with_subs, user_id, expected', (
-    ('active', False, 1, 0),
-    ('active', False, 2, 1),
-    ('all', False, 2, 2),
-    ('all', True, 2, 3),
+    ('active', False, 1, []),
+    ('active', False, 2, [1]),
+    ('all', False, 2, [1, 3]),
+    ('all', True, 2, [1, 2, 3]),
 ))
-async def test_get_offers_count_by_tab(pg, http_client, status_tab, with_subs, user_id, expected):
+async def test_get_offers_ids_by_tab(pg, http_client, status_tab, with_subs, user_id, expected):
     # arrange
     now = datetime.now()
     await pg.execute(
@@ -65,7 +65,7 @@ async def test_get_offers_count_by_tab(pg, http_client, status_tab, with_subs, u
     # act
     response = await http_client.request(
         'POST',
-        '/v1/get-offers-count-by-tab/',
+        '/v1/get-offers-ids-by-tab/',
         json={
             'statusTab': status_tab,
             'userId': user_id,
@@ -74,4 +74,4 @@ async def test_get_offers_count_by_tab(pg, http_client, status_tab, with_subs, u
     )
 
     # assert
-    assert response.data['count'] == expected
+    assert response.data['ids'] == expected

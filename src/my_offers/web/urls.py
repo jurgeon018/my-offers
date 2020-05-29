@@ -32,12 +32,12 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
     url(
-        r'/v1/get-offers-count-by-tab/$',
+        r'/v1/get-offers-ids-by-tab/$',
         get_handler(
-            service=offers.get_offers_count_by_tab,
+            service=offers.get_offers_ids_by_tab,
             method='POST',  # pragma: no mutate
-            request_schema=entities.GetOffersCountByTabRequest,
-            response_schema=entities.GetOffersCountByTabResponse,
+            request_schema=entities.GetOffersIdsByTabRequest,
+            response_schema=entities.GetOffersIdsByTabResponse,
             base_handler_cls=RequestContextHandler,
         )
     ),
