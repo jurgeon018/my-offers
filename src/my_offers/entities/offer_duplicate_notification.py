@@ -10,9 +10,3 @@ class OfferDuplicateNotification:
     """Id объявления дубликата"""
     send_at: datetime
     """Дата отправления душа"""
-
-
-@dataclass
-class OfferDuplicateEvent:
-    user_id: int
-    """realtyUserId пользователя"""

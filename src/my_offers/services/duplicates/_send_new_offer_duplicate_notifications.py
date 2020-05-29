@@ -3,7 +3,7 @@ from datetime import datetime
 import pytz
 from asyncpg import UniqueViolationError
 
-from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification, OfferDuplicateEvent
+from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
 from my_offers.helpers.category import get_types
 from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
@@ -71,7 +71,7 @@ async def process_notification(*, offer: ObjectModel, duplicate_offer: ObjectMod
         await delete_offers_duplicate_notification(notification)
         raise
 
-    OfferDuplicateEventProducer.produce(OfferDuplicateEvent(user_id=offer.published_user_id))
+    OfferDuplicateEventProducer.produce_new_duplicate_event(offer=offer, duplicate_offer=duplicate_offer)
 
 
 async def _send_notification(offer: ObjectModel):
