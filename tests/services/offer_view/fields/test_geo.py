@@ -12,6 +12,7 @@ from my_offers.services.offer_view.fields.geo import (
     _get_newbuilding,
     _get_underground,
     _get_underground_for_mobile,
+    get_address_for_push,
     prepare_geo,
     prepare_geo_for_mobile,
 )
@@ -197,6 +198,42 @@ def test__get_address_for_mobile__empty_address_info__empty():
 def test__get_underground_for_mobile(undergrounds, addresses, expected):
     # arrange & act
     result = _get_underground_for_mobile(undergrounds=undergrounds, addresses=addresses)
+
+    # assert
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    ('geo', 'expected'),
+    (
+        (
+            Geo(
+                undergrounds=[UndergroundInfo(is_default=True, line_color='red', name='ZZZ')],
+                address=[AddressInfo(type=Type.location, id=77, full_name='YYYY')],
+            ),
+            'м. ZZZ, YYYY'
+        ),
+        (
+            Geo(address=[AddressInfo(type=Type.location, id=77, full_name='YYYY')]),
+            'YYYY'
+        ),
+        (
+            Geo(undergrounds=[UndergroundInfo(is_default=True, line_color='red', name='ZZZ')]),
+            'м. ZZZ'
+        ),
+        (
+            None,
+            ''
+        ),
+        (
+            Geo(undergrounds=[UndergroundInfo(name='ZZZ')]),
+            'м. ZZZ'
+        ),
+    ),
+)
+def test_get_address_for_push(geo, expected):
+    # arrange & act
+    result = get_address_for_push(geo)
 
     # assert
     assert result == expected

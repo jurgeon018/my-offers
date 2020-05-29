@@ -4,6 +4,7 @@ from typing import List, Tuple
 
 import asyncpgsa
 import pytz
+import sqlalchemy as sa
 from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
@@ -11,10 +12,20 @@ from my_offers import entities, enums, pg
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.offers_duplicates.entities import Duplicate
-from my_offers.repositories.postgresql import tables
+from my_offers.repositories.postgresql.tables import metadata
 
 
-async def update_offers_duplicates(duplicates: List[Duplicate]) -> None:
+offers_duplicates = sa.Table(
+    'offers_duplicates',
+    metadata,
+    sa.Column('offer_id', sa.BIGINT, primary_key=True),
+    sa.Column('group_id', sa.BIGINT, nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP, nullable=True),
+)
+
+
+async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
     now = datetime.now(tz=pytz.UTC)
 
     data = [
@@ -25,21 +36,28 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> None:
         } for duplicate in duplicates
     ]
 
-    insert_query = insert(tables.offers_duplicates)
+    insert_query = insert(offers_duplicates)
 
     query, params = asyncpgsa.compile_query(
         insert_query
         .values(data)
         .on_conflict_do_update(
-            index_elements=[tables.offers_duplicates.c.offer_id],
+            index_elements=[offers_duplicates.c.offer_id],
             set_={
                 'group_id': insert_query.excluded.group_id,
                 'updated_at': insert_query.excluded.created_at,
             }
+        ).returning(
+            offers_duplicates.c.offer_id,
+            offers_duplicates.c.updated_at,
         )
     )
 
-    await pg.get().execute(query, *params)
+    rows = await pg.get().fetch(query, *params)
+    if not rows:
+        return []
+
+    return [row['offer_id'] for row in rows if row['updated_at'] is None]
 
 
 async def get_offer_duplicates(offer_id: int, limit: int, offset: int) -> Tuple[List[ObjectModel], int]:

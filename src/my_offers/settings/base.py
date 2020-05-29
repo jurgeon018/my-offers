@@ -28,3 +28,5 @@ TIMEOUT_BETWEEN_DELETE_OFFERS: int = 10 * 60
 LOG_SEARCH_QUERIES: bool = True
 
 CASSANDRA_DEFAULT_TIMEOUT: float = 1.0
+
+SEND_PUSH_ON_NEW_DUPLICATE: bool = False  # пока не раскатили приложения пуши рассылать не надо
