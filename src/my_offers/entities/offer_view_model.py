@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from my_offers import enums
+from my_offers.enums.offer_status import OfferStatus
 
 
 @dataclass
@@ -89,3 +90,5 @@ class OfferViewModelV2:
     """Дата для отображения в карточке"""
     status: Optional[str]
     """Строка статуса"""
+    status_type: Optional[OfferStatus]
+    """Тип стутуса объявления"""
