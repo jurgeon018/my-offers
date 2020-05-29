@@ -89,7 +89,7 @@ class OfferDuplicateEvent:
     """id объявки риэлтора"""
     similar_object_id: int
     """id объявки-дубля"""
-    similar_object_price: int
+    similar_object_price: Optional[int]
     """цена объявки-дубля в рублях"""
     region_id: int
     """id региона, в котором публикуется объявление-дубль или меняется цена на него"""
