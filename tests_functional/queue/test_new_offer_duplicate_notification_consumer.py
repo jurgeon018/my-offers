@@ -61,14 +61,14 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
     payload = json.loads(messages[0].payload)
     payload.pop('timestamp', None)
     assert payload == {
-        "similarObjectPrice": 1350000,
-        "similarObjectId": 231655140,
-        "userId": 6808488,
-        "eventType": "pushOfferDuplicate",
-        "objectId": 173975523,
-        "operationId": "c31e2bb8-a02b-11ea-a141-19840ed2f005",
-        "regionId": 4592,
-        # "timestamp": "2020-05-29T09:42:46.905695+00:00"
+        'similarObjectPrice': 1350000,
+        'similarObjectId': 231655140,
+        'userId': 6808488,
+        'eventType': 'pushOfferDuplicate',
+        'objectId': 173975523,
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005',
+        'regionId': 4592,
+        # 'timestamp': '2020-05-29T09:42:46.905695+00:00'
     }
 
 
