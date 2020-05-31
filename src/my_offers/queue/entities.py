@@ -66,3 +66,13 @@ class NeedUpdateDuplicateMessage:
     """Принудительное обновление"""
     date: datetime
     """Время изменения"""
+
+
+@dataclass
+class OfferNewDuplicateMessage:
+    duplicate_offer_id: int
+    """Id объявления дубликата"""
+    operation_id: str
+    """Operation id"""
+    date: datetime
+    """Время изменения"""

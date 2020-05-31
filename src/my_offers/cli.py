@@ -4,7 +4,10 @@ from cian_core.web import Application
 from tornado.ioloop import IOLoop
 
 from my_offers import setup
-from my_offers.queue import consumers, queues, schemas
+from my_offers.helpers.schemas import get_entity_schema
+from my_offers.queue import consumers
+from my_offers.queue import entities as mq_entities
+from my_offers.queue import queues, schemas
 from my_offers.services.offers import reindex_offers_command
 from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.web.urls import urlpatterns
@@ -28,15 +31,6 @@ def serve(debug: bool, host: str, port: int) -> None:
 register_consumer(
     command=cli.command('process_announcement_consumer'),
     queue=queues.process_announcements_queue,
-    callback=consumers.process_announcement_callback,
-    schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
-    dead_queue_enabled=True,
-)
-
-# [announcements] тех. очередь для наполнения базы объявлений
-register_consumer(
-    command=cli.command('process_announcement_consumer_fill'),
-    queue=queues.process_announcements_queue_fill,
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
     dead_queue_enabled=True,
@@ -112,6 +106,16 @@ register_consumer(
     callback=consumers.update_offer_duplicates_callback,
     schema_cls=schemas.RabbitMQNeedUpdateDuplicateMessageSchema,
     dead_queue_enabled=True,
+)
+
+# [duplicates] рассылка пушей по новым дубликатам
+register_consumer(
+    command=cli.command('new_offer_duplicate_notification_consumer'),
+    queue=queues.new_offer_duplicate_notification_queue,
+    callback=consumers.new_offer_duplicate_notification_callback,
+    schema_cls=get_entity_schema(mq_entities.OfferNewDuplicateMessage),
+    dead_queue_enabled=True,
+    default_prefetch_count=1,
 )
 
 

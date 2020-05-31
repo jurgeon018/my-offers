@@ -8,7 +8,7 @@ from my_offers import enums
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 
 
-_metadata = sa.MetaData()
+metadata = sa.MetaData()
 
 
 def get_names(enum: EnumMeta) -> List[str]:
@@ -26,7 +26,7 @@ _service = psa.ENUM(*get_names(Services), name='offer_service', )
 
 offers = sa.Table(
     'offers',
-    _metadata,
+    metadata,
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
     sa.Column('master_user_id', sa.BIGINT, nullable=False),
     sa.Column('user_id', sa.BIGINT, nullable=False),
@@ -53,7 +53,7 @@ offers = sa.Table(
 
 offers_billing_contracts = sa.Table(
     'offers_billing_contracts',
-    _metadata,
+    metadata,
     sa.Column('id', sa.BIGINT, primary_key=True),
     sa.Column('user_id', sa.BIGINT, nullable=False),
     sa.Column('actor_user_id', sa.BIGINT, nullable=False),
@@ -69,7 +69,7 @@ offers_billing_contracts = sa.Table(
 
 offers_last_import_error = sa.Table(
     'offers_last_import_error',
-    _metadata,
+    metadata,
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
     sa.Column('type', sa.String),
     sa.Column('message', sa.String),
@@ -79,7 +79,7 @@ offers_last_import_error = sa.Table(
 _offence_status = psa.ENUM(*get_names(enums.ModerationOffenceStatus), name='offence_status')
 offers_offences = sa.Table(
     'offers_offences',
-    _metadata,
+    metadata,
     sa.Column('offence_id', sa.BIGINT, primary_key=True),
     sa.Column('offence_type', sa.BIGINT, nullable=False),
     sa.Column('offence_text', sa.TEXT, nullable=False),
@@ -95,7 +95,7 @@ offers_offences = sa.Table(
 _account_type = psa.ENUM(*get_names(enums.AgentAccountType), name='account_type')
 agents_hierarchy = sa.Table(
     'agents_hierarchy',
-    _metadata,
+    metadata,
     sa.Column('id', sa.BIGINT, primary_key=True),
     sa.Column('account_type', _account_type, nullable=False),
     sa.Column('realty_user_id', sa.BIGINT, nullable=False),
@@ -110,7 +110,7 @@ agents_hierarchy = sa.Table(
 
 offers_premoderations = sa.Table(
     'offers_premoderations',
-    _metadata,
+    metadata,
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
     sa.Column('removed', sa.BOOLEAN, nullable=False),
     sa.Column('row_version', sa.BIGINT, nullable=False),
@@ -120,17 +120,8 @@ offers_premoderations = sa.Table(
 
 offers_reindex_queue = sa.Table(
     'offers_reindex_queue',
-    _metadata,
+    metadata,
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
     sa.Column('in_process', sa.BOOLEAN, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
-)
-
-offers_duplicates = sa.Table(
-    'offers_duplicates',
-    _metadata,
-    sa.Column('offer_id', sa.BIGINT, primary_key=True),
-    sa.Column('group_id', sa.BIGINT, nullable=False),
-    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
-    sa.Column('updated_at', sa.TIMESTAMP, nullable=True),
 )
