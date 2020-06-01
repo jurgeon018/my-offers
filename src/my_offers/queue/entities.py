@@ -91,7 +91,7 @@ class OfferDuplicateEvent:
     """id объявки-дубля"""
     similar_object_price: Optional[int]
     """цена объявки-дубля в рублях"""
-    region_id: int
+    region_id: Optional[int]
     """id региона, в котором публикуется объявление-дубль или меняется цена на него"""
     operation_id: str
     """идентификатор операции"""
