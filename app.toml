@@ -24,6 +24,10 @@ alias = "statistics"
 type = "cassandra"
 alias = "search_coverage"
 
+[[dependency]]
+type = "kafka"
+alias = "default"
+
 [job.web]
 type = "web"
 memory = 128

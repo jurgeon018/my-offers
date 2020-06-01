@@ -1,4 +1,5 @@
 import asyncio
+import json
 import os
 
 from cian_functional_test_utils.pytest_plugin import MockResponse
@@ -6,7 +7,7 @@ from cian_functional_test_utils.pytest_plugin import MockResponse
 from tests_functional.utils import load_data
 
 
-async def test_new_offer_duplicate_notification_consumer(queue_service, pg, notification_center_mock):
+async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafka_service, notification_center_mock):
     # arrange
     await pg.execute(load_data(os.path.dirname(__file__) + '/../', 'offers.sql'))
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
@@ -29,6 +30,7 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, noti
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
     await asyncio.sleep(1)
+    messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
 
     # assert
     request = await notification_center_stub.get_request()
@@ -53,6 +55,20 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, noti
                 'webUrl': 'http://master.dev3.cian.ru/rent/flat/173975523'
             }
         ]
+    }
+
+    assert len(messages) == 1
+    payload = json.loads(messages[0].payload)
+    payload.pop('timestamp', None)
+    assert payload == {
+        'similarObjectPrice': 1350000,
+        'similarObjectId': 231655140,
+        'userId': 6808488,
+        'eventType': 'pushOfferDuplicate',
+        'objectId': 173975523,
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005',
+        'regionId': 4592,
+        # 'timestamp': '2020-05-29T09:42:46.905695+00:00'
     }
 
 
