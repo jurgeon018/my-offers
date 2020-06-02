@@ -32,8 +32,10 @@ def get_rooms_count(
     if rooms_count == 1:
         return RoomsCount.value_1
 
-    raise BrokenRulesException([Error(
-        message='broken offer object_model, has not right room info',
-        code='broken',
-        key='rooms_count'
-    )])
+    raise BrokenRulesException([
+        Error(
+            message='broken offer object_model, has not right room info',
+            code='broken',
+            key='rooms_count'
+        )
+    ])

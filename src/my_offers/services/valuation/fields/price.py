@@ -14,5 +14,5 @@ def get_price_rur(
     if currency == Currency.usd:
         return int(price * USD_RUR)
     if currency == Currency.eur:
-        return int(price + EUR_RUR)
+        return int(price * EUR_RUR)
     return int(price)
