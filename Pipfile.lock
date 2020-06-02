@@ -113,9 +113,9 @@
         },
         "asyncpgsa": {
             "hashes": [
-                "sha256:1101fa0bd5c83ea0cd3c4c5d1b8efcf36307d33ae8b14357c3a1acbcaeef9e41"
+                "sha256:3bcea15768925f10779aa03c01f9774d3da687031016eee7ebf799cf435540f7"
             ],
-            "version": "==0.26.1"
+            "version": "==0.26.3"
         },
         "attributes-doc": {
             "hashes": [
@@ -1008,10 +1008,10 @@
                 "rabbitmq"
             ],
             "hashes": [
-                "sha256:4bfc1bc97a80901208a81a73a205f2f963902a80655f878be9d04e4f572c1894",
-                "sha256:c8246755abf5be38c46410833b501bf0006ad2326eea741b499a78f565ed614d"
+                "sha256:5aa28f7e854423d1f3051e4c0cd61ee37a6dbc19b62c94cdc44c29eb5d8ff1d6",
+                "sha256:ee5b877d9bfdecc359a92a3159a108ea9a2dded13e9aab8ff1038902462bd6fa"
             ],
-            "version": "==0.34.2"
+            "version": "==0.35.0"
         },
         "cian-helpers": {
             "hashes": [

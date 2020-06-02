@@ -3,7 +3,7 @@ from cian_test_utils import future
 
 from my_offers import enums
 from my_offers.entities import OfferActionRequest, OfferActionResponse
-from my_offers.enums.offer_action_status import OfferActionStatus
+from my_offers.enums.actions import OfferActionStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.repositories.monolith_cian_realty.entities.announcement_change_status import (

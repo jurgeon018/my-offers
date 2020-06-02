@@ -11,21 +11,21 @@ from my_offers.entities.offer_view_model import OfferViewModelV2
 class Filter:
     status_tab: enums.OfferStatusTab
     """Вкладка"""
-    deal_type: Optional[enums.DealType]
+    deal_type: Optional[enums.DealType] = None
     """Тип сделки"""
-    offer_type: Optional[enums.OfferType]
+    offer_type: Optional[enums.OfferType] = None
     """Тип объявления"""
-    services: Optional[List[enums.OfferServices]]
+    services: Optional[List[enums.OfferServices]] = None
     """Тип размещения"""
-    sub_agent_ids: Optional[List[int]]
+    sub_agent_ids: Optional[List[int]] = None
     """Список сотрудников (только для мастрер аккаунтов)"""
-    has_photo: Optional[bool]
+    has_photo: Optional[bool] = None
     """Только с фото"""
-    is_manual: Optional[bool]
+    is_manual: Optional[bool] = None
     """Только ручные"""
-    is_in_hidden_base: Optional[bool]
+    is_in_hidden_base: Optional[bool] = None
     """Только видимые агентам"""
-    search_text: Optional[str]
+    search_text: Optional[str] = None
     """Полнотекстовый поиск по объявлению"""
 
 
