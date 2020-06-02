@@ -1,0 +1,140 @@
+definitions:
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items: {title: errors, type: object}
+        title: errors
+        type: array
+      message: {title: message, type: string}
+    type: object
+  price_estimator.entities.estimation.EstimationUserChosenFiltersSchema:
+    properties:
+      key:
+        description: Имя фильтра
+        enum: [amenities, entrance, floor, livingConditions, repairAge, repairType]
+        type: string
+        x-amenities: Удобства
+        x-entrance: Подъезд
+        x-floor: Этаж
+        x-livingConditions: Условия проживания
+        x-repairAge: Сколько лет ремонту?
+        x-repairType: Укажите тип ремонта?
+      value:
+        description: Выбранные(ое) значения(е)
+        items:
+          enum: [childrenAllowed, conditioner, entranceAfterRepair, entranceConcierge,
+            floorLast, floorOne, floorOther, floorTwo, fridge, kitchenFurniture, petsAllowed,
+            repairAgeFour, repairAgeMoreThanFive, repairAgeOne, repairAgeThree, repairAgeTwo,
+            repairTypeCosmetic, repairTypeDesign, repairTypeEuro, repairTypeWithout,
+            tv, washingMachine]
+          type: string
+          x-childrenAllowed: Можно с детьми
+          x-conditioner: Кондиционер
+          x-entranceAfterRepair: Парадная после ремонта
+          x-entranceConcierge: Есть консьерж в парадной
+          x-floorLast: Последний этаж
+          x-floorOne: 1 этаж
+          x-floorOther: Другой этаж
+          x-floorTwo: 2 этаж
+          x-fridge: Холодильник
+          x-kitchenFurniture: Кухонная мебель
+          x-petsAllowed: Можно с животными
+          x-repairAgeFour: 4 года ремонту
+          x-repairAgeMoreThanFive: Больше 5 лет ремонту
+          x-repairAgeOne: 1 год ремонту
+          x-repairAgeThree: 3 года ремонту
+          x-repairAgeTwo: 2 года ремонту
+          x-repairTypeCosmetic: Косметический ремонт
+          x-repairTypeDesign: Дизайнерский ремонт
+          x-repairTypeEuro: Евроремонт
+          x-repairTypeWithout: Без ремонта
+          x-tv: Телевизор
+          x-washingMachine: Стиральная машина
+        title: value
+        type: array
+    required: [key, value]
+    type: object
+  price_estimator.entities.estimation.GetEstimationForRealtorsRequestSchema:
+    properties:
+      address: {description: Адрес дома, title: address, type: string}
+      area: {description: Площадь, format: double, title: area, type: number}
+      dealType:
+        description: Тип сделки
+        enum: [rent, sale]
+        type: string
+        x-rent: Аренда
+        x-sale: Продажа
+      filters:
+        description: Выбранные пользователем фильтры
+        items: {$ref: '#/definitions/price_estimator.entities.estimation.EstimationUserChosenFiltersSchema'}
+        type: array
+      houseId: {description: Id дома, format: int64, title: house_id, type: integer}
+      offerId: {description: ID объявления, format: int64, title: offer_id, type: integer}
+      price: {description: Цена квартиры в рублях, format: int64, title: price, type: integer}
+      roomsCount:
+        description: Кол-во комнат
+        enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        type: integer
+        x-0: Комната
+        x-1: Однокомнатная квартира
+        x-10: Койко-место
+        x-2: Двухкомнатная квартира
+        x-3: Трехкомнатная квартира
+        x-4: Четырехкомнатная квартира
+        x-5: Пятикомнатная квартира
+        x-6: Многокомнатная квартира (6 и более комнат)
+        x-7: Квартира со свободной планировкой
+        x-8: Доля квартиры
+        x-9: Студия
+    required: [address, area, dealType, houseId, offerId, price, roomsCount]
+    type: object
+  price_estimator.entities.estimation.GetEstimationForRealtorsResponseSchema:
+    properties:
+      liquidityPeriods: {$ref: '#/definitions/price_estimator.entities.liquidity.LiquidityPeriodsRangeSchema',
+        description: Объект с ликвидностью}
+      prices: {$ref: '#/definitions/price_estimator.entities.estimation.PriceWithRangeSchema',
+        description: Объект с оценкой и её диапазоном}
+      url: {description: Ссылка на результаты оценки калькулятора недвижимости, title: url,
+        type: string}
+    type: object
+  price_estimator.entities.estimation.PriceWithRangeSchema:
+    properties:
+      price: {description: Цена (аренда/продажа) в этом доме(с учётом метража), format: int64,
+        title: price, type: integer}
+      priceMax: {description: Максимальная цена (аренда/продажа) в этом доме(с учётом
+          метража), format: int64, title: price_max, type: integer}
+      priceMin: {description: Минимальная цена (аренда/продажа) в этом доме(с учётом
+          метража), format: int64, title: price_min, type: integer}
+    type: object
+  price_estimator.entities.liquidity.LiquidityPeriodsRangeSchema:
+    properties:
+      periodWithPromotion: {$ref: '#/definitions/price_estimator.entities.liquidity.LiquidityTermRangeSchema',
+        description: Срок продажи квартиры "от-до" в днях при текущей цене с продвижением}
+      regularPeriod: {$ref: '#/definitions/price_estimator.entities.liquidity.LiquidityTermRangeSchema',
+        description: Срок продажи квартиры "от-до" в днях при текущей цене и без продвижения}
+    required: [periodWithPromotion, regularPeriod]
+    type: object
+  price_estimator.entities.liquidity.LiquidityTermRangeSchema:
+    properties:
+      maxSellingTerm: {description: 'Максимальный срок продажи, в днях', format: int64,
+        title: max_selling_term, type: integer}
+      minSellingTerm: {description: 'Минимальный срок продажи, в днях', format: int64,
+        title: min_selling_term, type: integer}
+    required: [minSellingTerm]
+    type: object
+info: {description: My short description, title: price-estimator, version: 1.0.0}
+paths:
+  /v1/get-estimation-for-realtors/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema: {$ref: '#/definitions/price_estimator.entities.estimation.GetEstimationForRealtorsRequestSchema'}
+      produces: [application/json]
+      responses:
+        '200':
+          schema: {$ref: '#/definitions/price_estimator.entities.estimation.GetEstimationForRealtorsResponseSchema'}
+        '400':
+          schema: {$ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'}
+swagger: '2.0'
