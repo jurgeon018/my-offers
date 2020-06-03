@@ -26,7 +26,7 @@ class OffersMassRestoreRequest:
     action_type: ActionType
     """Тип массовой операции"""
     filters: Filter
-    """Вкладка"""
+    """Фильтры"""
 
 
 @dataclass
