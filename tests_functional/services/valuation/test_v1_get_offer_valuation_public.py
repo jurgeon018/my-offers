@@ -65,11 +65,11 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
             },
             {
                 'title': 'Диапазон ставки',
-                'value': '52340000-63970000 ₽/мес'
+                'value': '52340000—63970000 ₽/мес'
             },
             {
                 'title': 'Прогнозируемый срок продажи при текущей цене квартиры и продвижении',
-                'value': '75-90 дней'
+                'value': '75—90 дней'
             }
         ],
         'infoRelativeMarket': {
