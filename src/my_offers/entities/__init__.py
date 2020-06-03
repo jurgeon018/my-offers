@@ -33,3 +33,4 @@ from my_offers.entities.offers_creation_date import (
     OffersCreationDateResponse,
 )
 from my_offers.entities.update_offer import UpdateOfferRequest
+from my_offers.entities.valuation import GetOfferValuationRequest, GetOfferValuationResponse, ValuationOption

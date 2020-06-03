@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from my_offers import entities
+from my_offers.queue import enums
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 
 
@@ -76,3 +77,21 @@ class OfferNewDuplicateMessage:
     """Operation id"""
     date: datetime
     """Время изменения"""
+
+
+@dataclass
+class OfferDuplicateEvent:
+    user_id: int
+    """realtyUserId пользователя"""
+    event_type: enums.PushType
+    """Тип события"""
+    object_id: int
+    """id объявки риэлтора"""
+    similar_object_id: int
+    """id объявки-дубля"""
+    similar_object_price: Optional[int]
+    """цена объявки-дубля в рублях"""
+    region_id: Optional[int]
+    """id региона, в котором публикуется объявление-дубль или меняется цена на него"""
+    operation_id: str
+    """идентификатор операции"""

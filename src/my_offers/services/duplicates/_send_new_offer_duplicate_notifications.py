@@ -5,6 +5,7 @@ from asyncpg import UniqueViolationError
 
 from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
 from my_offers.helpers.category import get_types
+from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.notification_center import v2_register_notifications
 from my_offers.repositories.notification_center.entities import (
@@ -70,7 +71,7 @@ async def process_notification(*, offer: ObjectModel, duplicate_offer: ObjectMod
         await delete_offers_duplicate_notification(notification)
         raise
 
-    # todo: https://jira.cian.tech/browse/CD-81714 отправить событие для МЛ
+    OfferDuplicateEventProducer.produce_new_duplicate_event(offer=offer, duplicate_offer=duplicate_offer)
 
 
 async def _send_notification(offer: ObjectModel):

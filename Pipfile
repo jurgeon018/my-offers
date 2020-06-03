@@ -6,7 +6,8 @@ url = "https://nexus.cian.tech/repository/cian/simple/"
 
 [packages]
 my-offers = {editable = true, path = "."}
-cian-core = {version = "~=1.10", index = "cian", extras = ["rabbitmq_consumer_cli", "postgres", "cache", "cassandra"]}
+cian-core = {version = "~=1.10", index = "cian", extras = ["rabbitmq_consumer_cli", "postgres", "cache", "cassandra", "kafka"]}
+cian-kafka = "~=1.1"
 cian-entities = "~=1.7"
 cian-enum = "~=1.1"
 cian-http = "~=0.20"
@@ -27,7 +28,7 @@ cian-cassandra = "~=0.4"
 
 [dev-packages]
 cian-lint = "*"
-cian-functional-test-utils = {version = "*", extras = ["python", "postgres", "rabbitmq", "cache", "cassandra"]}
+cian-functional-test-utils = {version = "*", extras = ["python", "postgres", "rabbitmq", "cache", "cassandra", "kafka"]}
 cian-test-utils = "*"
 diff-cover = "*"
 isort = "*"
