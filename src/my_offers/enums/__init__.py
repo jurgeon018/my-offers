@@ -9,3 +9,4 @@ from my_offers.enums.offer_status import OfferStatusTab
 from my_offers.enums.offer_type import OfferType
 from my_offers.enums.offer_vas import OfferVas
 from my_offers.enums.sort_types import GetOffersSortType
+from my_offers.enums.valuation import PriceEstimate
