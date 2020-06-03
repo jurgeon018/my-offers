@@ -11,7 +11,7 @@ from my_offers.services.valuation.fields.info_relative_market import get_info_re
         (1_000_000, 2_000_000, InfoRelativeMarket(
             price_estimate=PriceEstimate.more_market,
             title='Ваша цена выше рыночной',
-            text='У объявлеений с ценой выше рынка в среднем на 35% меньше просмотров.',
+            text='У объявлений с ценой выше рынка в среднем на 35% меньше просмотров.',
             hint='Согласно статистике просмотров объявлений похожих квартир за последние 12 дней.'
         )),
         (1_000_000, 500_000, InfoRelativeMarket(

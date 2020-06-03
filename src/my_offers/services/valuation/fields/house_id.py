@@ -16,7 +16,7 @@ def get_house_id(
         Error(
             message='offer object_model does not have house in address, '
                     'valuation can not be provided without house_id',
-            code='broken',
+            code='valuation_not_poossible',
             key='house_id'
         )
     ])

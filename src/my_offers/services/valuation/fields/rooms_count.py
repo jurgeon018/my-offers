@@ -11,12 +11,8 @@ def get_rooms_count(
 ) -> RoomsCount:
     if category in [Category.room_rent, Category.room_sale]:
         return RoomsCount.value_0
-    if category == Category.bed_rent:
-        return RoomsCount.value_10
     if flat_type == FlatType.studio:
         return RoomsCount.value_9
-    if category == Category.flat_share_sale:
-        return RoomsCount.value_8
     if flat_type == FlatType.open_plan:
         return RoomsCount.value_7
     if rooms_count >= 6:
@@ -35,7 +31,7 @@ def get_rooms_count(
     raise BrokenRulesException([
         Error(
             message='broken offer object_model, has not right room info',
-            code='broken',
+            code='valuation_not_poossible',
             key='rooms_count'
         )
     ])

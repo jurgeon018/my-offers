@@ -18,8 +18,15 @@ async def v1_get_offer_valuation_public(
     offer_id = request.offer_id
     object_model = await load_object_model(user_id=realty_user_id, offer_id=offer_id)
     _, deal_type = get_types(object_model.category)
-    filters = None  # https://jira.cian.tech/browse/CD-82137
+    filters = None  # todo https://jira.cian.tech/browse/CD-82137
 
+    price_in_rur = get_price_rur(
+        price=object_model.bargain_terms.price,
+        currency=object_model.bargain_terms.currency
+    )
+
+    # todo https://jira.cian.tech/browse/CD-82659
+    # впилить деградацию и валидацию, что считаем оценку только для  жилой вторички - квартир и комнат
     response = await v1_get_estimation_for_realtors(
         GetEstimationForRealtorsRequest(
             address=get_address(object_model.geo.address),
@@ -27,10 +34,7 @@ async def v1_get_offer_valuation_public(
             deal_type=deal_type,
             house_id=get_house_id(object_model.geo.address),
             offer_id=offer_id,
-            price=get_price_rur(
-                price=object_model.bargain_terms.price,
-                currency=object_model.bargain_terms.currency
-            ),
+            price=price_in_rur,
             rooms_count=get_rooms_count(
                 category=object_model.category,
                 flat_type=object_model.flat_type,
@@ -47,7 +51,7 @@ async def v1_get_offer_valuation_public(
         ),
         info_relative_market=get_info_relative_market(
             market_price=response.prices.price,
-            real_price=int(object_model.bargain_terms.price),
+            real_price=price_in_rur,
         ),
         valuation_block_link_share=response.url,
         valuation_block_link_report=response.url,

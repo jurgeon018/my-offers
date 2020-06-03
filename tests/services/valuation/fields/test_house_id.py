@@ -7,7 +7,7 @@ from my_offers.services.valuation.fields.house_id import get_house_id
 
 
 def test_get_house_id():
-    # arrange & act
+    # arrange
     address = [
         AddressInfo(
             id=1,
@@ -35,6 +35,8 @@ def test_get_house_id():
             is_forming_address=True
         )
     ]
+
+    # act
     result = get_house_id(address=address)
 
     # assert
@@ -42,7 +44,7 @@ def test_get_house_id():
 
 
 def test_get_house_id_raise_exeption():
-    # arrange & act
+    # arrange
     address_without_house = [
         AddressInfo(
             id=1,
@@ -63,10 +65,12 @@ def test_get_house_id_raise_exeption():
         )
     ]
 
+    # act
     with pytest.raises(BrokenRulesException) as exc_info:
         get_house_id(address=address_without_house)
 
     # assert
     assert exc_info.value.errors[0].key == 'house_id'
+    assert exc_info.value.errors[0].code == 'valuation_not_poossible'
     assert exc_info.value.errors[0].message == 'offer object_model does not have house in address, valuation can not ' \
                                                'be provided without house_id'
