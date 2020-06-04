@@ -4,7 +4,6 @@ import pytest
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
 
-@pytest.mark.skip  # TODO: remove
 class TestMassOffersRestore:
 
     @pytest.mark.parametrize('status_tab, action_type, job_status', [
@@ -72,7 +71,7 @@ class TestMassOffersRestore:
 
         await monolith_cian_announcementapi_mock.add_stub(
             method='POST',
-            path='/announcements-actions/restore/',
+            path='/announcements-actions/v1/restore/',
             response=MockResponse(
                 body={
                     'job_id': 123
@@ -81,7 +80,7 @@ class TestMassOffersRestore:
         )
         await monolith_cian_announcementapi_mock.add_stub(
             method='GET',
-            path='/announcements-actions/get-job-status/',
+            path='/announcements-actions/v1/get-job-status/',
             response=[
                 MockResponse(
                     body={
@@ -110,7 +109,7 @@ class TestMassOffersRestore:
                 'X-Real-UserId': master_user
             },
             json={
-                'status_tab': status_tab,
+                'filters': {"status_tab": status_tab},
                 'action_type': action_type
             },
         )
@@ -200,7 +199,7 @@ class TestMassOffersRestore:
 
         await monolith_cian_announcementapi_mock.add_stub(
             method='POST',
-            path='/announcements-actions/restore/',
+            path='/announcements-actions/v1/restore/',
             response=MockResponse(
                 body={
                     'job_id': 123
@@ -209,7 +208,7 @@ class TestMassOffersRestore:
         )
         await monolith_cian_announcementapi_mock.add_stub(
             method='GET',
-            path='/announcements-actions/get-job-status/',
+            path='/announcements-actions/v1/get-job-status/',
             response=[
                 MockResponse(
                     body={
@@ -238,7 +237,7 @@ class TestMassOffersRestore:
                 'X-Real-UserId': master_user
             },
             json={
-                'status_tab': status_tab,
+                'filters': {"status_tab": status_tab},
                 'offers_ids': [offer_id_1, offer_id_3],
                 'action_type': action_type
             },

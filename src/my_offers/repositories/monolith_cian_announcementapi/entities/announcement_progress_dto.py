@@ -17,13 +17,13 @@ from cian_enum import NoFormat, StrEnum
 class State(StrEnum):
     __value_format__ = NoFormat
     new = 'New'
-    """Новый запрос."""
+    """Новое"""
     in_progress = 'InProgress'
-    """Запрос обрабатывается."""
+    """В обработке"""
     completed = 'Completed'
-    """Запрос обработан."""
+    """Завершено"""
     error = 'Error'
-    """Произошла ошибка."""
+    """Завершено с ошибками"""
 
 
 @dataclass

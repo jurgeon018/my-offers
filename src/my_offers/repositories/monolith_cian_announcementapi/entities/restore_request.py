@@ -14,7 +14,9 @@ from typing import List
 
 @dataclass
 class RestoreRequest:
+    """Запрос на создание задачи массового восстановления"""
+
     announcement_ids: List[int]
-    """Список id объявлений для восстановления."""
+    """Список id объявлений для восстановления"""
     user_id: int
-    """Realty id пользователя."""
+    """Realty id пользователя"""

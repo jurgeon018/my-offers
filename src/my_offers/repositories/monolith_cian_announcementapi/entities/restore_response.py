@@ -13,5 +13,7 @@ from dataclasses import dataclass
 
 @dataclass
 class RestoreResponse:
+    """Информация о созданной задаче"""
+
     job_id: int
     """Id задачи."""

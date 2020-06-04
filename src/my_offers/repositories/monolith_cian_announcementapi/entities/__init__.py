@@ -12,7 +12,7 @@ cian-codegen version: 1.4.1
 from .address_info import AddressInfo
 from .agent_bonus import AgentBonus
 from .announcement_progress_dto import AnnouncementProgressDto
-from .announcements_actions_get_job_status import AnnouncementsActionsGetJobStatus
+from .announcements_actions_v1_get_job_status import AnnouncementsActionsV1GetJobStatus
 from .archive_announcement_v2_request import ArchiveAnnouncementV2Request
 from .auction import Auction
 from .utilities_terms import UtilitiesTerms

@@ -30,6 +30,8 @@ class State(StrEnum):
 
 @dataclass
 class GetJobStatusResponse:
+    """Статус выполнения задачи"""
+
     state: State
     """Статус задачи."""
     announcements_progress: Optional[List[AnnouncementProgressDto]] = None

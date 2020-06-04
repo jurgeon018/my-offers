@@ -9,8 +9,8 @@ cian-codegen version: 1.4.1
 
 """
 from ._repo import (
-    announcements_actions_get_job_status,
-    announcements_actions_restore,
+    announcements_actions_v1_get_job_status,
+    announcements_actions_v1_restore,
     v1_get_announcement,
     v2_announcements_archive,
 )
