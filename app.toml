@@ -32,6 +32,11 @@ alias = "default"
 type = "web"
 memory = 128
 
+[job.web.prod]
+type = "web"
+cpu = 4096
+memory = 1024
+
 [job.process_announcement_consumer]
 type = "consumer"
 command = "process_announcement_consumer"
