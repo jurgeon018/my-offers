@@ -34,7 +34,7 @@ memory = 128
 
 [job.web.prod]
 type = "web"
-cpu = 2048
+cpu = 4096
 memory = 1024
 
 [job.process_announcement_consumer]
