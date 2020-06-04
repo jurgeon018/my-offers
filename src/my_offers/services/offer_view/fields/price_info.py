@@ -58,7 +58,7 @@ def get_price_info(
 
             pretty_price = get_pretty_number(price_per_month)
             price_exact = f'{pretty_price}\xa0{currency}/мес.'
-    elif can_parts:
+    elif can_parts and min_area and max_area:
         min_price = get_pretty_number(price * min_area / max_area)
         max_price = get_pretty_number(price)
         price_range = [f'от\xa0{min_price}', f'до\xa0{max_price}\xa0{currency}']
