@@ -108,7 +108,7 @@ class TestMassOffersRestore:
                 'X-Real-UserId': master_user
             },
             json={
-                'filters': {"status_tab": status_tab},
+                'filters': {'status_tab': status_tab},
                 'action_type': action_type
             },
         )
@@ -125,13 +125,13 @@ class TestMassOffersRestore:
         ('notActive', 'select', 'Error'),
     ])
     async def test_restore_selected(
-        self,
-        pg,
-        http,
-        status_tab,
-        action_type,
-        job_status,
-        monolith_cian_announcementapi_mock
+            self,
+            pg,
+            http,
+            status_tab,
+            action_type,
+            job_status,
+            monolith_cian_announcementapi_mock
     ):
         """ Проверяем восстановление только выбранных объявлений """
         # arrange
@@ -188,8 +188,8 @@ class TestMassOffersRestore:
             [
                 offer_id_1, master_user, master_user, 'sale', 'flat', status_tab, [], True, False, False, 'text', '{}',
                 1, now, now,
-                offer_id_2, master_user, master_user, 'sale', 'flat', status_tab, [], True, False, False, 'text', '{}', 1,
-                now, now,
+                offer_id_2, master_user, master_user, 'sale', 'flat', status_tab, [], True, False, False, 'text', '{}',
+                1, now, now,
                 offer_id_3, master_user, user_id, 'sale', 'flat', status_tab, [], True, False, False, 'text', '{}', 1,
                 now, now,
             ]
@@ -235,7 +235,7 @@ class TestMassOffersRestore:
                 'X-Real-UserId': master_user
             },
             json={
-                'filters': {"status_tab": status_tab},
+                'filters': {'status_tab': status_tab},
                 'offers_ids': [offer_id_1, offer_id_3],
                 'action_type': action_type
             },
@@ -253,13 +253,13 @@ class TestMassOffersRestore:
         ('notActive', 'all', 'Error'),
     ])
     async def test_restore_selected__exclude_xml(
-        self,
-        pg,
-        http,
-        status_tab,
-        action_type,
-        job_status,
-        monolith_cian_announcementapi_mock
+            self,
+            pg,
+            http,
+            status_tab,
+            action_type,
+            job_status,
+            monolith_cian_announcementapi_mock
     ):
         """ Проверяем восстановление всех объявлений, кроме XML """
         # arrange
@@ -359,7 +359,7 @@ class TestMassOffersRestore:
                 'X-Real-UserId': master_user
             },
             json={
-                'filters': {"status_tab": status_tab},
+                'filters': {'status_tab': status_tab},
                 'action_type': action_type
             },
         )

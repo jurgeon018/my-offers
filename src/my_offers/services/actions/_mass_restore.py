@@ -28,11 +28,9 @@ END_STATUSES = [
 ]
 
 
-# TODO: metrics for mass operations
-
 async def mass_offers_restore(
-    request: entities.OffersMassRestoreRequest,
-    realty_user_id: int
+        request: entities.OffersMassRestoreRequest,
+        realty_user_id: int
 ) -> entities.OffersMassRestoreResponse:
     """ Массово восстановить все объявление для пользователя """
     # TODO: перенести в Actions: https://jira.cian.tech/browse/CD-82000
@@ -53,7 +51,7 @@ async def mass_offers_restore(
     if request.action_type.is_select:
         filters['offer_id'] = request.offers_ids
 
-    objects_models, total = await postgresql.get_object_models(
+    objects_models, _total = await postgresql.get_object_models(
         filters=filters,
         limit=settings.MASS_OFFERS_LIMIT,
         offset=0,
@@ -64,14 +62,13 @@ async def mass_offers_restore(
 
     if offers_ids:
         offers_final_statuses = await _run_job(offers_ids=offers_ids, realty_user_id=realty_user_id)
-        if offers_final_statuses:
-            offers_statuses += [
-                entities.OfferMassRestoreStatus(
-                    offer_id=offer.id,
-                    status=offer.state,
-                    message=offer.error_message
-                ) for offer in offers_final_statuses
-            ]
+        offers_statuses += [
+            entities.OfferMassRestoreStatus(
+                offer_id=offer.id,
+                status=offer.state,
+                message=offer.error_message
+            ) for offer in offers_final_statuses
+        ]
 
     return entities.OffersMassRestoreResponse(offers=offers_statuses)
 
