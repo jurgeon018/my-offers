@@ -41,5 +41,7 @@ class OfferMassRestoreStatus:
 
 @dataclass
 class OffersMassRestoreResponse:
+    total: int
+    """Общее количетсво офферов"""
     offers: List[OfferMassRestoreStatus]
     """Статусы по восстановленным объявлениям"""

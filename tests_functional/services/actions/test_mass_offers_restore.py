@@ -115,6 +115,7 @@ class TestMassOffersRestore:
 
         # assert
         assert response.data == {
+            'total': 2,
             'offers': [
                 {'message': None, 'offerId': offer_id_1, 'status': 'Completed'},
                 {'message': 'Need more money!', 'offerId': offer_id_2, 'status': 'Error'},
@@ -243,6 +244,7 @@ class TestMassOffersRestore:
 
         # assert
         assert response.data == {
+            'total': 2,
             'offers': [
                 {'message': None, 'offerId': offer_id_1, 'status': 'Completed'},
                 {'message': 'Need more money!', 'offerId': offer_id_3, 'status': 'Error'},
@@ -366,8 +368,39 @@ class TestMassOffersRestore:
 
         # assert
         assert response.data == {
+            'total': 2,
             'offers': [
                 {'message': 'Нельзя автоматически восстановить XML', 'offerId': offer_id_2, 'status': 'Error'},
                 {'message': None, 'offerId': offer_id_1, 'status': 'Completed'},
+            ]
+        }
+
+    @pytest.mark.parametrize('status_tab, action_type, job_status', [
+        ('notActive', 'select', 'Error'),
+    ])
+    async def test_restore_selected__bad_request(self, pg, http, status_tab, action_type, job_status):
+        # arrange
+        master_user = 333
+
+        # act
+        response = await http.request(
+            'POST',
+            '/public/v1/actions/restore-offers/',
+            headers={
+                'X-Real-UserId': master_user
+            },
+            json={
+                'filters': {'status_tab': status_tab},
+                'action_type': action_type,
+                'offers_ids': []
+            },
+            expected_status=400
+        )
+
+        # assert
+        assert response.data == {
+            'message': 'offers_ids is empty with type `select`',
+            'errors': [
+                {'key': 'offersIds', 'code': 'offersIdsIsEmpty', 'message': 'offers_ids is empty with type `select`'}
             ]
         }

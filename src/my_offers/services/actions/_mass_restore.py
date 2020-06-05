@@ -51,7 +51,7 @@ async def mass_offers_restore(
     if request.action_type.is_select:
         filters['offer_id'] = request.offers_ids
 
-    objects_models, _total = await postgresql.get_object_models(
+    objects_models, total = await postgresql.get_object_models(
         filters=filters,
         limit=settings.MASS_OFFERS_LIMIT,
         offset=0,
@@ -70,7 +70,7 @@ async def mass_offers_restore(
             ) for offer in offers_final_statuses
         ]
 
-    return entities.OffersMassRestoreResponse(offers=offers_statuses)
+    return entities.OffersMassRestoreResponse(offers=offers_statuses, total=total)
 
 
 async def _run_job(*, offers_ids: List[int], realty_user_id: int) -> List[AnnouncementProgressDto]:
