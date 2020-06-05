@@ -60,7 +60,7 @@ async def mass_offers_restore(
     offers_statuses.extend(offers_errors)
 
     if not offers_ids:
-        return entities.OffersMassRestoreResponse(offers=[])
+        return entities.OffersMassRestoreResponse(offers=offers_statuses)
 
     offers_final_statuses = await _run_job(offers_ids=offers_ids, realty_user_id=realty_user_id)
     if offers_final_statuses:
