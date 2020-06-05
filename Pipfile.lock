@@ -190,10 +190,10 @@
                 "rabbitmq_consumer_cli"
             ],
             "hashes": [
-                "sha256:25eaa975a6ef3cb9def64453d98020f3d5c665d2aaab8eb3cab20e435c049132",
-                "sha256:6205db9e3fb9bd43e45f4d59ce711b47af501a2c4908e5c566e9183355bca124"
+                "sha256:a556dc2d71a48d3ba24e4a2cf7d8c440d60890339cc69ce99eaedd9936f6a289",
+                "sha256:a93fae910e984b52f523af485b5a67db637012bf51e789a0755ee7963182b268"
             ],
-            "version": "==1.13.2"
+            "version": "==1.14.0"
         },
         "cian-entities": {
             "hashes": [
@@ -618,10 +618,11 @@
         },
         "serpyco": {
             "hashes": [
-                "sha256:8daac1c3f79c91c0eecb857e733d9881dfeac48930a733d57a3f8511eb3d3d50"
+                "sha256:6912d2863b7a4843b20f14f89bacf1f4db2d059d233f41f278d2f1ce10c522bd",
+                "sha256:992090d920048ebb5c110cb3da50e6aea38f88250a79d08dc0224abe161aac5d"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==10.2.2"
+            "version": "==10.2.3"
         },
         "simple-settings": {
             "hashes": [
@@ -1023,10 +1024,10 @@
                 "rabbitmq_consumer_cli"
             ],
             "hashes": [
-                "sha256:25eaa975a6ef3cb9def64453d98020f3d5c665d2aaab8eb3cab20e435c049132",
-                "sha256:6205db9e3fb9bd43e45f4d59ce711b47af501a2c4908e5c566e9183355bca124"
+                "sha256:a556dc2d71a48d3ba24e4a2cf7d8c440d60890339cc69ce99eaedd9936f6a289",
+                "sha256:a93fae910e984b52f523af485b5a67db637012bf51e789a0755ee7963182b268"
             ],
-            "version": "==1.13.2"
+            "version": "==1.14.0"
         },
         "cian-entities": {
             "hashes": [
@@ -1052,10 +1053,10 @@
                 "rabbitmq"
             ],
             "hashes": [
-                "sha256:36eacff01ce71673ee6bc89992e40c9eaa6726dd37cb24970d7c42163eca5783",
-                "sha256:9c590f0f473727af6802855d583f9c299702f9a80968dce676eecad1b22066a4"
+                "sha256:1656e80eb09fb638e31fb75dda65da4ab2fa895a4ede6be0ebbb6577ec91cd2d",
+                "sha256:32c5d4c9998f01516ee388023149f003638c44e17089a70b1b2e7f869abd1e48"
             ],
-            "version": "==0.36.0"
+            "version": "==0.37.1"
         },
         "cian-helpers": {
             "hashes": [
@@ -1202,10 +1203,10 @@
         },
         "diff-cover": {
             "hashes": [
-                "sha256:56f17a39da3d6a1a57483684bf6c3877e28b9e36e8fc625d4ec92cc97b3068dd",
-                "sha256:8932c1a8028335c92312654bbef95ce8f508ad7415f0e0042fd7b5fbf09ca8e6"
+                "sha256:13768c8bc755dd8e1184ce79b95bbc8115ea566282f4b06efbeca72a4d00427b",
+                "sha256:ffd42409ff2f297c6778a722923a449e1a3ccafa7528d7cd3923da249fbe05df"
             ],
-            "version": "==3.0.0"
+            "version": "==3.0.1"
         },
         "distlib": {
             "hashes": [
@@ -1782,10 +1783,11 @@
         },
         "serpyco": {
             "hashes": [
-                "sha256:8daac1c3f79c91c0eecb857e733d9881dfeac48930a733d57a3f8511eb3d3d50"
+                "sha256:6912d2863b7a4843b20f14f89bacf1f4db2d059d233f41f278d2f1ce10c522bd",
+                "sha256:992090d920048ebb5c110cb3da50e6aea38f88250a79d08dc0224abe161aac5d"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==10.2.2"
+            "version": "==10.2.3"
         },
         "simple-settings": {
             "hashes": [

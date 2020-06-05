@@ -52,25 +52,23 @@ async def mass_offers_restore(
     )
     objects_models, total = await postgresql.get_object_models(
         filters=filters,
-        limit=300,  # TODO: settinga
+        limit=settings.MASS_OFFERS_LIMIT,
         offset=0,
         sort_type=GetOffersSortType.by_default
     )
     offers_ids, offers_errors = _filter_offers(objects_models=objects_models)
     offers_statuses.extend(offers_errors)
 
-    if not offers_ids:
-        return entities.OffersMassRestoreResponse(offers=offers_statuses)
-
-    offers_final_statuses = await _run_job(offers_ids=offers_ids, realty_user_id=realty_user_id)
-    if offers_final_statuses:
-        offers_statuses += [
-            entities.OfferMassRestoreStatus(
-                offer_id=offer.id,
-                status=offer.state,
-                message=offer.error_message
-            ) for offer in offers_final_statuses
-        ]
+    if offers_ids:
+        offers_final_statuses = await _run_job(offers_ids=offers_ids, realty_user_id=realty_user_id)
+        if offers_final_statuses:
+            offers_statuses += [
+                entities.OfferMassRestoreStatus(
+                    offer_id=offer.id,
+                    status=offer.state,
+                    message=offer.error_message
+                ) for offer in offers_final_statuses
+            ]
 
     return entities.OffersMassRestoreResponse(offers=offers_statuses)
 
