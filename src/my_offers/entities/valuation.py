@@ -14,7 +14,7 @@ class GetOfferValuationRequest:
 class ValuationOption:
     value: str
     """Значение"""
-    title: str
+    description: str
     """Заголовок"""
 
 

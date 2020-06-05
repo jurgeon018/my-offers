@@ -60,15 +60,15 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
     assert response.data == {
         'valuationOptions': [
             {
-                'title': 'Рыночная ставка',
+                'description': 'Рыночная ставка',
                 'value': '58160000 ₽/мес'
             },
             {
-                'title': 'Диапазон ставки',
+                'description': 'Диапазон ставки',
                 'value': '52340000—63970000 ₽/мес'
             },
             {
-                'title': 'Прогнозируемый срок продажи при текущей цене квартиры и продвижении',
+                'description': 'Прогнозируемый срок продажи при текущей цене квартиры и продвижении',
                 'value': '75—90 дней'
             }
         ],
@@ -86,4 +86,102 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
                                     '1%D0%BA%D0%B2%D0%B0%2C+%D0%9D%D0%B8%D0%BA%D0%B8%D1%82%D1%81%D0%BA%D0%B8%D0%B9+%D0%'
                                     'B1%D1%83%D0%BB%D1%8C%D0%B2%D0%B0%D1%80%2C+12&totalArea=115&roomsCount=4&offerId=15'
                                     '3126220'
+    }
+
+
+async def test_v1_get_offer_valuation__price_estimator_None_response(http_client, pg, price_estimator_mock):
+    # arrange
+    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers_for_valuation.sql'))
+
+    await price_estimator_mock.add_stub(
+        method='POST',
+        path='/v1/get-estimation-for-realtors/',
+        response=MockResponse(
+            body={
+                'liquidity_periods': None,
+                'prices': None,
+                'url': None,
+            }
+        ),
+    )
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-valuation/',
+        json={'offerId': 153126220},
+        headers={'X-Real-UserId': 2994068},
+        expected_status=400,
+    )
+
+    # assert
+    assert response.data == {
+        'errors': [
+            {
+                'key': 'noValuation',
+                'code': 'didNotGetValuation',
+                'message': 'did not get valuation for offer from mcs price-estimator'
+            }
+        ],
+        'message': 'did not get valuation for offer from mcs price-estimator'
+    }
+
+
+async def test_v1_get_offer_valuation__price_estimator_500(http_client, pg, price_estimator_mock):
+    # arrange
+    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers_for_valuation.sql'))
+
+    await price_estimator_mock.add_stub(
+        method='POST',
+        path='/v1/get-estimation-for-realtors/',
+        response=MockResponse(
+            status=500
+        ),
+    )
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-valuation/',
+        json={'offerId': 153126220},
+        headers={'X-Real-UserId': 2994068},
+        expected_status=400,
+    )
+
+    # assert
+    assert response.data == {
+        'errors': [
+            {
+                'key': 'noValuation',
+                'code': 'didNotGetValuation',
+                'message': 'did not get valuation for offer from mcs price-estimator'
+            }
+        ],
+        'message': 'did not get valuation for offer from mcs price-estimator'
+    }
+
+
+async def test_v1_get_offer_valuation__wrong_offer_category(http_client, pg, price_estimator_mock):
+    # arrange
+    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers_for_valuation.sql'))
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-valuation/',
+        json={'offerId': 165197457},
+        headers={'X-Real-UserId': 13898800},
+        expected_status=400,
+    )
+
+    # assert
+    assert response.data == {
+        'errors': [
+            {
+                'key': 'offerCategory',
+                'code': 'categoryNotSupported',
+                'message': 'offer category Category.building_rent is not supported'
+            }
+        ],
+        'message': 'offer category Category.building_rent is not supported'
     }
