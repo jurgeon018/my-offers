@@ -50,6 +50,9 @@ async def mass_offers_restore(
         user_id=realty_user_id,
         filters=request.filters
     )
+    if request.action_type.is_select:
+        filters['offer_id'] = request.offers_ids
+
     objects_models, total = await postgresql.get_object_models(
         filters=filters,
         limit=settings.MASS_OFFERS_LIMIT,
