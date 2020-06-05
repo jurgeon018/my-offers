@@ -103,7 +103,6 @@ def _filter_offers(objects_models: List[ObjectModel]) -> Tuple[List[int], List[e
     offers_errors = []
 
     for o in objects_models:
-        print(2313231323131, o)
         if helpers.is_manual(o.source):
             offers_ids.append(o.id)
         else:
