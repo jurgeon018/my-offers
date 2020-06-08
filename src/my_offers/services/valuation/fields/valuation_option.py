@@ -15,11 +15,11 @@ def get_valuation_options(
     result = [
         ValuationOption(
             value=f'{valuation_response.prices.price}\xa0₽/мес',
-            title='Рыночная\xa0ставка'
+            description='Рыночная\xa0ставка'
         ),
         ValuationOption(
             value=f'{valuation_response.prices.price_min}—{valuation_response.prices.price_max}\xa0₽/мес',
-            title='Диапазон\xa0ставки'
+            description='Диапазон\xa0ставки'
         ),
     ]
     if deal_type == DealType.sale:
@@ -27,7 +27,7 @@ def get_valuation_options(
             ValuationOption(
                 value=f'{valuation_response.liquidity_periods.period_with_promotion.min_selling_term}—'
                       f'{valuation_response.liquidity_periods.period_with_promotion.max_selling_term} дней',
-                title='Прогнозируемый срок продажи при текущей цене квартиры и продвижении'
+                description='Прогнозируемый срок продажи при текущей цене квартиры и продвижении'
             )
         )
     return result
