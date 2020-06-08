@@ -31,5 +31,9 @@ CASSANDRA_DEFAULT_TIMEOUT: float = 1.0
 
 SEND_PUSH_ON_NEW_DUPLICATE: bool = False  # пока не раскатили приложения пуши рассылать не надо
 
+# mass operations
+MASS_OFFERS_RESTORE_DELAY: float = .5
+MASS_OFFERS_LIMIT: int = 300
+
 RESEND_JOB_REFRESH: float = .5
 RESEND_JOB_BROADCAST_TYPE: str = 'temp'

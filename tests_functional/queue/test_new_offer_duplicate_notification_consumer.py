@@ -1,15 +1,13 @@
 import asyncio
 import json
-import os
+from pathlib import Path
 
 from cian_functional_test_utils.pytest_plugin import MockResponse
-
-from tests_functional.utils import load_data
 
 
 async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafka_service, notification_center_mock):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 
@@ -74,7 +72,7 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
 
 async def test_new_offer_duplicate_notification_consumer__already_sent(queue_service, pg, notification_center_mock):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 
@@ -104,7 +102,7 @@ async def test_new_offer_duplicate_notification_consumer__already_sent(queue_ser
 
 async def test_new_offer_duplicate_notification_consumer__error(queue_service, pg, notification_center_mock):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 

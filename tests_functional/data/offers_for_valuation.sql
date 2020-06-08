@@ -97,3 +97,52 @@ VALUES (
 	'2020-01-28 11:30:51.850070',
 	'2020-03-12 14:08:01.082307'
 	);
+
+INSERT INTO public.offers (
+	offer_id,
+	master_user_id,
+	user_id,
+	deal_type,
+	offer_type,
+	status_tab,
+	services,
+	is_manual,
+	is_in_hidden_base,
+	has_photo,
+	search_text,
+	price,
+	price_per_meter,
+	total_area,
+	street_name,
+	walking_time,
+	sort_date,
+	raw_data,
+	row_version,
+	is_test,
+	created_at,
+	updated_at
+	)
+VALUES (
+	165197457,
+	13898800,
+	13898800,
+	'rent',
+	'commercial',
+	'active',
+	'{paid}',
+	true,
+	false,
+	true,
+	'165197457 4993223807 Россия, Москва, улица Орджоникидзе, 5к2 Москва Орджоникидзе 5К2 д5 д 5 5д К2 К 2 2К Ленинский проспект Площадь Гагарина Шаболовская ЮАО Донской Нижние Котлы Москва-Сортировочная Москва (Курский вокзал) Здание, 10 м² 5 Объявление не является действительным. Номер телефона указанный в объявлении является случайным набором цифр.',
+    120000,
+	12000,
+	10,
+	'Орджоникидзе',
+	13,
+	'2019-07-02 16:26:21.873000',
+	'{"id": 165197457, "geo": {"address": [{"id": 1, "name": "Москва", "type": "location", "fullName": "Москва", "shortName": "Москва", "locationTypeId": 1, "isFormingAddress": true}, {"id": 1710, "name": "Орджоникидзе", "type": "street", "fullName": "улица Орджоникидзе", "shortName": "ул. Орджоникидзе", "isFormingAddress": true}, {"id": 57769, "name": "5К2", "type": "house", "fullName": "5К2", "shortName": "5К2", "isFormingAddress": true}], "district": [{"id": 9, "name": "ЮАО", "type": "okrug", "locationId": 1}, {"id": 88, "name": "Донской", "type": "raion", "parentId": 9, "locationId": 1}], "highways": [], "railways": [{"id": 709, "name": "Нижние Котлы", "time": 7, "distance": 4.0, "travelType": "byCar", "directionIds": [17]}, {"id": 706, "name": "Москва-Сортировочная", "time": 93, "distance": 7.0, "travelType": "byFoot", "directionIds": [14]}, {"id": 687, "name": "Москва (Курский вокзал)", "time": 93, "distance": 7.0, "travelType": "byFoot", "directionIds": [12, 15]}], "countryId": 138, "userInput": "Россия, Москва, улица Орджоникидзе, 5к2", "coordinates": {"lat": 55.709175, "lng": 37.600837}, "locationPath": {"countryId": 138, "childToParent": [1]}, "undergrounds": [{"id": 63, "name": "Ленинский проспект", "time": 13, "lineId": 5, "isDefault": true, "lineColor": "FF7F00", "transportType": "walk"}, {"id": 309, "name": "Площадь Гагарина", "time": 14, "lineId": 22, "isDefault": false, "lineColor": "FA6F9E", "transportType": "walk"}, {"id": 151, "name": "Шаболовская", "time": 17, "lineId": 5, "isDefault": false, "lineColor": "FF7F00", "transportType": "walk"}], "calculatedUndergrounds": []}, "land": {"type": "owned", "areaUnitType": "hectare"}, "flags": {"isArchived": false, "draftReason": "user"}, "cianId": 165197457, "phones": [{"number": "4993223807", "countryCode": "+7"}], "photos": [], "source": "website", "status": "Published", "userId": 13898800, "videos": [], "version": 2, "building": {"type": "residentialHouse", "buildYear": 1934, "liftTypes": [], "statusType": "operational", "floorsCount": 5, "cranageTypes": [], "extinguishingSystemTypes": []}, "category": "buildingRent", "editDate": "2019-07-02T19:26:21.873000", "platform": {"type": "webSite"}, "specialty": {"types": [], "additionalTypes": []}, "totalArea": 10.0, "cianUserId": 13898800, "objectGuid": "1d6b6003-4ba1-4684-84de-51d02d3cfa95", "rowVersion": 19794793403, "description": "Объявление не является действительным. Номер телефона указанный в объявлении является случайным набором цифр.", "bargainTerms": {"price": 12000.0, "vatType": "included", "agentFee": 0, "currency": "rur", "vatPrice": 2000.0, "clientFee": 0, "leaseType": "direct", "priceType": "squareMeter", "vatIncluded": true, "prepayMonths": 2, "leaseTermType": "longTerm", "paymentPeriod": "annual", "includedOptions": []}, "creationDate": "2019-07-02T19:26:21.873000", "publishTerms": {"terms": [{"days": 1, "type": "dailyTermless", "services": ["auction"], "dynamicPrice": 5.0}, {"days": 1, "type": "dailyTermless", "services": ["paid"]}], "autoprolong": true, "infinitePublishPeriod": true}, "conditionType": "typical", "isRentByParts": false, "isInHiddenBase": false, "publishedUserId": 13898800}',
+    19794793403,
+	false,
+	'2020-03-27 10:23:22.877508',
+	'2020-04-17 10:14:20.262274'
+	);

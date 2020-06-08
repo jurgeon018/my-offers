@@ -2,7 +2,7 @@ import pytest
 from cian_test_utils import future
 
 from my_offers.entities import OfferActionRequest, OfferActionResponse
-from my_offers.enums.offer_action_status import OfferActionStatus
+from my_offers.enums.actions import OfferActionStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     ArchiveAnnouncementV2Request,
     BargainTerms,
