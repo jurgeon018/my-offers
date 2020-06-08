@@ -1,11 +1,9 @@
-import os
-
-from tests_functional.utils import load_data
+from pathlib import Path
 
 
 async def test_v2_get_offer_tabs_public__duplicates_found__200(http_client, pg, auction_mock):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-26\')')
     await pg.execute('INSERT INTO offers_duplicates values(231659418, 231655140, \'2020-05-26\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-26\')')
@@ -29,7 +27,7 @@ async def test_v2_get_offer_tabs_public__duplicates_found__200(http_client, pg, 
 
 async def test_v2_get_offer_tabs_public__duplicates_not_found__200(http_client, pg):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     # act
     response = await http_client.request(
@@ -45,7 +43,7 @@ async def test_v2_get_offer_tabs_public__duplicates_not_found__200(http_client, 
 
 async def test_v2_get_offer_tab_public__not_validate_offer__200(http_client, pg):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     # act
     response = await http_client.request(

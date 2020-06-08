@@ -1,6 +1,4 @@
-import os
-
-from tests_functional.utils import load_data
+from pathlib import Path
 
 
 async def test_v2_get_offers_public__not_found__200(http_client):
@@ -25,7 +23,7 @@ async def test_v2_get_offers_public__not_found__200(http_client):
 
 async def test_v2_get_offers_public__search_text__result(http_client, pg):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     # act
     response = await http_client.request(

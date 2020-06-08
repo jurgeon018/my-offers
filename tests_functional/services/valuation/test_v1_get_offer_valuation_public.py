@@ -1,13 +1,11 @@
-import os
+from pathlib import Path
 
 from cian_functional_test_utils.pytest_plugin import MockResponse
-
-from tests_functional.utils import load_data
 
 
 async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers_for_valuation.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     price_estimator_stub = await price_estimator_mock.add_stub(
         method='POST',
@@ -89,9 +87,9 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
     }
 
 
-async def test_v1_get_offer_valuation__price_estimator_None_response(http_client, pg, price_estimator_mock):
+async def test_v1_get_offer_valuation__price_estimator_None_response__error(http_client, pg, price_estimator_mock):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers_for_valuation.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     await price_estimator_mock.add_stub(
         method='POST',
@@ -127,9 +125,9 @@ async def test_v1_get_offer_valuation__price_estimator_None_response(http_client
     }
 
 
-async def test_v1_get_offer_valuation__price_estimator_500(http_client, pg, price_estimator_mock):
+async def test_v1_get_offer_valuation__price_estimator_500__error(http_client, pg, price_estimator_mock):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers_for_valuation.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     await price_estimator_mock.add_stub(
         method='POST',
@@ -161,9 +159,9 @@ async def test_v1_get_offer_valuation__price_estimator_500(http_client, pg, pric
     }
 
 
-async def test_v1_get_offer_valuation__wrong_offer_category(http_client, pg, price_estimator_mock):
+async def test_v1_get_offer_valuation__error_wrong_offer_category(http_client, pg, price_estimator_mock):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers_for_valuation.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     # act
     response = await http_client.request(
