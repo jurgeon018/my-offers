@@ -4,7 +4,7 @@ from cian_http.exceptions import ApiClientException, BadRequestException, Timeou
 from cian_web.exceptions import BrokenRulesException, Error
 
 from my_offers import entities, helpers
-from my_offers.enums.offer_action_status import OfferActionStatus
+from my_offers.enums.actions import OfferActionStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services import agencies_settings
 from my_offers.services.offers import load_object_model

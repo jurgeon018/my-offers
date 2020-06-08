@@ -122,6 +122,16 @@ urlpatterns = base_urls.urlpatterns + [
             base_handler_cls=PublicHandler,
         )
     ),
+    url(
+        r'/public/v1/actions/restore-offers/$',
+        get_handler(
+            service=actions.mass_offers_restore,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.OffersMassRestoreRequest,
+            response_schema=entities.OffersMassRestoreResponse,
+            base_handler_cls=PublicHandler,
+        )
+    ),
 
     # public API
     url(

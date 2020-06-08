@@ -81,6 +81,7 @@ async def test_v2_get_offers_public(mocker):
             can_raise=True,
         ),
         page_specific_info=PageSpecificInfo(),
+        status_type=None
     )
 
     expected_result = GetOffersV2Response(
@@ -188,6 +189,7 @@ async def test_v2_get_offers_public__offers_degraded__error(mocker):
             can_raise=True,
         ),
         page_specific_info=PageSpecificInfo(),
+        status_type=None
     )
 
     get_object_models_mock = mocker.patch(
@@ -342,7 +344,8 @@ async def test_v2_get_offer_views(mocker):
                         publish_features=[],
                         auction=None
                     ),
-                )
+                ),
+                status_type=None
             )
         ],
         {}

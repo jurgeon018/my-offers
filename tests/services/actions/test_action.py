@@ -4,7 +4,7 @@ from cian_test_utils import future
 from cian_web.exceptions import BrokenRulesException
 
 from my_offers import entities
-from my_offers.enums.offer_action_status import OfferActionStatus
+from my_offers.enums.actions import OfferActionStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.services.actions._action import OfferAction

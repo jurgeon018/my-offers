@@ -32,6 +32,8 @@ class Photo:
     """URL исходного изображения"""
     id: Optional[int] = None
     """ID фотографии"""
+    is_cian_layout: Optional[bool] = None
+    """Является ли фото планировкой Циан"""
     is_default: Optional[bool] = None
     """Является ли фото по-умолчанию"""
     mini_url: Optional[str] = None

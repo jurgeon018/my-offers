@@ -18,7 +18,13 @@ from my_offers.entities.get_offers import GetOffersPrivateRequest, GetOffersRequ
 from my_offers.entities.get_offers_ids_by_tab import GetOffersIdsByTabRequest, GetOffersIdsByTabResponse
 from my_offers.entities.moderation import ModerationOfferOffence
 from my_offers.entities.offer import Offer, ReindexOffer, ReindexOfferItem
-from my_offers.entities.offer_action import OfferActionRequest, OfferActionResponse
+from my_offers.entities.offer_action import (
+    OfferActionRequest,
+    OfferActionResponse,
+    OfferMassRestoreStatus,
+    OffersMassRestoreRequest,
+    OffersMassRestoreResponse,
+)
 from my_offers.entities.offer_import_error import OfferImportError
 from my_offers.entities.offers_creation_date import (
     OfferCreationDate,

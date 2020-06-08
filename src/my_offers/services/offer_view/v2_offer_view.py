@@ -15,6 +15,7 @@ from my_offers.services.offer_view.fields import (
 )
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
 from my_offers.services.offer_view.fields.statistics import get_statistics
+from my_offers.services.offer_view.fields.status import get_status_type
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -71,6 +72,7 @@ def v2_build_offer_view(
         # TODO: https://jira.cian.tech/browse/CD-76582
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=archived),
+        status_type=get_status_type(is_manual=manual, status=object_model.status),
         available_actions=get_available_actions(
             status=object_model.status,
             is_archived=archived,
