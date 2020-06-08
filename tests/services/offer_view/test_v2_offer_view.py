@@ -64,7 +64,8 @@ def test_build_offer_view(enrich_data_mock):
             ),
             not_active_info=None,
             declined_info=None
-        )
+        ),
+        status_type=None
     )
 
     # act

@@ -11,6 +11,8 @@ cian-codegen version: 1.4.1
 """
 from .address_info import AddressInfo
 from .agent_bonus import AgentBonus
+from .announcement_progress_dto import AnnouncementProgressDto
+from .announcements_actions_v1_get_job_status import AnnouncementsActionsV1GetJobStatus
 from .archive_announcement_v2_request import ArchiveAnnouncementV2Request
 from .auction import Auction
 from .utilities_terms import UtilitiesTerms
@@ -43,6 +45,7 @@ from .location_path import LocationPath
 from .railway_info import RailwayInfo
 from .underground_info import UndergroundInfo
 from .geo import Geo
+from .get_job_status_response import GetJobStatusResponse
 from .home_owner import HomeOwner
 from .kp import Kp
 from .land import Land
@@ -58,4 +61,6 @@ from .publish_terms import PublishTerms
 from .video import Video
 from .water import Water
 from .object_model import ObjectModel
+from .restore_request import RestoreRequest
+from .restore_response import RestoreResponse
 from .v1_get_announcement import V1GetAnnouncement

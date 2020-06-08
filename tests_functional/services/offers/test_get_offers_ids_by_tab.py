@@ -74,4 +74,4 @@ async def test_get_offers_ids_by_tab(pg, http_client, status_tab, with_subs, use
     )
 
     # assert
-    assert response.data['ids'] == expected
+    assert set(response.data['ids']) == set(expected)

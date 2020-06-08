@@ -1,4 +1,4 @@
-from cian_enum import NoFormat, StrEnum
+from cian_enum import StrEnum
 
 
 class OfferStatusTab(StrEnum):
@@ -15,3 +15,10 @@ class OfferStatusTab(StrEnum):
     """Архив"""
     deleted = 'deleted'
     """Удалено"""
+
+
+class OfferStatus(StrEnum):
+    xml = 'xml'
+    """Импортное объявление"""
+    draft = 'draft'
+    """Черновик"""
