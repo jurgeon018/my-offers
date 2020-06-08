@@ -14,6 +14,7 @@ from my_offers.services.valuation.fields.house_id import get_house_id
 from my_offers.services.valuation.fields.info_relative_market import get_info_relative_market
 from my_offers.services.valuation.fields.price import get_price_rur
 from my_offers.services.valuation.fields.rooms_count import get_rooms_count
+from my_offers.services.valuation.fields.valuation_filters import get_valuation_filters
 from my_offers.services.valuation.fields.valuation_option import get_valuation_options
 from my_offers.services.valuation.helpers.validation_offer import validate_offer
 
@@ -53,7 +54,7 @@ async def v1_get_offer_valuation_public(
                 flat_type=object_model.flat_type,
                 rooms_count=object_model.rooms_count
             ),
-            filters=None  # todo https://jira.cian.tech/browse/CD-82137
+            filters=get_valuation_filters(object_model)
         )
     )
     if response.degraded or not response.value.prices:

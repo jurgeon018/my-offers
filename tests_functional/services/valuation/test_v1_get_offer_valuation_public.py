@@ -53,7 +53,16 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
         'offerId': 153126220,
         'price': 54_000_000,
         'roomsCount': 4,
-        'filters': None,
+        'filters': [
+            {
+                'key': 'floor',
+                'value': ['floorOne']
+            },
+            {
+                'key': 'repairType',
+                'value': ['repairTypeEuro']
+            }
+        ],
     }
     assert response.data == {
         'valuationOptions': [
