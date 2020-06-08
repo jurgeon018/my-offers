@@ -1,3 +1,5 @@
+from functools import partial
+
 import click
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
@@ -8,6 +10,7 @@ from my_offers.helpers.schemas import get_entity_schema
 from my_offers.queue import consumers
 from my_offers.queue import entities as mq_entities
 from my_offers.queue import queues, schemas
+from my_offers.services import realty_resender
 from my_offers.services.offers import reindex_offers_command
 from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.web.urls import urlpatterns
@@ -131,3 +134,12 @@ def clear_deleted_offer_cron() -> None:
     """Крон удаления офферов"""
     io_loop = IOLoop.current()
     io_loop.run_sync(delete_offers_data)
+
+
+@cli.command()
+def resend_offers():
+    """ Дослать объявления из Realty через rabbitmq """
+
+    result = IOLoop.current().run_sync(partial(
+        realty_resender.resend_offers
+    ))

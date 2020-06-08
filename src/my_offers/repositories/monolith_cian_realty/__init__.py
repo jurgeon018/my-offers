@@ -8,4 +8,9 @@ To re-generate, run `codegen generate-client monolith-cian-realty`
 cian-codegen version: 1.4.1
 
 """
-from ._repo import api_announcement_set_deleted, api_geo_get_regions
+from ._repo import (
+    api_announcement_set_deleted,
+    api_geo_get_regions,
+    api_v1_resend_reporting_messages_get_job,
+    api_v1_resend_reporting_messages_resend_announcements,
+)

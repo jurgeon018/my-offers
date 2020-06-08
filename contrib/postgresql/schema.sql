@@ -160,21 +160,43 @@ create table offers_premoderations
     updated_at  timestamp with time zone
 );
 
-CREATE INDEX ON offers_premoderations(offer_id, removed);
+CREATE INDEX ON offers_premoderations (offer_id, removed);
 
-create table offers_duplicates(
-    offer_id bigint not null primary key,
-    group_id bigint not null,
+create table offers_duplicates
+(
+    offer_id   bigint                   not null primary key,
+    group_id   bigint                   not null,
     created_at timestamp with time zone not null,
     updated_at timestamp with time zone
 );
 
-create index on offers_duplicates(group_id);
+create index on offers_duplicates (group_id);
 
-create table offers_duplicate_notification(
-    offer_id bigint not null,
-    duplicate_offer_id bigint not null,
-    send_at timestamp with time zone not null
+create table offers_duplicate_notification
+(
+    offer_id           bigint                   not null,
+    duplicate_offer_id bigint                   not null,
+    send_at            timestamp with time zone not null
 );
 
-create unique index on offers_duplicate_notification(offer_id, duplicate_offer_id);
+create unique index on offers_duplicate_notification (offer_id, duplicate_offer_id);
+
+CREATE TABLE offers_resender_cron
+(
+    id          bigint,
+    session_id  text,
+    row_version bigint,
+    date        timestamp with time zone
+);
+
+CREATE TABLE offers_resender_stats
+(
+    session_id                   text,
+-- TODO:    who hand, cron
+    difference_for_requested     bigint[],
+    difference_for_my_offers     bigint[],
+    difference_for_realty        bigint[],
+    difference_for_rows_versions bigint[],
+    date                         timestamp with time zone
+
+);

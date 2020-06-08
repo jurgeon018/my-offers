@@ -2,44 +2,39 @@ definitions:
   Common.Models.CanUpdateEditDate.CanUpdateEditdateResult:
     description: Возможность обновления даты публикации для объявления.
     properties:
-      canUpdateEditDate:
-        description: Возможность обновления даты публикации.
-        type: boolean
-      id:
-        description: Id объявления.
-        format: int32
-        type: integer
+      canUpdateEditDate: {description: Возможность обновления даты публикации., type: boolean}
+      id: {description: Id объявления., format: int32, type: integer}
     type: object
   Common.Models.UpdateEditDate.UpdateEditdateRequest:
     description: Запрос на обновление даты публикации для списка объявлений.
     properties:
       ids:
         description: Список id объявлений для обновления даты публикации.
-        items:
-          format: int32
-          type: integer
+        items: {format: int32, type: integer}
         type: array
     type: object
   Common.Models.UpdateEditDate.UpdateEditdateResult:
     description: Результат обновления даты публикации объявления.
     properties:
-      id:
-        description: Id объявления.
-        format: int32
-        type: integer
+      id: {description: Id объявления., format: int32, type: integer}
       result:
         description: Результат обновления даты публикации.
-        enum:
-        - success
-        - error
+        enum: [success, error]
         type: string
         x-error: ''
         x-success: ''
     type: object
+  WebApi.Models.Announcements.GetChangedIdsResponse:
+    description: Ответ на запрос на получение изменившихся объявлений
+    properties:
+      offersIds:
+        description: Ids объявлений
+        items: {format: int32, type: integer}
+        type: array
+    required: [offersIds]
+    type: object
 host: master.announcements.dev3.cian.ru
-info:
-  title: csharp.announcements
-  version: v1
+info: {title: csharp.announcements, version: v1}
 paths:
   /v1/can-update-editdate/:
     get:
@@ -50,53 +45,54 @@ paths:
         description: Список id объявлений для получения возможности обновления даты
           публикации.
         in: query
-        items:
-          format: int32
-          type: integer
+        items: {format: int32, type: integer}
         name: ids
         required: false
         type: array
-      produces:
-      - application/json
-      - text/json
+      produces: [application/json, text/json]
       responses:
         '200':
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/Common.Models.CanUpdateEditDate.CanUpdateEditdateResult'
+            items: {$ref: '#/definitions/Common.Models.CanUpdateEditDate.CanUpdateEditdateResult'}
             type: array
       summary: Определяет возможность обновления даты публикации для всех переданных
         id объявлений.
-      tags:
-      - AnnouncementsEdit
+      tags: [AnnouncementsEdit]
+  /v1/get-changed-announcements-ids/:
+    get:
+      consumes: []
+      operationId: AnnouncementsWebApi_GetChangedIdsAsync
+      parameters:
+      - {description: RowVersion объявления, format: int64, in: query, name: rowVersion,
+        required: true, type: integer}
+      - {description: Количество, format: int32, in: query, name: top, required: false,
+        type: integer}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/WebApi.Models.Announcements.GetChangedIdsResponse'}
+      summary: Получение изменившихся объявлений
+      tags: [AnnouncementsWebApi]
   /v1/update-editdate/:
     post:
-      consumes:
-      - application/json
-      - text/json
-      - application/x-www-form-urlencoded
+      consumes: [application/json, text/json, application/x-www-form-urlencoded]
       operationId: AnnouncementsEdit_UpdateEditDate
       parameters:
       - description: Запрос со списком id объявлений для обновления времени публикации.
         in: body
         name: request
         required: true
-        schema:
-          $ref: '#/definitions/Common.Models.UpdateEditDate.UpdateEditdateRequest'
-      produces:
-      - application/json
-      - text/json
+        schema: {$ref: '#/definitions/Common.Models.UpdateEditDate.UpdateEditdateRequest'}
+      produces: [application/json, text/json]
       responses:
         '200':
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/Common.Models.UpdateEditDate.UpdateEditdateResult'
+            items: {$ref: '#/definitions/Common.Models.UpdateEditDate.UpdateEditdateResult'}
             type: array
       summary: Обновляет дату публикации для всех переданных id объявлений.
-      tags:
-      - AnnouncementsEdit
-schemes:
-- http
+      tags: [AnnouncementsEdit]
+schemes: [http]
 swagger: '2.0'
