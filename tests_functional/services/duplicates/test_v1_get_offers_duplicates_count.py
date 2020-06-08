@@ -1,11 +1,9 @@
-import os
-
-from tests_functional.utils import load_data
+from pathlib import Path
 
 
 async def test_v1_get_offers_duplicates_count(http_client, pg):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 
@@ -25,7 +23,7 @@ async def test_v1_get_offers_duplicates_count(http_client, pg):
 
 async def test_v1_get_offers_duplicates_count__emty__empty(http_client, pg):
     # arrange
-    await pg.execute(load_data(os.path.dirname(__file__) + '/../../', 'offers.sql'))
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 
