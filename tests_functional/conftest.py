@@ -14,10 +14,10 @@ async def start(runner, pg, queue_service, cassandra_service):
     await runner.start_background_python_command('process_announcement_consumer')
     await runner.start_background_python_command('update_offer_duplicates_consumer')
     await runner.start_background_python_command('new_offer_duplicate_notification_consumer')
-    await runner.start_background_python_command('process_announcement_from_elasticapi')
+    await runner.start_background_python_command('process_announcement_from_elasticapi_consumer')
 
     await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
-    await queue_service.wait_consumer('my-offers.process_announcement_from_elasticapi')
+    await queue_service.wait_consumer('my-offers.process_announcement_from_elasticapi_consumer')
 
 
 @pytest.fixture(name='pg', scope='session')

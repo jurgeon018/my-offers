@@ -41,7 +41,7 @@ register_consumer(
 
 # [announcements-temp] очередь догонки объявлений через `resend` API
 register_consumer(
-    command=cli.command('process_announcement_from_temp'),
+    command=cli.command('process_announcement_from_temp_consumer'),
     queue=queues.process_announcements_from_temp,
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
@@ -50,7 +50,7 @@ register_consumer(
 
 # [my-offers] очередь догонки объявлений через elasticapi на стороне my-offers
 register_consumer(
-    command=cli.command('process_announcement_from_elasticapi'),
+    command=cli.command('process_announcement_from_elasticapi_consumer'),
     queue=queues.process_announcements_from_elasticapi,
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
