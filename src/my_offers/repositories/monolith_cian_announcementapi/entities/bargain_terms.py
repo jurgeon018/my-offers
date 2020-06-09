@@ -125,7 +125,7 @@ class VatType(StrEnum):
 
 @dataclass
 class BargainTerms:
-    price: float
+    price: Optional[float]
     """Цена"""
     action_id: Optional[str] = None
     'Значение string.<br />\r\nВы можете добавить акцию, которая идет в вашем ЖК. Для этого вам необходимо обратиться к вашему курирующему менеджеру.\r\nId акции не ставится произвольно, вам его высылает менеджер.'
