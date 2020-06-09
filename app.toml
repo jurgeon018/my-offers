@@ -121,6 +121,3 @@ command = "reindex-offers"
 type = "manage"
 command = "resend-offers"
 
-[job.resend_offers.prod]
-cpu = 2048
-memory = 2048
