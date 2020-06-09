@@ -43,7 +43,7 @@ async def resend_offers(bulk_size: int) -> None:
 
     with new_operation_id() as operation_id:
         changed_offers = await monolith_cian_elasticapi.api_elastic_announcement_v3_get_changed_ids(
-            ApiElasticAnnouncementV3GetChangedIds(row_version=row_version)
+            ApiElasticAnnouncementV3GetChangedIds(row_version=row_version, top=settings.SYNC_OFFERS_TOP_CHANGED_CNT)
         )
         changed_offers_len = len(changed_offers)
         max_row_version = max(x.row_version for x in changed_offers) - settings.SYNC_OFFERS_ROW_VERSION_OFFSET
@@ -59,8 +59,8 @@ async def resend_offers(bulk_size: int) -> None:
             offers_diff = await _get_offers_diff(changed_offers=offers)  # type: ignore
             diffs.append(offers_diff)
 
-        need_update = chain(*[d.need_update for d in diffs])
-        not_found_in_db = chain(*[d.not_found for d in diffs])
+        need_update = list(chain(*[d.need_update for d in diffs]))
+        not_found_in_db = list(chain(*[d.not_found for d in diffs]))
         offers_ids = [
             *need_update,
             *not_found_in_db
@@ -79,8 +79,8 @@ async def resend_offers(bulk_size: int) -> None:
         await postgresql.save_cron_stats(
             operation_id=operation_id,
             founded_from_elastic=changed_offers_len,
-            need_update=sum(need_update),
-            not_found_in_db=sum(not_found_in_db),
+            need_update=len(need_update),
+            not_found_in_db=len(not_found_in_db),
             created_at=now
         )
 
@@ -107,7 +107,6 @@ def _get_row_versions_diff(
         my_offers: List[OfferRowVersion]
 ) -> Set[int]:
     my_offers_map = {o.offer_id: o for o in my_offers}
-
     found_difference = set()
 
     for realty_offer in realty_offers:

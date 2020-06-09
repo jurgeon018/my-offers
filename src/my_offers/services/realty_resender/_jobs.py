@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from datetime import datetime
-from typing import List, NamedTuple
+from typing import List
 
 import pytz
 from cian_json import json
@@ -26,16 +26,6 @@ from my_offers.repositories.monolith_cian_realty.entities.resend_announcements_m
 
 
 logger = logging.getLogger()
-
-
-class _OffersData(NamedTuple):
-    ids: List[int]
-    """Переданные объявления"""
-    success_ids: List[int]
-    """Объявления без ошибок"""
-    errors_ids: List[int]
-    """Объявсления с ошибками во время работы шедулера"""
-
 
 END_STATUSES = [
     JobStatus.finished,
@@ -77,7 +67,7 @@ async def run_resend_task(offers_ids: List[int]) -> None:
     for offers in grouper(offers_ids, settings.RESEND_TASK_BULK_SIZE):
         offers = list(filter(None, offers))  # type: ignore
         await asyncio.sleep(settings.RESEND_JOB_DELAY)
-        await _send_offers(offers_ids=offers)  # type: ignore
+        await _run_job(offers_ids=offers)  # type: ignore
 
         send_to_graphite(
             key='resend_job_realty_task.offers_count',
