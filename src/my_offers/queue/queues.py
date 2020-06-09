@@ -40,7 +40,7 @@ process_announcements_queue = Queue(
 )
 
 process_announcements_from_elasticapi = Queue(
-    name=get_modified_queue_name('process_announcement_from_elasticapi_consumer'),
+    name=get_modified_queue_name('process_announcement_from_elasticapi'),
     bindings=[
         QueueBinding(
             exchange=my_offers_exchange,
@@ -50,7 +50,7 @@ process_announcements_from_elasticapi = Queue(
 )
 
 process_announcements_from_temp = Queue(
-    name=get_modified_queue_name('process_announcement_from_temp_consumer'),
+    name=get_modified_queue_name('process_announcement_from_temp'),
     bindings=_get_bindings('announcements-temp', 'announcement_reporting', AnnouncementReportingV1RoutingKey),
 )
 
