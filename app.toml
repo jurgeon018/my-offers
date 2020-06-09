@@ -120,7 +120,7 @@ command = "reindex-offers"
 
 [job.resend_offers]
 type = "manage"
-command = "resend_offers"
+command = "resend-offers"
 
 [job.resend_offers.prod]
 cpu = 2048
