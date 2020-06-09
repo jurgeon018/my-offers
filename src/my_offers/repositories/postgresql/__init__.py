@@ -16,3 +16,4 @@ from my_offers.repositories.postgresql.offer import (
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error
 from my_offers.repositories.postgresql.offers_duplicates import delete_offers_duplicates, update_offers_duplicates
+from my_offers.repositories.postgresql.offers_resender import get_last_row_version_for_offers

@@ -186,7 +186,7 @@ CREATE TABLE offers_resender_cron
     id          bigint,
     session_id  text,
     row_version bigint,
-    date        timestamp with time zone
+    created_at  timestamp with time zone
 );
 
 CREATE TABLE offers_resender_stats

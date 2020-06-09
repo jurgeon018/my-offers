@@ -10,12 +10,12 @@ async def start(runner, pg, queue_service, cassandra_service):
 
     await pg.execute_scripts((Path('contrib') / 'postgresql' / 'migrations').glob('*.sql'))
 
-    await runner.start_background_python_web()
-    await runner.start_background_python_command('process_announcement_consumer')
-    await runner.start_background_python_command('update_offer_duplicates_consumer')
-    await runner.start_background_python_command('new_offer_duplicate_notification_consumer')
-
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
+    # await runner.start_background_python_web()
+    # await runner.start_background_python_command('process_announcement_consumer')
+    # await runner.start_background_python_command('update_offer_duplicates_consumer')
+    # await runner.start_background_python_command('new_offer_duplicate_notification_consumer')
+    #
+    # await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
 
 @pytest.fixture(name='pg', scope='session')
@@ -46,3 +46,14 @@ async def price_estimator_mock(http_mock_service):
 @pytest.fixture(scope='session')
 async def monolith_cian_announcementapi_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('monolith_cian_announcementapi')
+
+
+@pytest.fixture(scope='session')
+async def monolith_cian_ms_announcements_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('monolith-cian-ms-announcements'
+                                                         '')
+
+
+@pytest.fixture(scope='session')
+async def monolith_cian_elasticapi_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('monolith-cian-elasticapi')

@@ -137,9 +137,11 @@ def clear_deleted_offer_cron() -> None:
 
 
 @cli.command()
-def resend_offers():
-    """ Дослать объявления из Realty через rabbitmq """
+@click.option('--bulk-size', type=int, default=50)
+def resend_offers(bulk_size: int):
+    """ Дослать объявления из Realty """
 
     result = IOLoop.current().run_sync(partial(
-        realty_resender.resend_offers
+        realty_resender.resend_offers,
+        bulk_size=bulk_size
     ))

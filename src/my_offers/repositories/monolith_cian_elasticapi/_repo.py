@@ -22,7 +22,6 @@ get_api_elastic_announcement_get = _api.make_client(
     handle_http_exceptions=True,
     request_schema=entities.GetApiElasticAnnouncementGet,
     response_schema=entities.ElasticResultIElasticAnnouncementElasticAnnouncementError,
-    default_timeout=5 # TODO: remove
 )
 post_api_elastic_announcement_get = _api.make_client(
     path='/api/elastic/announcement/get/',

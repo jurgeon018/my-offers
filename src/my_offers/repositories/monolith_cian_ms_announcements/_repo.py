@@ -29,6 +29,7 @@ v1_get_changed_announcements_ids = _api.make_client(
     handle_http_exceptions=True,
     request_schema=entities.V1GetChangedAnnouncementsIds,
     response_schema=entities.GetChangedIdsResponse,
+    default_timeout=60
 )
 v1_update_editdate = _api.make_client(
     path='/v1/update-editdate/',
