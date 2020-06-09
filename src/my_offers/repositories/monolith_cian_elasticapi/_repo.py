@@ -16,6 +16,13 @@ from . import entities
 
 
 _api = Api(microservice_name='monolith-cian-elasticapi')
+api_elastic_announcement_v3_get_changed_ids = _api.make_client(
+    path='/api/elastic/announcement/v3/get-changed-ids/',
+    method='GET',
+    handle_http_exceptions=True,
+    request_schema=entities.ApiElasticAnnouncementV3GetChangedIds,
+    response_schema=List[entities.ElasticAnnouncementRowVersion],
+)
 get_api_elastic_announcement_get = _api.make_client(
     path='/api/elastic/announcement/get/',
     method='GET',

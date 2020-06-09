@@ -86,3 +86,9 @@ class OfferDuplicateV1RoutingKey(StrEnum):
     __value_format__ = NoFormat
 
     new = 'my-offers.offer-duplicate.v1.new'
+
+
+class OffersResendV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    new = 'my-offers.resend.v1.new'

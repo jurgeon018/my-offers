@@ -19,7 +19,7 @@ def test__get_bindings(mocker):
     ]
 
     # act
-    result = _get_bindings('zzz', enums.DealType)
+    result = _get_bindings('announcements', 'zzz', enums.DealType)
 
     # assert
     assert result[0].routing_key == expected[0].routing_key

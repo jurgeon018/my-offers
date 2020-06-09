@@ -183,20 +183,17 @@ create unique index on offers_duplicate_notification (offer_id, duplicate_offer_
 
 CREATE TABLE offers_resender_cron
 (
-    id          bigint,
-    session_id  text,
-    row_version bigint,
-    created_at  timestamp with time zone
+    id           serial primary key,
+    operation_id text                     not null,
+    row_version  bigint                   not null,
+    created_at   timestamp with time zone not null
 );
 
 CREATE TABLE offers_resender_stats
 (
-    session_id                   text,
--- TODO:    who hand, cron
-    difference_for_requested     bigint[],
-    difference_for_my_offers     bigint[],
-    difference_for_realty        bigint[],
-    difference_for_rows_versions bigint[],
-    date                         timestamp with time zone
-
+    operation_id         text                     not null,
+    founded_from_elastic bigint                   not null,
+    need_update          bigint                   not null,
+    not_found_in_db      bigint                   not null,
+    created_at           timestamp with time zone not null
 );

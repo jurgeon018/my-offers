@@ -8,8 +8,11 @@ To re-generate, run `codegen generate-client monolith-cian-elasticapi`
 cian-codegen version: 1.4.1
 
 """
-from ._repo import (
-    api_elastic_announcement_v3_get_changed_ids,
-    get_api_elastic_announcement_get,
-    post_api_elastic_announcement_get,
-)
+from dataclasses import dataclass
+from typing import Optional
+
+
+@dataclass
+class ApiElasticAnnouncementV3GetChangedIds:
+    row_version: int
+    top: Optional[int] = None

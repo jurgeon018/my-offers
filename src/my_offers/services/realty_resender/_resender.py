@@ -1,50 +1,24 @@
 import asyncio
 import logging
-from dataclasses import dataclass, field
-from typing import List, Set, NamedTuple, Iterable
+from datetime import datetime
+from itertools import chain
+from typing import Iterable, List, NamedTuple, Set
 
+import pytz
 from cian_core.context import new_operation_id
 from more_itertools import grouper
-from itertools import zip_longest, chain
 from simple_settings import settings
 
 from my_offers.entities import OfferRowVersion
-from my_offers.repositories import (
-    monolith_cian_elasticapi,
-    monolith_cian_ms_announcements,
-    monolith_cian_realty,
-    postgresql,
-)
+from my_offers.repositories import monolith_cian_elasticapi, postgresql
 from my_offers.repositories.monolith_cian_elasticapi.entities import (
-    ElasticResultIElasticAnnouncementElasticAnnouncementError as ElasticApiGetResponse, IElasticAnnouncement,
+    ApiElasticAnnouncementV3GetChangedIds,
+    ElasticAnnouncementRowVersion,
 )
-from my_offers.repositories.monolith_cian_elasticapi.entities import GetApiElasticAnnouncementGet
-from my_offers.repositories.monolith_cian_ms_announcements.entities import V1GetChangedAnnouncementsIds
-from my_offers.repositories.monolith_cian_realty.entities import (
-    ApiV1ResendReportingMessagesGetJob,
-    GetResendMessagesJobResponse,
-    ResendAnnouncementsMessagesRequest,
-)
-from my_offers.repositories.monolith_cian_realty.entities.get_resend_messages_job_response import State as JobStatus
-from my_offers.repositories.monolith_cian_realty.entities.resend_announcements_messages_request import BroadcastType
+from my_offers.services.realty_resender._jobs import run_resend_task, save_offers_from_elasticapi
 
 
 logger = logging.getLogger()
-
-END_STATUSES = [
-    JobStatus.finished,
-    JobStatus.finished_with_errors,
-]
-
-
-@dataclass
-class OfferData:
-    ids: List[int] = field(default_factory=list)
-    """Переданные объявления"""
-    success_ids: List[int] = field(default_factory=list)
-    """Объявления без ошибок"""
-    errors_ids: List[int] = field(default_factory=list)
-    """Объявсления с ошибками во время работы шедулера"""
 
 
 class _OffersDiff(NamedTuple):
@@ -52,84 +26,86 @@ class _OffersDiff(NamedTuple):
     """Объявления не найденный в my=offers, но притутсвующие в Realty.Objects"""
     need_update: Iterable[int]
     """Объявления для которых не совпадают версии строк"""
-    max_row_version: int
-    """Максималынй row_version для текущей пачки объявлений"""
 
-
-# первый раз запускаем с row_version = 0 (взять стартовый row_version до (полу)года)
-# второй запуск будет с max(row_version) от текущей БД
-# взять стартовый row_version до (полу)года
-# row_version = 31749573344  # database
-
-# session - uuid
-# stats: check consistency, запросы к elasticapi (можем нагнуть эластик)
-
-# 1. /v1/get-published-announcement-ids/
-#   [http://swagger.dev3.cian.ru/?url=http://master.announcements.dev3.cian.ru/swagger/]
-# 2. [v3] http://swagger.dev3.cian.ru/?url=http://master.monolith-cian-elasticapi.dev3.cian.ru/swagger/
-
-# Get changed offers from row_version: 29910061494, count: 4164615
 
 async def resend_offers(bulk_size: int) -> None:
-    # TODO: max(row_version) - 1000 от changed_announcements_ids
+    """ Догоняет и проверяет сходимость объявлений в Realty.Objects и my-offers.offers.
 
-    row_version = 29910061494  # await postgresql.get_last_row_version_for_offers()
+        Алгоритм имеет два режима работы:
+            1. Через шедулер шарпа (делаем запрос на получение объявок через очередь)
+            2. Через апи щарпа на стороне my-offers (поход за объявлением в elasticapi и сохранение через очередь)
+
+        Каждый прогон вычисляет max(row_version) от всех полученных объявлений.
+        Следующий прогон начнется с последнего сохранненого row_version.
+    """
+    bulk_size = settings.SYNC_OFFERS_GET_DIFF_BULK_SIZE or bulk_size
+    row_version = await postgresql.get_last_row_version()
 
     with new_operation_id() as operation_id:
-        changed_offers_ids: List[int] = (await monolith_cian_ms_announcements.v1_get_changed_announcements_ids(
-            V1GetChangedAnnouncementsIds(row_version=row_version)
-        )).offers_ids
-        changed_offers_ids_len = len(changed_offers_ids)
+        changed_offers = await monolith_cian_elasticapi.api_elastic_announcement_v3_get_changed_ids(
+            ApiElasticAnnouncementV3GetChangedIds(row_version=row_version)
+        )
+        changed_offers_len = len(changed_offers)
+        max_row_version = max(x.row_version for x in changed_offers) - settings.SYNC_OFFERS_ROW_VERSION_OFFSET
 
-        logger.info('Get changed offers from row_version: %s, count: %s', row_version, changed_offers_ids_len)
-        for offers_ids in grouper(changed_offers_ids, bulk_size):
-            offers_ids = list(filter(None, offers_ids))
+        logger.info('Get changed offers from row_version: %s, count: %s', row_version, changed_offers_len)
+        logger.info('Max row version found: %s', max_row_version)
 
-            logger.info('Get offers diff, progress %s/%s', len(offers_ids), changed_offers_ids_len)
+        diffs = []
+        for offers in grouper(changed_offers, bulk_size):
+            offers = list(filter(None, offers))  # type: ignore
+            logger.info('Get offers diff, progress %s/%s', len(offers), changed_offers_len)
+            await asyncio.sleep(settings.SYNC_OFFERS_GET_DIFF_DELAY)
+            offers_diff = await _get_offers_diff(changed_offers=offers)  # type: ignore
+            diffs.append(offers_diff)
 
-            await asyncio.sleep(settings.GET_DIFF_DELAY)
-            offers_diff = await _get_offers_diff(offers_ids=offers_ids)
+        need_update = chain(*[d.need_update for d in diffs])
+        not_found_in_db = chain(*[d.not_found for d in diffs])
+        offers_ids = [
+            *need_update,
+            *not_found_in_db
+        ]
+        if settings.SYNC_OFFERS_ALLOW_RUN_TASK:
+            await run_resend_task(offers_ids=offers_ids)
+        else:
+            await save_offers_from_elasticapi(offers_ids=offers_ids)
 
-            break
+        now = datetime.now(tz=pytz.utc)
+        await postgresql.save_cron_session(
+            operation_id=operation_id,
+            row_version=max_row_version,
+            created_at=now
+        )
+        await postgresql.save_cron_stats(
+            operation_id=operation_id,
+            founded_from_elastic=changed_offers_len,
+            need_update=sum(need_update),
+            not_found_in_db=sum(not_found_in_db),
+            created_at=now
+        )
 
 
-async def _get_offers_diff(offers_ids: List[int]) -> _OffersDiff:
-    realty_offers: ElasticApiGetResponse = await monolith_cian_elasticapi.get_api_elastic_announcement_get(
-        GetApiElasticAnnouncementGet(ids=offers_ids)
-    )
-
-    my_offers_ids = await postgresql.get_offers_row_version(offer_ids=offers_ids)
-    realty_offers_set = {o.realty_object_id for o in realty_offers.success}
+async def _get_offers_diff(changed_offers: List[ElasticAnnouncementRowVersion]) -> _OffersDiff:
+    realty_offers_set = set(o.realty_object_id for o in changed_offers)
+    my_offers_ids = await postgresql.get_offers_row_version(offer_ids=realty_offers_set)
     my_offers_set = {o.offer_id for o in my_offers_ids}
 
-    # realty_offers - offers_ids
-    # ElasticAnnouncementError(code='announcement_not_found', message='Объявление от тестового пользователя')
-    difference_for_requested = {
-        err.realty_object_id for err in realty_offers.errors
-        if err.code == 'announcement_not_found' and 'тестового пользователя' not in err.message
-    }
-
-    # realty_offers - my_offers_ids
+    # объявления, которых нет в my_offers
     difference_for_my_offers = realty_offers_set - my_offers_set
 
-    # realty_offers versions != my_offers versions
-    difference_for_rows_versions = _get_row_versions_diff(realty_offers.success, my_offers_ids)
-
-    print(
-        f'difference_for_requested: {difference_for_requested}',
-        f'difference_for_my_offers: {difference_for_my_offers}',
-        f'difference_for_rows_versions: {difference_for_rows_versions}',
-
-        sep='\n'
-    )
+    # объявления, которые отстали по версиям от Realty.Objects
+    difference_for_rows_versions = _get_row_versions_diff(changed_offers, my_offers_ids)
 
     return _OffersDiff(
         not_found=difference_for_my_offers,
         need_update=difference_for_rows_versions,
-        max_row_version=1111  # TODO
+    )
 
 
-def _get_row_versions_diff(realty_offers: List[IElasticAnnouncement], my_offers: List[OfferRowVersion]) -> Set[int]:
+def _get_row_versions_diff(
+        realty_offers: List[ElasticAnnouncementRowVersion],
+        my_offers: List[OfferRowVersion]
+) -> Set[int]:
     my_offers_map = {o.offer_id: o for o in my_offers}
 
     found_difference = set()
@@ -145,44 +121,3 @@ def _get_row_versions_diff(realty_offers: List[IElasticAnnouncement], my_offers:
             found_difference.add(offer_id)
 
     return found_difference
-
-
-async def _upsert_offers(offers_ids: List[int]): ...
-
-
-async def _run_job(offers_ids: List[int]):
-    job_id: int = (await monolith_cian_realty.api_v1_resend_reporting_messages_resend_announcements(
-        ResendAnnouncementsMessagesRequest(
-            ids=offers_ids,
-            comment='',
-            broadcast_type=BroadcastType(settings.RESEND_JOB_BROADCAST_TYPE)
-        )
-    )).id
-
-    while True:
-        await asyncio.sleep(settings.RESEND_JOB_REFRESH)
-        job: GetResendMessagesJobResponse = await monolith_cian_realty.api_v1_resend_reporting_messages_get_job(
-            ApiV1ResendReportingMessagesGetJob(id=job_id)
-        )
-
-        if job.state in END_STATUSES:
-            #     "data": {
-            #         "ids": [
-            #             165489453,
-            #             165489452,
-            #             165489451,
-            #             265489450
-            #         ],
-            #         "successIds": [
-            #             165489453,
-            #             165489452,
-            #             165489451
-            #         ],
-            #         "errorIds": [
-            #             265489450
-            #         ]
-            #     }
-            if job.data:
-                pass
-
-            break

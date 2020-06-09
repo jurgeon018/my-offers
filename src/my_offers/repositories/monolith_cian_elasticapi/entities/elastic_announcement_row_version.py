@@ -9,13 +9,10 @@ cian-codegen version: 1.4.1
 
 """
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Optional
 
 
 @dataclass
-class IElasticAnnouncement:
-    activity_date: Optional[datetime] = None
+class ElasticAnnouncementRowVersion:
     realty_object_id: Optional[int] = None
     row_version: Optional[int] = None
-    object_model: Optional[str] = None

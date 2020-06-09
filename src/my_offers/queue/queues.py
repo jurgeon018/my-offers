@@ -10,21 +10,23 @@ from my_offers.queue.routing_keys import (
     AnnouncementReportingV1RoutingKey,
     ModerationOfferOffenceReportingV1RoutingKey,
     OfferDuplicateV1RoutingKey,
+    OffersResendV1RoutingKey,
     ServiceContractsReportingV1RoutingKey,
     UnloadOrderReportingV1RoutingKey,
 )
 
 
+my_offers_exchange = Exchange('my-offers')
 billing_exchange = Exchange('billing')
 
 
-def _get_bindings(prefix: str, enum: Type[StrEnum]) -> List[QueueBinding]:
+def _get_bindings(exchange: str, prefix: str, enum: Type[StrEnum]) -> List[QueueBinding]:
     result: List[QueueBinding] = []
     values: List[StrEnum] = list(enum)
     for item in values:
         result.append(
             QueueBinding(
-                exchange=Exchange('announcements'),
+                exchange=Exchange(exchange),
                 routing_key='{}.{}'.format(prefix, item.value),
             )
         )
@@ -34,7 +36,22 @@ def _get_bindings(prefix: str, enum: Type[StrEnum]) -> List[QueueBinding]:
 
 process_announcements_queue = Queue(
     name=get_modified_queue_name('process_announcement_v2'),
-    bindings=_get_bindings('announcement_reporting', AnnouncementReportingV1RoutingKey),
+    bindings=_get_bindings('announcements', 'announcement_reporting', AnnouncementReportingV1RoutingKey),
+)
+
+process_announcements_from_elasticapi = Queue(
+    name=get_modified_queue_name('process_announcement_from_elasticapi'),
+    bindings=[
+        QueueBinding(
+            exchange=my_offers_exchange,
+            routing_key=OffersResendV1RoutingKey.new.value,
+        )
+    ],
+)
+
+process_announcements_from_temp = Queue(
+    name=get_modified_queue_name('process_announcement_from_temp'),
+    bindings=_get_bindings('announcements-temp', 'announcement_reporting', AnnouncementReportingV1RoutingKey),
 )
 
 save_announcement_contract_queue = Queue(
@@ -129,7 +146,7 @@ new_offer_duplicate_notification_queue = Queue(
     name=get_modified_queue_name('new_offer_duplicate_notification'),
     bindings=[
         QueueBinding(
-            exchange=Exchange('my-offers'),
+            exchange=my_offers_exchange,
             routing_key=OfferDuplicateV1RoutingKey.new.value,
         ),
     ],

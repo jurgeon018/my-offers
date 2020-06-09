@@ -39,6 +39,25 @@ register_consumer(
     dead_queue_enabled=True,
 )
 
+# [announcements-temp] очередь догонки объявлений через `resend` API
+register_consumer(
+    command=cli.command('process_announcement_from_temp'),
+    queue=queues.process_announcements_from_temp,
+    callback=consumers.process_announcement_callback,
+    schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
+    dead_queue_enabled=True,
+)
+
+# [my-offers] очередь догонки объявлений через elasticapi на стороне my-offers
+register_consumer(
+    command=cli.command('process_announcement_from_elasticapi'),
+    queue=queues.process_announcements_from_elasticapi,
+    callback=consumers.process_announcement_callback,
+    schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
+    dead_queue_enabled=True,
+)
+
+
 # [billing] сохраняет/обновляет контракты по объявлению
 register_consumer(
     command=cli.command('save_announcement_contract_consumer'),
@@ -141,7 +160,7 @@ def clear_deleted_offer_cron() -> None:
 def resend_offers(bulk_size: int):
     """ Дослать объявления из Realty """
 
-    result = IOLoop.current().run_sync(partial(
+    IOLoop.current().run_sync(partial(
         realty_resender.resend_offers,
         bulk_size=bulk_size
     ))

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "cd117e1a64e89d3d9455abca4495f1b4f614bcce3c881d388291aa9ac965a74f"
+            "sha256": "95881d5d7e19cb636411eeb3a74077f67a32c3f86f2192a0cf293779de5b6519"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -185,6 +185,7 @@
             "extras": [
                 "cache",
                 "cassandra",
+                "graphite",
                 "kafka",
                 "postgres",
                 "rabbitmq_consumer_cli"
@@ -353,6 +354,12 @@
                 "sha256:f4d6f1e5479c376a5b7bdc62795d736d8c1b2a754f366a2ad2816e46e946e22e"
             ],
             "version": "==2.1.0"
+        },
+        "graphyte": {
+            "hashes": [
+                "sha256:ab1fd5a0061cd8f412d379273e36dfb4b80906c4c804052cfe3aa1ed416dc072"
+            ],
+            "version": "==1.6.0"
         },
         "hiredis": {
             "hashes": [
@@ -900,10 +907,10 @@
         },
         "astroid": {
             "hashes": [
-                "sha256:4c17cea3e592c21b6e222f673868961bad77e1f985cb1694ed077475a89229c1",
-                "sha256:d8506842a3faf734b81599c8b98dcc423de863adcc1999248480b18bd31a0f38"
+                "sha256:2f4078c2a41bf377eea06d71c9d2ba4eb8f6b1af2135bec27bbbb7d8f12bb703",
+                "sha256:bc58d83eb610252fd8de6363e39d4f1d0619c894b0ed24603b881c02e64c7386"
             ],
-            "version": "==2.4.1"
+            "version": "==2.4.2"
         },
         "async-generator": {
             "hashes": [
@@ -1019,6 +1026,7 @@
             "extras": [
                 "cache",
                 "cassandra",
+                "graphite",
                 "kafka",
                 "postgres",
                 "rabbitmq_consumer_cli"
@@ -1047,16 +1055,17 @@
             "extras": [
                 "cache",
                 "cassandra",
+                "graphite",
                 "kafka",
                 "postgres",
                 "python",
                 "rabbitmq"
             ],
             "hashes": [
-                "sha256:1656e80eb09fb638e31fb75dda65da4ab2fa895a4ede6be0ebbb6577ec91cd2d",
-                "sha256:32c5d4c9998f01516ee388023149f003638c44e17089a70b1b2e7f869abd1e48"
+                "sha256:360240795321f1b0193020acedbf390a00c0239e63da6a9ff45a38fb1b7cf288",
+                "sha256:7e4548281e3986bb81b0c16e72ed35c2963c3d3e61970e4c4500a6f62d6635f5"
             ],
-            "version": "==0.37.1"
+            "version": "==0.38.0"
         },
         "cian-helpers": {
             "hashes": [
@@ -1628,10 +1637,10 @@
         },
         "pylint": {
             "hashes": [
-                "sha256:b95e31850f3af163c2283ed40432f053acbc8fc6eba6a069cb518d9dbf71848c",
-                "sha256:dd506acce0427e9e08fb87274bcaa953d38b50a58207170dbf5b36cf3e16957b"
+                "sha256:7dd78437f2d8d019717dbf287772d0b2dbdfd13fc016aa7faa08d67bccc46adc",
+                "sha256:d0ece7d223fe422088b0e8f13fa0a1e8eb745ebffcb8ed53d3e95394b6101a1c"
             ],
-            "version": "==2.5.2"
+            "version": "==2.5.3"
         },
         "pylint-quotes": {
             "hashes": [
@@ -1988,10 +1997,10 @@
         },
         "wcwidth": {
             "hashes": [
-                "sha256:980fbf4f3c196c0f329cdcd1e84c554d6a211f18e252e525a0cf4223154a41d6",
-                "sha256:edbc2b718b4db6cdf393eefe3a420183947d6aa312505ce6754516f458ff8830"
+                "sha256:79375666b9954d4a1a10739315816324c3e73110af9d0e102d906fdb0aec009f",
+                "sha256:8c6b5b6ee1360b842645f336d9e5d68c55817c26d3050f46b235ef2bc650e48f"
             ],
-            "version": "==0.2.3"
+            "version": "==0.2.4"
         },
         "webob": {
             "hashes": [

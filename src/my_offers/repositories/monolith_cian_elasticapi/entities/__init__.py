@@ -9,7 +9,9 @@ To re-generate, run `codegen generate-client monolith-cian-elasticapi`
 cian-codegen version: 1.4.1
 
 """
+from .api_elastic_announcement_v3_get_changed_ids import ApiElasticAnnouncementV3GetChangedIds
 from .elastic_announcement_error import ElasticAnnouncementError
+from .elastic_announcement_row_version import ElasticAnnouncementRowVersion
 from .i_elastic_announcement import IElasticAnnouncement
 from .elastic_result_i_elastic_announcement_elastic_announcement_error import (
     ElasticResultIElasticAnnouncementElasticAnnouncementError,

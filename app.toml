@@ -101,3 +101,11 @@ memory = 128
 [job.reindex_offers]
 type = "manage"
 command = "reindex-offers"
+
+[job.resend_offers]
+type = "manage"
+command = "resend_offers"
+
+[job.resend_offers.prod]
+cpu = 2048
+memory = 2048
