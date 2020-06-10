@@ -1,6 +1,7 @@
 import pytest
 
 from my_offers.entities.get_offers import ActiveInfo, DeclinedInfo, Moderation, NotActiveInfo, PageSpecificInfo
+from my_offers.enums.not_active_status import NotActiveStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
@@ -43,7 +44,11 @@ from tests_api.cian.my_offers.entities.filter import StatusTab
             StatusTab.not_active,
             PageSpecificInfo(
                 active_info=None,
-                not_active_info=NotActiveInfo(status='Черновик', message=None),
+                not_active_info=NotActiveInfo(
+                    status='Черновик',
+                    message=None,
+                    status_type=NotActiveStatus.discontinued
+                ),
                 declined_info=None
             ),
         ),
