@@ -110,7 +110,7 @@ type = "consumer"
 command = "process_announcement_from_elasticapi_consumer"
 
 [job.process_announcement_from_elasticapi_consumer.prod]
-instances = 0
+instances = 5
 
 [job.reindex_offers]
 type = "manage"
