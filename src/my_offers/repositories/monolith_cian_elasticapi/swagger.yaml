@@ -1,0 +1,83 @@
+definitions:
+  Web.ElasticAPI.Elastic.Announcements.Models.ElasticAnnouncementError:
+    properties:
+      code: {type: string}
+      message: {type: string}
+      realtyObjectId: {format: int32, type: integer}
+    type: object
+  Web.ElasticAPI.Elastic.Announcements.Models.ElasticAnnouncementRowVersion:
+    properties:
+      realtyObjectId: {format: int32, type: integer}
+      rowVersion: {format: int64, type: integer}
+    type: object
+  Web.ElasticAPI.Elastic.Announcements.Models.IElasticAnnouncement:
+    properties:
+      activityDate: {format: date-time, type: string}
+      realtyObjectId: {format: int32, type: integer}
+      rowVersion: {format: int64, type: integer}
+    type: object
+  ? Web.ElasticAPI.Elastic.Common.Models.ElasticResult[Web.ElasticAPI.Elastic.Announcements.Models.IElasticAnnouncement,Web.ElasticAPI.Elastic.Announcements.Models.ElasticAnnouncementError]
+  : description: Модель для ответов для Elastic с множественными результатами.
+    properties:
+      errors:
+        description: Список ошибок.
+        items: {$ref: '#/definitions/Web.ElasticAPI.Elastic.Announcements.Models.ElasticAnnouncementError'}
+        type: array
+      success:
+        description: Список успешных ответов.
+        items: {$ref: '#/definitions/Web.ElasticAPI.Elastic.Announcements.Models.IElasticAnnouncement'}
+        type: array
+    type: object
+host: master.monolith-cian-elasticapi.dev3.cian.ru
+info: {title: monolith-cian-elasticapi, version: v1}
+paths:
+  /api/elastic/announcement/get/:
+    get:
+      consumes: []
+      operationId: ElasticAnnouncement_GetAsync
+      parameters:
+      - collectionFormat: multi
+        in: query
+        items: {format: int32, type: integer}
+        name: ids
+        required: true
+        type: array
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/Web.ElasticAPI.Elastic.Common.Models.ElasticResult[Web.ElasticAPI.Elastic.Announcements.Models.IElasticAnnouncement,Web.ElasticAPI.Elastic.Announcements.Models.ElasticAnnouncementError]'}
+      tags: [ElasticAnnouncement]
+    post:
+      consumes: [application/json, text/json, application/x-www-form-urlencoded]
+      operationId: ElasticAnnouncement_GetFromPostAsync
+      parameters:
+      - in: body
+        name: ids
+        required: true
+        schema:
+          items: {format: int32, type: integer}
+          type: array
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/Web.ElasticAPI.Elastic.Common.Models.ElasticResult[Web.ElasticAPI.Elastic.Announcements.Models.IElasticAnnouncement,Web.ElasticAPI.Elastic.Announcements.Models.ElasticAnnouncementError]'}
+      tags: [ElasticAnnouncement]
+  /api/elastic/announcement/v3/get-changed-ids/:
+    get:
+      consumes: []
+      operationId: ElasticAnnouncement_GetChangedIdsV3
+      parameters:
+      - {format: int64, in: query, name: rowVersion, required: true, type: integer}
+      - {format: int32, in: query, name: top, required: false, type: integer}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema:
+            items: {$ref: '#/definitions/Web.ElasticAPI.Elastic.Announcements.Models.ElasticAnnouncementRowVersion'}
+            type: array
+      tags: [ElasticAnnouncement]
+schemes: [http]
+swagger: '2.0'

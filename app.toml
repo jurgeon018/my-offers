@@ -98,6 +98,25 @@ type = "consumer"
 command = "clear-deleted-offer-cron"
 memory = 128
 
+[job.process_announcement_from_temp_consumer]
+type = "consumer"
+command = "process_announcement_from_temp_consumer"
+
+[job.process_announcement_from_temp_consumer.prod]
+instances = 3
+
+[job.process_announcement_from_elasticapi_consumer]
+type = "consumer"
+command = "process_announcement_from_elasticapi_consumer"
+
+[job.process_announcement_from_elasticapi_consumer.prod]
+instances = 0
+
 [job.reindex_offers]
 type = "manage"
 command = "reindex-offers"
+
+[job.resend_offers]
+type = "manage"
+command = "resend-offers"
+

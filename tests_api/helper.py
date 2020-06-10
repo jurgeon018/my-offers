@@ -11,6 +11,6 @@ from automation_helpers.base import BaseTest
 from pytest import mark
 
 
-@mark.my_offers
+@mark.my_offers_exchange
 class MyOffersHelper(BaseTest):
     pass

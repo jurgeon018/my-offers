@@ -5,19 +5,13 @@ definitions:
       \ который можно описать вокруг объекта. \r\nОбласть задается двумя геоточками,\
       \ координаты которых содержатся в тегах lowerCorner и upperCorner."
     properties:
-      lowerCorner:
-        $ref: '#/definitions/Geo.GeoApi.Models.BoundedByCorner'
-      upperCorner:
-        $ref: '#/definitions/Geo.GeoApi.Models.BoundedByCorner'
+      lowerCorner: {$ref: '#/definitions/Geo.GeoApi.Models.BoundedByCorner'}
+      upperCorner: {$ref: '#/definitions/Geo.GeoApi.Models.BoundedByCorner'}
     type: object
   Geo.GeoApi.Models.BoundedByCorner:
     properties:
-      lat:
-        format: double
-        type: number
-      lng:
-        format: double
-        type: number
+      lat: {format: double, type: number}
+      lng: {format: double, type: number}
     type: object
   RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus:
     description: "    Запрос для изменения статуса объявления.<br />\r\n    Если заполнено\
@@ -28,106 +22,141 @@ definitions:
       \ поле {RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus.RealtyObjectId}."
     properties:
       announcementType:
-        enum:
-        - Flat
-        - Flat2
-        - Suburbian
-        - Office
+        enum: [Flat, Flat2, Suburbian, Office]
         type: string
         x-Flat: Городская недвижимость - Квартира аренда
         x-Flat2: Городская недвижимость - Квартира продажа
         x-Office: Коммерческая недвижимость - офисы и прочее
         x-Suburbian: Загородная недвижимость и земля
-      cianAnnouncementId:
-        description: Id объявления в Циане.
-        format: int32
-        type: integer
-      cianUserId:
-        format: int32
-        type: integer
-      realtyObjectId:
-        description: Realty Id объявления.
-        format: int32
-        type: integer
+      cianAnnouncementId: {description: Id объявления в Циане., format: int32, type: integer}
+      cianUserId: {format: int32, type: integer}
+      realtyObjectId: {description: Realty Id объявления., format: int32, type: integer}
     type: object
   RealtyDmir.App.Geo.Models.GetRegionsResponse:
     properties:
-      boundedBy:
-        $ref: '#/definitions/Geo.GeoApi.Models.BoundedBy'
-        description: "Bounding-box региона\r\nЕсли у нас в БД у региона нет контуров,\
-          \ то boundedBy будет null"
-      displayName:
+      boundedBy: {$ref: '#/definitions/Geo.GeoApi.Models.BoundedBy', description: "Bounding-box\
+          \ региона\r\nЕсли у нас в БД у региона нет контуров, то boundedBy будет\
+          \ null"}
+      displayName: {type: string}
+      fullName: {type: string}
+      hasDistricts: {type: boolean}
+      hasHighway: {type: boolean}
+      hasMetro: {type: boolean}
+      id: {format: int32, type: integer}
+      lat: {format: double, type: number}
+      lng: {format: double, type: number}
+      mainTownId: {format: int32, type: integer}
+      name: {type: string}
+      timeZone: {description: TimeZone региона., format: int32, type: integer}
+    type: object
+  RealtyDmir.App.ResendReportingMessages.Models.GetResendMessagesJobResponse:
+    description: Ответ на получение статуса задачи на переотправку сообщений
+    properties:
+      broadcastType:
+        description: Тип отправки
+        enum: [temp, all]
         type: string
-      fullName:
+        x-all: Рассылать в боевой Exchange
+        x-temp: Отсылать в темповый Exchange
+      comment: {description: Комментарий, type: string}
+      creationDate: {description: Дата создания, format: date-time, type: string}
+      data: {description: Данные, type: object}
+      state:
+        description: Состояние
+        enum: [active, finished, finishedWithErrors]
         type: string
-      hasDistricts:
-        type: boolean
-      hasHighway:
-        type: boolean
-      hasMetro:
-        type: boolean
-      id:
-        format: int32
-        type: integer
-      lat:
-        format: double
-        type: number
-      lng:
-        format: double
-        type: number
-      mainTownId:
-        format: int32
-        type: integer
-      name:
+        x-active: Активный
+        x-finished: Завершенный
+        x-finishedWithErrors: Завершенный с ошибками
+      type:
+        description: Тип
+        enum: [announcement, users, agent]
         type: string
-      timeZone:
-        description: TimeZone региона.
-        format: int32
-        type: integer
+        x-agent: Агент
+        x-announcement: Объявление
+        x-users: Пользователь
+    type: object
+  RealtyDmir.App.ResendReportingMessages.Models.ResendAnnouncementsMessagesRequest:
+    description: Запрос на переотправку сообщений по объявлениям
+    properties:
+      broadcastType:
+        description: Тип отправки
+        enum: [temp, all]
+        type: string
+        x-all: Рассылать в боевой Exchange
+        x-temp: Отсылать в темповый Exchange
+      comment: {description: Комментарий, type: string}
+      ids:
+        description: Список id объявлений
+        items: {format: int32, type: integer}
+        type: array
+    required: [ids, comment, broadcastType]
+    type: object
+  RealtyDmir.App.ResendReportingMessages.Models.ResendReportingMessagesResponse:
+    description: Ответ на запрос переотправки сообщений
+    properties:
+      id: {description: Id задачи, format: int32, type: integer}
+    required: [id]
     type: object
 host: master.monolith-cian-realty.dev3.cian.ru
-info:
-  title: monolith-cian-realty
-  version: v1
+info: {title: monolith-cian-realty, version: v1}
 paths:
   /api/announcement/set-deleted/:
     post:
-      consumes:
-      - application/json
-      - text/json
-      - application/x-www-form-urlencoded
+      consumes: [application/json, text/json, application/x-www-form-urlencoded]
       operationId: AnnouncementWebApi_AnnouncementSetDeleted
       parameters:
       - description: ''
         in: body
         name: request
         required: true
-        schema:
-          $ref: '#/definitions/RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus'
+        schema: {$ref: '#/definitions/RealtyDmir.App.Announcements.Models.AnnouncementChangeStatus'}
       produces: []
       responses:
-        '204':
-          description: No Content
+        '204': {description: No Content}
       summary: "Меняет статус объявления на \"{Core.Data.Enums.Status.Deleted}\".<br\
         \ />\r\nМожет работать с объявлениями в архиве."
-      tags:
-      - AnnouncementWebApi
+      tags: [AnnouncementWebApi]
   /api/geo/get-regions/:
     get:
       consumes: []
+      deprecated: true
       operationId: GeoCoderWebApi_GetRegions
-      produces:
-      - application/json
-      - text/json
+      produces: [application/json, text/json]
       responses:
         '200':
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/RealtyDmir.App.Geo.Models.GetRegionsResponse'
+            items: {$ref: '#/definitions/RealtyDmir.App.Geo.Models.GetRegionsResponse'}
             type: array
-      tags:
-      - GeoCoderWebApi
-schemes:
-- http
+      tags: [GeoCoderWebApi]
+  /api/v1/resend-reporting-messages/get-job/:
+    get:
+      consumes: []
+      operationId: ResendReportingMessagesApi_GetJob
+      parameters:
+      - {description: Id задачи, format: int32, in: query, name: id, required: true,
+        type: integer}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/RealtyDmir.App.ResendReportingMessages.Models.GetResendMessagesJobResponse'}
+      tags: [ResendReportingMessagesApi]
+  /api/v1/resend-reporting-messages/resend-announcements/:
+    post:
+      consumes: [application/json, text/json, application/x-www-form-urlencoded]
+      operationId: ResendReportingMessagesApi_ResendAnnouncementsReportingMessages
+      parameters:
+      - in: body
+        name: request
+        required: true
+        schema: {$ref: '#/definitions/RealtyDmir.App.ResendReportingMessages.Models.ResendAnnouncementsMessagesRequest'}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/RealtyDmir.App.ResendReportingMessages.Models.ResendReportingMessagesResponse'}
+      tags: [ResendReportingMessagesApi]
+schemes: [http]
 swagger: '2.0'

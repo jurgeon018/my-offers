@@ -23,6 +23,13 @@ v1_can_update_editdate = _api.make_client(
     request_schema=entities.V1CanUpdateEditdate,
     response_schema=List[entities.CanUpdateEditdateResult],
 )
+v1_get_changed_announcements_ids = _api.make_client(
+    path='/v1/get-changed-announcements-ids/',
+    method='GET',
+    handle_http_exceptions=True,
+    request_schema=entities.V1GetChangedAnnouncementsIds,
+    response_schema=entities.GetChangedIdsResponse,
+)
 v1_update_editdate = _api.make_client(
     path='/v1/update-editdate/',
     method='POST',

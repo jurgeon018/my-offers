@@ -1,3 +1,5 @@
+from functools import partial
+
 import click
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
@@ -8,6 +10,7 @@ from my_offers.helpers.schemas import get_entity_schema
 from my_offers.queue import consumers
 from my_offers.queue import entities as mq_entities
 from my_offers.queue import queues, schemas
+from my_offers.services import realty_resender
 from my_offers.services.offers import reindex_offers_command
 from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.web.urls import urlpatterns
@@ -35,6 +38,25 @@ register_consumer(
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
     dead_queue_enabled=True,
 )
+
+# [announcements-temp] очередь догонки объявлений через `resend` API
+register_consumer(
+    command=cli.command('process_announcement_from_temp_consumer'),
+    queue=queues.process_announcements_from_temp,
+    callback=consumers.process_announcement_callback,
+    schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
+    dead_queue_enabled=True,
+)
+
+# [my-offers] очередь догонки объявлений через elasticapi на стороне my-offers
+register_consumer(
+    command=cli.command('process_announcement_from_elasticapi_consumer'),
+    queue=queues.process_announcements_from_elasticapi,
+    callback=consumers.process_announcement_callback,
+    schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
+    dead_queue_enabled=True,
+)
+
 
 # [billing] сохраняет/обновляет контракты по объявлению
 register_consumer(
@@ -131,3 +153,14 @@ def clear_deleted_offer_cron() -> None:
     """Крон удаления офферов"""
     io_loop = IOLoop.current()
     io_loop.run_sync(delete_offers_data)
+
+
+@cli.command()
+@click.option('--bulk-size', type=int, default=50)
+def resend_offers(bulk_size: int):
+    """ Дослать объявления из Realty """
+
+    IOLoop.current().run_sync(partial(
+        realty_resender.resend_offers,
+        bulk_size=bulk_size
+    ))

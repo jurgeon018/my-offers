@@ -28,3 +28,17 @@ api_geo_get_regions = _api.make_client(
     handle_http_exceptions=True,
     response_schema=List[entities.GetRegionsResponse],
 )
+api_v1_resend_reporting_messages_get_job = _api.make_client(
+    path='/api/v1/resend-reporting-messages/get-job/',
+    method='GET',
+    handle_http_exceptions=True,
+    request_schema=entities.ApiV1ResendReportingMessagesGetJob,
+    response_schema=entities.GetResendMessagesJobResponse,
+)
+api_v1_resend_reporting_messages_resend_announcements = _api.make_client(
+    path='/api/v1/resend-reporting-messages/resend-announcements/',
+    method='POST',
+    handle_http_exceptions=True,
+    request_schema=entities.ResendAnnouncementsMessagesRequest,
+    response_schema=entities.ResendReportingMessagesResponse,
+)
