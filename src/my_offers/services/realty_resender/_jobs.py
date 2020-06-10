@@ -94,7 +94,7 @@ async def _run_job(offers_ids: List[int]) -> None:
     job_id: int = (await monolith_cian_realty.api_v1_resend_reporting_messages_resend_announcements(
         ResendAnnouncementsMessagesRequest(
             ids=offers_ids,
-            comment='test',
+            comment='my_offers_resend_job',
             broadcast_type=BroadcastType(settings.RESEND_JOB_BROADCAST_TYPE)
         )
     )).id
