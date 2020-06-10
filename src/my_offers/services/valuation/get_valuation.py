@@ -14,9 +14,9 @@ from my_offers.services.valuation.fields.house_id import get_house_id
 from my_offers.services.valuation.fields.info_relative_market import get_info_relative_market
 from my_offers.services.valuation.fields.price import get_price_rur
 from my_offers.services.valuation.fields.rooms_count import get_rooms_count
-from my_offers.services.valuation.fields.valuation_filters import get_valuation_filters
-from my_offers.services.valuation.fields.valuation_option import get_valuation_options
 from my_offers.services.valuation.helpers.validation_offer import validate_offer
+from my_offers.services.valuation.helpers.valuation_filters import get_valuation_filters
+from my_offers.services.valuation.helpers.valuation_option import get_valuation_options
 
 
 async def v1_get_offer_valuation_public(
@@ -69,9 +69,11 @@ async def v1_get_offer_valuation_public(
     return entities.GetOfferValuationResponse(
         valuation_options=get_valuation_options(
             deal_type=deal_type,
+            publish_terms=object_model.publish_terms,
             valuation_response=response.value,
         ),
         info_relative_market=get_info_relative_market(
+            deal_type=deal_type,
             market_price=response.value.prices.price,
             real_price=price_in_rur,
         ),

@@ -15,7 +15,7 @@ class ValuationOption:
     value: str
     """Значение"""
     description: str
-    """Заголовок"""
+    """Описание"""
 
 
 @dataclass
