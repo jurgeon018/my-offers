@@ -12,6 +12,7 @@ EUR_RUR = 80
 
 
 def get_price_rur(
+        *,
         price: Optional[float],
         currency: Currency,
 ) -> int:

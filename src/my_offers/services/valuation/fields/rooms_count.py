@@ -14,6 +14,7 @@ OFFER_ROOMS_VALUATION_ROOMS = {
 
 
 def get_rooms_count(
+        *,
         category: Category,
         flat_type: FlatType,
         rooms_count: int
