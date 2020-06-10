@@ -116,7 +116,7 @@ async def test_v2_get_offers_public__duplicates_found__200(http_client, pg, auct
             }
         ],
         'page': {'pageCount': 1, 'count': 2, 'canLoadMore': False},
-        'tabs': [{'title': 'Все', 'type': 'all', 'count': 2}, {'title': 'Дубли', 'type': 'duplicate', 'count': 2}]
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 2}]
     }
 
     request = await auction_stub.get_request()
