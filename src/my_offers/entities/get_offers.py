@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 from my_offers import enums
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.offer_view_model import OfferViewModelV2
+from my_offers.enums.not_active_status import NotActiveStatus
 
 
 @dataclass
@@ -81,6 +82,8 @@ class NotActiveInfo:
     """Статус для неактивных"""
     message: Optional[str] = None
     """Доп. сообщение"""
+    status_type: Optional[NotActiveStatus] = None
+    """Тип статуса"""
 
 
 @dataclass
