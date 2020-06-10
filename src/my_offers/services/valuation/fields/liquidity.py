@@ -3,7 +3,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term 
 from my_offers.repositories.price_estimator.entities import LiquidityPeriodsRange, LiquidityTermRange
 
 
-PROMOUTION_SERVICES = [
+PROMOTION_SERVICES = [
     Services.premium,
     Services.top3,
     Services.auction,
@@ -11,14 +11,15 @@ PROMOUTION_SERVICES = [
 ]
 
 
-def get_liquidity_diapason(
+def get_liquidity_range(
+        *,
         publish_terms: PublishTerms,
         periods_range: LiquidityPeriodsRange,
 ) -> str:
     for term in publish_terms.terms:
         for service in term.services:
 
-            if service in PROMOUTION_SERVICES:
+            if service in PROMOTION_SERVICES:
                 return make_liquidity_str(period=periods_range.period_with_promotion)
     return make_liquidity_str(period=periods_range.regular_period)
 

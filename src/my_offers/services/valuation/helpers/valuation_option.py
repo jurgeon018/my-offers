@@ -4,17 +4,18 @@ from my_offers.entities import ValuationOption
 from my_offers.enums import DealType
 from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerms
 from my_offers.repositories.price_estimator.entities import GetEstimationForRealtorsResponse
-from my_offers.services.valuation.fields.liquidity import get_liquidity_diapason
-from my_offers.services.valuation.helpers.pretty_price import get_pretty_market_price, get_pretty_price_diapason
+from my_offers.services.valuation.fields.liquidity import get_liquidity_range
+from my_offers.services.valuation.helpers.pretty_price import get_pretty_market_price, get_pretty_price_range
 
 
 def get_valuation_options(
+        *,
         deal_type: DealType,
         publish_terms: PublishTerms,
         valuation_response: GetEstimationForRealtorsResponse
 ) -> List[ValuationOption]:
-    market_price_str = get_pretty_market_price(valuation_response.prices.price)
-    price_diapason = get_pretty_price_diapason(
+    market_price_str = get_pretty_market_price(price=valuation_response.prices.price)
+    price_diapason = get_pretty_price_range(
         price_min=valuation_response.prices.price_min,
         price_max=valuation_response.prices.price_max,
     )
@@ -30,7 +31,7 @@ def get_valuation_options(
             ),
         ]
 
-    liquidity_diapason = get_liquidity_diapason(
+    liquidity_diapason = get_liquidity_range(
         publish_terms=publish_terms,
         periods_range=valuation_response.liquidity_periods,
     )

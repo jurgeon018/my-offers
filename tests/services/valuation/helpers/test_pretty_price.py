@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.services.valuation.helpers.pretty_price import get_pretty_market_price, get_pretty_price_diapason
+from my_offers.services.valuation.helpers.pretty_price import get_pretty_market_price, get_pretty_price_range
 
 
 @pytest.mark.parametrize(
@@ -38,9 +38,9 @@ def test_get_pretty_market_price(mocker, price, need_million_str, expected):
 
     )
 )
-def test_get_pretty_price_diapason(mocker, price_min, price_max, expected):
+def test_get_pretty_price_range(mocker, price_min, price_max, expected):
     # arrange & act
-    result = get_pretty_price_diapason(
+    result = get_pretty_price_range(
         price_min=price_min,
         price_max=price_max,
     )

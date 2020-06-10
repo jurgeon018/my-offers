@@ -5,6 +5,7 @@ from my_offers.repositories.price_estimator.entities.estimation_user_chosen_filt
 
 
 def get_living_conditions(
+        *,
         children_allowed: bool,
         pets_allowed: bool,
 ) -> Optional[EstimationUserChosenFilters]:

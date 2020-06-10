@@ -40,6 +40,7 @@ MORE_MARKET = {
 
 
 def get_info_relative_market(
+        *,
         deal_type: DealType,
         market_price: int,
         real_price: int,

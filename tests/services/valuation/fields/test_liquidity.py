@@ -3,7 +3,7 @@ import pytest
 from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerm, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.price_estimator.entities import LiquidityPeriodsRange, LiquidityTermRange
-from my_offers.services.valuation.fields.liquidity import get_liquidity_diapason
+from my_offers.services.valuation.fields.liquidity import get_liquidity_range
 
 
 @pytest.mark.parametrize(
@@ -43,9 +43,9 @@ from my_offers.services.valuation.fields.liquidity import get_liquidity_diapason
         ),
     )
 )
-def test_get_liquidity_diapason(mocker, publish_terms, periods_range, expected):
+def test_get_liquidity_range(mocker, publish_terms, periods_range, expected):
     # arrange & act
-    result = get_liquidity_diapason(
+    result = get_liquidity_range(
         publish_terms=publish_terms,
         periods_range=periods_range,
     )
