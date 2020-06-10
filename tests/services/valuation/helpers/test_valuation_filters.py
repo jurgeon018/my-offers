@@ -4,7 +4,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Bargai
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, RepairType
 from my_offers.repositories.price_estimator.entities import EstimationUserChosenFilters
 from my_offers.repositories.price_estimator.entities.estimation_user_chosen_filters import Key, Value
-from my_offers.services.valuation.fields.valuation_filters import get_valuation_filters
+from my_offers.services.valuation.helpers.valuation_filters import get_valuation_filters
 
 
 @pytest.mark.parametrize(
