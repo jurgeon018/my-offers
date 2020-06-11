@@ -35,10 +35,17 @@ END_STATUSES = [
 
 async def save_offers_from_elasticapi(offers_ids: List[int]) -> None:
     """ Получить объялвения из elasticapi и отправить в очередь сохрарнения объявлений. """
+    offers_ids_cnt = len(offers_ids)
+    logger.info('Run task, count: %s', offers_ids_cnt)
+
+    offers_progress = 0
     for offers in grouper(offers_ids, settings.ELASTIC_API_BULK_SIZE):
         offers = list(filter(None, offers))  # type: ignore
-        await asyncio.sleep(settings.ELASTIC_API_DELAY)
+        offers_progress += len(offers)
+
+        logger.info('Run task, progress %s/%s', offers_progress, offers_ids_cnt)
         await _send_offers(offers_ids=offers)  # type: ignore
+        await asyncio.sleep(settings.ELASTIC_API_DELAY)
 
         send_to_graphite(
             key='resend_job_elasticapi.offers_count',
@@ -64,10 +71,17 @@ async def _send_offers(offers_ids: List[int]) -> None:
 
 async def run_resend_task(offers_ids: List[int]) -> None:
     """ Запросить досылку объялвений из Realty.Objects. Новые события придут в `announcements-temp`. """
+    offers_ids_cnt = len(offers_ids)
+    logger.info('Run task, count: %s', offers_ids_cnt)
+
+    offers_progress = 0
     for offers in grouper(offers_ids, settings.RESEND_TASK_BULK_SIZE):
         offers = list(filter(None, offers))  # type: ignore
-        await asyncio.sleep(settings.RESEND_JOB_DELAY)
+        offers_progress += len(offers)
+
+        logger.info('Run task, progress %s/%s', offers_progress, offers_ids_cnt)
         await _run_job(offers_ids=offers)  # type: ignore
+        await asyncio.sleep(settings.RESEND_JOB_DELAY)
 
         send_to_graphite(
             key='resend_job_realty_task.offers_count',
@@ -80,7 +94,7 @@ async def _run_job(offers_ids: List[int]) -> None:
     job_id: int = (await monolith_cian_realty.api_v1_resend_reporting_messages_resend_announcements(
         ResendAnnouncementsMessagesRequest(
             ids=offers_ids,
-            comment='',
+            comment='my_offers_resend_job',
             broadcast_type=BroadcastType(settings.RESEND_JOB_BROADCAST_TYPE)
         )
     )).id

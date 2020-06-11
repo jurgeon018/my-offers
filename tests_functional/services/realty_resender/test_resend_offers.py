@@ -265,7 +265,7 @@ async def test_resend_offers__use_realty_task(
         path='/api/v1/resend-reporting-messages/resend-announcements/',
         body={
             'ids': [offer_id_1, offer_id_2],
-            'comment': '',
+            'comment': 'my_offers_resend_job',
             'broadcastType': 'temp'
         },
         response=MockResponse(body={'id': job_id})
