@@ -52,9 +52,12 @@ async def resend_offers(bulk_size: int) -> None:
         logger.info('Max row version found: %s', max_row_version)
 
         diffs = []
+        offers_progress = 0
         for offers in grouper(changed_offers, bulk_size):
             offers = list(filter(None, offers))  # type: ignore
-            logger.info('Get offers diff, progress %s/%s', len(offers), changed_offers_len)
+            offers_progress += len(offers)
+
+            logger.info('Get offers diff, progress %s/%s', offers_progress, changed_offers_len)
             await asyncio.sleep(settings.SYNC_OFFERS_GET_DIFF_DELAY)
             offers_diff = await _get_offers_diff(changed_offers=offers)  # type: ignore
             diffs.append(offers_diff)
