@@ -72,6 +72,29 @@ from my_offers.services.valuation.helpers.valuation_option import get_valuation_
                 )
             ]
         ),
+        (
+            DealType.sale,
+            PublishTerms(terms=[PublishTerm(services=[Services.paid, Services.auction])]),
+            GetEstimationForRealtorsResponse(
+                liquidity_periods=None,
+                prices=PriceWithRange(
+                    price=1_000_000,
+                    price_min=900_000,
+                    price_max=1_100_000,
+                ),
+                url='http://www.master.dev3.cian.ru/kalkulator-nedvizhimosti/'
+            ),
+            [
+                ValuationOption(
+                    value='1 млн\xa0₽',
+                    description='Рыночная\xa0цена\xa0этой\xa0квартиры'
+                ),
+                ValuationOption(
+                    value='0,9—1,1\xa0млн\xa0₽',
+                    description='Диапазон\xa0цены'
+                ),
+            ]
+        ),
 
 
     )
