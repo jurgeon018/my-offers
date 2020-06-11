@@ -29,7 +29,7 @@ async def _get_currencies() -> Dict[Currency, float]:
     """Получение курсов валют из монолита шарпа"""
     currencies = await api_currencies()
     result = {
-        currency.currency_code: Currency(currency.rate.lower())
+        Currency(currency.currency_code.lower()): currency.rate
         for currency in currencies
     }
 
