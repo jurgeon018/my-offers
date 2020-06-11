@@ -1,16 +1,18 @@
-from typing import List, Optional
+from typing import Optional
 
 from cian_web.exceptions import BrokenRulesException, Error
 
-from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo
+from my_offers.repositories.monolith_cian_announcementapi.entities import Geo
 
 
 def get_house_id(
-        address: List[AddressInfo]
+        geo: Geo
 ) -> Optional[int]:
-    for detail in address:
-        if detail.type.is_house:
-            return detail.id
+    if geo:
+        for detail in geo.address:
+            if detail.type.is_house:
+                return detail.id
+
     raise BrokenRulesException([
         Error(
             message='offer object_model does not have house in address, '

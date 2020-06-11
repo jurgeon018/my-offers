@@ -1,14 +1,22 @@
-from typing import List
+from cian_web.exceptions import BrokenRulesException, Error
 
-from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo
+from my_offers.repositories.monolith_cian_announcementapi.entities import Geo
 
 
 def get_address(
-        address: List[AddressInfo]
+        geo: Geo
 ) -> str:
-    address_full_names = []
-    for detail in address:
-        if detail.full_name:
-            address_full_names.append(detail.full_name)
+    if geo:
+        address_full_names = []
+        for detail in geo.address:
+            if detail.full_name:
+                address_full_names.append(detail.full_name)
+        return ', '.join(address_full_names)
 
-    return ', '.join(address_full_names)
+    raise BrokenRulesException([
+        Error(
+            message='broken offer object_model, has not right geo address',
+            code='valuation_not_poossible',
+            key='geo.address'
+        )
+    ])

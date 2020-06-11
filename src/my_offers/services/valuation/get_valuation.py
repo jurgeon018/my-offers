@@ -43,10 +43,10 @@ async def v1_get_offer_valuation_public(
 
     response = await v1_get_estimation_for_realtors_degradation_handler(
         GetEstimationForRealtorsRequest(
-            address=get_address(object_model.geo.address),
+            address=get_address(object_model.geo),
             area=object_model.total_area,
             deal_type=deal_type,
-            house_id=get_house_id(object_model.geo.address),
+            house_id=get_house_id(object_model.geo),
             offer_id=offer_id,
             price=price_in_rur,
             rooms_count=get_rooms_count(
