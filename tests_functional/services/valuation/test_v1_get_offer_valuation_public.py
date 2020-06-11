@@ -161,14 +161,14 @@ async def test_v1_get_offer_valuation__price_estimator_500__error(http_client, p
             {
                 'key': 'noValuation',
                 'code': 'didNotGetValuation',
-                'message': 'did not get valuation for offer from mcs price-estimator'
+                'message': 'mcs price-estimator degraded response'
             }
         ],
-        'message': 'did not get valuation for offer from mcs price-estimator'
+        'message': 'mcs price-estimator degraded response'
     }
 
 
-async def test_v1_get_offer_valuation__error_wrong_offer_category(http_client, pg, price_estimator_mock):
+async def test_v1_get_offer_valuation__error_wrong_offer_category(http_client, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
