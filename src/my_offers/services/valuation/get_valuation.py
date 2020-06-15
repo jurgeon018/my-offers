@@ -36,6 +36,15 @@ async def v1_get_offer_valuation_public(
             )
         ])
 
+    if not object_model.geo:
+        raise BrokenRulesException([
+            Error(
+                message='broken offer object_model, has not right geo address',
+                code='valuation_not_poossible',
+                key='geo'
+            )
+        ])
+
     if not object_model.bargain_terms.price:
         raise BrokenRulesException([
             Error(
