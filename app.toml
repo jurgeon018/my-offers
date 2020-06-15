@@ -120,6 +120,11 @@ command = "reindex-offers"
 type = "manage"
 command = "resend-offers"
 
+[job.resend_offers_cron]
+type = "cron"
+command = "resend-offers"
+cron = "0 */2 * * *"
+
 [job.resend_offers.prod]
 cpu = 4096
 memory = 2048
