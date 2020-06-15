@@ -9,10 +9,10 @@ cian-codegen version: 1.4.3
 
 """
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 
 @dataclass
-class BoundedByCorner:
-    lat: Optional[float] = None
-    lng: Optional[float] = None
+class ApiCurrencies:
+    date: Optional[datetime] = None
