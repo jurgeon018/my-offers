@@ -329,3 +329,29 @@ async def test_v1_get_offer_valuation__null_price__error(http_client, pg):
         ],
         'message': 'offer object_model has uncorrect price valuation can not be provided without price',
     }
+
+
+async def test_v1_get_offer_valuation__no_geo_in_object_model__error(http_client, pg, price_estimator_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-valuation/',
+        json={'offerId': 161953060},
+        headers={'X-Real-UserId': 12678364},
+        expected_status=400,
+    )
+
+    # assert
+    assert response.data == {
+        'errors': [
+            {
+                'key': 'geo',
+                'code': 'valuationNotPoossible',
+                'message': 'broken offer object_model, has not right geo address'
+            }
+        ],
+        'message': 'broken offer object_model, has not right geo address'
+    }
