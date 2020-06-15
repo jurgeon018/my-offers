@@ -55,17 +55,17 @@ async def v1_get_offer_valuation_public(
             )
         ])
 
-    price_in_rur = get_price_rur(
+    price_in_rur = await get_price_rur(
         price=object_model.bargain_terms.price,
         currency=object_model.bargain_terms.currency
     )
 
     response = await v1_get_estimation_for_realtors_degradation_handler(
         GetEstimationForRealtorsRequest(
-            address=get_address(object_model.geo),
+            address=get_address(object_model.geo.address),
             area=object_model.total_area,
             deal_type=deal_type,
-            house_id=get_house_id(object_model.geo),
+            house_id=get_house_id(object_model.geo.address),
             offer_id=offer_id,
             price=price_in_rur,
             rooms_count=get_rooms_count(

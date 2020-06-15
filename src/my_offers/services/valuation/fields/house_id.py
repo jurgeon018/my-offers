@@ -1,14 +1,14 @@
-from typing import Optional
+from typing import List, Optional
 
 from cian_web.exceptions import BrokenRulesException, Error
 
-from my_offers.repositories.monolith_cian_announcementapi.entities import Geo
+from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo
 
 
 def get_house_id(
-        geo: Geo
+        address: List[AddressInfo]
 ) -> Optional[int]:
-    for detail in geo.address:
+    for detail in address:
         if detail.type.is_house:
             return detail.id
 
