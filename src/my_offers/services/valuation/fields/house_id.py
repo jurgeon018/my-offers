@@ -8,10 +8,9 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Geo
 def get_house_id(
         geo: Geo
 ) -> Optional[int]:
-    if geo:
-        for detail in geo.address:
-            if detail.type.is_house:
-                return detail.id
+    for detail in geo.address:
+        if detail.type.is_house:
+            return detail.id
 
     raise BrokenRulesException([
         Error(

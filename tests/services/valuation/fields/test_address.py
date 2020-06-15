@@ -1,6 +1,3 @@
-import pytest
-from cian_web.exceptions import BrokenRulesException
-
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, Geo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
 from my_offers.services.valuation.fields.address import get_address
@@ -43,14 +40,3 @@ def test_get_address():
 
     # assert
     assert result == 'Москва, Никитский бульвар, 12'
-
-
-def test_get_address_raise_exeption():
-    # arrange & act
-    with pytest.raises(BrokenRulesException) as exc_info:
-        get_address(geo=None)
-
-    # assert
-    assert exc_info.value.errors[0].key == 'geo.address'
-    assert exc_info.value.errors[0].code == 'valuation_not_poossible'
-    assert exc_info.value.errors[0].message == 'broken offer object_model, has not right geo address'

@@ -48,7 +48,6 @@ def test_get_house_id():
 @pytest.mark.parametrize(
     'geo',
     (
-        None,
         Geo(
             address=[
                 AddressInfo(
