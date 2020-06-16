@@ -25,7 +25,7 @@ from my_offers.repositories.monolith_cian_realty.entities.get_resend_messages_jo
 from my_offers.repositories.monolith_cian_realty.entities.resend_announcements_messages_request import BroadcastType
 
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 END_STATUSES = [
     JobStatus.finished,
@@ -38,20 +38,25 @@ async def save_offers_from_elasticapi(offers_ids: List[int]) -> None:
     offers_ids_cnt = len(offers_ids)
     logger.info('Run task, count: %s', offers_ids_cnt)
 
+    errors = []
     offers_progress = 0
     for offers in grouper(offers_ids, settings.ELASTIC_API_BULK_SIZE):
         offers = list(filter(None, offers))  # type: ignore
         offers_progress += len(offers)
 
         logger.info('Run task, progress %s/%s', offers_progress, offers_ids_cnt)
-        await _send_offers(offers_ids=offers)  # type: ignore
+        try:
+            await _send_offers(offers_ids=offers)  # type: ignore
+        except:
+            errors.extend(offers)
         await asyncio.sleep(settings.ELASTIC_API_DELAY)
 
-        send_to_graphite(
-            key='resend_job_elasticapi.offers_count',
-            value=len(offers),
-            timestamp=datetime.now(pytz.utc).timestamp()
-        )
+    logger.info('errors: %s', errors)
+        # send_to_graphite(
+        #     key='resend_job_elasticapi.offers_count',
+        #     value=len(offers),
+        #     timestamp=datetime.now(pytz.utc).timestamp()
+        # )
 
 
 async def _send_offers(offers_ids: List[int]) -> None:
@@ -63,7 +68,15 @@ async def _send_offers(offers_ids: List[int]) -> None:
 
     if realty_offers.success:
         offers = [ro.object_model for ro in realty_offers.success]
-        models = [object_model_mapper.map_from(json.loads(object_model)) for object_model in offers]
+
+        models = []
+        for object_model in offers:
+            d = json.loads(object_model)
+            d['rowVersion'] = 0
+            models.append(object_model_mapper.map_from(d))
+
+        # old_unpublished_invalid_announcement --> deleted
+        # announcement_not_found ??
 
         for object_model in models:
             await announcement_models_producer(object_model)
