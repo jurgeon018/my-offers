@@ -35,9 +35,9 @@ logger = logging.getLogger(__name__)
 
 
 async def load_enrich_data(
-    *,
-    params: EnrichParams,
-    status_tab: enums.OfferStatusTab
+        *,
+        params: EnrichParams,
+        status_tab: enums.OfferStatusTab
 ) -> Tuple[EnrichData, Dict[str, bool]]:
     offer_ids = params.get_offer_ids()
     if not offer_ids:
