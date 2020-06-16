@@ -133,7 +133,7 @@ async def test_load_enrich_data__active_tab(mocker):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_can_update_edit_dates_mock.assert_called_once_with([11], False)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_auctions_mock.assert_called_once_with([11])
@@ -226,7 +226,7 @@ async def test_load_enrich_data__not_active_tab(mocker):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_can_update_edit_dates_mock.assert_called_once_with([11], False)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_premoderation_info_mock.assert_called_once_with([11])
@@ -307,7 +307,7 @@ async def test_load_enrich_data__declined_tab(mocker):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_can_update_edit_dates_mock.assert_called_once_with([11], False)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_moderation_info_mock.assert_called_once_with([11])
@@ -385,7 +385,7 @@ async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_can_update_edit_dates_mock.assert_called_once_with([11], False)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
 
@@ -533,7 +533,7 @@ async def test__load_can_update_edit_date(mocker):
     expected = EnrichItem(key='can_update_edit_dates', degraded=False, value={11: True, 12: False})
 
     # act
-    result = await _load_can_update_edit_dates([11, 22])
+    result = await _load_can_update_edit_dates([11, 22], True)
 
     # assert
     assert result == expected

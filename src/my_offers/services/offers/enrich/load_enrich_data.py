@@ -52,10 +52,14 @@ async def load_enrich_data(
             views_counts={},
         ), {}
 
+    allow_update_edit_date = (
+        status_tab.is_active
+        and status_tab.is_not_active
+    )
     enriched = [
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
-        _load_can_update_edit_dates(offer_ids),
+        _load_can_update_edit_dates(offer_ids, allow_update_edit_date),
         _load_agency_settings(params.get_user_id()),
         _load_subagents(params.get_agent_ids()),
     ]
@@ -79,15 +83,12 @@ async def load_enrich_data(
         enriched.extend([
             _load_moderation_info(offer_ids),
         ])
-
     elif status_tab.is_archived:
         # не требуется доп. обогащений
         pass
-
     elif status_tab.is_deleted:
         # не требуется доп. обогащений
         pass
-
     else:
         logger.warning('Unsupported status tab: %s', status_tab)
 
@@ -164,7 +165,10 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> EnrichItem:
 
 
 @async_statsd_timer('enrich.load_can_update_edit_dates')
-async def _load_can_update_edit_dates(offer_ids: List[int]) -> EnrichItem:
+async def _load_can_update_edit_dates(offer_ids: List[int], allow_update: bool) -> EnrichItem:
+    if not allow_update:
+        return EnrichItem(key='can_update_edit_dates', degraded=False, value=dict.fromkeys(offer_ids, False))
+
     result = await can_update_edit_date_degradation_handler(offer_ids)
 
     return EnrichItem(key='can_update_edit_dates', degraded=result.degraded, value=result.value)
