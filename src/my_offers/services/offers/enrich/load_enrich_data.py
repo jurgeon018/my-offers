@@ -1,10 +1,12 @@
 import asyncio
+import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 
 import pytz
 from simple_settings import settings
 
+from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import ModerationOffenceStatus
@@ -29,7 +31,14 @@ from my_offers.services.search_coverage import get_offers_search_coverage_degrad
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
-async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, bool]]:
+logger = logging.getLogger(__name__)
+
+
+async def load_enrich_data(
+        *,
+        params: EnrichParams,
+        status_tab: enums.OfferStatusTab
+) -> Tuple[EnrichData, Dict[str, bool]]:
     offer_ids = params.get_offer_ids()
     if not offer_ids:
         return EnrichData(
@@ -43,23 +52,47 @@ async def load_enrich_data(params: EnrichParams) -> Tuple[EnrichData, Dict[str, 
             views_counts={},
         ), {}
 
-    data = await asyncio.gather(
-        _load_favorites_counts(offer_ids),
-        _load_searches_counts(offer_ids),
-        _load_views_counts(offer_ids),
-        _load_auctions(offer_ids),
+    allow_update_edit_date = (
+        status_tab.is_active
+        or status_tab.is_not_active
+    )
+    enriched = [
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
-        _load_can_update_edit_dates(offer_ids),
-        _load_import_errors(offer_ids),
-        _load_moderation_info(offer_ids),
-        _load_premoderation_info(offer_ids),
+        _load_can_update_edit_dates(offer_ids, allow_update_edit_date),
         _load_agency_settings(params.get_user_id()),
         _load_subagents(params.get_agent_ids()),
-        _load_archive_date(offer_ids),
-        _load_payed_till(offer_ids),
-        # todo: https://jira.cian.tech/browse/CD-75737 Разные обогощения в зависимости от вкладок
-    )
+    ]
+
+    if status_tab.is_active:
+        enriched.extend([
+            _load_favorites_counts(offer_ids),
+            _load_searches_counts(offer_ids),
+            _load_views_counts(offer_ids),
+            _load_auctions(offer_ids),
+            _load_payed_till(offer_ids),
+        ])
+    elif status_tab.is_not_active:
+        enriched.extend([
+            _load_import_errors(offer_ids),
+            _load_premoderation_info(offer_ids),
+            _load_archive_date(offer_ids),
+        ])
+
+    elif status_tab.is_declined:
+        enriched.extend([
+            _load_moderation_info(offer_ids),
+        ])
+    elif status_tab.is_archived:
+        # не требуется доп. обогащений
+        pass
+    elif status_tab.is_deleted:
+        # не требуется доп. обогащений
+        pass
+    else:
+        logger.warning('Unsupported status tab: %s', status_tab)
+
+    data = await asyncio.gather(*enriched)
 
     loaded_data = {}
     degradation = {}
@@ -132,7 +165,10 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> EnrichItem:
 
 
 @async_statsd_timer('enrich.load_can_update_edit_dates')
-async def _load_can_update_edit_dates(offer_ids: List[int]) -> EnrichItem:
+async def _load_can_update_edit_dates(offer_ids: List[int], allow_update: bool) -> EnrichItem:
+    if not allow_update:
+        return EnrichItem(key='can_update_edit_dates', degraded=False, value=dict.fromkeys(offer_ids, False))
+
     result = await can_update_edit_date_degradation_handler(offer_ids)
 
     return EnrichItem(key='can_update_edit_dates', degraded=result.degraded, value=result.value)
