@@ -104,11 +104,11 @@ class EnrichItem(NamedTuple):
 
 @dataclass
 class EnrichData:
-    auctions: Dict[int, Any]
-    jk_urls: Dict[int, str]
-    geo_urls: Dict[GeoUrlKey, AddressUrls]
-    can_update_edit_dates: Dict[int, bool]
-    import_errors: Dict[int, str]
+    auctions: Dict[int, Any] = field(default_factory=dict)
+    jk_urls: Dict[int, str] = field(default_factory=dict)
+    geo_urls: Dict[GeoUrlKey, AddressUrls] = field(default_factory=dict)
+    can_update_edit_dates: Dict[int, bool] = field(default_factory=dict)
+    import_errors: Dict[int, str] = field(default_factory=dict)
     moderation_info: Optional[Dict[int, OfferOffence]] = None
     agency_settings: Optional[AgencySettings] = None
     subagents: Optional[Dict[int, Subagent]] = None

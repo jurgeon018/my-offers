@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 
@@ -30,7 +31,11 @@ from my_offers.services.search_coverage import get_offers_search_coverage_degrad
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 
 
+logger = logging.getLogger(__name__)
+
+
 async def load_enrich_data(
+    *,
     params: EnrichParams,
     status_tab: enums.OfferStatusTab
 ) -> Tuple[EnrichData, Dict[str, bool]]:
@@ -76,13 +81,15 @@ async def load_enrich_data(
         ])
 
     elif status_tab.is_archived:
+        # не требуется доп. обогащений
         pass
 
     elif status_tab.is_deleted:
+        # не требуется доп. обогащений
         pass
 
     else:
-        pass
+        logger.warning('Unsupported status tab: %s', status_tab)
 
     data = await asyncio.gather(*enriched)
 

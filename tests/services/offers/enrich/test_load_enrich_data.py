@@ -12,7 +12,7 @@ from my_offers.entities import AgentName
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent
-from my_offers.enums import ModerationOffenceStatus
+from my_offers.enums import ModerationOffenceStatus, OfferStatusTab
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
@@ -41,7 +41,7 @@ PATH = 'my_offers.services.offers.enrich.load_enrich_data.'
 
 
 @pytest.mark.gen_test
-async def test_load_enrich_data(mocker):
+async def test_load_enrich_data__active_tab(mocker):
     # arrange
     params = EnrichParams(111)
     params.add_offer_id(11)
@@ -51,10 +51,6 @@ async def test_load_enrich_data(mocker):
         offer_type=enums.OfferType.flat,
         geo_type=Type.location,
         geo_id=1,
-    )
-    load_auctions_mock = mocker.patch(
-        f'{PATH}_load_auctions',
-        return_value=future(EnrichItem(key='auctions', degraded=False, value={})),
     )
     load_jk_urls_mock = mocker.patch(
         f'{PATH}_load_jk_urls',
@@ -68,14 +64,6 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_can_update_edit_dates',
         return_value=future(EnrichItem(key='can_update_edit_dates', degraded=False, value={})),
     )
-    load_import_errors_mock = mocker.patch(
-        f'{PATH}_load_import_errors',
-        return_value=future(EnrichItem(key='import_errors', degraded=False, value={})),
-    )
-    load_moderation_info_mock = mocker.patch(
-        f'{PATH}_load_moderation_info',
-        return_value=future(EnrichItem(key='moderation_info', degraded=False, value={})),
-    )
     load_agency_settings_mock = mocker.patch(
         f'{PATH}_load_agency_settings',
         return_value=future(EnrichItem(key='agency_settings', degraded=False, value=None)),
@@ -84,13 +72,9 @@ async def test_load_enrich_data(mocker):
         f'{PATH}_load_subagents',
         return_value=future(EnrichItem(key='subagents', degraded=False, value=None)),
     )
-    load_premoderation_info_mock = mocker.patch(
-        f'{PATH}_load_premoderation_info',
-        return_value=future(EnrichItem(key='premoderation_info', degraded=False, value=None)),
-    )
-    load_archive_date_mock = mocker.patch(
-        f'{PATH}_load_archive_date',
-        return_value=future(EnrichItem(key='archive_date', degraded=False, value=None)),
+    load_auctions_mock = mocker.patch(
+        f'{PATH}_load_auctions',
+        return_value=future(EnrichItem(key='auctions', degraded=False, value={})),
     )
     load_payed_till_mock = mocker.patch(
         f'{PATH}_load_payed_till',
@@ -109,45 +93,38 @@ async def test_load_enrich_data(mocker):
         return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
     )
 
-    expected = (
-        EnrichData(
-
-            auctions={},
-            jk_urls={},
-            geo_urls={},
-            can_update_edit_dates={},
-            moderation_info={},
-            import_errors={},
-            agency_settings=None,
-            subagents=None,
-            premoderation_info=None,
-            archive_date=None,
-            payed_till=None,
-        ),
-        {
-            'agency_settings': False,
-            'auctions': False,
-            'can_update_edit_dates': False,
-            'geo_urls': False,
-            'jk_urls': False,
-            'import_errors': False,
-            'moderation_info': False,
-            'subagents': False,
-            'premoderation_info': False,
-            'archive_date': False,
-            'payed_till': False,
-            'favorites_counts': False,
-            'views_counts': False,
-            'searches_counts': False,
-        }
+    expected_data = EnrichData(
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        moderation_info=None,
+        import_errors={},
+        agency_settings=None,
+        subagents=None,
+        premoderation_info=None,
+        archive_date=None,
+        payed_till=None,
     )
+    expected_degradation = {
+        'agency_settings': False,
+        'auctions': False,
+        'can_update_edit_dates': False,
+        'geo_urls': False,
+        'jk_urls': False,
+        'subagents': False,
+        'payed_till': False,
+        'favorites_counts': False,
+        'views_counts': False,
+        'searches_counts': False,
+    }
 
     # act
-    result = await load_enrich_data(params=params)
+    data, degradation = await load_enrich_data(params=params, status_tab=OfferStatusTab.active)
 
     # assert
-    assert result == expected
-    load_auctions_mock.assert_called_once_with([11])
+    assert data == expected_data
+    assert degradation == expected_degradation
     load_jk_urls_mock.assert_called_once_with([44])
     load_geo_urls_mock.assert_called_once_with([
         AddressUrlParams(
@@ -157,12 +134,9 @@ async def test_load_enrich_data(mocker):
         )
     ])
     load_can_update_edit_dates_mock.assert_called_once_with([11])
-    load_import_errors_mock.assert_called_once_with([11])
-    load_moderation_info_mock.assert_called_once_with([11])
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
-    load_premoderation_info_mock.assert_called_once_with([11])
-    load_archive_date_mock.assert_called_once_with([11])
+    load_auctions_mock.assert_called_once_with([11])
     load_payed_till_mock.assert_called_once_with([11])
     load_views_counts_mock.assert_called_once_with([11])
     load_searches_counts_mock.assert_called_once_with([11])
@@ -170,11 +144,257 @@ async def test_load_enrich_data(mocker):
 
 
 @pytest.mark.gen_test
+async def test_load_enrich_data__not_active_tab(mocker):
+    # arrange
+    params = EnrichParams(111)
+    params.add_offer_id(11)
+    params.add_jk_id(44)
+    params.add_geo_url_id(
+        deal_type=enums.DealType.rent,
+        offer_type=enums.OfferType.flat,
+        geo_type=Type.location,
+        geo_id=1,
+    )
+    load_jk_urls_mock = mocker.patch(
+        f'{PATH}_load_jk_urls',
+        return_value=future(EnrichItem(key='jk_urls', degraded=False, value={})),
+    )
+    load_geo_urls_mock = mocker.patch(
+        f'{PATH}_load_geo_urls',
+        return_value=future(EnrichItem(key='geo_urls', degraded=False, value={})),
+    )
+    load_can_update_edit_dates_mock = mocker.patch(
+        f'{PATH}_load_can_update_edit_dates',
+        return_value=future(EnrichItem(key='can_update_edit_dates', degraded=False, value={})),
+    )
+    load_agency_settings_mock = mocker.patch(
+        f'{PATH}_load_agency_settings',
+        return_value=future(EnrichItem(key='agency_settings', degraded=False, value=None)),
+    )
+    load_subagents_mock = mocker.patch(
+        f'{PATH}_load_subagents',
+        return_value=future(EnrichItem(key='subagents', degraded=False, value=None)),
+    )
+    load_premoderation_info_mock = mocker.patch(
+        f'{PATH}_load_premoderation_info',
+        return_value=future(EnrichItem(key='premoderation_info', degraded=False, value=None)),
+    )
+    load_archive_date_mock = mocker.patch(
+        f'{PATH}_load_archive_date',
+        return_value=future(EnrichItem(key='archive_date', degraded=False, value=None)),
+    )
+    load_import_errors_mock = mocker.patch(
+        f'{PATH}_load_import_errors',
+        return_value=future(EnrichItem(key='import_errors', degraded=False, value={})),
+    )
+
+    expected_data = EnrichData(
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+        moderation_info=None,
+        agency_settings=None,
+        subagents=None,
+        premoderation_info=None,
+        archive_date=None,
+        payed_till=None,
+    )
+    expected_degradation = {
+        'agency_settings': False,
+        'can_update_edit_dates': False,
+        'geo_urls': False,
+        'jk_urls': False,
+        'subagents': False,
+        'premoderation_info': False,
+        'import_errors': False,
+        'archive_date': False,
+    }
+
+    # act
+    data, degradation = await load_enrich_data(params=params, status_tab=OfferStatusTab.not_active)
+
+    # assert
+    assert data == expected_data
+    assert degradation == expected_degradation
+    load_jk_urls_mock.assert_called_once_with([44])
+    load_geo_urls_mock.assert_called_once_with([
+        AddressUrlParams(
+            deal_type=enums.DealType.rent,
+            offer_type=enums.OfferType.flat,
+            address_info=[AddressInfo(id=1, type=Type.location)]
+        )
+    ])
+    load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_agency_settings_mock.assert_called_once_with(111)
+    load_subagents_mock.assert_called_once_with([])
+    load_premoderation_info_mock.assert_called_once_with([11])
+    load_import_errors_mock.assert_called_once_with([11])
+    load_archive_date_mock.assert_called_once_with([11])
+
+
+@pytest.mark.gen_test
+async def test_load_enrich_data__declined_tab(mocker):
+    # arrange
+    params = EnrichParams(111)
+    params.add_offer_id(11)
+    params.add_jk_id(44)
+    params.add_geo_url_id(
+        deal_type=enums.DealType.rent,
+        offer_type=enums.OfferType.flat,
+        geo_type=Type.location,
+        geo_id=1,
+    )
+    load_jk_urls_mock = mocker.patch(
+        f'{PATH}_load_jk_urls',
+        return_value=future(EnrichItem(key='jk_urls', degraded=False, value={})),
+    )
+    load_geo_urls_mock = mocker.patch(
+        f'{PATH}_load_geo_urls',
+        return_value=future(EnrichItem(key='geo_urls', degraded=False, value={})),
+    )
+    load_can_update_edit_dates_mock = mocker.patch(
+        f'{PATH}_load_can_update_edit_dates',
+        return_value=future(EnrichItem(key='can_update_edit_dates', degraded=False, value={})),
+    )
+    load_agency_settings_mock = mocker.patch(
+        f'{PATH}_load_agency_settings',
+        return_value=future(EnrichItem(key='agency_settings', degraded=False, value=None)),
+    )
+    load_subagents_mock = mocker.patch(
+        f'{PATH}_load_subagents',
+        return_value=future(EnrichItem(key='subagents', degraded=False, value=None)),
+    )
+    load_moderation_info_mock = mocker.patch(
+        f'{PATH}_load_moderation_info',
+        return_value=future(EnrichItem(key='moderation_info', degraded=False, value={})),
+    )
+
+    expected_data = EnrichData(
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+        moderation_info={},
+        agency_settings=None,
+        subagents=None,
+        premoderation_info=None,
+        archive_date=None,
+        payed_till=None,
+    )
+    expected_degradation = {
+        'agency_settings': False,
+        'can_update_edit_dates': False,
+        'geo_urls': False,
+        'jk_urls': False,
+        'subagents': False,
+        'moderation_info': False,
+    }
+
+    # act
+    data, degradation = await load_enrich_data(params=params, status_tab=OfferStatusTab.declined)
+
+    # assert
+    assert data == expected_data
+    assert degradation == expected_degradation
+    load_jk_urls_mock.assert_called_once_with([44])
+    load_geo_urls_mock.assert_called_once_with([
+        AddressUrlParams(
+            deal_type=enums.DealType.rent,
+            offer_type=enums.OfferType.flat,
+            address_info=[AddressInfo(id=1, type=Type.location)]
+        )
+    ])
+    load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_agency_settings_mock.assert_called_once_with(111)
+    load_subagents_mock.assert_called_once_with([])
+    load_moderation_info_mock.assert_called_once_with([11])
+
+
+@pytest.mark.gen_test
+@pytest.mark.parametrize('status_tab', [
+    OfferStatusTab.deleted,
+    OfferStatusTab.archived,
+])
+async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
+    # arrange
+    params = EnrichParams(111)
+    params.add_offer_id(11)
+    params.add_jk_id(44)
+    params.add_geo_url_id(
+        deal_type=enums.DealType.rent,
+        offer_type=enums.OfferType.flat,
+        geo_type=Type.location,
+        geo_id=1,
+    )
+    load_jk_urls_mock = mocker.patch(
+        f'{PATH}_load_jk_urls',
+        return_value=future(EnrichItem(key='jk_urls', degraded=False, value={})),
+    )
+    load_geo_urls_mock = mocker.patch(
+        f'{PATH}_load_geo_urls',
+        return_value=future(EnrichItem(key='geo_urls', degraded=False, value={})),
+    )
+    load_can_update_edit_dates_mock = mocker.patch(
+        f'{PATH}_load_can_update_edit_dates',
+        return_value=future(EnrichItem(key='can_update_edit_dates', degraded=False, value={})),
+    )
+    load_agency_settings_mock = mocker.patch(
+        f'{PATH}_load_agency_settings',
+        return_value=future(EnrichItem(key='agency_settings', degraded=False, value=None)),
+    )
+    load_subagents_mock = mocker.patch(
+        f'{PATH}_load_subagents',
+        return_value=future(EnrichItem(key='subagents', degraded=False, value=None)),
+    )
+
+    expected_data = EnrichData(
+        auctions={},
+        jk_urls={},
+        geo_urls={},
+        can_update_edit_dates={},
+        import_errors={},
+        moderation_info=None,
+        agency_settings=None,
+        subagents=None,
+        premoderation_info=None,
+        archive_date=None,
+        payed_till=None,
+    )
+    expected_degradation = {
+        'agency_settings': False,
+        'can_update_edit_dates': False,
+        'geo_urls': False,
+        'jk_urls': False,
+        'subagents': False,
+    }
+
+    # act
+    data, degradation = await load_enrich_data(params=params, status_tab=status_tab)
+
+    # assert
+    assert data == expected_data
+    assert degradation == expected_degradation
+    load_jk_urls_mock.assert_called_once_with([44])
+    load_geo_urls_mock.assert_called_once_with([
+        AddressUrlParams(
+            deal_type=enums.DealType.rent,
+            offer_type=enums.OfferType.flat,
+            address_info=[AddressInfo(id=1, type=Type.location)]
+        )
+    ])
+    load_can_update_edit_dates_mock.assert_called_once_with([11])
+    load_agency_settings_mock.assert_called_once_with(111)
+    load_subagents_mock.assert_called_once_with([])
+
+
+@pytest.mark.gen_test
 async def test_load_enrich_data__empty__empty(mocker):
     # arrange
     params = EnrichParams(111)
     expected = EnrichData(
-
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -183,7 +403,7 @@ async def test_load_enrich_data__empty__empty(mocker):
     ), {}
 
     # act
-    result = await load_enrich_data(params=params)
+    result = await load_enrich_data(params=params, status_tab=OfferStatusTab.active)
 
     # assert
     assert result == expected
