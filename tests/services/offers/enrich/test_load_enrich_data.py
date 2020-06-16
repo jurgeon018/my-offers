@@ -133,7 +133,7 @@ async def test_load_enrich_data__active_tab(mocker):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11], False)
+    load_can_update_edit_dates_mock.assert_called_once_with([11], True)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_auctions_mock.assert_called_once_with([11])
@@ -226,7 +226,7 @@ async def test_load_enrich_data__not_active_tab(mocker):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11], False)
+    load_can_update_edit_dates_mock.assert_called_once_with([11], True)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_premoderation_info_mock.assert_called_once_with([11])

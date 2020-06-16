@@ -54,7 +54,7 @@ async def load_enrich_data(
 
     allow_update_edit_date = (
         status_tab.is_active
-        and status_tab.is_not_active
+        or status_tab.is_not_active
     )
     enriched = [
         _load_jk_urls(params.get_jk_ids()),
