@@ -7,7 +7,7 @@ from my_offers.services.valuation.fields.house_id import get_house_id
 
 
 def test_get_house_id():
-    # arrange
+    # arrange & act
     address = [
         AddressInfo(
             id=1,
@@ -35,8 +35,6 @@ def test_get_house_id():
             is_forming_address=True
         )
     ]
-
-    # act
     result = get_house_id(address=address)
 
     # assert
@@ -44,8 +42,8 @@ def test_get_house_id():
 
 
 def test_get_house_id_raise_exeption():
-    # arrange
-    address_without_house = [
+    # arrange & act
+    address = [
         AddressInfo(
             id=1,
             name='Москва',
@@ -64,10 +62,8 @@ def test_get_house_id_raise_exeption():
             is_forming_address=True
         )
     ]
-
-    # act
     with pytest.raises(BrokenRulesException) as exc_info:
-        get_house_id(address=address_without_house)
+        get_house_id(address=address)
 
     # assert
     assert exc_info.value.errors[0].key == 'house_id'

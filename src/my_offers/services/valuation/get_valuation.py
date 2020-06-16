@@ -8,11 +8,11 @@ from my_offers.repositories.price_estimator.entities import (
     GetEstimationForRealtorsRequest,
     GetEstimationForRealtorsResponse,
 )
+from my_offers.services.convert_price import get_price_rur
 from my_offers.services.offers import load_object_model
 from my_offers.services.valuation.fields.address import get_address
 from my_offers.services.valuation.fields.house_id import get_house_id
 from my_offers.services.valuation.fields.info_relative_market import get_info_relative_market
-from my_offers.services.valuation.fields.price import get_price_rur
 from my_offers.services.valuation.fields.rooms_count import get_rooms_count
 from my_offers.services.valuation.helpers.validation_offer import validate_offer
 from my_offers.services.valuation.helpers.valuation_filters import get_valuation_filters
@@ -36,7 +36,26 @@ async def v1_get_offer_valuation_public(
             )
         ])
 
-    price_in_rur = get_price_rur(
+    if not object_model.geo:
+        raise BrokenRulesException([
+            Error(
+                message='broken offer object_model, has not right geo address',
+                code='valuation_not_poossible',
+                key='geo'
+            )
+        ])
+
+    if not object_model.bargain_terms.price:
+        raise BrokenRulesException([
+            Error(
+                message='offer object_model has uncorrect price '
+                        'valuation can not be provided without price',
+                code='valuation_not_poossible',
+                key='price'
+            )
+        ])
+
+    price_in_rur = await get_price_rur(
         price=object_model.bargain_terms.price,
         currency=object_model.bargain_terms.currency
     )
@@ -57,7 +76,15 @@ async def v1_get_offer_valuation_public(
             filters=get_valuation_filters(object_model)
         )
     )
-    if response.degraded or not response.value.prices:
+    if response.degraded:
+        raise BrokenRulesException([
+            Error(
+                message='mcs price-estimator degraded response',
+                code='did_not_get_valuation',
+                key='no_valuation'
+            )
+        ])
+    if not response.value.prices:
         raise BrokenRulesException([
             Error(
                 message='did not get valuation for offer from mcs price-estimator',

@@ -58,6 +58,10 @@ type = "consumer"
 command = "save_announcement_contract_consumer"
 memory = 128
 
+[job.save_announcement_contract_consumer.prod]
+instances = 3
+cpu = 2048
+
 [job.mark_to_delete_announcement_contract_consumer]
 type = "consumer"
 command = "mark_to_delete_announcement_contract_consumer"
@@ -119,6 +123,11 @@ command = "reindex-offers"
 [job.resend_offers]
 type = "manage"
 command = "resend-offers"
+
+[job.resend_offers_cron]
+type = "cron"
+command = "resend-offers"
+cron = "0 */2 * * *"
 
 [job.resend_offers.prod]
 cpu = 4096

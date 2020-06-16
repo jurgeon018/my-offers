@@ -11,6 +11,7 @@ def get_house_id(
     for detail in address:
         if detail.type.is_house:
             return detail.id
+
     raise BrokenRulesException([
         Error(
             message='offer object_model does not have house in address, '
