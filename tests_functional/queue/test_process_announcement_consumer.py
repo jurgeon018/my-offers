@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+from cian_json import json
 
 from tests_functional.utils import load_json_data
 
@@ -37,3 +38,21 @@ async def test_process_announcement_consumer(queue_service, pg, offer, expected)
     # assert
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
     assert row['search_text'] == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('offer', [
+    load_json_data(__file__, 'announcement_codegen.json')
+])
+async def test_process_announcement_consumer__codegen_fix_validate(queue_service, pg, offer):
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+    raw_data = json.loads(row['raw_data'])
+
+    assert raw_data['phones'] == []
+    assert raw_data['bargainTerms'].get('price') is None
