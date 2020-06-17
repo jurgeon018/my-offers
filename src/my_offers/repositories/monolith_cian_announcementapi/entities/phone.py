@@ -16,9 +16,9 @@ from .source_phone import SourcePhone
 
 @dataclass
 class Phone:
-    country_code: str
+    country_code: Optional[str] = None
     """Код страны"""
-    number: str
+    number: Optional[str] = None
     """Номер"""
     source_phone: Optional[SourcePhone] = None
     """Исходный номер телефона"""
