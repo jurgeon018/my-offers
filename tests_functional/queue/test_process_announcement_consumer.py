@@ -54,5 +54,5 @@ async def test_process_announcement_consumer__codegen_fix_validate(queue_service
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
     raw_data = json.loads(row['raw_data'])
 
-    assert raw_data['phones'] == []
+    assert raw_data['phones'] == [None]
     assert raw_data['bargainTerms'].get('price') is None

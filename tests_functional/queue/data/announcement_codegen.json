@@ -4,7 +4,7 @@
 		"isInHiddenBase": false,
 		"cianUserId": 39401272,
 		"floorNumber": 6,
-		"phones": [],
+		"phones": [{}],
 		"isRentByParts": false,
 		"category": "newBuildingFlatSale",
 		"publishTerms": {
