@@ -1,11 +1,12 @@
 from cian_schemas import EntitySchema
 
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Phone
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 
 
-class PhoneSchema(EntitySchema):
+class ObjectModelSchema(EntitySchema):
     class Meta:
-        entity = Phone
+        entity = ObjectModel
 
 
 class BargainTermsSchema(EntitySchema):
@@ -22,15 +23,16 @@ class TestCodegenObjectModel:
         """
         # arrange
         data = {
-            'country_code': None,
-            'number': None,
-            'source_phone': None,
+            'Category': Category.bed_rent.value,
+            'bargain_terms': {},
+            'phones': [None],
         }
 
         # act
-        data, errors = PhoneSchema().dumps(data)
+        data, errors = ObjectModelSchema().dumps(data)
 
         # assert
+        assert data == '{"phones": [{}], "bargainTerms": {}}'
         assert not errors
 
     def test_bargain_terms_price(self):
