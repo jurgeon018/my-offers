@@ -197,10 +197,14 @@ def fix2():
     from my_offers.services.realty_resender._jobs import save_offers_from_elasticapi
 
     archive = [
-        # 228297896,
-        # 224414708,
-        # 221414072,
-        148081225
+        232894278,
+        232894804,
+        232896888,
+        234523343,
+        234619342,
+        233617498,
+        233821481,
+        233722973
     ]
 
     async def _run(archive_offers_):

@@ -1,6 +1,6 @@
 from my_offers import entities
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import get_sort_date
+from my_offers.helpers.fields import get_sort_date, is_archived
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories import postgresql
@@ -18,7 +18,11 @@ from my_offers.services.announcement.fields.walking_time import get_walking_time
 async def process_announcement(object_model: ObjectModel) -> None:
     offer = await prepare_offer(object_model)
 
-    await postgresql.save_offer(offer)
+    if is_archived(object_model.flags):
+        await postgresql.save_offer_archive(offer)
+    else:
+        await postgresql.save_offer(offer)
+
     await post_process_announcement(object_model)
 
 

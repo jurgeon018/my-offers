@@ -12,6 +12,7 @@ from my_offers import entities, enums, pg
 from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
+from my_offers.enums import OfferStatusTab
 from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.offer_mapper import (
     offer_mapper,
@@ -21,6 +22,14 @@ from my_offers.mappers.offer_mapper import (
 )
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
+
+
+# realty объявление которое перенесли в архив всегда приходит с таким row_version (фейковый)
+REALTY_ARCHIVE_ROW_VERSION = 1
+
+# для my-offers устанавливаем невалидный row_version, т.к. для архива существует только фековый row_version
+# при переносе объявления из архива, такой row_version гарантированно будет обновлен
+MY_OFFERS_ARCHIVE_ROW_VERSION = -1
 
 
 async def save_offer(offer: entities.Offer) -> None:
@@ -36,7 +45,10 @@ async def save_offer(offer: entities.Offer) -> None:
         .values([values])
         .on_conflict_do_update(
             index_elements=[tables.offers.c.offer_id],
-            where=tables.offers.c.row_version < offer.row_version,
+            where=and_(
+                tables.offers.c.row_version < offer.row_version,
+                offer.status_tab != OfferStatusTab.archived
+            ),
             set_={
                 'master_user_id': insert_query.excluded.master_user_id,
                 'user_id': insert_query.excluded.user_id,
@@ -56,6 +68,54 @@ async def save_offer(offer: entities.Offer) -> None:
                 'sort_date': insert_query.excluded.sort_date,
                 'raw_data': insert_query.excluded.raw_data,
                 'row_version': insert_query.excluded.row_version,
+                'is_test': insert_query.excluded.is_test,
+                'updated_at': insert_query.excluded.updated_at,
+            }
+        )
+    )
+
+    await pg.get().execute(query, *params)
+
+
+async def save_offer_archive(offer: entities.Offer) -> None:
+    insert_query = insert(tables.offers)
+
+    now = datetime.now(tz=pytz.UTC)
+    values = offer_mapper.map_to(offer)
+    values['created_at'] = now
+    values['updated_at'] = now
+
+    # устанавливаем невалидный row_version с точки зрения Realty.Objects
+    values['row_version'] = MY_OFFERS_ARCHIVE_ROW_VERSION
+
+    query, params = asyncpgsa.compile_query(
+        insert_query
+        .values([values])
+        .on_conflict_do_update(
+            index_elements=[tables.offers.c.offer_id],
+            where=and_(
+                offer.row_version == REALTY_ARCHIVE_ROW_VERSION,
+                offer.status_tab == OfferStatusTab.archived
+            ),
+            set_={
+                'master_user_id': insert_query.excluded.master_user_id,
+                'user_id': insert_query.excluded.user_id,
+                'deal_type': insert_query.excluded.deal_type,
+                'offer_type': insert_query.excluded.offer_type,
+                'status_tab': insert_query.excluded.status_tab,
+                'services': insert_query.excluded.services,
+                'is_manual': insert_query.excluded.is_manual,
+                'is_in_hidden_base': insert_query.excluded.is_in_hidden_base,
+                'has_photo': insert_query.excluded.has_photo,
+                'search_text': insert_query.excluded.search_text,
+                'price': insert_query.excluded.price,
+                'price_per_meter': insert_query.excluded.price_per_meter,
+                'total_area': insert_query.excluded.total_area,
+                'street_name': insert_query.excluded.street_name,
+                'walking_time': insert_query.excluded.walking_time,
+                'sort_date': insert_query.excluded.sort_date,
+                'raw_data': insert_query.excluded.raw_data,
+                'row_version': MY_OFFERS_ARCHIVE_ROW_VERSION,
                 'is_test': insert_query.excluded.is_test,
                 'updated_at': insert_query.excluded.updated_at,
             }
