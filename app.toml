@@ -58,6 +58,10 @@ type = "consumer"
 command = "save_announcement_contract_consumer"
 memory = 128
 
+[job.save_announcement_contract_consumer.prod]
+instances = 3
+cpu = 2048
+
 [job.mark_to_delete_announcement_contract_consumer]
 type = "consumer"
 command = "mark_to_delete_announcement_contract_consumer"

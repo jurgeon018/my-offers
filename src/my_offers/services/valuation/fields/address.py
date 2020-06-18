@@ -10,5 +10,4 @@ def get_address(
     for detail in address:
         if detail.full_name:
             address_full_names.append(detail.full_name)
-
     return ', '.join(address_full_names)

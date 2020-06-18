@@ -16,11 +16,11 @@ def get_liquidity_range(
         publish_terms: PublishTerms,
         periods_range: LiquidityPeriodsRange,
 ) -> str:
-    for term in publish_terms.terms:
-        for service in term.services:
-
-            if service in PROMOTION_SERVICES:
-                return make_liquidity_str(period=periods_range.period_with_promotion)
+    if publish_terms:
+        for term in publish_terms.terms:
+            for service in term.services:
+                if service in PROMOTION_SERVICES:
+                    return make_liquidity_str(period=periods_range.period_with_promotion)
     return make_liquidity_str(period=periods_range.regular_period)
 
 

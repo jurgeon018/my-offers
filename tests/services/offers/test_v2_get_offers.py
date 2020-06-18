@@ -121,7 +121,11 @@ async def test_v2_get_offers_public(mocker):
 
     # assert
     assert result == expected_result
-    get_offer_views_mock.assert_called_once_with(object_models=[object_model], user_id=777)
+    get_offer_views_mock.assert_called_once_with(
+        object_models=[object_model],
+        user_id=777,
+        status_tab=OfferStatusTab.active
+    )
     get_object_models_mock.assert_called_once_with(
         filters={'status_tab': 'active', 'master_user_id': [777]},
         limit=20,
@@ -352,7 +356,11 @@ async def test_v2_get_offer_views(mocker):
     )
 
     # act
-    result = await v2_get_offer_views(object_models=[object_model], user_id=777)
+    result = await v2_get_offer_views(
+        object_models=[object_model],
+        user_id=777,
+        status_tab=OfferStatusTab.active
+    )
 
     # assert
     assert result == expected

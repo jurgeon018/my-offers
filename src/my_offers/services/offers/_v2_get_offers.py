@@ -59,7 +59,11 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     if settings.LOG_SEARCH_QUERIES and filters.get('search_text'):
         await save_offers_search_log(filters=filters, found_cnt=total, is_error=object_models_result.degraded)
 
-    offers, degradation = await v2_get_offer_views(object_models=object_models, user_id=realty_user_id)
+    offers, degradation = await v2_get_offer_views(
+        object_models=object_models,
+        user_id=realty_user_id,
+        status_tab=request.filters.status_tab
+    )
 
     degradation['offer_counters'] = offer_counters_result.degraded
 
@@ -76,12 +80,16 @@ async def v2_get_offer_views(
         *,
         object_models: List[ObjectModel],
         user_id: int,
+        status_tab: enums.OfferStatusTab
 ) -> Tuple[List[get_offers.GetOfferV2], Dict[str, bool]]:
     # шаг 1 - подготовка параметров для обогащения
     enrich_params = prepare_enrich_params(models=object_models, user_id=user_id)
 
     # шаг 2 - получение данных для обогащения
-    enrich_data, degradation = await load_enrich_data(enrich_params)
+    enrich_data, degradation = await load_enrich_data(
+        params=enrich_params,
+        status_tab=status_tab
+    )
 
     # шаг 3 - подготовка моделей для ответа
     offers = [

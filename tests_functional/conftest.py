@@ -18,7 +18,7 @@ async def start(runner, pg, queue_service, cassandra_service):
     await runner.start_background_python_command('process_announcement_from_elasticapi_consumer')
 
     await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification', timeout=30)
-    await queue_service.wait_consumer('my-offers.process_announcement_from_elasticapi')
+    await queue_service.wait_consumer('my-offers.process_announcement_from_elasticapi', timeout=30)
 
 
 @pytest.fixture(name='pg', scope='session')

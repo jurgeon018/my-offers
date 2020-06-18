@@ -10,6 +10,14 @@ from my_offers.services.valuation.fields.liquidity import get_liquidity_range
     ('publish_terms', 'periods_range', 'expected'),
     (
         (
+            None,
+            LiquidityPeriodsRange(
+                regular_period=LiquidityTermRange(min_selling_term=50, max_selling_term=60),
+                period_with_promotion=LiquidityTermRange(min_selling_term=20, max_selling_term=30)
+            ),
+            '50—60'
+        ),
+        (
             PublishTerms(terms=[PublishTerm(services=[Services.top3])]),
             LiquidityPeriodsRange(
                 regular_period=LiquidityTermRange(min_selling_term=50, max_selling_term=60),
