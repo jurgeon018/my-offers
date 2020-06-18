@@ -1,8 +1,6 @@
-import asyncio
 from functools import partial
 
 import click
-from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
 from tornado.ioloop import IOLoop
@@ -164,57 +162,4 @@ def resend_offers(bulk_size: int):
     IOLoop.current().run_sync(partial(
         realty_resender.resend_offers,
         bulk_size=bulk_size
-    ))
-
-
-@cli.command()
-def fix():
-    import csv
-    from my_offers.services.realty_resender._jobs import save_offers_from_elasticapi
-
-    fields = ['offer_id']
-
-    with open('not_active_offers.csv') as offers_csv:
-        archive_offers = csv.DictReader(offers_csv, fieldnames=fields, delimiter=';')
-        archive = list(int(o['offer_id']) for o in archive_offers)
-
-    async def _run(archive_offers_):
-        try:
-            with new_operation_id():
-                await save_offers_from_elasticapi(offers_ids=archive_offers_)
-        except:
-            print('Error during call elasticapi')
-
-    IOLoop.current().run_sync(partial(
-        _run,
-        archive
-    ))
-
-
-@cli.command()
-def fix2():
-    import csv
-    from my_offers.services.realty_resender._jobs import save_offers_from_elasticapi
-
-    archive = [
-        232894278,
-        232894804,
-        232896888,
-        234523343,
-        234619342,
-        233617498,
-        233821481,
-        233722973
-    ]
-
-    async def _run(archive_offers_):
-        try:
-            with new_operation_id():
-                await save_offers_from_elasticapi(offers_ids=archive_offers_)
-        except:
-            print('Error during call elasticapi')
-
-    IOLoop.current().run_sync(partial(
-        _run,
-        archive
     ))
