@@ -1,6 +1,6 @@
 from cian_schemas import EntitySchema
 
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Phone, ObjectModel
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 
 
 class PhoneSchema(EntitySchema):
