@@ -89,8 +89,10 @@ async def get_object_model_by_id(offer_id: int) -> Optional[ObjectModel]:
 
 
 async def get_offers_by_ids(offer_ids: List[int]) -> List[ObjectModel]:
-    query = 'SELECT raw_data FROM offers WHERE offer_id = $1 AND status_tab <> $2 ORDER BY sort_date DESC'
+    query = """
+    SELECT raw_data FROM offers WHERE offer_id = ANY($1::BIGINT[]) AND status_tab <> $2 ORDER BY sort_date DESC
+    """
 
-    rows = await pg.get().fetchrow(query, offer_ids, enums.OfferStatusTab.deleted)
+    rows = await pg.get().fetch(query, offer_ids, enums.OfferStatusTab.deleted.value)
 
     return [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in rows]
