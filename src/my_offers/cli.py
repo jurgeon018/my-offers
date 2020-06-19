@@ -1,6 +1,7 @@
 from functools import partial
 
 import click
+from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
 from tornado.ioloop import IOLoop
@@ -163,3 +164,19 @@ def resend_offers(bulk_size: int):
         realty_resender.resend_offers,
         bulk_size=bulk_size
     ))
+
+
+@cli.command()
+@click.option('--ids', type=str)
+def fix_offers(ids: str):
+    """ Догнать объявления до актуального статуса.
+
+        my-offers fix-offers --ids 123,777
+    """
+    offers_ids = list(map(int, [i.strip() for i in ids.split(',')]))
+
+    with new_operation_id():
+        IOLoop.current().run_sync(partial(
+            realty_resender.save_offers_from_elasticapi,
+            offers_ids=offers_ids
+        ))
