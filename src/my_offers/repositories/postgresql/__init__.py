@@ -7,7 +7,6 @@ from my_offers.repositories.postgresql.offer import (
     get_offers_ids_by_tab,
     get_offers_row_version,
     save_offer,
-    save_offer_archive,
     update_offer_master_user_id,
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error

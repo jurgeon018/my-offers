@@ -26,10 +26,11 @@ async def test_process_announcements_queue(mocker):
         cian_id=333,
         row_version=111,
     )
+    event_date = datetime(2019, 1, 1)
     message.data = AnnouncementMessage(
         model=model,
         operation_id='zzzzzzzzzzzzzzz',
-        date=datetime(2019, 1, 1),
+        date=event_date,
     )
 
     process_announcement_mock = mocker.patch(
@@ -43,7 +44,7 @@ async def test_process_announcements_queue(mocker):
     await process_announcement_callback([message])
 
     # assert
-    process_announcement_mock.assert_called_once_with(model)
+    process_announcement_mock.assert_called_once_with(object_model=model, event_date=event_date)
     new_operation_id_mock.assert_called_once_with('zzzzzzzzzzzzzzz')
 
 
@@ -62,10 +63,11 @@ async def test_process_announcements_queue__exception__raise(mocker):
         cian_id=333,
         row_version=111,
     )
+    event_date = datetime(2019, 1, 1)
     message.data = AnnouncementMessage(
         model=model,
         operation_id='zzzzzzzzzzzzzzz',
-        date=datetime(2019, 1, 1),
+        date=event_date,
     )
 
     process_announcement_mock = mocker.patch(
@@ -80,5 +82,5 @@ async def test_process_announcements_queue__exception__raise(mocker):
         await process_announcement_callback([message])
 
     # assert
-    process_announcement_mock.assert_called_once_with(model)
+    process_announcement_mock.assert_called_once_with(object_model=model, event_date=event_date)
     new_operation_id_mock.assert_called_once_with('zzzzzzzzzzzzzzz')

@@ -38,25 +38,20 @@ async def save_offers_from_elasticapi(offers_ids: List[int]) -> None:
     offers_ids_cnt = len(offers_ids)
     logger.info('Run task, count: %s', offers_ids_cnt)
 
-    errors = []
     offers_progress = 0
     for offers in grouper(offers_ids, settings.ELASTIC_API_BULK_SIZE):
         offers = list(filter(None, offers))  # type: ignore
         offers_progress += len(offers)
 
         logger.info('Run task, progress %s/%s', offers_progress, offers_ids_cnt)
-        try:
-            await _send_offers(offers_ids=offers)  # type: ignore
-        except:
-            errors.extend(offers)
+        await _send_offers(offers_ids=offers)  # type: ignore
         await asyncio.sleep(settings.ELASTIC_API_DELAY)
 
-    logger.info('errors: %s', errors)
-        # send_to_graphite(
-        #     key='resend_job_elasticapi.offers_count',
-        #     value=len(offers),
-        #     timestamp=datetime.now(pytz.utc).timestamp()
-        # )
+        send_to_graphite(
+            key='resend_job_elasticapi.offers_count',
+            value=len(offers),
+            timestamp=datetime.now(pytz.utc).timestamp()
+        )
 
 
 async def _send_offers(offers_ids: List[int]) -> None:
@@ -68,15 +63,7 @@ async def _send_offers(offers_ids: List[int]) -> None:
 
     if realty_offers.success:
         offers = [ro.object_model for ro in realty_offers.success]
-
-        models = []
-        for object_model in offers:
-            d = json.loads(object_model)
-            d['rowVersion'] = 0
-            models.append(object_model_mapper.map_from(d))
-
-        # old_unpublished_invalid_announcement --> deleted
-        # announcement_not_found ??
+        models = [object_model_mapper.map_from(json.loads(object_model)) for object_model in offers]
 
         for object_model in models:
             await announcement_models_producer(object_model)
