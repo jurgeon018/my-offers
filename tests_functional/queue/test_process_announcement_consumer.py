@@ -73,10 +73,10 @@ async def test_process_announcement_consumer__archive_offer(queue_service, pg, o
     )
 ])
 async def test_process_announcement_consumer__archive_offer_after_active_offer(
-    queue_service,
-    pg,
-    offer_archive,
-    offer_active
+        queue_service,
+        pg,
+        offer_archive,
+        offer_active
 ):
     """
     Сохрарнение архивного объявления после активного объявления.
@@ -107,10 +107,10 @@ async def test_process_announcement_consumer__archive_offer_after_active_offer(
     )
 ])
 async def test_process_announcement_consumer__active_offer_after_archive_offer(
-    queue_service,
-    pg,
-    offer_archive,
-    offer_active
+        queue_service,
+        pg,
+        offer_archive,
+        offer_active
 ):
     """
     Сохрарнение активного объявления после архивного объявления.
@@ -155,9 +155,9 @@ async def test_process_announcement_consumer__codegen_fix_validate(queue_service
     load_json_data(__file__, 'announcement.json')
 ])
 async def test_process_announcement_consumer__row_version_incr_for_unique_offer(
-    queue_service,
-    pg,
-    offer_active
+        queue_service,
+        pg,
+        offer_active
 ):
     """
     Сохрарнение активного объявления c row_version=2 после активного объявления row_version=1.
