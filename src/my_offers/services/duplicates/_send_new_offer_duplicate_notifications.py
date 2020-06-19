@@ -5,6 +5,7 @@ from asyncpg import UniqueViolationError
 
 from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
 from my_offers.helpers.category import get_types
+from my_offers.helpers.fields import get_main_photo_url
 from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.notification_center import v2_register_notifications
@@ -22,7 +23,7 @@ from my_offers.repositories.postgresql.offers_duplicate_notification import (
     save_offers_duplicate_notification,
 )
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
-from my_offers.services.offer_view.fields import get_main_photo_url, get_offer_url
+from my_offers.services.offer_view.fields import get_offer_url
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 
 
