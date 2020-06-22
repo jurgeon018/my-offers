@@ -24,7 +24,7 @@ from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
 
 
-# realty объявление которое перенесли в архив всегда приходит с таким row_version (фейковый)
+# realty объявление, которое перенесли в архив всегда приходит с таким row_version (фейковый)
 REALTY_ARCHIVE_ROW_VERSION = 1
 
 # для my-offers устанавливаем невалидный row_version, т.к. для архива существует только фековый row_version
@@ -58,12 +58,12 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
             index_elements=[tables.offers.c.offer_id],
             where=or_(
                 and_(
-                    tables.offers.c.row_version < offer.row_version,
-                    tables.offers.c.status_tab != OfferStatusTab.archived.value,
+                    tables.offers.c.updated_at < event_date,
+                    is_archive
                 ),
                 and_(
-                    tables.offers.c.updated_at <= event_date,
-                    is_archive
+                    tables.offers.c.row_version < offer.row_version,
+                    tables.offers.c.updated_at < event_date,
                 )
             ),
             set_={

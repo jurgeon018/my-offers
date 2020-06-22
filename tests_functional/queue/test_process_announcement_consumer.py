@@ -154,20 +154,22 @@ async def test_process_announcement_consumer__codegen_fix_validate(queue_service
 @pytest.mark.parametrize('offer_active', [
     load_json_data(__file__, 'announcement.json')
 ])
-async def test_process_announcement_consumer__row_version_incr_for_unique_offer(
+async def test_process_announcement_consumer__row_version_increment(
         queue_service,
         pg,
         offer_active
 ):
     """
     Сохрарнение активного объявления c row_version=2 после активного объявления row_version=1.
-    Проверка обновления версий.
     """
+
     offer_active_1 = deepcopy(offer_active)
     offer_active_1['model']['rowVersion'] = 1
+    offer_active_1['date'] = str(datetime.now())
 
     offer_active_2 = deepcopy(offer_active)
     offer_active_2['model']['rowVersion'] = 2
+    offer_active_2['date'] = str(datetime.now() + timedelta(seconds=10))
 
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
@@ -181,3 +183,77 @@ async def test_process_announcement_consumer__row_version_incr_for_unique_offer(
 
     assert row['status_tab'] == 'active'
     assert row['row_version'] == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('offer_active', [
+    load_json_data(__file__, 'announcement.json')
+])
+async def test_process_announcement_consumer__offer_not_updated_with_old_row_version(
+        queue_service,
+        pg,
+        offer_active
+):
+    """
+    Сохрарнение активного объявления c row_version=1 после активного объявления row_version=2.
+    """
+
+    offer_active_1 = deepcopy(offer_active)
+    offer_active_1['model']['rowVersion'] = 2
+    offer_active_1['date'] = str(datetime.now() + timedelta(seconds=10))
+
+    offer_active_2 = deepcopy(offer_active)
+    offer_active_2['model']['rowVersion'] = 1
+    offer_active_2['date'] = str(datetime.now())
+
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer_active_1, exchange='announcements')
+    await asyncio.sleep(.5)
+    await queue_service.publish('announcement_reporting.change', offer_active_2, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+
+    assert row['status_tab'] == 'active'
+    assert row['row_version'] == 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('offer_archive, offer_active', [
+    (
+        load_json_data(__file__, 'announcement_archive.json'),
+        load_json_data(__file__, 'announcement.json')
+    )
+])
+async def test_process_announcement_consumer__archive_updated_to_active(
+        queue_service,
+        pg,
+        offer_archive,
+        offer_active
+):
+    """
+    Сохрарнение активного объявления после архивного объявления.
+    Архивное объявление обновлено до активного.
+    """
+    archive_row_version = 0
+    offer_archive['date'] = str(datetime.now())
+    offer_archive['model']['rowVersion'] = archive_row_version
+
+    active_row_version = 111
+    offer_active['date'] = str(datetime.now() + timedelta(days=5))
+    offer_active['model']['rowVersion'] = active_row_version
+
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer_archive, exchange='announcements')
+    await asyncio.sleep(.5)
+    await queue_service.publish('announcement_reporting.change', offer_active, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+
+    assert row['status_tab'] == 'active'
+    assert row['row_version'] == active_row_version
