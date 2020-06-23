@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from my_offers import enums
 from my_offers.helpers.time import get_aware_date
-from my_offers.repositories.monolith_cian_announcementapi.entities import Flags, ObjectModel
+from my_offers.repositories.monolith_cian_announcementapi.entities import Flags, ObjectModel, Photo
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Source
 
 
@@ -24,3 +24,12 @@ def get_sort_date(*, object_model: ObjectModel, status_tab: enums.OfferStatusTab
         result = object_model.creation_date
 
     return get_aware_date(result)
+
+
+def get_main_photo_url(
+        photos: Optional[List[Photo]],
+        better_quality: bool = False
+) -> Optional[str]:
+    if not photos:
+        return None
+    return photos[0].thumbnail_url if better_quality else photos[0].mini_url

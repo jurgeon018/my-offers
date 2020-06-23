@@ -2,11 +2,11 @@ from typing import Dict
 
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import get_sort_date
+from my_offers.helpers.fields import get_main_photo_url, get_sort_date
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_properties
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.services.offer_view.fields import get_main_photo_url, get_price_info, get_vas, prepare_geo_for_mobile
+from my_offers.services.offer_view.fields import get_price_info, get_vas, prepare_geo_for_mobile
 from my_offers.services.offer_view.fields.auction import get_auction_bet
 
 

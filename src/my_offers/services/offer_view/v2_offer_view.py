@@ -1,18 +1,11 @@
 from my_offers.entities import get_offers
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import get_sort_date, is_archived, is_manual
+from my_offers.helpers.fields import get_main_photo_url, get_sort_date, is_archived, is_manual
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.services.offer_view.fields import (
-    get_features,
-    get_main_photo_url,
-    get_offer_url,
-    get_price_info,
-    get_status,
-    prepare_geo,
-)
+from my_offers.services.offer_view.fields import get_features, get_offer_url, get_price_info, get_status, prepare_geo
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
 from my_offers.services.offer_view.fields.statistics import get_statistics
 from my_offers.services.offer_view.fields.status import get_status_type
