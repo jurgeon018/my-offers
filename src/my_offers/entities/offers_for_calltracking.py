@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+from my_offers import enums
 from my_offers.entities import MobileOfferGeo
 
 
@@ -28,6 +29,10 @@ class OfferForCalltrackingCard:
     """Свойства: комнаты, площадь и т.д."""
     geo: MobileOfferGeo
     """Гео"""
+    deal_type: enums.DealType
+    """Тип сделки"""
+    offer_type: enums.OfferType
+    """Тип объекта недвижимости"""
 
 
 @dataclass
