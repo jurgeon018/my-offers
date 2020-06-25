@@ -1,4 +1,8 @@
 from my_offers.services.offers._get_offers import get_filters, get_page_info, get_pagination, get_user_filter
+from my_offers.services.offers._get_offers_for_calltracking import (
+    get_offers_for_calltracking,
+    get_offers_for_calltracking_card,
+)
 from my_offers.services.offers._get_offers_ids_by_tab import get_offers_ids_by_tab
 from my_offers.services.offers._load_object_model import load_object_model
 from my_offers.services.offers._offers_creation_date import get_offers_creation_date

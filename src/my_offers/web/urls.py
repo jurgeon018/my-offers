@@ -133,6 +133,28 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
 
+    # calltracking
+    url(
+        r'/v1/get-offers-for-calltracking/$',
+        get_handler(
+            service=offers.get_offers_for_calltracking,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.OffersForCalltrackingRequest,
+            response_schema=entities.OffersForCalltrackingResponse,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
+    url(
+        r'/v1/get-offers-for-calltracking-card/$',
+        get_handler(
+            service=offers.get_offers_for_calltracking_card,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.OffersForCalltrackingRequest,
+            response_schema=entities.OffersForCalltrackingCardResponse,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
+
     # public API
     url(
         r'/v1/get-offers-creation-date/$',
