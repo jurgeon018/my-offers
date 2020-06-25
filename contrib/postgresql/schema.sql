@@ -52,6 +52,9 @@ CREATE TABLE offers
     is_in_hidden_base bool                     not null,
     has_photo         bool                     not null,
 
+    district_id       int,
+    house_id          int,
+
 -- поля для поиска
     search_text       text                     not null,
 
@@ -74,6 +77,7 @@ CREATE TABLE offers
 CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));
 CREATE INDEX ON offers (master_user_id, status_tab);
 CREATE INDEX ON offers (updated_at);
+CREATE INDEX ON offers (district_id);
 
 CREATE TABLE offers_billing_contracts
 (
