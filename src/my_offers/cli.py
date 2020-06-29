@@ -174,10 +174,6 @@ def fix_offers(ids: str):
         my-offers fix-offers --ids 123,777
     """
     offers_ids = list(map(int, [i.strip() for i in ids.split(',')]))
-    offers_ids = [
-        231477568,
-        231482728
-    ]
 
     with new_operation_id():
         IOLoop.current().run_sync(partial(
