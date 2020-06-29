@@ -5,7 +5,7 @@ class OfferActionStatus(StrEnum):
     ok = 'ok'
 
 
-class ActionType(StrEnum):
+class MassRestoreActionType(StrEnum):
     all = 'all'
     """Восстановить все объявления"""
     select = 'select'
