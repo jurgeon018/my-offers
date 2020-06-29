@@ -54,7 +54,7 @@ async def test_process_announcement(mocker, announcement):
         walking_time=None,
         street_name='Большая Садовая',
         sort_date=TIMEZONE.localize(datetime(2020, 2, 7, 16, 25, 37, 99015)),
-        district_id=221,
+        district_id=641,
         house_id=2045030,
     )
 

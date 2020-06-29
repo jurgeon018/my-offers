@@ -33,6 +33,7 @@ from my_offers.services.announcement.fields.district_id import get_district_id
                     name='Троицкий район',
                     type=Type.raion,
                     location_id=134,
+                    parent_id=326
                 )
             ],
             444
@@ -50,6 +51,7 @@ from my_offers.services.announcement.fields.district_id import get_district_id
                     name='Троицкий микрорайон район',
                     type=Type.mikroraion,
                     location_id=1,
+                    parent_id=326
                 )
             ],
             488
@@ -67,6 +69,7 @@ from my_offers.services.announcement.fields.district_id import get_district_id
                     name='Троицк',
                     type=Type.poselenie,
                     location_id=1,
+                    parent_id=326
                 )
             ],
             346
@@ -84,21 +87,53 @@ from my_offers.services.announcement.fields.district_id import get_district_id
                     name='Троицкий район',
                     type=Type.raion,
                     location_id=134,
+                    parent_id=326
                 ),
                 DistrictInfo(
                     id=488,
                     name='Троицкий микрорайон район',
                     type=Type.mikroraion,
                     location_id=1,
+                    parent_id=444
                 ),
                 DistrictInfo(
-                    id=346,
+                    id=526,
                     name='Троицк',
                     type=Type.poselenie,
                     location_id=1,
+                    parent_id=488
                 )
             ],
-            444
+            526
+        ),
+        (
+            [
+                DistrictInfo(
+                    id=133,
+                    name='Центральный',
+                    type=Type.raion,
+                    location_id=2,
+                ),
+                DistrictInfo(
+                    id=766,
+                    name='Литейный',
+                    type=Type.okrug,
+                    location_id=2,
+                    parent_id=133
+                )
+            ],
+            766
+        ),
+        (
+            [
+                DistrictInfo(
+                    id=133,
+                    name='Центральный',
+                    type=Type.raion,
+                    location_id=2,
+                ),
+            ],
+            None
         ),
 
     )
