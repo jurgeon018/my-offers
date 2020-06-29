@@ -1,5 +1,7 @@
 from my_offers import entities
-from my_offers.enums.change_publisher import ChangePublisherStatus
+from my_offers.repositories.monolith_cian_announcementapi.entities.announcement_progress_dto import (
+    State as OffersOperationStatus,
+)
 
 
 async def change_offers_publisher(
@@ -16,11 +18,11 @@ async def change_offers_publisher(
         offers=[
             entities.OffersChangePublisherStatus(
                 offer_id=3,
-                status=ChangePublisherStatus.completed,
+                status=OffersOperationStatus.completed,
             ),
             entities.OffersChangePublisherStatus(
                 offer_id=4,
-                status=ChangePublisherStatus.error,
+                status=OffersOperationStatus.error,
                 message='Ошибка при смене владельца. Недостаточно средств.'
             )
         ]
