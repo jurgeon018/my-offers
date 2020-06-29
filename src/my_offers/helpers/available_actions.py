@@ -29,8 +29,8 @@ def get_available_actions(
 ) -> entities.AvailableActions:
     """
         Возможные действия
-        Активные: Удалить, Перенести в архив, Редактировать(черновик), Поднять, Восстановить (!= черновик)
-        Неактивные: Удалить, Перенести в архив, Редактировать
+        Активные: Удалить, Перенести в архив, Редактировать, Поднять
+        Неактивные: Удалить, Перенести в архив, Редактировать(черновик), Восстановить (!= черновик)
         Архив: Восстановить, Удалить
 
         Если объявление находится в статусе `Снято с публикации`, то появляется кнопка "Восстановить".
@@ -55,7 +55,7 @@ def get_available_actions(
 
     can_edit = not is_archived and not status.is_removed_by_moderator
     return entities.AvailableActions(
-        can_edit=status.is_draft and can_edit,
+        can_edit=status.is_draft or status.is_published and can_edit,
         can_raise=_can_raise(
             is_archived=is_archived,
             is_published=status.is_published,
@@ -79,7 +79,7 @@ def _can_restore(*, is_archived: bool, is_removed_by_moderator: bool, is_discont
     if is_archived or is_discontinued:
         return True
 
-    return True
+    return False
 
 
 def _can_raise(*, is_archived: bool, is_published: bool, is_in_hidden_base: Optional[bool]) -> bool:
