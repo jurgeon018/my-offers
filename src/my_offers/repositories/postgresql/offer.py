@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 import asyncpgsa
 import pytz
 from simple_settings import settings
-from sqlalchemy import and_, or_, select, update
+from sqlalchemy import and_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.functions import count
 
@@ -27,12 +27,9 @@ from my_offers.repositories.postgresql.offer_conditions import prepare_condition
 # realty объявление, которое перенесли в архив всегда приходит с таким row_version (фейковый)
 REALTY_ARCHIVE_ROW_VERSION = 1
 
-# для my-offers устанавливаем невалидный row_version, т.к. для архива существует только фековый row_version
-# при переносе объявления из архива, такой row_version гарантированно будет обновлен
-MY_OFFERS_ARCHIVE_ROW_VERSION = -1
-
 
 async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
+    """ Сохрнаить любое объявление, кроме архива. """
     insert_query = insert(tables.offers)
 
     now = datetime.now(tz=pytz.UTC)
@@ -41,31 +38,13 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
     values['updated_at'] = now
     values['event_date'] = event_date
 
-    is_archive = (
-        offer.row_version == REALTY_ARCHIVE_ROW_VERSION
-        and offer.status_tab == OfferStatusTab.archived
-    )
-    if is_archive:
-        # устанавливаем невалидный row_version с точки зрения Realty.Objects
-        values['row_version'] = MY_OFFERS_ARCHIVE_ROW_VERSION
-        row_version = MY_OFFERS_ARCHIVE_ROW_VERSION
-    else:
-        row_version = insert_query.excluded.row_version
-
     query, params = asyncpgsa.compile_query(
         insert_query
         .values([values])
         .on_conflict_do_update(
             index_elements=[tables.offers.c.offer_id],
-            where=or_(
-                and_(
-                    tables.offers.c.updated_at < event_date,
-                    is_archive
-                ),
-                and_(
-                    tables.offers.c.row_version < offer.row_version,
-                    tables.offers.c.event_date < event_date,
-                )
+            where=(
+                tables.offers.c.row_version < offer.row_version
             ),
             set_={
                 'master_user_id': insert_query.excluded.master_user_id,
@@ -85,7 +64,61 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
                 'walking_time': insert_query.excluded.walking_time,
                 'sort_date': insert_query.excluded.sort_date,
                 'raw_data': insert_query.excluded.raw_data,
-                'row_version': row_version,
+                'row_version': insert_query.excluded.row_version,
+                'is_test': insert_query.excluded.is_test,
+                'updated_at': insert_query.excluded.updated_at,
+                'event_date': event_date,
+            }
+        )
+    )
+
+    await pg.get().execute(query, *params)
+
+
+async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> None:
+    """ Сохрнаить архивное объявление.
+        Если объявление уже есть в БД, то row_version не обновляем.
+    """
+    insert_query = insert(tables.offers)
+
+    now = datetime.now(tz=pytz.UTC)
+    values = offer_mapper.map_to(offer)
+    values['created_at'] = now
+    values['updated_at'] = now
+    values['event_date'] = event_date
+
+    is_archive = (
+        offer.row_version == REALTY_ARCHIVE_ROW_VERSION
+        and offer.status_tab == OfferStatusTab.archived
+    )
+
+    query, params = asyncpgsa.compile_query(
+        insert_query
+        .values([values])
+        .on_conflict_do_update(
+            index_elements=[tables.offers.c.offer_id],
+            where=and_(
+                tables.offers.c.event_date < event_date,
+                is_archive
+            ),
+            set_={
+                'master_user_id': insert_query.excluded.master_user_id,
+                'user_id': insert_query.excluded.user_id,
+                'deal_type': insert_query.excluded.deal_type,
+                'offer_type': insert_query.excluded.offer_type,
+                'status_tab': insert_query.excluded.status_tab,
+                'services': insert_query.excluded.services,
+                'is_manual': insert_query.excluded.is_manual,
+                'is_in_hidden_base': insert_query.excluded.is_in_hidden_base,
+                'has_photo': insert_query.excluded.has_photo,
+                'search_text': insert_query.excluded.search_text,
+                'price': insert_query.excluded.price,
+                'price_per_meter': insert_query.excluded.price_per_meter,
+                'total_area': insert_query.excluded.total_area,
+                'street_name': insert_query.excluded.street_name,
+                'walking_time': insert_query.excluded.walking_time,
+                'sort_date': insert_query.excluded.sort_date,
+                'raw_data': insert_query.excluded.raw_data,
                 'is_test': insert_query.excluded.is_test,
                 'updated_at': insert_query.excluded.updated_at,
                 'event_date': event_date,

@@ -62,7 +62,7 @@ async def test_process_announcement_consumer__archive_offer(queue_service, pg, o
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
 
     assert row['status_tab'] == 'archived'
-    assert row['row_version'] == -1
+    assert row['row_version'] == 1
 
 
 @pytest.mark.asyncio
@@ -84,7 +84,9 @@ async def test_process_announcement_consumer__archive_offer_after_active_offer(
     """
     # arrange
     offer_active['date'] = str(datetime(2020, 1, 1))
+    offer_active['model']['rowVersion'] = 123
     offer_archive['date'] = str(datetime.now() + timedelta(days=5))
+    offer_archive['model']['rowVersion'] = 1
 
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
@@ -96,7 +98,7 @@ async def test_process_announcement_consumer__archive_offer_after_active_offer(
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
 
     assert row['status_tab'] == 'archived'
-    assert row['row_version'] == -1
+    assert row['row_version'] == 123
 
 
 @pytest.mark.asyncio
@@ -117,7 +119,9 @@ async def test_process_announcement_consumer__active_offer_after_archive_offer(
     Дата активного меньше даты архивного.
     """
     offer_archive['date'] = str(datetime.now() + timedelta(days=5))
+    offer_archive['model']['rowVersion'] = 123
     offer_active['date'] = str(datetime(2020, 1, 1))
+    offer_active['model']['rowVersion'] = 122
 
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
@@ -129,7 +133,7 @@ async def test_process_announcement_consumer__active_offer_after_archive_offer(
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
 
     assert row['status_tab'] == 'archived'
-    assert row['row_version'] == -1
+    assert row['row_version'] == 123
 
 
 @pytest.mark.asyncio
