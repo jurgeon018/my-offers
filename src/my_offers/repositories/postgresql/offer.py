@@ -39,6 +39,7 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
     values = offer_mapper.map_to(offer)
     values['created_at'] = now
     values['updated_at'] = now
+    values['event_date'] = event_date
 
     is_archive = (
         offer.row_version == REALTY_ARCHIVE_ROW_VERSION
@@ -63,7 +64,7 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
                 ),
                 and_(
                     tables.offers.c.row_version < offer.row_version,
-                    tables.offers.c.updated_at < event_date,
+                    tables.offers.c.event_date < event_date,
                 )
             ),
             set_={
@@ -87,6 +88,7 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
                 'row_version': row_version,
                 'is_test': insert_query.excluded.is_test,
                 'updated_at': insert_query.excluded.updated_at,
+                'event_date': event_date,
             }
         )
     )
