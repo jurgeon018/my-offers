@@ -44,7 +44,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_move_to_archive=True,
             can_delete=True,
             can_edit=True,
-            can_restore=False,
+            can_restore=True,
             can_raise=True,
         )
     ),
@@ -54,7 +54,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_move_to_archive=True,
             can_delete=True,
             can_edit=True,
-            can_restore=False,
+            can_restore=True,
             can_raise=True,
         )
     ),
@@ -105,19 +105,21 @@ def test_get_available_actions__no_settings__actions():
 
 
 @pytest.mark.parametrize(
-    ('is_removed_by_moderator', 'is_archived', 'expected'),
+    ('is_removed_by_moderator', 'is_archived', 'is_discontinued', 'expected'),
     (
-        (False, False, False),
-        (True, False, False),
-        (False, True, True),
-        (True, True, False),
+        (False, False, False, True),
+        (True, False, False, False),
+        (False, True, False, True),
+        (True, True, False, False),
+        (False, False, True, True),
     )
 )
-def test__can_restore(mocker, is_archived, is_removed_by_moderator, expected):
+def test__can_restore(mocker, is_archived, is_removed_by_moderator, is_discontinued, expected):
     # arrange & act
     result = _can_restore(
         is_archived=is_archived,
         is_removed_by_moderator=is_removed_by_moderator,
+        is_discontinued=is_discontinued
     )
 
     # assert

@@ -47,7 +47,7 @@ def test_build_offer_view(enrich_data_mock):
         statistics=Statistics(shows=None, views=None, favorites=None),
         available_actions=AvailableActions(
             can_edit=True,
-            can_restore=False,
+            can_restore=True,
             can_update_edit_date=False,
             can_move_to_archive=True,
             can_delete=True,
