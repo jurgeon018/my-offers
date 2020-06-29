@@ -12,13 +12,13 @@ from my_offers.services.announcement.fields.district_id import get_district_id
         (
             [
                 DistrictInfo(
-                    id=326,
-                    name='ТАО (Троицкий)',
-                    type=Type.okrug,
-                    location_id=1,
+                    id=555,
+                    name='Троицкое поселение',
+                    type=Type.poselenie,
+                    location_id=44,
                 )
             ],
-            None
+            555
         ),
         (
             [
@@ -133,7 +133,7 @@ from my_offers.services.announcement.fields.district_id import get_district_id
                     location_id=2,
                 ),
             ],
-            None
+            133
         ),
 
     )
