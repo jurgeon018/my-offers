@@ -43,7 +43,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_update_edit_date=True,
             can_move_to_archive=True,
             can_delete=True,
-            can_edit=True,
+            can_edit=False,
             can_restore=True,
             can_raise=True,
         )
@@ -53,7 +53,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_update_edit_date=True,
             can_move_to_archive=True,
             can_delete=True,
-            can_edit=True,
+            can_edit=False,
             can_restore=True,
             can_raise=True,
         )

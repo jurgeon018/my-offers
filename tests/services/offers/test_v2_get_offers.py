@@ -332,7 +332,7 @@ async def test_v2_get_offer_views(mocker):
                 archived_at=None,
                 status='Опубликовано',
                 available_actions=AvailableActions(
-                    can_edit=True,
+                    can_edit=False,
                     can_restore=True,
                     can_update_edit_date=False,
                     can_move_to_archive=True,
