@@ -28,7 +28,9 @@ def test_get_status(mocker, status, is_archived, expected):
     ('status', 'is_manual', 'expected'),
     (
         (None, True, None),
+        (None, False, OfferStatus.xml),
         (Status.draft, True, OfferStatus.draft),
+        (Status.draft, False, OfferStatus.xml),
         (Status.published, False, OfferStatus.xml),
         (Status.published, True, None),
     )
