@@ -37,6 +37,8 @@ async def test_save_offer(mocker):
         walking_time=15,
         street_name='AAAAA',
         sort_date=datetime(2020, 2, 7),
+        district_id=10,
+        house_id=111,
     )
 
     # act
@@ -60,7 +62,9 @@ async def test_save_offer(mocker):
         FakeDatetime(2020, 2, 10, 9, 57, 30, 303690, tzinfo=pytz.UTC),
         'rent',
         FakeDatetime(2020, 6, 1, 0, 0),
+        10,
         False,
+        111,
         False,
         True,
         False,
