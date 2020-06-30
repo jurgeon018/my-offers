@@ -25,7 +25,7 @@ from my_offers.repositories.monolith_cian_realty.entities.get_resend_messages_jo
 from my_offers.repositories.monolith_cian_realty.entities.resend_announcements_messages_request import BroadcastType
 
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 END_STATUSES = [
     JobStatus.finished,

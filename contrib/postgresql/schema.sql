@@ -71,7 +71,8 @@ CREATE TABLE offers
     row_version       bigint                   not null,
     is_test           boolean,
     created_at        timestamp with time zone not null,
-    updated_at        timestamp with time zone not null
+    updated_at        timestamp with time zone not null,
+    event_date        timestamp with time zone not null
 );
 
 CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));

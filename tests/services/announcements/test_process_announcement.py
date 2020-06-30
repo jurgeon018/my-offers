@@ -30,7 +30,7 @@ async def test_process_announcement(mocker, announcement):
         'my_offers.services.announcement.process_announcement_service._get_master_user_id',
         return_value=future(15062425),
     )
-
+    event_date = datetime(2020, 6, 18)
     offer = entities.Offer(
         offer_id=165456885,
         master_user_id=15062425,
@@ -59,10 +59,10 @@ async def test_process_announcement(mocker, announcement):
     )
 
     # act
-    await process_announcement(announcement)
+    await process_announcement(object_model=announcement, event_date=event_date)
 
     # assert
-    save_offer_mock.assert_called_once_with(offer)
+    save_offer_mock.assert_called_once_with(offer=offer, event_date=event_date)
     get_master_user_id_mock.assert_called_once_with(offer_id=165456885, user_id=15062425)
 
 

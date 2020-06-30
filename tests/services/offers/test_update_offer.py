@@ -19,10 +19,9 @@ async def test_update_offer(mocker):
         return_value=future(),
     )
 
-
     # act
     await update_offer(entities.UpdateOfferRequest(offer_id=11))
 
     # assert
     v1_get_announcement_mock.assert_called_once_with(V1GetAnnouncement(id=11))
-    process_announcement_mock.assert_called_once_with(object_model)
+    process_announcement_mock.assert_called_once_with(object_model=object_model, event_date=mocker.ANY)

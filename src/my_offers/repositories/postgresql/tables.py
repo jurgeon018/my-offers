@@ -42,6 +42,7 @@ offers = sa.Table(
     sa.Column('raw_data', sa.JSON, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('event_date', sa.TIMESTAMP, nullable=False),
     sa.Column('total_area', sa.FLOAT),
     sa.Column('price', sa.FLOAT),
     sa.Column('price_per_meter', sa.FLOAT),

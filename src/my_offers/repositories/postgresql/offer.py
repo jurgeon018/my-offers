@@ -12,6 +12,7 @@ from my_offers import entities, enums, pg
 from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
+from my_offers.enums import OfferStatusTab
 from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.offer_mapper import (
     offer_mapper,
@@ -23,20 +24,28 @@ from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
 
 
-async def save_offer(offer: entities.Offer) -> None:
+# realty объявление, которое перенесли в архив всегда приходит с таким row_version (фейковый)
+REALTY_ARCHIVE_ROW_VERSION = 1
+
+
+async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
+    """ Сохрнаить любое объявление, кроме архива. """
     insert_query = insert(tables.offers)
 
     now = datetime.now(tz=pytz.UTC)
     values = offer_mapper.map_to(offer)
     values['created_at'] = now
     values['updated_at'] = now
+    values['event_date'] = event_date
 
     query, params = asyncpgsa.compile_query(
         insert_query
         .values([values])
         .on_conflict_do_update(
             index_elements=[tables.offers.c.offer_id],
-            where=tables.offers.c.row_version < offer.row_version,
+            where=(
+                tables.offers.c.row_version < offer.row_version
+            ),
             set_={
                 'master_user_id': insert_query.excluded.master_user_id,
                 'user_id': insert_query.excluded.user_id,
@@ -60,6 +69,61 @@ async def save_offer(offer: entities.Offer) -> None:
                 'updated_at': insert_query.excluded.updated_at,
                 'district_id': insert_query.excluded.district_id,
                 'house_id': insert_query.excluded.house_id,
+                'event_date': event_date,
+            }
+        )
+    )
+
+    await pg.get().execute(query, *params)
+
+
+async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> None:
+    """ Сохрнаить архивное объявление.
+        Если объявление уже есть в БД, то row_version не обновляем.
+    """
+    insert_query = insert(tables.offers)
+
+    now = datetime.now(tz=pytz.UTC)
+    values = offer_mapper.map_to(offer)
+    values['created_at'] = now
+    values['updated_at'] = now
+    values['event_date'] = event_date
+
+    is_archive = (
+        offer.row_version == REALTY_ARCHIVE_ROW_VERSION
+        and offer.status_tab == OfferStatusTab.archived
+    )
+
+    query, params = asyncpgsa.compile_query(
+        insert_query
+        .values([values])
+        .on_conflict_do_update(
+            index_elements=[tables.offers.c.offer_id],
+            where=and_(
+                tables.offers.c.event_date < event_date,
+                is_archive
+            ),
+            set_={
+                'master_user_id': insert_query.excluded.master_user_id,
+                'user_id': insert_query.excluded.user_id,
+                'deal_type': insert_query.excluded.deal_type,
+                'offer_type': insert_query.excluded.offer_type,
+                'status_tab': insert_query.excluded.status_tab,
+                'services': insert_query.excluded.services,
+                'is_manual': insert_query.excluded.is_manual,
+                'is_in_hidden_base': insert_query.excluded.is_in_hidden_base,
+                'has_photo': insert_query.excluded.has_photo,
+                'search_text': insert_query.excluded.search_text,
+                'price': insert_query.excluded.price,
+                'price_per_meter': insert_query.excluded.price_per_meter,
+                'total_area': insert_query.excluded.total_area,
+                'street_name': insert_query.excluded.street_name,
+                'walking_time': insert_query.excluded.walking_time,
+                'sort_date': insert_query.excluded.sort_date,
+                'raw_data': insert_query.excluded.raw_data,
+                'is_test': insert_query.excluded.is_test,
+                'updated_at': insert_query.excluded.updated_at,
+                'event_date': event_date,
             }
         )
     )
