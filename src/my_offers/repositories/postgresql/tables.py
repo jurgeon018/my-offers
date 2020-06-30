@@ -49,6 +49,8 @@ offers = sa.Table(
     sa.Column('street_name', sa.String),
     sa.Column('sort_date', sa.TIMESTAMP),
     sa.Column('is_test', sa.BOOLEAN),
+    sa.Column('district_id', sa.INT),
+    sa.Column('house_id', sa.INT)
 )
 
 offers_billing_contracts = sa.Table(

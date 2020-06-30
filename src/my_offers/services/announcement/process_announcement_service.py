@@ -6,6 +6,8 @@ from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
 from my_offers.repositories.postgresql.billing import get_offer_publisher_user_id
+from my_offers.services.announcement.fields.district_id import get_district_id
+from my_offers.services.announcement.fields.house_id import get_house_id
 from my_offers.services.announcement.fields.is_test import get_is_test
 from my_offers.services.announcement.fields.prices import get_prices
 from my_offers.services.announcement.fields.search_text import get_search_text
@@ -52,6 +54,8 @@ async def prepare_offer(object_model: ObjectModel) -> entities.Offer:
         walking_time=get_walking_time(geo),
         street_name=get_street_name(geo.address) if geo else None,
         sort_date=get_sort_date(object_model=object_model, status_tab=status_tab),
+        district_id=get_district_id(geo.district) if geo else None,
+        house_id=get_house_id(geo.address) if geo else None,
     )
 
     return offer
