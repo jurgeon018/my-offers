@@ -21,13 +21,13 @@ def get_status(is_archived: bool, status: Optional[Status]) -> Optional[str]:
 
 
 def get_status_type(*, is_manual: bool, status: Optional[Status]) -> Optional[OfferStatus]:
+    if not is_manual:
+        return OfferStatus.xml
+
     if not status:
         return None
 
     if status.is_draft:
         return OfferStatus.draft
-
-    if not is_manual:
-        return OfferStatus.xml
 
     return None
