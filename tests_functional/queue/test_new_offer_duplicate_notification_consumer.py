@@ -2,7 +2,6 @@ import asyncio
 import json
 from pathlib import Path
 
-from anyio import sleep
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
 
@@ -12,16 +11,11 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 
-    notification_center_stub = await notification_center_mock.add_stub(
-        method='POST',
-        path='/v2/register-notifications/',
-        response=MockResponse(),
-    )
-    notification_center_settings_stub = await notification_center_mock.add_stub(
+    await notification_center_mock.add_stub(
         method='POST',
         path='/v1/mobile-push/get-settings/',
         response=MockResponse(
-            {
+            body={
                 'items': [
                     {
                         'children': [
@@ -37,6 +31,11 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
             }
         ),
     )
+    notification_center_stub = await notification_center_mock.add_stub(
+        method='POST',
+        path='/v2/register-notifications/',
+        response=MockResponse(),
+    )
 
     message = {
         'duplicateOfferId': 231655140,
@@ -50,8 +49,6 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
     await asyncio.sleep(1)
     messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
-
-    sleep(100000)
 
     # assert
     request = await notification_center_stub.get_request()
@@ -93,6 +90,41 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
     }
 
 
+async def test_new_offer_duplicate_notification_consumer__push_disabled__skip(
+        queue_service, pg, kafka_service, notification_center_mock
+):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
+    await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
+
+    await notification_center_mock.add_stub(
+        method='POST',
+        path='/v1/mobile-push/get-settings/',
+        response=MockResponse(
+            body={
+                'items': []
+            }
+        ),
+    )
+
+    message = {
+        'duplicateOfferId': 231655140,
+        'date': '2020-05-27T15:07:35.005788+00:00',
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
+    }
+
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
+
+    # act
+    await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
+    await asyncio.sleep(1)
+    messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
+
+    # assert
+    assert len(messages) == 0
+
+
 async def test_new_offer_duplicate_notification_consumer__already_sent(queue_service, pg, notification_center_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
@@ -129,16 +161,11 @@ async def test_new_offer_duplicate_notification_consumer__error(queue_service, p
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 
-    notification_center_stub = await notification_center_mock.add_stub(
-        method='POST',
-        path='/v2/register-notifications/',
-        response=MockResponse(status=500),
-    )
-    notification_center_settings_stub = await notification_center_mock.add_stub(
+    await notification_center_mock.add_stub(
         method='POST',
         path='/v1/mobile-push/get-settings/',
         response=MockResponse(
-            {
+            body={
                 'items': [
                     {
                         'children': [
@@ -153,6 +180,11 @@ async def test_new_offer_duplicate_notification_consumer__error(queue_service, p
                 ]
             }
         ),
+    )
+    notification_center_stub = await notification_center_mock.add_stub(
+        method='POST',
+        path='/v2/register-notifications/',
+        response=MockResponse(status=500),
     )
 
     message = {

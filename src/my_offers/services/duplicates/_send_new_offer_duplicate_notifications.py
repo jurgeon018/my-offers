@@ -1,18 +1,20 @@
 from datetime import datetime
+from typing import Dict
 
 import pytz
 from asyncpg import UniqueViolationError
-from typing import Dict
 
 from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
 from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.repositories.notification_center import v2_register_notifications, v1_mobile_push_get_settings
+from my_offers.repositories.notification_center import v1_mobile_push_get_settings, v2_register_notifications
 from my_offers.repositories.notification_center.entities import (
+    GetMobilePushSettingsRequest,
+    GetMobilePushSettingsResponse,
     RegisterNotificationsV2Request,
-    RegisterNotificationV2Request, GetMobilePushSettingsRequest, GetMobilePushSettingsResponse,
+    RegisterNotificationV2Request,
 )
 from my_offers.repositories.notification_center.entities.get_mobile_push_settings_request import OsType
 from my_offers.repositories.notification_center.entities.register_notification_v2_request import (
