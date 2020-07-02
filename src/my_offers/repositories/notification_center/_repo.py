@@ -14,6 +14,13 @@ from . import entities
 
 
 _api = Api(microservice_name='notification-center')
+v1_mobile_push_get_settings = _api.make_client(
+    path='/v1/mobile-push/get-settings/',
+    method='POST',
+    handle_http_exceptions=True,
+    request_schema=entities.GetMobilePushSettingsRequest,
+    response_schema=entities.GetMobilePushSettingsResponse,
+)
 v2_register_notifications = _api.make_client(
     path='/v2/register-notifications/',
     method='POST',
