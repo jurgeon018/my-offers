@@ -2,6 +2,7 @@ import asyncio
 import json
 from pathlib import Path
 
+from anyio import sleep
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
 
@@ -16,6 +17,26 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
         path='/v2/register-notifications/',
         response=MockResponse(),
     )
+    notification_center_settings_stub = await notification_center_mock.add_stub(
+        method='POST',
+        path='/v1/mobile-push/get-settings/',
+        response=MockResponse(
+            {
+                'items': [
+                    {
+                        'children': [
+                            {'description': '',
+                             'id': 'OfferNewDuplicateFoundNotifications',
+                             'isActive': True,
+                             'title': 'Новые дубли по объектам'}
+                        ],
+                        'id': 'OfferDuplicatesGroup',
+                        'title': 'Дубли по вашим объектам'
+                    }
+                ]
+            }
+        ),
+    )
 
     message = {
         'duplicateOfferId': 231655140,
@@ -29,6 +50,8 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
     await asyncio.sleep(1)
     messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
+
+    sleep(100000)
 
     # assert
     request = await notification_center_stub.get_request()
@@ -110,6 +133,26 @@ async def test_new_offer_duplicate_notification_consumer__error(queue_service, p
         method='POST',
         path='/v2/register-notifications/',
         response=MockResponse(status=500),
+    )
+    notification_center_settings_stub = await notification_center_mock.add_stub(
+        method='POST',
+        path='/v1/mobile-push/get-settings/',
+        response=MockResponse(
+            {
+                'items': [
+                    {
+                        'children': [
+                            {'description': '',
+                             'id': 'OfferNewDuplicateFoundNotifications',
+                             'isActive': True,
+                             'title': 'Новые дубли по объектам'}
+                        ],
+                        'id': 'OfferDuplicatesGroup',
+                        'title': 'Дубли по вашим объектам'
+                    }
+                ]
+            }
+        ),
     )
 
     message = {
