@@ -66,7 +66,7 @@ async def process_notification(*, offer: ObjectModel, duplicate_offer: ObjectMod
         return
 
     try:
-        await _send_notification(offer)
+        await _send_notification(offer=offer, duplicate_offer=duplicate_offer)
     except:
         # неполучилось отправить
         await delete_offers_duplicate_notification(notification)
@@ -75,7 +75,7 @@ async def process_notification(*, offer: ObjectModel, duplicate_offer: ObjectMod
     OfferDuplicateEventProducer.produce_new_duplicate_event(offer=offer, duplicate_offer=duplicate_offer)
 
 
-async def _send_notification(offer: ObjectModel):
+async def _send_notification(*, offer: ObjectModel, duplicate_offer: ObjectModel):
     offer_type, deal_type = get_types(offer.category)
 
     await v2_register_notifications(RegisterNotificationsV2Request(
@@ -87,10 +87,11 @@ async def _send_notification(offer: ObjectModel):
             mobile_push_payload={
                 'dealType': deal_type.value,
                 'offerType': offer_type.value,
+                'duplicateOfferId': duplicate_offer.id,
             },
             text=get_address_for_push(offer.geo),
             title='Новый дубль вашего объекта',
-            web_url=get_offer_url(offer_id=offer.id, offer_type=offer_type, deal_type=deal_type),
+            web_url=get_offer_url(offer_id=duplicate_offer.id, offer_type=offer_type, deal_type=deal_type),
             media_url=get_main_photo_url(offer.photos),
             transports_to_send=[TransportsToSend.mobile_push],
         )]
