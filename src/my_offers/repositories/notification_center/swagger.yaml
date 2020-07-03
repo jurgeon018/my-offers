@@ -7,6 +7,47 @@ definitions:
         type: array
       message: {title: message, type: string}
     type: object
+  notification_center.web.entities.mobile_push.push_settings.GetMobilePushSettingsRequestSchema:
+    properties:
+      isAuthenticated: {description: Анонимный/Зарегистрированный пользователь, title: is_authenticated,
+        type: boolean}
+      osType:
+        description: Тип операционной системы iOS/Android
+        enum: [android, ios]
+        type: string
+        x-android: Android
+        x-ios: iOS
+      userId: {description: Идентификатор пользователя, title: user_id, type: string}
+    required: [isAuthenticated, osType, userId]
+    type: object
+  notification_center.web.entities.mobile_push.push_settings.GetMobilePushSettingsResponseSchema:
+    properties:
+      items:
+        description: Список настроек мобильных пушей
+        items: {$ref: '#/definitions/notification_center.web.entities.mobile_push.push_settings.MobilePushSettingsParentItemRequestSchema'}
+        type: array
+    required: [items]
+    type: object
+  notification_center.web.entities.mobile_push.push_settings.MobilePushSettingsChildItemRequestSchema:
+    properties:
+      description: {description: Описание настрйоки мобильного пуша, title: description,
+        type: string}
+      id: {description: Идентификатор настройки пуша, title: id, type: string}
+      isActive: {description: Флаг вкл/выкл мобильный пуш, title: is_active, type: boolean}
+      title: {description: Название настройки мобильного пуша, title: title, type: string}
+    required: [description, id, isActive, title]
+    type: object
+  notification_center.web.entities.mobile_push.push_settings.MobilePushSettingsParentItemRequestSchema:
+    properties:
+      children:
+        description: Список настроек мобильных пушей для группы
+        items: {$ref: '#/definitions/notification_center.web.entities.mobile_push.push_settings.MobilePushSettingsChildItemRequestSchema'}
+        type: array
+      id: {description: Идентификатор группы настроек, title: id, type: string}
+      title: {description: Название группы настроек мобильных пушей, title: title,
+        type: string}
+    required: [children, id, title]
+    type: object
   notification_center.web.entities.notifications.RegisterNotificationV2RequestSchema:
     properties:
       emailPayload: {description: Данные для email, title: email_payload, type: object}
@@ -89,6 +130,21 @@ definitions:
     type: object
 info: {description: Notification Center, title: notification-center, version: 1.0.0}
 paths:
+  /v1/mobile-push/get-settings/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema: {$ref: '#/definitions/notification_center.web.entities.mobile_push.push_settings.GetMobilePushSettingsRequestSchema'}
+      produces: [application/json]
+      responses:
+        '200':
+          schema: {$ref: '#/definitions/notification_center.web.entities.mobile_push.push_settings.GetMobilePushSettingsResponseSchema'}
+        '400':
+          schema: {$ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'}
+      summary: "Возвращает список настроек мобильных пушей пользователя.\n    Используется\
+        \ из микросервсиа mobile-push-notifications"
   /v2/register-notifications/:
     post:
       parameters:
