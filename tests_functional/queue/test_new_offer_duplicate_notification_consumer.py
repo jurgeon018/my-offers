@@ -61,7 +61,8 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
                 'mediaUrl': 'https://cdn-p.cian.site/images/1/644/244/kvartira-tula-prospekt-lenina-442446187-3.jpg',
                 'mobilePushPayload': {
                     'dealType': 'rent',
-                    'offerType': 'flat'
+                    'offerType': 'flat',
+                    'duplicateOfferId': 231655140,
                 },
                 'notificationType': 'offerNewDuplicateFound',
                 'plannedSendDatetime': None,
@@ -70,7 +71,7 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
                 'transportsToSend': ['mobilePush'],
                 'userId': '6808488',
                 'webPushPayload': None,
-                'webUrl': 'http://master.dev3.cian.ru/rent/flat/173975523'
+                'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140'
             }
         ]
     }
