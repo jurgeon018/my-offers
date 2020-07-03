@@ -46,7 +46,14 @@ async def send_new_offer_duplicate_notifications(duplicate_offer_id: int) -> Non
             break
 
         for offer in duplicates:
-            if offer.published_user_id == duplicate_offer.published_user_id:
+            user_id = offer.published_user_id
+            if user_id == duplicate_offer.published_user_id:
+                continue
+
+            if user_id not in user_settings:
+                user_settings[user_id] = await _is_push_enabled(user_id)
+
+            if not user_settings[user_id]:
                 continue
 
             await process_notification(offer=offer, duplicate_offer=duplicate_offer)
