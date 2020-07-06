@@ -176,6 +176,7 @@ async def get_offers_in_same_building(
         low_price: float,
         high_price: float,
         duplicates_ids: List[int],
+        is_test: bool,
         limit: int,
         offset: int
 ) -> Tuple[List[ObjectModel], int]:
@@ -194,11 +195,11 @@ async def get_offers_in_same_building(
         and o.price  <= $6
         and o.offer_id <> all ($7::bigint[])
         and o.status_tab = $8
-        and not o.is_test
+        and o.is_test = $9
     order by
         o.sort_date desc
-    limit $9
-    offset $10;
+    limit $10
+    offset $11;
     """
 
     result = await pg.get().fetch(
@@ -211,6 +212,7 @@ async def get_offers_in_same_building(
         high_price,
         duplicates_ids,
         enums.OfferStatusTab.active.value,
+        is_test,
         limit,
         offset,
         timeout=settings.DB_TIMEOUT

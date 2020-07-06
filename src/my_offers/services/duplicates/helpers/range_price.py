@@ -3,6 +3,7 @@ from typing import Optional, Tuple
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms
 from my_offers.services.announcement.fields.prices import get_prices
 
+
 PRICE_DEVIATION = 0.2
 
 
