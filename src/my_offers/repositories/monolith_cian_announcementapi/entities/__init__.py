@@ -27,6 +27,8 @@ from .parking import Parking
 from .building import Building
 from .business_shopping_center import BusinessShoppingCenter
 from .calculated_undergrounds import CalculatedUndergrounds
+from .change_owner_request import ChangeOwnerRequest
+from .change_owner_response import ChangeOwnerResponse
 from .commercial_specialty import CommercialSpecialty
 from .coordinates import Coordinates
 from .cpl_moderation import CplModeration
