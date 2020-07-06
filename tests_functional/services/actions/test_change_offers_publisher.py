@@ -131,7 +131,7 @@ class TestChangeOffersPublisher:
             ]
         }
 
-    async def change_offers_publisher__offers_ids_is_empty(self, pg, http):
+    async def test_change_offers_publisher__offers_ids_is_empty(self, pg, http):
         """ При пустом offers_ids возвращаем пустой результат """
         # arrange
         master_user = 333
