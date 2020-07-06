@@ -1,4 +1,3 @@
-import asyncio
 from typing import List, Tuple
 
 from cian_web.exceptions import BrokenRulesException, Error
@@ -7,25 +6,24 @@ from simple_settings import settings
 from my_offers import entities, helpers
 from my_offers.enums import GetOffersSortType
 from my_offers.repositories import monolith_cian_announcementapi, postgresql
-from my_offers.repositories.monolith_cian_announcementapi.entities import (
-    AnnouncementProgressDto,
-    AnnouncementsActionsV1GetJobStatus,
-    GetJobStatusResponse,
-    ObjectModel,
-    RestoreRequest,
-    RestoreResponse,
-)
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, RestoreRequest
 from my_offers.repositories.monolith_cian_announcementapi.entities.announcement_progress_dto import (
     State as OfferMassRestoreState,
 )
-from my_offers.repositories.monolith_cian_announcementapi.entities.get_job_status_response import State as JobState
+from my_offers.services.actions._action import MassActions
 from my_offers.services.offers import get_filters
 
 
-END_STATUSES = [
-    JobState.completed,
-    JobState.error,
-]
+class OffersMassRestoreAction(MassActions):
+
+    async def _run_job(self) -> int:
+        session = await monolith_cian_announcementapi.announcements_actions_v1_restore(
+            RestoreRequest(
+                announcement_ids=self.offers_ids,
+                user_id=self.actor_id
+            )
+        )
+        return session.job_id
 
 
 async def mass_offers_restore(
@@ -61,7 +59,13 @@ async def mass_offers_restore(
     offers_statuses.extend(offers_errors)
 
     if offers_ids:
-        offers_final_statuses = await _run_job(offers_ids=offers_ids, realty_user_id=realty_user_id)
+        mass_restore_action = OffersMassRestoreAction(
+            offers_ids=offers_ids,
+            actor_id=realty_user_id
+        )
+        offers_final_statuses = await mass_restore_action.execute(
+            delay=settings.MASS_OFFERS_RESTORE_DELAY
+        )
         offers_statuses += [
             entities.OfferMassRestoreStatus(
                 offer_id=offer.id,
@@ -71,29 +75,6 @@ async def mass_offers_restore(
         ]
 
     return entities.OffersMassRestoreResponse(offers=offers_statuses, total=total)
-
-
-async def _run_job(*, offers_ids: List[int], realty_user_id: int) -> List[AnnouncementProgressDto]:
-    session: RestoreResponse = await monolith_cian_announcementapi.announcements_actions_v1_restore(
-        RestoreRequest(
-            announcement_ids=offers_ids,
-            user_id=realty_user_id
-        )
-    )
-    # TODO: https://jira.cian.tech/browse/CD-81998
-    while True:
-        await asyncio.sleep(settings.MASS_OFFERS_RESTORE_DELAY)
-        job_status: GetJobStatusResponse = await monolith_cian_announcementapi.announcements_actions_v1_get_job_status(
-            AnnouncementsActionsV1GetJobStatus(
-                job_id=session.job_id,
-                user_id=realty_user_id
-            )
-        )
-
-        if job_status.state in END_STATUSES:
-            break
-
-    return job_status.announcements_progress or []
 
 
 def _filter_offers(objects_models: List[ObjectModel]) -> Tuple[List[int], List[entities.OfferMassRestoreStatus]]:
