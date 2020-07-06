@@ -49,6 +49,7 @@ async def test_get_offers_for_calltracking_card(http, pg):
                 'offerId': 227140265,
                 'properties': ['1-комн.\xa0кв.', '33\xa0м²', '1/15\xa0этаж'],
                 'offerType': 'flat',
+                'priceInfo': {'exact': '3\xa0784\xa0800\xa0₽', 'range': None},
             },
             {
                 'dealType': 'sale',
@@ -60,6 +61,7 @@ async def test_get_offers_for_calltracking_card(http, pg):
                 'offerId': 221798834,
                 'properties': ['Земельный участок', '10.0\xa0сот.'],
                 'offerType': 'suburban',
+                'priceInfo': {'exact': '250\xa0000\xa0₽', 'range': None},
             }
         ],
     }
