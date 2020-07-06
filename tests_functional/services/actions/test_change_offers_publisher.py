@@ -11,7 +11,7 @@ class TestChangeOffersPublisher:
             http,
             monolith_cian_announcementapi_mock
     ):
-        """ Проверяем восстановление всех объявлений """
+        """ Проверяем флоу смены владельца объявления """
         # arrange
         offer_id_1 = 11111111
         offer_id_2 = 22222222
@@ -74,16 +74,24 @@ class TestChangeOffersPublisher:
         await monolith_cian_announcementapi_mock.add_stub(
             method='POST',
             path='/announcements-actions/v1/change-owner/',
+            body={
+                'actorId': master_user,
+                'announcementIds': [offer_id_2],
+                'newOwnerId': user_id
+            },
             response=MockResponse(
                 body={
                     'job_id': 123,
-                    'isNew': False
+                    'is_new': False
                 }
             ),
         )
         await monolith_cian_announcementapi_mock.add_stub(
             method='GET',
             path='/announcements-actions/v1/get-job-status/',
+            query={
+                'JobId': 123
+            },
             response=[
                 MockResponse(
                     body={
@@ -96,7 +104,6 @@ class TestChangeOffersPublisher:
                     body={
                         'state': job_state,
                         'announcementsProgress': [
-                            {'id': offer_id_1, 'state': 'Completed'},
                             {'id': offer_id_2, 'state': 'Error', 'error_message': 'Need more money!'},
                         ]
                     }
@@ -120,12 +127,12 @@ class TestChangeOffersPublisher:
         # assert
         assert response.data == {
             'offers': [
-                {'message': None, 'offerId': offer_id_1, 'status': 'Completed'},
                 {'message': 'Need more money!', 'offerId': offer_id_2, 'status': 'Error'},
             ]
         }
 
-    async def test_change_offers_publisher__offers_ids_is_empty(self, pg, http):
+    async def change_offers_publisher__offers_ids_is_empty(self, pg, http):
+        """ При пустом offers_ids возвращаем пустой результат """
         # arrange
         master_user = 333
         user_id = 222
