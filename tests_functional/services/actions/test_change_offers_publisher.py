@@ -1,16 +1,15 @@
 from datetime import datetime
 
-import pytest
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
 
 class TestChangeOffersPublisher:
 
     async def test_change_offers_publisher(
-        self,
-        pg,
-        http,
-        monolith_cian_announcementapi_mock
+            self,
+            pg,
+            http,
+            monolith_cian_announcementapi_mock
     ):
         """ Проверяем восстановление всех объявлений """
         # arrange
