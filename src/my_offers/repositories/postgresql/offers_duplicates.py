@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import asyncpgsa
 import pytz
@@ -9,7 +9,7 @@ from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, enums, pg
-from my_offers.enums import OfferType
+from my_offers.enums import DealType, OfferType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.offers_duplicates.entities import Duplicate
@@ -155,7 +155,7 @@ async def get_offers_duplicates_count(offer_ids: List[int]) -> List[entities.Off
     ]
 
 
-async def get_offer_duplicates_ids(offer_id: int) -> List[Optional[int]]:
+async def get_offer_duplicates_ids(offer_id: int) -> List[int]:
     query = """
     select
         offer_id
@@ -170,6 +170,7 @@ async def get_offer_duplicates_ids(offer_id: int) -> List[Optional[int]]:
 
 async def get_offers_in_same_building(
         *,
+        deal_type: DealType,
         house_id: int,
         rooms_counts: Tuple[str, str, str],
         low_price: float,
@@ -187,22 +188,24 @@ async def get_offers_in_same_building(
     where
         o.house_id = $1
         and o.offer_type = $2
-        and o.raw_data -> 'roomsCount' = any($3)
-        and o.price >= $4
-        and o.price  <= $5
-        and o.offer_id <> all ($6::bigint[])
-        and o.status_tab = $7
+        and o.deal_type = $3
+        and o.raw_data -> 'roomsCount' = any($4)
+        and o.price >= $5
+        and o.price  <= $6
+        and o.offer_id <> all ($7::bigint[])
+        and o.status_tab = $8
+        and not o.is_test
     order by
         o.sort_date desc
-    limit $8
-    offset $9;
+    limit $9
+    offset $10;
     """
-    # and not o.is_test
 
     result = await pg.get().fetch(
         query,
         house_id,
         OfferType.flat.value,
+        deal_type.value,
         rooms_counts,
         low_price,
         high_price,

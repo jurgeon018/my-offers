@@ -3,6 +3,8 @@ from typing import Optional, Tuple
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms
 from my_offers.services.announcement.fields.prices import get_prices
 
+PRICE_DEVIATION = 0.2
+
 
 def get_range_price(
         *,
@@ -15,4 +17,4 @@ def get_range_price(
     )
     if not price:
         return None, None
-    return price * 0.8, price * 1.2
+    return price * (1 - PRICE_DEVIATION), price * (1 + PRICE_DEVIATION)

@@ -1,6 +1,7 @@
 from typing import Dict, List
 
 from my_offers import entities, enums
+from my_offers.helpers.category import get_types
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel, Status
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql.offers_duplicates import (
@@ -26,6 +27,7 @@ async def v1_get_offer_duplicates_public(
     if not tab_type:
         tab_type = enums.DuplicateTabType.all
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
+    _, deal_type = get_types(object_model.category)
     limit, offset = get_pagination(request.pagination)
     offer_id = object_model.id
 
@@ -46,6 +48,7 @@ async def v1_get_offer_duplicates_public(
             return get_empty_response(limit, offset)
 
         object_models, total = await get_offers_in_same_building(
+            deal_type=deal_type,
             house_id=house_id,
             rooms_counts=rooms_list,
             low_price=low_price,
