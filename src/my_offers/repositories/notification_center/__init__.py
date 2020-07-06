@@ -8,4 +8,4 @@ To re-generate, run `codegen generate-client notification-center`
 cian-codegen version: 1.4.3
 
 """
-from ._repo import v2_register_notifications
+from ._repo import v1_mobile_push_get_settings, v2_register_notifications

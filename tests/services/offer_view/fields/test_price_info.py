@@ -1,7 +1,8 @@
 import pytest
 
 from my_offers import enums
-from my_offers.entities.offer_view_model import PriceInfo
+from my_offers.entities import PriceInfo
+from my_offers.helpers.fields import get_price_info
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import (
     Currency,
@@ -12,7 +13,6 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms
     VatType,
 )
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
-from my_offers.services.offer_view.fields.price_info import get_price_info
 
 
 @pytest.mark.parametrize(

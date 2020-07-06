@@ -11,6 +11,26 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 
+    await notification_center_mock.add_stub(
+        method='POST',
+        path='/v1/mobile-push/get-settings/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'children': [
+                            {'description': '',
+                             'id': 'OfferNewDuplicateFoundNotifications',
+                             'isActive': True,
+                             'title': 'Новые дубли по объектам'}
+                        ],
+                        'id': 'OfferDuplicatesGroup',
+                        'title': 'Дубли по вашим объектам'
+                    }
+                ]
+            }
+        ),
+    )
     notification_center_stub = await notification_center_mock.add_stub(
         method='POST',
         path='/v2/register-notifications/',
@@ -41,7 +61,8 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
                 'mediaUrl': 'https://cdn-p.cian.site/images/1/644/244/kvartira-tula-prospekt-lenina-442446187-3.jpg',
                 'mobilePushPayload': {
                     'dealType': 'rent',
-                    'offerType': 'flat'
+                    'offerType': 'flat',
+                    'duplicateOfferId': 231655140,
                 },
                 'notificationType': 'offerNewDuplicateFound',
                 'plannedSendDatetime': None,
@@ -50,7 +71,7 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
                 'transportsToSend': ['mobilePush'],
                 'userId': '6808488',
                 'webPushPayload': None,
-                'webUrl': 'http://master.dev3.cian.ru/rent/flat/173975523'
+                'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140'
             }
         ]
     }
@@ -68,6 +89,41 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
         'regionId': 4592,
         # 'timestamp': '2020-05-29T09:42:46.905695+00:00'
     }
+
+
+async def test_new_offer_duplicate_notification_consumer__push_disabled__skip(
+        queue_service, pg, kafka_service, notification_center_mock
+):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
+    await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
+
+    await notification_center_mock.add_stub(
+        method='POST',
+        path='/v1/mobile-push/get-settings/',
+        response=MockResponse(
+            body={
+                'items': []
+            }
+        ),
+    )
+
+    message = {
+        'duplicateOfferId': 231655140,
+        'date': '2020-05-27T15:07:35.005788+00:00',
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
+    }
+
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
+
+    # act
+    await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
+    await asyncio.sleep(1)
+    messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
+
+    # assert
+    assert len(messages) == 0
 
 
 async def test_new_offer_duplicate_notification_consumer__already_sent(queue_service, pg, notification_center_mock):
@@ -106,6 +162,26 @@ async def test_new_offer_duplicate_notification_consumer__error(queue_service, p
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
 
+    await notification_center_mock.add_stub(
+        method='POST',
+        path='/v1/mobile-push/get-settings/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'children': [
+                            {'description': '',
+                             'id': 'OfferNewDuplicateFoundNotifications',
+                             'isActive': True,
+                             'title': 'Новые дубли по объектам'}
+                        ],
+                        'id': 'OfferDuplicatesGroup',
+                        'title': 'Дубли по вашим объектам'
+                    }
+                ]
+            }
+        ),
+    )
     notification_center_stub = await notification_center_mock.add_stub(
         method='POST',
         path='/v2/register-notifications/',

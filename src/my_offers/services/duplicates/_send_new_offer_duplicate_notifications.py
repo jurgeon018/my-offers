@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Dict
 
 import pytz
 from asyncpg import UniqueViolationError
@@ -8,11 +9,14 @@ from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
 from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.repositories.notification_center import v2_register_notifications
+from my_offers.repositories.notification_center import v1_mobile_push_get_settings, v2_register_notifications
 from my_offers.repositories.notification_center.entities import (
+    GetMobilePushSettingsRequest,
+    GetMobilePushSettingsResponse,
     RegisterNotificationsV2Request,
     RegisterNotificationV2Request,
 )
+from my_offers.repositories.notification_center.entities.get_mobile_push_settings_request import OsType
 from my_offers.repositories.notification_center.entities.register_notification_v2_request import (
     NotificationType,
     TransportsToSend,
@@ -45,8 +49,16 @@ async def send_new_offer_duplicate_notifications(duplicate_offer_id: int) -> Non
         if not duplicates:
             break
 
+        user_settings: Dict[int, bool] = {}
         for offer in duplicates:
-            if offer.published_user_id == duplicate_offer.published_user_id:
+            user_id = offer.published_user_id
+            if user_id == duplicate_offer.published_user_id:
+                continue
+
+            if user_id not in user_settings:
+                user_settings[user_id] = await _is_push_enabled(user_id)
+
+            if not user_settings[user_id]:
                 continue
 
             await process_notification(offer=offer, duplicate_offer=duplicate_offer)
@@ -66,7 +78,7 @@ async def process_notification(*, offer: ObjectModel, duplicate_offer: ObjectMod
         return
 
     try:
-        await _send_notification(offer)
+        await _send_notification(offer=offer, duplicate_offer=duplicate_offer)
     except:
         # неполучилось отправить
         await delete_offers_duplicate_notification(notification)
@@ -75,7 +87,7 @@ async def process_notification(*, offer: ObjectModel, duplicate_offer: ObjectMod
     OfferDuplicateEventProducer.produce_new_duplicate_event(offer=offer, duplicate_offer=duplicate_offer)
 
 
-async def _send_notification(offer: ObjectModel):
+async def _send_notification(*, offer: ObjectModel, duplicate_offer: ObjectModel):
     offer_type, deal_type = get_types(offer.category)
 
     await v2_register_notifications(RegisterNotificationsV2Request(
@@ -87,11 +99,27 @@ async def _send_notification(offer: ObjectModel):
             mobile_push_payload={
                 'dealType': deal_type.value,
                 'offerType': offer_type.value,
+                'duplicateOfferId': duplicate_offer.id,
             },
             text=get_address_for_push(offer.geo),
             title='Новый дубль вашего объекта',
-            web_url=get_offer_url(offer_id=offer.id, offer_type=offer_type, deal_type=deal_type),
+            web_url=get_offer_url(offer_id=duplicate_offer.id, offer_type=offer_type, deal_type=deal_type),
             media_url=get_main_photo_url(offer.photos),
             transports_to_send=[TransportsToSend.mobile_push],
         )]
     ))
+
+
+async def _is_push_enabled(user_id: int) -> bool:
+    response: GetMobilePushSettingsResponse = await v1_mobile_push_get_settings(GetMobilePushSettingsRequest(
+        user_id=str(user_id),
+        is_authenticated=True,
+        os_type=OsType.android,
+    ))
+
+    for item in response.items:
+        for child_item in item.children:
+            if child_item.id == 'OfferNewDuplicateFoundNotifications':
+                return child_item.is_active
+
+    return False

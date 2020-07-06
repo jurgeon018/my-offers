@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from my_offers import enums
 from my_offers.entities import MobileOfferGeo
+from my_offers.entities.offer_view_model import PriceInfo
 
 
 @dataclass
@@ -33,6 +34,8 @@ class OfferForCalltrackingCard:
     """Тип сделки"""
     offer_type: enums.OfferType
     """Тип объекта недвижимости"""
+    price_info: PriceInfo
+    """Инофрмация о цене"""
 
 
 @dataclass
