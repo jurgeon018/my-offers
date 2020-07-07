@@ -10,7 +10,12 @@ from my_offers.services.offer_view.fields import get_vas, prepare_geo_for_mobile
 from my_offers.services.offer_view.fields.auction import get_auction_bet
 
 
-def build_duplicate_view(object_model: ObjectModel, auction_bets: Dict[int, float]) -> entities.OfferDuplicate:
+def build_duplicate_view(
+        *,
+        object_model: ObjectModel,
+        auction_bets: Dict[int, float],
+        duplicate_type: enums.DuplicateType = enums.DuplicateType.duplicate,
+) -> entities.OfferDuplicate:
     offer_type, deal_type = get_types(object_model.category)
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
 
@@ -35,5 +40,5 @@ def build_duplicate_view(object_model: ObjectModel, auction_bets: Dict[int, floa
         ),
         vas=get_vas(object_model.publish_terms.terms if object_model.publish_terms else None),
         auction_bet=get_auction_bet(auction_bets.get(offer_id)),
-        type=enums.DuplicateType.duplicate,
+        type=duplicate_type,
     )
