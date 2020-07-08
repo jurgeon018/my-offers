@@ -8,8 +8,10 @@ from my_offers.repositories.postgresql.offers_duplicates import (
     get_offer_duplicates,
     get_offer_duplicates_ids,
     get_offers_in_same_building,
+    get_similar_offers,
 )
 from my_offers.services import offer_view
+from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
 from my_offers.services.announcement.fields.is_test import get_is_test
 from my_offers.services.auctions import get_auction_bets_degradation_handler
@@ -59,6 +61,30 @@ async def v1_get_offer_duplicates_public(
             limit=limit,
             offset=offset,
         )
+    elif tab_type.is_similar:
+        district_id = get_district_id(object_model.geo.district)
+        house_id = get_house_id(object_model.geo.address)
+        rooms_list = get_possible_room_counts(object_model.rooms_count)
+        low_price, high_price = get_range_price(
+            bargain_terms=object_model.bargain_terms,
+            total_area=object_model.total_area,
+        )
+
+        if not (district_id and rooms_list and low_price and high_price):
+            return get_empty_response(limit, offset)
+
+        object_models, total = await get_similar_offers(
+            deal_type=deal_type,
+            district_id=district_id,
+            house_id=house_id,
+            rooms_counts=rooms_list,
+            low_price=low_price,
+            high_price=high_price,
+            is_test=get_is_test(object_model),
+            offer_id=offer_id,
+            limit=limit,
+            offset=offset,
+        )
     else:
         object_models, total = await get_offer_duplicates(
             offer_id=offer_id,
@@ -76,8 +102,7 @@ async def v1_get_offer_duplicates_public(
         offers.append(offer_view.build_duplicate_view(
             object_model=object_model,
             auction_bets=auction_bets,
-            duplicate_type=enums.DuplicateType.same_building if tab_type.is_same_building
-            else enums.DuplicateType.duplicate,
+            duplicate_tab=tab_type,
         ))
 
     return entities.GetOfferDuplicatesResponse(

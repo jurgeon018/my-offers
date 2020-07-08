@@ -225,3 +225,65 @@ async def get_offers_in_same_building(
     total = result[0]['total_count']
 
     return models, total
+
+
+async def get_similar_offers(
+        *,
+        deal_type: DealType,
+        district_id: int,
+        house_id: int,
+        rooms_counts: Tuple[str, str, str],
+        low_price: float,
+        high_price: float,
+        is_test: bool,
+        offer_id: int,
+        limit: int,
+        offset: int
+) -> Tuple[List[ObjectModel], int]:
+    query = """
+    SELECT
+        o.raw_data,
+        count(*) OVER () AS total_count
+    from
+        offers o
+    where
+        o.district_id = $1
+        and (house_id != $2 or house_id is null)
+        and o.offer_type = $3
+        and o.deal_type = $4
+        and o.raw_data -> 'roomsCount' = any($5)
+        and o.price >= $6
+        and o.price  <= $7
+        and o.status_tab = $8
+        and o.is_test = $9
+        and o.offer_id <> $10
+    order by
+        o.sort_date desc
+    limit $11
+    offset $12;
+    """
+
+    result = await pg.get().fetch(
+        query,
+        district_id,
+        house_id,
+        OfferType.flat.value,
+        deal_type.value,
+        rooms_counts,
+        low_price,
+        high_price,
+        enums.OfferStatusTab.active.value,
+        is_test,
+        offer_id,
+        limit,
+        offset,
+        timeout=settings.DB_TIMEOUT
+    )
+
+    if not result:
+        return [], 0
+
+    models = [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in result]
+    total = result[0]['total_count']
+
+    return models, total
