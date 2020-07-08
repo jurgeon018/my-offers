@@ -103,6 +103,7 @@ async def test_save_announcement_contract__row_version_is_none(mocker):
     TargetObjectType.post_paid,
     TargetObjectType.demand,
     TargetObjectType.demand_package,
+    TargetObjectType.cpl_calltracking,
 ])
 async def test_save_announcement_contract__ignore_types(mocker, target_object_type):
     # arrange
