@@ -244,3 +244,73 @@ async def test_v2_get_offers_public__same_building_offers_not_found__offer_witho
 
     # assert
     assert len(response.data['offers']) == 0
+
+
+async def test_v2_get_offers_public__similar_offers_found__200(http_client, pg, auction_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 162730477, 'type': 'similar'},
+        headers={'X-Real-UserId': 8088578},
+    )
+
+    # assert
+    assert response.data == {
+        'offers': [
+            {
+                'vas': ['premium'],
+                'priceInfo': {'range': None, 'exact': '6 837 729 ₽'},
+                'properties': ['1-комн. кв.', '37 м²', '9/13 этаж'],
+                'geo': {
+                    'underground': {'name': 'Кунцевская', 'lineColor': '03238B', 'regionId': 1},
+                    'address': ['Москва', 'улица Петра Алексеева', '12АС1']
+                },
+                'offerId': 162729892,
+                'dealType': 'sale',
+                'offerType': 'flat',
+                'type': 'similar',
+                'displayDate': '2019-02-21T10:30:56.847000+00:00',
+                'mainPhotoUrl': 'http://master.images.dev3.cian.ru/v1/view/9/403/692/novostroyka-moskva-ulica-petra'
+                                '-alekseeva-296304975-2.jpg',
+                'auctionBet': None
+            }
+        ],
+        'page': {'pageCount': 1, 'count': 1, 'canLoadMore': False},
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 1}]
+    }
+
+
+async def test_v2_get_offers_public__similar_offers_not_found_in_bd__200(http_client, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 165516518, 'type': 'similar'},
+        headers={'X-Real-UserId': 15137826},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 0
+
+
+async def test_v2_get_offers_public__similar_offers_not_found__offer_without_district_id__200(http_client, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 161950566, 'type': 'similar'},
+        headers={'X-Real-UserId': 13328695},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 0

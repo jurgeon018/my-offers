@@ -15,6 +15,8 @@ class DuplicateTabType(StrEnum):
     """Дубликат объявления"""
     same_building = 'same_building'
     """"В этом же доме"""
+    similar = 'similar'
+    """Похожие"""
 
 
 class DuplicateType(StrEnum):
@@ -22,3 +24,5 @@ class DuplicateType(StrEnum):
     """Дубликат объявления"""
     same_building = 'same_building'
     """"В этом же доме"""
+    similar = 'similar'
+    """Похожие"""
