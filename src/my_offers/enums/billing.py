@@ -28,3 +28,5 @@ class TargetObjectType(StrEnum):
     """Оплата заявки"""
     demand_package = 'DemandPackage'
     """Оплата пакета заявок"""
+    cpl_calltracking = 'CplCalltracking'
+    """CPL Колтрекинг"""
