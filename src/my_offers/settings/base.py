@@ -34,6 +34,7 @@ SEND_PUSH_ON_NEW_DUPLICATE: bool = False  # пока не раскатили п�
 # mass operations
 MASS_OFFERS_RESTORE_DELAY: float = .5
 MASS_OFFERS_LIMIT: int = 300
+MASS_OFFERS_CHANGE_OWNERS_DELAY: float = .5
 
 # sync offers
 SYNC_OFFERS_ROW_VERSION_OFFSET: int = 1000

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 async def update_agents_hierarchy(agent: AgentMessage) -> None:
-    """ Cохранить/изменить данные об агенте.
+    """ Сохранить/изменить данные об агенте.
 
         Если master_agent_user_id == None:
             1. Это может быть сам мастер-агент

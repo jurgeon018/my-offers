@@ -14,6 +14,13 @@ from . import entities
 
 
 _api = Api(microservice_name='monolith-cian-announcementapi')
+announcements_actions_v1_change_owner = _api.make_client(
+    path='/announcements-actions/v1/change-owner/',
+    method='POST',
+    handle_http_exceptions=True,
+    request_schema=entities.ChangeOwnerRequest,
+    response_schema=entities.ChangeOwnerResponse,
+)
 announcements_actions_v1_get_job_status = _api.make_client(
     path='/announcements-actions/v1/get-job-status/',
     method='GET',
