@@ -9,6 +9,7 @@ from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, enums, pg
+from my_offers.enums import DealType, OfferType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.offers_duplicates.entities import Duplicate
@@ -152,3 +153,137 @@ async def get_offers_duplicates_count(offer_ids: List[int]) -> List[entities.Off
         )
         for row in rows
     ]
+
+
+async def get_offer_duplicates_ids(offer_id: int) -> List[int]:
+    query = """
+    select
+        offer_id
+    from
+        offers_duplicates
+    where
+        group_id = (select group_id from offers_duplicates where offer_id = $1);
+    """
+    result = await pg.get().fetch(query, offer_id, timeout=settings.DB_TIMEOUT)
+    return [r['offer_id'] for r in result]
+
+
+async def get_offers_in_same_building(
+        *,
+        deal_type: DealType,
+        house_id: int,
+        rooms_counts: Tuple[str, str, str],
+        low_price: float,
+        high_price: float,
+        duplicates_ids: List[int],
+        is_test: bool,
+        limit: int,
+        offset: int
+) -> Tuple[List[ObjectModel], int]:
+    query = """
+    SELECT
+        o.raw_data,
+        count(*) OVER () AS total_count
+    from
+        offers o
+    where
+        o.house_id = $1
+        and o.offer_type = $2
+        and o.deal_type = $3
+        and o.raw_data -> 'roomsCount' = any($4)
+        and o.price >= $5
+        and o.price  <= $6
+        and o.offer_id <> all ($7::bigint[])
+        and o.status_tab = $8
+        and o.is_test = $9
+    order by
+        o.sort_date desc
+    limit $10
+    offset $11;
+    """
+
+    result = await pg.get().fetch(
+        query,
+        house_id,
+        OfferType.flat.value,
+        deal_type.value,
+        rooms_counts,
+        low_price,
+        high_price,
+        duplicates_ids,
+        enums.OfferStatusTab.active.value,
+        is_test,
+        limit,
+        offset,
+        timeout=settings.DB_TIMEOUT
+    )
+
+    if not result:
+        return [], 0
+
+    models = [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in result]
+    total = result[0]['total_count']
+
+    return models, total
+
+
+async def get_similar_offers(
+        *,
+        deal_type: DealType,
+        district_id: int,
+        house_id: int,
+        rooms_counts: Tuple[str, str, str],
+        low_price: float,
+        high_price: float,
+        is_test: bool,
+        offer_id: int,
+        limit: int,
+        offset: int
+) -> Tuple[List[ObjectModel], int]:
+    query = """
+    SELECT
+        o.raw_data,
+        count(*) OVER () AS total_count
+    from
+        offers o
+    where
+        o.district_id = $1
+        and (house_id != $2 or house_id is null)
+        and o.offer_type = $3
+        and o.deal_type = $4
+        and o.raw_data -> 'roomsCount' = any($5)
+        and o.price >= $6
+        and o.price  <= $7
+        and o.status_tab = $8
+        and o.is_test = $9
+        and o.offer_id <> $10
+    order by
+        o.sort_date desc
+    limit $11
+    offset $12;
+    """
+
+    result = await pg.get().fetch(
+        query,
+        district_id,
+        house_id,
+        OfferType.flat.value,
+        deal_type.value,
+        rooms_counts,
+        low_price,
+        high_price,
+        enums.OfferStatusTab.active.value,
+        is_test,
+        offer_id,
+        limit,
+        offset,
+        timeout=settings.DB_TIMEOUT
+    )
+
+    if not result:
+        return [], 0
+
+    models = [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in result]
+    total = result[0]['total_count']
+
+    return models, total

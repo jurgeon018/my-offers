@@ -139,3 +139,178 @@ async def test_v2_get_offers_public__whithout_type_parameter(http_client, pg, au
 
     # assert
     assert len(response.data['offers']) == 1
+
+
+async def test_v2_get_offers_public__same_building_offers_found__200(http_client, pg, auction_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_same_building.sql')
+    await pg.execute('INSERT INTO offers_duplicates values(163885962, 163596314, \'2020-05-09\')')
+    await pg.execute('INSERT INTO offers_duplicates values(163596314, 163596314, \'2020-05-09\')')
+    await pg.execute('INSERT INTO offers_duplicates values(111111111, 163596314, \'2020-05-09\')')
+
+    auction_stub = await auction_mock.add_stub(
+        method='POST',
+        path='/v1/get-bets-by-announcements',
+        response=MockResponse(
+            body={
+                'bets': [{
+                    'announcement_id': 163564158,
+                    'bet': 12.33,
+                }]
+            },
+        ),
+    )
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 163885962, 'type': 'sameBuilding'},
+        headers={'X-Real-UserId': 12926195},
+    )
+
+    # assert
+    assert response.data == {
+        'offers': [
+            {
+                'vas': ['auction', 'premium'],
+                'priceInfo': {'range': None, 'exact': '140 000 ₽/мес.'},
+                'properties': ['2-комн.\xa0кв.', '53\xa0м²', '2/12\xa0этаж'],
+                'geo': {
+                    'underground': {'name': 'Маяковская', 'lineColor': '00701A', 'regionId': 1},
+                    'address': ['Москва', 'Большая Садовая улица', '5к1']
+                },
+                'offerId': 163564158,
+                'dealType': 'rent',
+                'offerType': 'flat',
+                'type': 'sameBuilding',
+                'displayDate': '2017-09-22T23:08:28.277000+00:00',
+                'mainPhotoUrl': 'http://master.images.dev3.cian.ru/v1/view/8/503/603/'
+                                'kvartira-moskva-bolshaya-sadovaya-ulica-306305809-2.jpg',
+                'auctionBet': '+\xa012\xa0₽'
+            }
+        ],
+        'page': {'pageCount': 1, 'count': 1, 'canLoadMore': False},
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 1}]
+    }
+
+    request = await auction_stub.get_request()
+    assert request.data == {'announcementsIds': [163564158]}
+
+
+async def test_v2_get_offers_public__same_building_offers_not_found__200(http_client, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_same_building.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 163569999, 'type': 'sameBuilding'},
+        headers={'X-Real-UserId': 8048745},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 0
+
+
+async def test_v2_get_offers_public__same_building_offers_not_found__offer_without_house_id__200(http_client, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_same_building.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 165459837, 'type': 'sameBuilding'},
+        headers={'X-Real-UserId': 15059798},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 0
+
+
+async def test_v2_get_offers_public__same_building_offers_not_found__offer_without_price__200(http_client, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_same_building.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 165459855, 'type': 'sameBuilding'},
+        headers={'X-Real-UserId': 15059798},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 0
+
+
+async def test_v2_get_offers_public__similar_offers_found__200(http_client, pg, auction_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 162730477, 'type': 'similar'},
+        headers={'X-Real-UserId': 8088578},
+    )
+
+    # assert
+    assert response.data == {
+        'offers': [
+            {
+                'vas': ['premium'],
+                'priceInfo': {'range': None, 'exact': '6 837 729 ₽'},
+                'properties': ['1-комн. кв.', '37 м²', '9/13 этаж'],
+                'geo': {
+                    'underground': {'name': 'Кунцевская', 'lineColor': '03238B', 'regionId': 1},
+                    'address': ['Москва', 'улица Петра Алексеева', '12АС1']
+                },
+                'offerId': 162729892,
+                'dealType': 'sale',
+                'offerType': 'flat',
+                'type': 'similar',
+                'displayDate': '2019-02-21T10:30:56.847000+00:00',
+                'mainPhotoUrl': 'http://master.images.dev3.cian.ru/v1/view/9/403/692/novostroyka-moskva-ulica-petra'
+                                '-alekseeva-296304975-2.jpg',
+                'auctionBet': None
+            }
+        ],
+        'page': {'pageCount': 1, 'count': 1, 'canLoadMore': False},
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 1}]
+    }
+
+
+async def test_v2_get_offers_public__similar_offers_not_found_in_bd__200(http_client, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 165516518, 'type': 'similar'},
+        headers={'X-Real-UserId': 15137826},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 0
+
+
+async def test_v2_get_offers_public__similar_offers_not_found__offer_without_district_id__200(http_client, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
+
+    # act
+    response = await http_client.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 161950566, 'type': 'similar'},
+        headers={'X-Real-UserId': 13328695},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 0
