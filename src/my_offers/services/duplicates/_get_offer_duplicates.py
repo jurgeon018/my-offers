@@ -1,5 +1,6 @@
-from cian_core.runtime_settings import runtime_settings
 from typing import Dict, List, Optional, Tuple
+
+from cian_core.runtime_settings import runtime_settings
 
 from my_offers import entities, enums
 from my_offers.enums import DealType, DuplicateType
