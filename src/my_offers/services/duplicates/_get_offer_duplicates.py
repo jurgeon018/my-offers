@@ -1,3 +1,4 @@
+from cian_core.runtime_settings import runtime_settings
 from typing import Dict, List, Optional, Tuple
 
 from my_offers import entities, enums
@@ -59,20 +60,27 @@ async def v1_get_offer_duplicates_public(
             offset=offset,
         )
     else:
-        duplicate_obj_mdls, duplicate_total = await get_data_about_offer_duplicates(
-            offer_id=offer_id,
-        )
-        same_buiding_obj_mdls, same_buiding_total = await get_data_about_offers_in_same_building(
-            object_model=object_model,
-            deal_type=deal_type,
-        )
-        similar_obj_mdls, similar_total = await get_data_about_similar_offers(
-            object_model=object_model,
-            deal_type=deal_type,
-        )
-        object_infos = duplicate_obj_mdls + same_buiding_obj_mdls + similar_obj_mdls
-        object_infos = object_infos[offset: offset+limit]
-        total = duplicate_total + same_buiding_total + similar_total
+        if not runtime_settings.get('MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled', False):
+            object_infos, total = await get_data_about_offer_duplicates(
+                offer_id=offer_id,
+                limit=limit,
+                offset=offset,
+            )
+        else:
+            duplicate_obj_mdls, duplicate_total = await get_data_about_offer_duplicates(
+                offer_id=offer_id,
+            )
+            same_buiding_obj_mdls, same_buiding_total = await get_data_about_offers_in_same_building(
+                object_model=object_model,
+                deal_type=deal_type,
+            )
+            similar_obj_mdls, similar_total = await get_data_about_similar_offers(
+                object_model=object_model,
+                deal_type=deal_type,
+            )
+            object_infos = duplicate_obj_mdls + same_buiding_obj_mdls + similar_obj_mdls
+            object_infos = object_infos[offset: offset+limit]
+            total = duplicate_total + same_buiding_total + similar_total
 
     if not object_infos:
         return get_empty_response(limit, offset)
