@@ -1581,6 +1581,33 @@ definitions:
       jobId: {description: Id задачи., format: int64, type: integer}
     required: [jobId]
     type: object
+  Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.ChangeOwnerRequest:
+    description: Запрос на создание задачи массового восстановления
+    properties:
+      actorId: {description: Realty id инициатора смены владельца объявлений, format: int64,
+                type: integer}
+      announcementIds:
+        description: Список id объявлений
+        items: {format: int32, type: integer}
+        type: array
+      newOwnerId: {description: Realty id нового владельца объявлений, format: int64,
+                   type: integer}
+    required: [actorId, newOwnerId, announcementIds]
+    type: object
+  Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.ChangeOwnerResponse:
+    description: Информация о созданной задаче
+    properties:
+      isNew: {description: 'True, если запустили новую задачу', type: boolean}
+      jobId: {description: Id задачи., format: int64, type: integer}
+    required: [isNew, jobId]
+    type: object
+  Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.GetJobStatusRequest:
+    description: Запрос на получение статуса задачи
+    properties:
+      jobId: {description: Id задачи, format: int32, type: integer}
+      userId: {description: Realty id пользователя, format: int64, type: integer}
+    required: [userId, jobId]
+    type: object
 host: beta12.announcementapi.stage.cian.ru
 info: {title: monolith-cian-announcementapi, version: v1}
 paths:
@@ -1644,5 +1671,22 @@ paths:
       summary: "Помечает объявление архивным.\r\nКидает 500 ошибку если объявление\
         \ не найдено.\r\nМетод закрыт по ключу."
       tags: [Archiving]
+  /announcements-actions/v1/change-owner/:
+    post:
+      consumes: [application/json, text/json, application/x-www-form-urlencoded]
+      operationId: AnnouncementsActions_ChangeOwnerAsync
+      parameters:
+        - in: body
+          name: request
+          required: true
+          schema: {$ref: '#/definitions/Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.ChangeOwnerRequest'}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/Web.AnnouncementApi.App.Announcements.Models.AnnouncementsActions.ChangeOwnerResponse'}
+      summary: Создает новую задачу на массовое изменение владельцев объявление на
+        переданного пользователя
+      tags: [AnnouncementsActions]
 schemes: [http]
 swagger: '2.0'
