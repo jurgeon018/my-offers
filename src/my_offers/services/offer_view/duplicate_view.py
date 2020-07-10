@@ -8,14 +8,13 @@ from my_offers.helpers.title import get_properties
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view.fields import get_vas, prepare_geo_for_mobile
 from my_offers.services.offer_view.fields.auction import get_auction_bet
-from my_offers.services.offer_view.fields.type_duplicate_offer import get_duplicate_type
 
 
 def build_duplicate_view(
         *,
         object_model: ObjectModel,
         auction_bets: Dict[int, float],
-        duplicate_tab: enums.DuplicateTabType = enums.DuplicateTabType.duplicate,
+        duplicate_type: enums.DuplicateType = enums.DuplicateType.duplicate,
 ) -> entities.OfferDuplicate:
     offer_type, deal_type = get_types(object_model.category)
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
@@ -41,5 +40,5 @@ def build_duplicate_view(
         ),
         vas=get_vas(object_model.publish_terms.terms if object_model.publish_terms else None),
         auction_bet=get_auction_bet(auction_bets.get(offer_id)),
-        type=get_duplicate_type(duplicate_tab),
+        type=duplicate_type,
     )

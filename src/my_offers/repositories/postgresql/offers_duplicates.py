@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import asyncpgsa
 import pytz
@@ -61,7 +61,12 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
     return [row['offer_id'] for row in rows if row['updated_at'] is None]
 
 
-async def get_offer_duplicates(offer_id: int, limit: int, offset: int) -> Tuple[List[ObjectModel], int]:
+async def get_offer_duplicates(
+        *,
+        offer_id: int,
+        limit: Optional[int],
+        offset: int
+) -> Tuple[List[ObjectModel], int]:
     query = """
     select
         o.raw_data,
@@ -177,7 +182,7 @@ async def get_offers_in_same_building(
         high_price: float,
         duplicates_ids: List[int],
         is_test: bool,
-        limit: int,
+        limit: Optional[int],
         offset: int
 ) -> Tuple[List[ObjectModel], int]:
     query = """
@@ -237,7 +242,7 @@ async def get_similar_offers(
         high_price: float,
         is_test: bool,
         offer_id: int,
-        limit: int,
+        limit: Optional[int],
         offset: int
 ) -> Tuple[List[ObjectModel], int]:
     query = """
