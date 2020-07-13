@@ -87,16 +87,13 @@ async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> Non
     values['updated_at'] = now
     values['event_date'] = event_date
 
-    is_archive = offer.status_tab == OfferStatusTab.archived
-
     query, params = asyncpgsa.compile_query(
         insert_query
         .values([values])
         .on_conflict_do_update(
             index_elements=[tables.offers.c.offer_id],
-            where=and_(
-                tables.offers.c.event_date < event_date,
-                is_archive
+            where=(
+                tables.offers.c.event_date < event_date
             ),
             set_={
                 'master_user_id': insert_query.excluded.master_user_id,
