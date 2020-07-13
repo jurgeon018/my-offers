@@ -77,7 +77,7 @@ async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> Non
     """ Сохрнаить архивное объявление.
         Если объявление уже есть в БД, то row_version не обновляем.
 
-        Чаще всего архив приходит с row_version=1.
+        Realty объявление, которое перенесли в архив чаще всего приходит row_version = 1
     """
     insert_query = insert(tables.offers)
 
@@ -257,7 +257,7 @@ async def get_offers_ids_by_tab(filters: Dict[str, Any]) -> List[int]:
     conditions = prepare_conditions(filters)
     query, params = asyncpgsa.compile_query(
         select([tables.offers.c.offer_id])
-            .where(and_(*conditions))
+        .where(and_(*conditions))
     )
 
     rows = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
