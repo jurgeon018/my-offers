@@ -77,7 +77,7 @@ async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> Non
     """ Сохрнаить архивное объявление.
         Если объявление уже есть в БД, то row_version не обновляем.
 
-        Realty объявление, которое перенесли в архив чаще всего приходит row_version = 1
+        Realty объявление, которое перенесли в архив чаще всего приходит с row_version = 1.
     """
     insert_query = insert(tables.offers)
 
