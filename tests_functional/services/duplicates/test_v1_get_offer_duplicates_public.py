@@ -399,7 +399,8 @@ async def test_v2_get_offers_public__tab_all__offers_found__200(http, pg, auctio
     await pg.execute('INSERT INTO offers_duplicates values(236308049, 236308049, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(236213060, 236308049, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(236331615, 236308049, \'2020-05-09\')')
-
+    await pg.execute('INSERT INTO offers_duplicates values(224829657, 236308049, \'2020-05-09\')')
+    await pg.execute('INSERT INTO offers_duplicates values(236619358, 236308049, \'2020-05-09\')')
     # act
     response = await http.request(
         'POST',
@@ -408,7 +409,7 @@ async def test_v2_get_offers_public__tab_all__offers_found__200(http, pg, auctio
             'offerId': 236308049,
             'type': 'all',
             'pagination': {
-                'limit': 2,
+                'limit': 3,
                 'page': 2
             }
         },
@@ -420,8 +421,25 @@ async def test_v2_get_offers_public__tab_all__offers_found__200(http, pg, auctio
         'offers': [
             {
                 'vas': ['payed'],
-                'priceInfo': {'range': None, 'exact': '30 000 ₽/мес.'},
-                'properties': ['1-комн. кв.', '36 м²', '18/21 этаж'],
+                'priceInfo': {'range': None, 'exact': '55\xa0000\xa0₽/мес.'},
+                'properties': ['3-комн.\xa0кв.', '67 м²', '20/25 этаж'],
+                'geo': {
+                    'underground': None,
+                    'address': ['Краснодарский край', 'Сочи', 'Пластунская улица', '123']
+                },
+                'offerId': 224829657,
+                'dealType': 'rent',
+                'offerType': 'flat',
+                'type': 'duplicate',
+                'displayDate': '2020-07-01T22:50:00.793000+00:00',
+                'mainPhotoUrl': 'https://cdn-p.cian.site/images/0/364/618/kvartira-sochi-plastunskaya-'
+                                'ulica-816463094-2.jpg',
+                'auctionBet': None
+            },
+            {
+                'vas': ['payed'],
+                'priceInfo': {'range': None, 'exact': '30\xa0000\xa0₽/мес.'},
+                'properties': ['1-комн.\xa0кв.', '36 м²', '18/21 этаж'],
                 'geo': {
                     'underground': None,
                     'address': ['Краснодарский край', 'Сочи', 'Пластунская улица', '123']
@@ -453,6 +471,6 @@ async def test_v2_get_offers_public__tab_all__offers_found__200(http, pg, auctio
                 'auctionBet': None
             }
         ],
-        'page': {'pageCount': 2, 'count': 4, 'canLoadMore': False},
-        'tabs': [{'title': 'Все', 'type': 'all', 'count': 4}]
+        'page': {'pageCount': 2, 'count': 6, 'canLoadMore': False},
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 6}]
     }
