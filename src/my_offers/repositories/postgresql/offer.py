@@ -24,10 +24,6 @@ from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
 
 
-# realty объявление, которое перенесли в архив всегда приходит с таким row_version (фейковый)
-REALTY_ARCHIVE_ROW_VERSION = 1
-
-
 async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
     """ Сохрнаить любое объявление, кроме архива. """
     insert_query = insert(tables.offers)
@@ -80,6 +76,8 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
 async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> None:
     """ Сохрнаить архивное объявление.
         Если объявление уже есть в БД, то row_version не обновляем.
+
+        Чаще всего архив приходит с row_version=1.
     """
     insert_query = insert(tables.offers)
 
@@ -89,10 +87,7 @@ async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> Non
     values['updated_at'] = now
     values['event_date'] = event_date
 
-    is_archive = (
-        offer.row_version == REALTY_ARCHIVE_ROW_VERSION
-        and offer.status_tab == OfferStatusTab.archived
-    )
+    is_archive = offer.status_tab == OfferStatusTab.archived
 
     query, params = asyncpgsa.compile_query(
         insert_query
@@ -262,7 +257,7 @@ async def get_offers_ids_by_tab(filters: Dict[str, Any]) -> List[int]:
     conditions = prepare_conditions(filters)
     query, params = asyncpgsa.compile_query(
         select([tables.offers.c.offer_id])
-        .where(and_(*conditions))
+            .where(and_(*conditions))
     )
 
     rows = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
