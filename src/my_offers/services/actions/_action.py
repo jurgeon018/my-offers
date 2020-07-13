@@ -1,19 +1,97 @@
+import asyncio
 import logging
+from dataclasses import dataclass, field
+from typing import List
 
 from cian_http.exceptions import ApiClientException, BadRequestException, TimeoutException
 from cian_web.exceptions import BrokenRulesException, Error
 
 from my_offers import entities, helpers
 from my_offers.enums.actions import OfferActionStatus
-from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
+from my_offers.repositories import monolith_cian_announcementapi
+from my_offers.repositories.monolith_cian_announcementapi.entities import (
+    AnnouncementProgressDto,
+    AnnouncementsActionsV1GetJobStatus,
+    ObjectModel,
+)
+from my_offers.repositories.monolith_cian_announcementapi.entities.get_job_status_response import State as JobState
 from my_offers.services import agencies_settings
 from my_offers.services.offers import load_object_model
 
 
 logger = logging.getLogger(__name__)
 
+END_STATUSES = [
+    JobState.completed,
+    JobState.error,
+]
+
+
+@dataclass
+class MassActions:
+    actor_id: int
+    """ Пользователь-инициатор запуска операции """
+    offers_ids: List[int] = field(default_factory=list)
+    """Объявляния на которыми надо провести операцию """
+
+    async def _get_job_result(self, job_id: int, actor_id: int, delay: float) -> List[AnnouncementProgressDto]:
+        """ Получение результата операции над объявлениями. """
+        # TODO: https://jira.cian.tech/browse/CD-81998
+
+        job_status = None
+        while True:
+            await asyncio.sleep(delay)
+
+            try:
+                job_status = await monolith_cian_announcementapi.announcements_actions_v1_get_job_status(
+                    AnnouncementsActionsV1GetJobStatus(
+                        job_id=job_id,
+                        user_id=actor_id
+                    )
+                )
+            except ApiClientException:
+                logger.warning('Failed to get status job: %s', job_id, exc_info=True)
+                continue
+
+            if job_status.state in END_STATUSES:
+                break
+
+        return job_status.announcements_progress if job_status else []
+
+    async def _run_job(self) -> int:
+        """ Запустить джобу и вернуть ID операции. """
+        raise NotImplementedError
+
+    async def _run_job_with_handle_errors(self) -> int:
+        """ Запустить джобу и вернуть ID операции. Прикидывает все 400 из вызываемой апи. """
+        try:
+            job_id: int = await self._run_job()
+            return job_id
+        except ApiClientException as exc:
+            if exc.code == 400:
+                raise BrokenRulesException(errors=[Error(
+                    key=e.key,
+                    code=e.code,
+                    message=e.message
+                ) for e in exc.errors])
+            raise exc
+
+    async def execute(self, delay: float) -> List[AnnouncementProgressDto]:
+        """ Запустить джобу и дождаться результата работы джобы.
+
+            delay - частота запроса статуса выполнения операции.
+        """
+        job_id = await self._run_job_with_handle_errors()
+        result = await self._get_job_result(
+            job_id=job_id,
+            actor_id=self.actor_id,
+            delay=delay
+        )
+        return result
+
 
 class OfferAction:
+
     def __init__(self, *, offer_id: int, user_id: int) -> None:
         self.offer_id = offer_id
         self.user_id = user_id

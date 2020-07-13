@@ -60,7 +60,7 @@ class OffersChangePublisherStatus:
 @dataclass
 class OffersChangePublisherRequest:
     user_id: int
-    """Пользователь на которого назвачить объявлени"""
+    """Пользователь на которого назвачить объявление"""
     offers_ids: List[int]
     """ID объявлений для которых надо сменить владельца"""
 
