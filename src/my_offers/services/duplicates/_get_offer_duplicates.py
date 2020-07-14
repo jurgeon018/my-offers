@@ -86,6 +86,7 @@ async def v1_get_offer_duplicates_public(
             object_infos = await get_offer_duplicates(offer_id=offer_id, limit=limit, offset=offset)
             total = duplicates_count
         else:
+            # todo https://jira.cian.tech/browse/CD-85593
             object_infos = []
             need_more_offers = False
             limit_for_all = limit

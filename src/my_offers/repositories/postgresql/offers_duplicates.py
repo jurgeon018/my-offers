@@ -64,7 +64,7 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
 async def get_offer_duplicates(
         *,
         offer_id: int,
-        limit: Optional[int],
+        limit: int,
         offset: int
 ) -> List[Tuple[ObjectModel, DuplicateType]]:
     query = """
@@ -177,7 +177,7 @@ async def get_offers_in_same_building(
         high_price: float,
         duplicates_ids: List[int],
         is_test: bool,
-        limit: Optional[int],
+        limit: int,
         offset: int
 ) -> List[Tuple[ObjectModel, DuplicateType]]:
     query = """
@@ -284,7 +284,7 @@ async def get_similar_offers(
         high_price: float,
         is_test: bool,
         offer_id: int,
-        limit: Optional[int],
+        limit: int,
         offset: int
 ) -> List[Tuple[ObjectModel, DuplicateType]]:
     query = """
