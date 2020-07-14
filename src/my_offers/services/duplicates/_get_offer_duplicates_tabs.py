@@ -3,7 +3,7 @@ import asyncio
 from my_offers import entities
 from my_offers.helpers.category import get_types
 from my_offers.repositories.postgresql.offers_duplicates import (
-    get_offer_duplicates_ids_and_count,
+    get_offer_duplicates_ids,
     get_offers_in_same_building_count,
     get_similar_offers_count,
 )
@@ -26,8 +26,6 @@ async def v1_get_offer_duplicates_tabs_public(
     if not validate_offer(status=object_model.status, category=object_model.category):
         return entities.GetOfferDuplicatesTabsResponse(tabs=[])
 
-    _, duplicates_count = await get_offer_duplicates_ids_and_count(request.offer_id)
-
     _, deal_type = get_types(object_model.category)
     district_id = get_district_id(object_model.geo.district)
     house_id = get_house_id(object_model.geo.address)
@@ -37,7 +35,8 @@ async def v1_get_offer_duplicates_tabs_public(
         total_area=object_model.total_area
     )
     is_test = get_is_test(object_model)
-    duplicates_ids, duplicates_count = await get_offer_duplicates_ids_and_count(object_model.id)
+    duplicates_ids = await get_offer_duplicates_ids(object_model.id)
+    duplicates_count = len(duplicates_ids)
     duplicates_ids.append(object_model.id)
 
     same_building_count, similar_count = await asyncio.gather(

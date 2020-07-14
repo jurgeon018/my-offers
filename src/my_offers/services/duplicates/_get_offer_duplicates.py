@@ -9,7 +9,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql.offers_duplicates import (
     get_offer_duplicates,
-    get_offer_duplicates_ids_and_count,
+    get_offer_duplicates_ids,
     get_offers_in_same_building,
     get_offers_in_same_building_count,
     get_similar_offers,
@@ -50,7 +50,8 @@ async def v1_get_offer_duplicates_public(
         total_area=object_model.total_area
     )
     is_test = get_is_test(object_model)
-    duplicates_ids, duplicates_count = await get_offer_duplicates_ids_and_count(offer_id)
+    duplicates_ids = await get_offer_duplicates_ids(offer_id)
+    duplicates_count = len(duplicates_ids)
     duplicates_ids.append(offer_id)
 
     same_building_count, similar_count = await asyncio.gather(

@@ -105,11 +105,10 @@ async def get_offer_duplicates(
     return offers_info
 
 
-async def get_offer_duplicates_ids_and_count(offer_id: int) -> Tuple[List[int], int]:
+async def get_offer_duplicates_ids(offer_id: int) -> List[int]:
     query = """
     select
-        o.offer_id,
-        count(*) OVER () as cnt
+        o.offer_id
     from
         offers_duplicates od
         join offers o on o.offer_id = od.offer_id
@@ -125,11 +124,8 @@ async def get_offer_duplicates_ids_and_count(offer_id: int) -> Tuple[List[int], 
         enums.OfferStatusTab.active.value
     )
     if not result:
-        return [], 0
-    ids = [r['offer_id'] for r in result]
-    count = result[0]['cnt']
-
-    return ids, count
+        return []
+    return [r['offer_id'] for r in result]
 
 
 async def delete_offers_duplicates(offer_ids: List[int]) -> None:
