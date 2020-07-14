@@ -1,5 +1,6 @@
 from cian_test_utils import future
 
+from my_offers.enums import DuplicateType
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.services.duplicates import send_new_offer_duplicate_notifications
@@ -41,13 +42,12 @@ async def test_send_new_offer_duplicate_notifications__owner__skip(mocker):
                         total_area=100,
                         can_parts=True,
                         min_area=7,
-                    )
+                    ),
+                    DuplicateType.duplicate
                 ],
-                1
             )),
             future((
-                [],
-                1,
+                []
             ))
         ]
     )

@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import asyncpgsa
 import pytz
@@ -9,7 +9,7 @@ from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, enums, pg
-from my_offers.enums import DealType, OfferType
+from my_offers.enums import DealType, DuplicateType, OfferType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.offers_duplicates.entities import Duplicate
@@ -61,11 +61,15 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
     return [row['offer_id'] for row in rows if row['updated_at'] is None]
 
 
-async def get_offer_duplicates(offer_id: int, limit: int, offset: int) -> Tuple[List[ObjectModel], int]:
+async def get_offer_duplicates(
+        *,
+        offer_id: int,
+        limit: int,
+        offset: int
+) -> List[Tuple[ObjectModel, DuplicateType]]:
     query = """
     select
-        o.raw_data,
-        count(*) OVER () AS total_count
+        o.raw_data
     from
         offers_duplicates od
         join offers o on o.offer_id = od.offer_id
@@ -88,20 +92,24 @@ async def get_offer_duplicates(offer_id: int, limit: int, offset: int) -> Tuple[
         offset,
         timeout=settings.DB_TIMEOUT
     )
-
+    offers_info: List[Tuple[ObjectModel, DuplicateType]] = []
     if not result:
-        return [], 0
+        return offers_info
+    for r in result:
+        offers_info.append(
+            (
+                object_model_mapper.map_from(json.loads(r['raw_data'])),
+                DuplicateType.duplicate
+            )
+        )
+    return offers_info
 
-    models = [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in result]
-    total = result[0]['total_count']
 
-    return models, total
-
-
-async def get_offer_duplicates_count(offer_id: int) -> int:
+async def get_offer_duplicates_ids_and_count(offer_id: int) -> Tuple[List[int], int]:
     query = """
     select
-        count(*) as cnt
+        o.offer_id,
+        count(*) OVER () as cnt
     from
         offers_duplicates od
         join offers o on o.offer_id = od.offer_id
@@ -110,13 +118,18 @@ async def get_offer_duplicates_count(offer_id: int) -> int:
         and od.offer_id <> $2
         and o.status_tab = $3;
     """
-    row = await pg.get().fetchrow(
+    result = await pg.get().fetch(
         query,
         offer_id,
         offer_id,
         enums.OfferStatusTab.active.value
     )
-    return row['cnt']
+    if not result:
+        return [], 0
+    ids = [r['offer_id'] for r in result]
+    count = result[0]['cnt']
+
+    return ids, count
 
 
 async def delete_offers_duplicates(offer_ids: List[int]) -> None:
@@ -155,19 +168,6 @@ async def get_offers_duplicates_count(offer_ids: List[int]) -> List[entities.Off
     ]
 
 
-async def get_offer_duplicates_ids(offer_id: int) -> List[int]:
-    query = """
-    select
-        offer_id
-    from
-        offers_duplicates
-    where
-        group_id = (select group_id from offers_duplicates where offer_id = $1);
-    """
-    result = await pg.get().fetch(query, offer_id, timeout=settings.DB_TIMEOUT)
-    return [r['offer_id'] for r in result]
-
-
 async def get_offers_in_same_building(
         *,
         deal_type: DealType,
@@ -179,11 +179,10 @@ async def get_offers_in_same_building(
         is_test: bool,
         limit: int,
         offset: int
-) -> Tuple[List[ObjectModel], int]:
+) -> List[Tuple[ObjectModel, DuplicateType]]:
     query = """
     SELECT
-        o.raw_data,
-        count(*) OVER () AS total_count
+        o.raw_data
     from
         offers o
     where
@@ -217,14 +216,62 @@ async def get_offers_in_same_building(
         offset,
         timeout=settings.DB_TIMEOUT
     )
-
+    offers_info: List[Tuple[ObjectModel, DuplicateType]] = []
     if not result:
-        return [], 0
+        return offers_info
+    for r in result:
+        offers_info.append(
+            (
+                object_model_mapper.map_from(json.loads(r['raw_data'])),
+                DuplicateType.same_building
+            )
+        )
+    return offers_info
 
-    models = [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in result]
-    total = result[0]['total_count']
 
-    return models, total
+async def get_offers_in_same_building_count(
+        *,
+        deal_type: DealType,
+        house_id: int,
+        rooms_counts: Tuple[str, str, str],
+        low_price: float,
+        high_price: float,
+        duplicates_ids: List[int],
+        is_test: bool,
+) -> int:
+    if not (house_id and rooms_counts and low_price and high_price):
+        return 0
+    query = """
+    SELECT
+        count(*) AS cnt
+    from
+        offers o
+    where
+        o.house_id = $1
+        and o.offer_type = $2
+        and o.deal_type = $3
+        and o.raw_data -> 'roomsCount' = any($4)
+        and o.price >= $5
+        and o.price  <= $6
+        and o.offer_id <> all ($7::bigint[])
+        and o.status_tab = $8
+        and o.is_test = $9
+    """
+
+    row = await pg.get().fetchrow(
+        query,
+        house_id,
+        OfferType.flat.value,
+        deal_type.value,
+        rooms_counts,
+        low_price,
+        high_price,
+        duplicates_ids,
+        enums.OfferStatusTab.active.value,
+        is_test,
+        timeout=settings.DB_TIMEOUT
+    )
+    return row['cnt']
 
 
 async def get_similar_offers(
@@ -239,11 +286,10 @@ async def get_similar_offers(
         offer_id: int,
         limit: int,
         offset: int
-) -> Tuple[List[ObjectModel], int]:
+) -> List[Tuple[ObjectModel, DuplicateType]]:
     query = """
     SELECT
-        o.raw_data,
-        count(*) OVER () AS total_count
+        o.raw_data
     from
         offers o
     where
@@ -279,11 +325,63 @@ async def get_similar_offers(
         offset,
         timeout=settings.DB_TIMEOUT
     )
-
+    offers_info: List[Tuple[ObjectModel, DuplicateType]] = []
     if not result:
-        return [], 0
+        return offers_info
+    for r in result:
+        offers_info.append(
+            (
+                object_model_mapper.map_from(json.loads(r['raw_data'])),
+                DuplicateType.similar
+            )
+        )
+    return offers_info
 
-    models = [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in result]
-    total = result[0]['total_count']
 
-    return models, total
+async def get_similar_offers_count(
+        *,
+        deal_type: DealType,
+        district_id: int,
+        house_id: int,
+        rooms_counts: Tuple[str, str, str],
+        low_price: float,
+        high_price: float,
+        is_test: bool,
+        offer_id: int,
+) -> int:
+    if not (district_id and rooms_counts and low_price and high_price):
+        return 0
+    query = """
+    SELECT
+        count(*) AS cnt
+    from
+        offers o
+    where
+        o.district_id = $1
+        and (house_id != $2 or house_id is null)
+        and o.offer_type = $3
+        and o.deal_type = $4
+        and o.raw_data -> 'roomsCount' = any($5)
+        and o.price >= $6
+        and o.price  <= $7
+        and o.status_tab = $8
+        and o.is_test = $9
+        and o.offer_id <> $10
+    """
+
+    row = await pg.get().fetchrow(
+        query,
+        district_id,
+        house_id,
+        OfferType.flat.value,
+        deal_type.value,
+        rooms_counts,
+        low_price,
+        high_price,
+        enums.OfferStatusTab.active.value,
+        is_test,
+        offer_id,
+        timeout=settings.DB_TIMEOUT
+    )
+
+    return row['cnt']

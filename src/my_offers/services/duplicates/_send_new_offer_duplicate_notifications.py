@@ -40,7 +40,7 @@ async def send_new_offer_duplicate_notifications(duplicate_offer_id: int) -> Non
         return
 
     while True:
-        duplicates, _ = await get_offer_duplicates(
+        duplicates = await get_offer_duplicates(
             offer_id=duplicate_offer_id,
             limit=limit,
             offset=offset,
@@ -50,7 +50,7 @@ async def send_new_offer_duplicate_notifications(duplicate_offer_id: int) -> Non
             break
 
         user_settings: Dict[int, bool] = {}
-        for offer in duplicates:
+        for offer, _ in duplicates:
             user_id = offer.published_user_id
             if user_id == duplicate_offer.published_user_id:
                 continue
