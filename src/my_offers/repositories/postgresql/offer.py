@@ -24,10 +24,6 @@ from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
 
 
-# realty объявление, которое перенесли в архив всегда приходит с таким row_version (фейковый)
-REALTY_ARCHIVE_ROW_VERSION = 1
-
-
 async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
     """ Сохрнаить любое объявление, кроме архива. """
     insert_query = insert(tables.offers)
@@ -80,6 +76,8 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
 async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> None:
     """ Сохрнаить архивное объявление.
         Если объявление уже есть в БД, то row_version не обновляем.
+
+        Realty объявление, которое перенесли в архив чаще всего приходит с row_version = 1.
     """
     insert_query = insert(tables.offers)
 
@@ -89,19 +87,13 @@ async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> Non
     values['updated_at'] = now
     values['event_date'] = event_date
 
-    is_archive = (
-        offer.row_version == REALTY_ARCHIVE_ROW_VERSION
-        and offer.status_tab == OfferStatusTab.archived
-    )
-
     query, params = asyncpgsa.compile_query(
         insert_query
         .values([values])
         .on_conflict_do_update(
             index_elements=[tables.offers.c.offer_id],
-            where=and_(
-                tables.offers.c.event_date < event_date,
-                is_archive
+            where=(
+                tables.offers.c.event_date < event_date
             ),
             set_={
                 'master_user_id': insert_query.excluded.master_user_id,
