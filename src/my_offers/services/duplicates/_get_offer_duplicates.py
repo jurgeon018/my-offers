@@ -138,7 +138,11 @@ async def v1_get_offer_duplicates_public(
 
     return entities.GetOfferDuplicatesResponse(
         offers=offers,
-        tabs=get_tabs(total),
+        tabs=get_tabs(
+            duplicate_count=duplicates_count,
+            same_building_count=same_building_count,
+            similar_count=similar_count
+        ),
         page=get_page_info(limit=limit, offset=offset, total=total),
     )
 

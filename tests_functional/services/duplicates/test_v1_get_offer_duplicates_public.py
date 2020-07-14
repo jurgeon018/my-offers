@@ -51,6 +51,7 @@ async def test_v2_get_offers_public__duplicates_not_found__200(http, pg):
 
 async def test_v2_get_offers_public__tab_duplicate__duplicates_found__200(http, pg, auction_mock, runtime_settings):
     # arrange
+    await runtime_settings.set({'MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled': False})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(231659418, 231655140, \'2020-05-09\')')
@@ -217,8 +218,9 @@ async def test_v2_get_offers_public__whithout_type_parameter(http, pg, auction_m
     assert len(response.data['offers']) == 1
 
 
-async def test_v2_get_offers_public__same_building_offers_found__200(http, pg, auction_mock):
+async def test_v2_get_offers_public__same_building_offers_found__200(http, pg, auction_mock, runtime_settings):
     # arrange
+    await runtime_settings.set({'MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled': False})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_same_building.sql')
     await pg.execute('INSERT INTO offers_duplicates values(163885962, 163596314, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(163596314, 163596314, \'2020-05-09\')')
@@ -322,8 +324,9 @@ async def test_v2_get_offers_public__same_building_offers_not_found__offer_witho
     assert len(response.data['offers']) == 0
 
 
-async def test_v2_get_offers_public__similar_offers_found__200(http, pg, auction_mock):
+async def test_v2_get_offers_public__similar_offers_found__200(http, pg, auction_mock, runtime_settings):
     # arrange
+    await runtime_settings.set({'MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled': True})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
 
     # act
@@ -356,7 +359,11 @@ async def test_v2_get_offers_public__similar_offers_found__200(http, pg, auction
             }
         ],
         'page': {'pageCount': 1, 'count': 1, 'canLoadMore': False},
-        'tabs': [{'title': 'Все', 'type': 'all', 'count': 1}]
+        'tabs': [
+            {'title': 'Все', 'type': 'all', 'count': 2},
+            {'title': 'В этом доме', 'type': 'sameBuilding', 'count': 1},
+            {'title': 'Похожие рядом', 'type': 'similar', 'count': 1},
+        ]
     }
 
 
@@ -472,5 +479,11 @@ async def test_v2_get_offers_public__tab_all__offers_found__200(http, pg, auctio
             }
         ],
         'page': {'pageCount': 2, 'count': 6, 'canLoadMore': False},
-        'tabs': [{'title': 'Все', 'type': 'all', 'count': 6}]
+        'tabs': [
+            {'title': 'Все', 'type': 'all', 'count': 6},
+            {'title': 'Дубли', 'type': 'duplicate', 'count': 4},
+            {'title': 'В этом доме', 'type': 'sameBuilding', 'count': 1},
+            {'title': 'Похожие рядом', 'type': 'similar', 'count': 1},
+
+        ]
     }
