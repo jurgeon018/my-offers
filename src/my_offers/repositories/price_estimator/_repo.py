@@ -14,10 +14,10 @@ from . import entities
 
 
 _api = Api(microservice_name='price-estimator')
-v1_get_estimation_for_realtors = _api.make_client(
-    path='/v1/get-estimation-for-realtors/',
-    method='POST',
+v2_get_estimation_for_realtors = _api.make_client(
+    path='/v2/get-estimation-for-realtors/',
+    method='GET',
     handle_http_exceptions=True,
-    request_schema=entities.GetEstimationForRealtorsRequest,
+    request_schema=entities.V2GetEstimationForRealtors,
     response_schema=entities.GetEstimationForRealtorsResponse,
 )

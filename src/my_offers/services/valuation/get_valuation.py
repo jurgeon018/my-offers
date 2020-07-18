@@ -3,19 +3,12 @@ from cian_web.exceptions import BrokenRulesException, Error
 
 from my_offers import entities
 from my_offers.helpers.category import get_types
-from my_offers.repositories.price_estimator import v1_get_estimation_for_realtors
-from my_offers.repositories.price_estimator.entities import (
-    GetEstimationForRealtorsRequest,
-    GetEstimationForRealtorsResponse,
-)
+from my_offers.repositories.price_estimator import v2_get_estimation_for_realtors
+from my_offers.repositories.price_estimator.entities import GetEstimationForRealtorsResponse, V2GetEstimationForRealtors
 from my_offers.services.convert_price import get_price_rur
 from my_offers.services.offers import load_object_model
-from my_offers.services.valuation.fields.address import get_address
-from my_offers.services.valuation.fields.house_id import get_house_id
 from my_offers.services.valuation.fields.info_relative_market import get_info_relative_market
-from my_offers.services.valuation.fields.rooms_count import get_rooms_count
 from my_offers.services.valuation.helpers.validation_offer import validate_offer
-from my_offers.services.valuation.helpers.valuation_filters import get_valuation_filters
 from my_offers.services.valuation.helpers.valuation_option import get_valuation_options
 
 
@@ -55,27 +48,10 @@ async def v1_get_offer_valuation_public(
             )
         ])
 
-    price_in_rur = await get_price_rur(
-        price=object_model.bargain_terms.price,
-        currency=object_model.bargain_terms.currency
+    response = await v2_get_estimation_for_realtors_degradation_handler(
+        V2GetEstimationForRealtors(realty_offer_id=offer_id)
     )
 
-    response = await v1_get_estimation_for_realtors_degradation_handler(
-        GetEstimationForRealtorsRequest(
-            address=get_address(object_model.geo.address),
-            area=object_model.total_area,
-            deal_type=deal_type,
-            house_id=get_house_id(object_model.geo.address),
-            offer_id=offer_id,
-            price=price_in_rur,
-            rooms_count=get_rooms_count(
-                category=object_model.category,
-                flat_type=object_model.flat_type,
-                rooms_count=object_model.rooms_count
-            ),
-            filters=get_valuation_filters(object_model)
-        )
-    )
     if response.degraded:
         raise BrokenRulesException([
             Error(
@@ -93,6 +69,11 @@ async def v1_get_offer_valuation_public(
             )
         ])
 
+    price_in_rur = await get_price_rur(
+        price=object_model.bargain_terms.price,
+        currency=object_model.bargain_terms.currency
+    )
+
     return entities.GetOfferValuationResponse(
         valuation_options=get_valuation_options(
             deal_type=deal_type,
@@ -109,8 +90,8 @@ async def v1_get_offer_valuation_public(
     )
 
 
-v1_get_estimation_for_realtors_degradation_handler = get_degradation_handler(
-    func=v1_get_estimation_for_realtors,
-    key='v1_get_estimation_for_realtors',
+v2_get_estimation_for_realtors_degradation_handler = get_degradation_handler(
+    func=v2_get_estimation_for_realtors,
+    key='v2_get_estimation_for_realtors',
     default=GetEstimationForRealtorsResponse(),
 )

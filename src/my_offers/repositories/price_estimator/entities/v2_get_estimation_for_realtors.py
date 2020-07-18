@@ -8,4 +8,10 @@ To re-generate, run `codegen generate-client price-estimator`
 cian-codegen version: 1.4.3
 
 """
-from ._repo import v2_get_estimation_for_realtors
+from dataclasses import dataclass
+
+
+@dataclass
+class V2GetEstimationForRealtors:
+    realty_offer_id: int
+    """realty ID объявления"""
