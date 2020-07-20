@@ -8,8 +8,8 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     price_estimator_stub = await price_estimator_mock.add_stub(
-        method='POST',
-        path='/v1/get-estimation-for-realtors/',
+        method='GET',
+        path='/v2/get-estimation-for-realtors/',
         response=MockResponse(
             body={
                 'liquidityPeriods': {
@@ -45,24 +45,8 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
 
     # assert
     request = await price_estimator_stub.get_request()
-    assert request.data == {
-        'address': 'Москва, Никитский бульвар, 12',
-        'area': 115.0,
-        'dealType': 'sale',
-        'houseId': 1691187,
-        'offerId': 153126220,
-        'price': 54_000_000,
-        'roomsCount': 4,
-        'filters': [
-            {
-                'key': 'floor',
-                'value': ['floorOne']
-            },
-            {
-                'key': 'repairType',
-                'value': ['repairTypeEuro']
-            }
-        ],
+    assert request.params == {
+        'realtyOfferId': '153126220'
     }
     assert response.data == {
         'valuationOptions': [
@@ -101,8 +85,8 @@ async def test_v1_get_offer_valuation__price_estimator_none_response__error(http
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     await price_estimator_mock.add_stub(
-        method='POST',
-        path='/v1/get-estimation-for-realtors/',
+        method='GET',
+        path='/v2/get-estimation-for-realtors/',
         response=MockResponse(
             body={
                 'liquidity_periods': None,
@@ -139,8 +123,8 @@ async def test_v1_get_offer_valuation__price_estimator_500__error(http_client, p
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     await price_estimator_mock.add_stub(
-        method='POST',
-        path='/v1/get-estimation-for-realtors/',
+        method='GET',
+        path='/v2/get-estimation-for-realtors/',
         response=MockResponse(
             status=500
         ),
@@ -199,8 +183,8 @@ async def test_v1_get_offer_valuation__usd__200(http_client, pg, price_estimator
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation_usd.sql')
 
     price_estimator_stub = await price_estimator_mock.add_stub(
-        method='POST',
-        path='/v1/get-estimation-for-realtors/',
+        method='GET',
+        path='/v2/get-estimation-for-realtors/',
         response=MockResponse(
             body={
                 'liquidityPeriods': {
@@ -254,24 +238,8 @@ async def test_v1_get_offer_valuation__usd__200(http_client, pg, price_estimator
 
     # assert
     request = await price_estimator_stub.get_request()
-    assert request.data == {
-        'address': 'Москва, Никитский бульвар, 12',
-        'area': 115.0,
-        'dealType': 'sale',
-        'houseId': 1691187,
-        'offerId': 153126220,
-        'price': 3705388201,
-        'roomsCount': 4,
-        'filters': [
-            {
-                'key': 'floor',
-                'value': ['floorOne']
-            },
-            {
-                'key': 'repairType',
-                'value': ['repairTypeEuro']
-            }
-        ],
+    assert request.params == {
+        'realtyOfferId': '153126220'
     }
     assert response.data == {
         'valuationOptions': [
