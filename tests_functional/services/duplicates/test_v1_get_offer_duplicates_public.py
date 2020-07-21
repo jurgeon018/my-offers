@@ -51,7 +51,6 @@ async def test_v2_get_offers_public__duplicates_not_found__200(http, pg):
 
 async def test_v2_get_offers_public__tab_duplicate__duplicates_found__200(http, pg, auction_mock, runtime_settings):
     # arrange
-    await runtime_settings.set({'MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled': False})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(231659418, 231655140, \'2020-05-09\')')
@@ -117,7 +116,8 @@ async def test_v2_get_offers_public__tab_duplicate__duplicates_found__200(http, 
             }
         ],
         'page': {'pageCount': 1, 'count': 2, 'canLoadMore': False},
-        'tabs': [{'title': 'Все', 'type': 'all', 'count': 2}]
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 2},
+                 {'title': 'Дубли', 'type': 'duplicate', 'count': 2}]
     }
 
     request = await auction_stub.get_request()
@@ -130,8 +130,6 @@ async def test_v2_get_offers_public__tab_all__duplicates_found__200(http, pg, au
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(231659418, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
-
-    await runtime_settings.set({'MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled': False})
 
     auction_stub = await auction_mock.add_stub(
         method='POST',
@@ -193,7 +191,8 @@ async def test_v2_get_offers_public__tab_all__duplicates_found__200(http, pg, au
             }
         ],
         'page': {'pageCount': 1, 'count': 2, 'canLoadMore': False},
-        'tabs': [{'title': 'Все', 'type': 'all', 'count': 2}]
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 2},
+                 {'title': 'Дубли', 'type': 'duplicate', 'count': 2}]
     }
 
     request = await auction_stub.get_request()
@@ -220,7 +219,6 @@ async def test_v2_get_offers_public__whithout_type_parameter(http, pg, auction_m
 
 async def test_v2_get_offers_public__same_building_offers_found__200(http, pg, auction_mock, runtime_settings):
     # arrange
-    await runtime_settings.set({'MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled': False})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_same_building.sql')
     await pg.execute('INSERT INTO offers_duplicates values(163885962, 163596314, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(163596314, 163596314, \'2020-05-09\')')
@@ -269,7 +267,9 @@ async def test_v2_get_offers_public__same_building_offers_found__200(http, pg, a
             }
         ],
         'page': {'pageCount': 1, 'count': 1, 'canLoadMore': False},
-        'tabs': [{'title': 'Все', 'type': 'all', 'count': 1}]
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 2},
+                 {'title': 'Дубли', 'type': 'duplicate', 'count': 1},
+                 {'title': 'В этом доме', 'type': 'sameBuilding', 'count': 1}]
     }
 
     request = await auction_stub.get_request()
@@ -326,7 +326,6 @@ async def test_v2_get_offers_public__same_building_offers_not_found__offer_witho
 
 async def test_v2_get_offers_public__similar_offers_found__200(http, pg, auction_mock, runtime_settings):
     # arrange
-    await runtime_settings.set({'MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled': True})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
 
     # act
@@ -401,7 +400,6 @@ async def test_v2_get_offers_public__similar_offers_not_found__offer_without_dis
 
 async def test_v2_get_offers_public__tab_all__offers_found__200(http, pg, auction_mock, runtime_settings):
     # arrange
-    await runtime_settings.set({'MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled': True})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar_tab_all.sql')
     await pg.execute('INSERT INTO offers_duplicates values(236308049, 236308049, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(236213060, 236308049, \'2020-05-09\')')
