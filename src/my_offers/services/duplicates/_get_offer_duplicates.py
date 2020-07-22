@@ -1,8 +1,6 @@
 import asyncio
 from typing import Dict, List
 
-from cian_core.runtime_settings import runtime_settings
-
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
@@ -86,50 +84,42 @@ async def v1_get_offer_duplicates_public(
         ) if total else []
 
     else:
-        if not runtime_settings.get('MY_OFFERS.SHOW_SIMILAR_OFFERS.Enabled', False):
-            total = duplicates_count
-            object_infos = await get_offer_duplicates(
-                offer_id=offer_id, limit=limit, offset=offset
-            ) if total else []
-        else:
-            # todo https://jira.cian.tech/browse/CD-85593
-            total = duplicates_count + same_building_count + similar_count
+        # todo https://jira.cian.tech/browse/CD-85593
+        object_infos = []
+        need_more_offers = False
+        limit_for_all = limit
+        offset_for_all = offset
 
-            object_infos = []
-            need_more_offers = False
-            limit_for_all = limit
-            offset_for_all = offset
+        if offset_for_all < duplicates_count:
+            duplicates = await get_offer_duplicates(offer_id=offer_id, limit=limit_for_all, offset=offset_for_all)
+            object_infos.extend(duplicates)
+            limit_for_all = limit_for_all - len(duplicates)
+            if limit_for_all:
+                need_more_offers = True
 
-            if offset_for_all < duplicates_count:
-                duplicates = await get_offer_duplicates(
-                    offer_id=offer_id, limit=limit_for_all, offset=offset_for_all
-                ) if duplicates_count else []
-                object_infos.extend(duplicates)
-                limit_for_all = limit_for_all - len(duplicates)
-                if limit_for_all:
-                    need_more_offers = True
+        if offset_for_all >= duplicates_count or need_more_offers:
+            offset_for_all = 0 if need_more_offers else offset_for_all - duplicates_count
+            same_building_offers = await get_offers_in_same_building(
+                deal_type=deal_type, house_id=house_id, rooms_counts=rooms_list, low_price=low_price,
+                high_price=high_price, duplicates_ids=duplicates_ids, is_test=is_test,
+                limit=limit_for_all, offset=offset_for_all
+            )
+            object_infos.extend(same_building_offers)
+            limit_for_all = limit_for_all - len(same_building_offers)
+            if limit_for_all:
+                need_more_offers = True
 
-            if offset_for_all >= duplicates_count or need_more_offers:
-                offset_for_all = 0 if need_more_offers else offset_for_all - duplicates_count
-                same_building_offers = await get_offers_in_same_building(
-                    deal_type=deal_type, house_id=house_id, rooms_counts=rooms_list, low_price=low_price,
-                    high_price=high_price, duplicates_ids=duplicates_ids, is_test=is_test,
-                    limit=limit_for_all, offset=offset_for_all
-                ) if same_building_count else []
-                object_infos.extend(same_building_offers)
-                limit_for_all = limit_for_all - len(same_building_offers)
-                if limit_for_all:
-                    need_more_offers = True
+        duplicates_and_same_building_count = duplicates_count + same_building_count
+        if offset_for_all >= duplicates_and_same_building_count or need_more_offers:
+            offset_for_all = 0 if need_more_offers else offset_for_all - duplicates_and_same_building_count
+            similar_offers = await get_similar_offers(
+                deal_type=deal_type, district_id=district_id, house_id=house_id, rooms_counts=rooms_list,
+                low_price=low_price, high_price=high_price, is_test=is_test, offer_id=offer_id,
+                limit=limit_for_all, offset=offset_for_all,
+            )
+            object_infos.extend(similar_offers)
 
-            duplicates_and_same_building_count = duplicates_count + same_building_count
-            if offset_for_all >= duplicates_and_same_building_count or need_more_offers:
-                offset_for_all = 0 if need_more_offers else offset_for_all - duplicates_and_same_building_count
-                similar_offers = await get_similar_offers(
-                    deal_type=deal_type, district_id=district_id, house_id=house_id, rooms_counts=rooms_list,
-                    low_price=low_price, high_price=high_price, is_test=is_test, offer_id=offer_id,
-                    limit=limit_for_all, offset=offset_for_all,
-                ) if similar_count else []
-                object_infos.extend(similar_offers)
+        total = duplicates_count + same_building_count + similar_count
 
     if not object_infos:
         return get_empty_response(limit, offset)
