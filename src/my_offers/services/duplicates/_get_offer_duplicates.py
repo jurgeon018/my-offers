@@ -91,7 +91,9 @@ async def v1_get_offer_duplicates_public(
         offset_for_all = offset
 
         if offset_for_all < duplicates_count:
-            duplicates = await get_offer_duplicates(offer_id=offer_id, limit=limit_for_all, offset=offset_for_all)
+            duplicates = await get_offer_duplicates(
+                offer_id=offer_id, limit=limit_for_all, offset=offset_for_all
+            ) if duplicates_count else []
             object_infos.extend(duplicates)
             limit_for_all = limit_for_all - len(duplicates)
             if limit_for_all:
@@ -103,7 +105,7 @@ async def v1_get_offer_duplicates_public(
                 deal_type=deal_type, house_id=house_id, rooms_counts=rooms_list, low_price=low_price,
                 high_price=high_price, duplicates_ids=duplicates_ids, is_test=is_test,
                 limit=limit_for_all, offset=offset_for_all
-            )
+            ) if same_building_count else []
             object_infos.extend(same_building_offers)
             limit_for_all = limit_for_all - len(same_building_offers)
             if limit_for_all:
@@ -116,7 +118,7 @@ async def v1_get_offer_duplicates_public(
                 deal_type=deal_type, district_id=district_id, house_id=house_id, rooms_counts=rooms_list,
                 low_price=low_price, high_price=high_price, is_test=is_test, offer_id=offer_id,
                 limit=limit_for_all, offset=offset_for_all,
-            )
+            ) if similar_count else []
             object_infos.extend(similar_offers)
 
         total = duplicates_count + same_building_count + similar_count
