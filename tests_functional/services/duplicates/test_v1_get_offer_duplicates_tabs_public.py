@@ -20,6 +20,7 @@ async def test_v2_get_offer_tabs_public__duplicates_found__200(http_client, pg, 
     assert response.data == {
         'tabs': [
             {'title': 'Все', 'type': 'all', 'count': 2},
+            {'title': 'Дубли', 'type': 'duplicate', 'count': 2},
         ]
     }
 
