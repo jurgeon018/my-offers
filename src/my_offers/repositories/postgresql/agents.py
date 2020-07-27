@@ -43,6 +43,20 @@ async def get_master_user_id(user_id: int) -> Optional[int]:
     return row['master_agent_user_id'] if row else None
 
 
+async def is_master_user_with_subs(user_id: int) -> bool:
+    query = (
+        'SELECT EXISTS('
+        '   SELECT *'
+        '   FROM agents_hierarchy'
+        '   WHERE master_agent_user_id = 52014011'
+        ') AS result'
+    )
+
+    row = await pg.get().fetchrow(query, user_id)
+
+    return bool(row['result'])
+
+
 async def get_agent_names(user_ids: List[int]) -> List[AgentName]:
     query = """
         SELECT

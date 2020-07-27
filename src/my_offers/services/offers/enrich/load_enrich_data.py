@@ -192,6 +192,17 @@ async def _load_agency_settings(user_id: int) -> EnrichItem:
     return EnrichItem(key='agency_settings', degraded=result.degraded, value=result.value)
 
 
+@async_statsd_timer('enrich.can_change_publisher')
+async def _load_can_change_publisher(user_id: int) -> EnrichItem:
+    agency_id = await get_master_user_id(user_id)
+    if not agency_id:
+        return EnrichItem(key='agency_settings', degraded=False, value=None)
+
+    result = await get_settings_degradation_handler(agency_id)
+
+    return EnrichItem(key='agency_settings', degraded=result.degraded, value=result.value)
+
+
 @async_statsd_timer('enrich.load_subagents')
 async def _load_subagents(user_ids: List[int]) -> EnrichItem:
     if not user_ids:

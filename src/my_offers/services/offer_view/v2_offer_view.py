@@ -62,7 +62,6 @@ def v2_build_offer_view(
             favorites=enrich_data.favorites_counts.get(offer_id),
             searches=enrich_data.searches_counts.get(offer_id),
         ),
-        # TODO: https://jira.cian.tech/browse/CD-76582
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=archived),
         status_type=get_status_type(is_manual=manual, status=object_model.status),
@@ -73,6 +72,7 @@ def v2_build_offer_view(
             can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
             agency_settings=enrich_data.agency_settings,
             is_in_hidden_base=object_model.is_in_hidden_base,
+            is_allow_change_publisher=enrich_data.allow_change_publisher.get(offer_id, False)
         ),
         page_specific_info=get_page_specific_info(
             object_model=object_model,
@@ -80,3 +80,28 @@ def v2_build_offer_view(
             status_tab=status_tab,
         ),
     )
+
+#        private bool IsPayedByMaster(ChangeAnnouncementOwnerContext context)
+#
+#         {
+#
+#             var masterAccount = this.accountService.GetByUserIdWithoutCache(context.ActorId);
+#
+#             if (context.AnnouncementStatus == Status.Published)
+#
+#                 return context.ActiveContracts.Any(s => s.PublisherAccountId == masterAccount.AccountId);
+#
+#             var lastAppliedMainContract = this.targetObjectServiceInfoService.GetLastAppliedMainContractServiceInfo(context.Announcement.ID, TargetObjectTypeEnum.Announcement);
+#
+#             return lastAppliedMainContract?.PublisherAccountId == masterAccount.AccountId;
+#
+#         }
+#
+#     }
+#
+# }
+
+
+# serviceType == ServiceTypeEnum.Highlight
+# || serviceType == ServiceTypeEnum.Calltracking
+# || serviceType == ServiceTypeEnum.Auction;
