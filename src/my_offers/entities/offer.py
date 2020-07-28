@@ -61,6 +61,8 @@ class Offer:
 class ReindexOfferItem:
     offer_id: int
     """Id объявления"""
+    sync: bool
+    """Синхронизировать объявление с эластик АПИ"""
     created_at: datetime
     """Дата постановки в очередь"""
 

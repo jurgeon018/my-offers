@@ -131,6 +131,7 @@ CREATE TABLE offers_reindex_queue
 (
     offer_id   bigint                   not null primary key,
     in_process bool                     not null default false,
+    sync       bool                     not null default false,
     created_at timestamp with time zone not null
 );
 CREATE INDEX ON offers_reindex_queue (created_at);

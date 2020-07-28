@@ -1,0 +1,1 @@
+alter table offers_reindex_queue add column sync boolean not null default false;
