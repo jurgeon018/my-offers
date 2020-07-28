@@ -1,10 +1,8 @@
 import asyncio
 import json
 import logging
-from datetime import datetime
 from typing import List
 
-import pytz
 from simple_settings import settings
 
 from my_offers.entities import ReindexOffer
@@ -46,7 +44,7 @@ async def reindex_offers_command() -> None:
             offer = await prepare_offer(object_model)
             await update_offer(offer)
 
-        await delete_reindex_items(offer_ids)
+        await delete_reindex_items(list(offer_ids_map.keys()))
 
         cnt += len(reindex_items)
         logger.info('Processed %s offers', cnt)
