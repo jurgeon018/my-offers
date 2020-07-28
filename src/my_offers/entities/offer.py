@@ -61,10 +61,10 @@ class Offer:
 class ReindexOfferItem:
     offer_id: int
     """Id объявления"""
-    sync: bool
-    """Синхронизировать объявление с эластик АПИ"""
     created_at: datetime
     """Дата постановки в очередь"""
+    sync: Optional[bool] = False
+    """Синхронизировать объявление с эластик АПИ"""
 
 
 @dataclass
@@ -73,5 +73,5 @@ class ReindexOffer:
     """Id объявления"""
     raw_data: str
     """Модель объявления"""
-    updated_at: datetime
+    updated_at: Optional[datetime] = None
     """Дата последнего обновления"""
