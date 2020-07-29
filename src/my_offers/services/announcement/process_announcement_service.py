@@ -19,6 +19,9 @@ from my_offers.services.announcement.fields.total_area import get_total_area
 from my_offers.services.announcement.fields.walking_time import get_walking_time
 
 
+FAKE_ROW_VERSION = -1
+
+
 async def process_announcement(object_model: ObjectModel, event_date: datetime) -> None:
     offer = await prepare_offer(object_model)
 
@@ -47,7 +50,7 @@ async def prepare_offer(object_model: ObjectModel) -> entities.Offer:
         offer_type=offer_type,
         status_tab=status_tab,
         search_text=get_search_text(object_model),
-        row_version=object_model.row_version,
+        row_version=object_model.row_version if object_model.row_version else FAKE_ROW_VERSION,
         raw_data=object_model_mapper.map_to(object_model),
         services=get_services(object_model.publish_terms),
         is_manual=not (object_model.source and object_model.source.is_upload),
