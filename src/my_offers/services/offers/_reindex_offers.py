@@ -70,7 +70,7 @@ async def get_offers_from_elasticapi_for_reindex(offer_ids: List[int]) -> List[R
             await asyncio.sleep(settings.ELASTIC_API_DELAY)
 
         response: ElasticResultIElasticAnnouncementElasticAnnouncementError = await get_api_elastic_announcement_get(
-            GetApiElasticAnnouncementGet(ids=[offer_ids[i: i + chunk_size]])
+            GetApiElasticAnnouncementGet(ids=offer_ids[i: i + chunk_size])
         )
 
         if response.success:
