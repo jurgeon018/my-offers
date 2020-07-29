@@ -1,10 +1,8 @@
 import asyncio
 import json
 import logging
-from datetime import datetime
 from typing import List
 
-import pytz
 from simple_settings import settings
 
 from my_offers.entities import ReindexOffer
@@ -46,7 +44,7 @@ async def reindex_offers_command() -> None:
             offer = await prepare_offer(object_model)
             await update_offer(offer)
 
-        await delete_reindex_items(offer_ids)
+        await delete_reindex_items(list(offer_ids_map.keys()))
 
         cnt += len(reindex_items)
         logger.info('Processed %s offers', cnt)
@@ -66,7 +64,6 @@ async def load_offers(*, offer_ids: List[int], offer_for_sync_ids: List[int]) ->
 
 async def get_offers_from_elasticapi_for_reindex(offer_ids: List[int]) -> List[ReindexOffer]:
     result = []
-    now = datetime.now(tz=pytz.UTC)
     chunk_size = settings.ELASTIC_API_BULK_SIZE
     for i in range(0, len(offer_ids), chunk_size):
         if i:
