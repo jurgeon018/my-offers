@@ -144,8 +144,9 @@ register_consumer(
 @cli.command()
 def reindex_offers() -> None:
     """ Переиндексация объявлений """
-    io_loop = IOLoop.current()
-    io_loop.run_sync(reindex_offers_command)
+    with new_operation_id():
+        io_loop = IOLoop.current()
+        io_loop.run_sync(reindex_offers_command)
 
 
 @cli.command()

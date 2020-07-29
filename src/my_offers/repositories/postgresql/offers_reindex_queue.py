@@ -28,7 +28,7 @@ async def get_reindex_items() -> List[ReindexOfferItem]:
     where
         offers_reindex_queue.offer_id = offer_ids.offer_id
     returning
-        offers_reindex_queue.offer_id, created_at
+        offers_reindex_queue.offer_id, sync, created_at
     """
 
     rows = await pg.get().fetch(query)

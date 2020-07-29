@@ -9,13 +9,14 @@ from my_offers.repositories.postgresql.offers_reindex_queue import get_reindex_i
 
 
 @pytest.mark.gen_test
-async def test_get_reindex_items(mocker):
+async def test_get_reindex_items():
     # arrange
     pg.get().fetch.return_value = future([{
         'offer_id': 11,
-        'created_at': datetime(2020, 3, 12)
+        'created_at': datetime(2020, 3, 12),
+        'sync': False,
     }])
-    expected = [ReindexOfferItem(offer_id=11, created_at=datetime(2020, 3, 12, 0, 0))]
+    expected = [ReindexOfferItem(offer_id=11, created_at=datetime(2020, 3, 12, 0, 0), sync=False)]
 
     # act
     result = await get_reindex_items()
@@ -25,8 +26,8 @@ async def test_get_reindex_items(mocker):
     pg.get().fetch.assert_called_once_with(
         '\n    with offer_ids as (\n        select\n            offer_id\n        from\n            '
         'offers_reindex_queue\n        where\n            not in_process\n        order by\n            '
-        'created_at\n        limit 100\n        for update\n    )\n    update\n        '
-        'offers_reindex_queue\n    set\n        in_process = true\n    from\n        offer_ids\n    '
-        'where\n        offers_reindex_queue.offer_id = offer_ids.offer_id\n    returning\n        '
-        'offers_reindex_queue.offer_id, created_at\n    '
+        'created_at\n        limit 100\n        for update\n    )\n    update\n        offers_reindex_queue\n    '
+        'set\n        in_process = true\n    from\n        offer_ids\n    where\n        '
+        'offers_reindex_queue.offer_id = offer_ids.offer_id\n    returning\n        offers_reindex_queue.offer_id, '
+        'sync, created_at\n    '
     )
