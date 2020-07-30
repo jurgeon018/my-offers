@@ -6,7 +6,7 @@ from my_offers.helpers.numbers import get_pretty_number
 from my_offers.helpers.time import get_aware_date
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Flags, ObjectModel, Photo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source, Status
 
 
 CURRENCY = {
@@ -22,6 +22,10 @@ def is_archived(flags: Optional[Flags]) -> bool:
 
 def is_manual(source: Optional[Source]) -> bool:
     return not bool(source and source.is_upload)
+
+
+def is_draft(status: Optional[Status]) -> bool:
+    return bool(status and status.is_draft)
 
 
 def get_sort_date(*, object_model: ObjectModel, status_tab: enums.OfferStatusTab) -> Optional[datetime]:

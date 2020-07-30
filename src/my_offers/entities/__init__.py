@@ -25,6 +25,7 @@ from my_offers.entities.offer_action import (
     OffersChangePublisherRequest,
     OffersChangePublisherResponse,
     OffersChangePublisherStatus,
+    OffersMassRestoreCounters,
     OffersMassRestoreRequest,
     OffersMassRestoreResponse,
 )

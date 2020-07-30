@@ -115,6 +115,12 @@ class TestMassOffersRestore:
 
         # assert
         assert response.data == {
+            'counters': {
+                'draftCount': 0,
+                'errorCount': 1,
+                'restoredCount': 1,
+                'xmlCount': 0
+            },
             'total': 2,
             'offers': [
                 {'message': None, 'offerId': offer_id_1, 'status': 'Completed'},
@@ -139,6 +145,7 @@ class TestMassOffersRestore:
         offer_id_1 = 11111111
         offer_id_2 = 22222222
         offer_id_3 = 33333333
+        offer_id_4 = 44444444
         user_id = 222
         master_user = 333
 
@@ -184,15 +191,18 @@ class TestMassOffersRestore:
             VALUES
                 ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15),
                 ($16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30),
-                ($31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45)
+                ($31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45),
+                ($46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60)
             """,
             [
-                offer_id_1, master_user, master_user, 'sale', 'flat', status_tab, [], True, False, False, 'text', '{}',
-                1, now, now,
-                offer_id_2, master_user, master_user, 'sale', 'flat', status_tab, [], True, False, False, 'text', '{}',
-                1, now, now,
-                offer_id_3, master_user, user_id, 'sale', 'flat', status_tab, [], True, False, False, 'text', '{}', 1,
-                now, now,
+                offer_id_1, master_user, master_user, 'sale', 'flat', status_tab, [], True, False, False, 'text',
+                '{"id": %s}' % offer_id_1, 1, now, now,
+                offer_id_2, master_user, master_user, 'sale', 'flat', status_tab, [], True, False, False, 'text',
+                '{"id": %s}' % offer_id_2, 1, now, now,
+                offer_id_3, master_user, user_id, 'sale', 'flat', status_tab, [], True, False, False, 'text',
+                '{"id": %s}' % offer_id_3, 1, now, now,
+                offer_id_4, master_user, user_id, 'sale', 'flat', status_tab, [], True, False, False, 'text',
+                '{"id": %s, "status": "Draft"}' % offer_id_4, 1, now, now,
             ]
         )
 
@@ -237,14 +247,20 @@ class TestMassOffersRestore:
             },
             json={
                 'filters': {'status_tab': status_tab},
-                'offers_ids': [offer_id_1, offer_id_3],
+                'offers_ids': [offer_id_1, offer_id_3, offer_id_4],
                 'action_type': action_type
             },
         )
 
         # assert
         assert response.data == {
-            'total': 2,
+            'total': 3,
+            'counters': {
+                'draftCount': 1,
+                'errorCount': 1,
+                'restoredCount': 1,
+                'xmlCount': 0
+            },
             'offers': [
                 {'message': None, 'offerId': offer_id_1, 'status': 'Completed'},
                 {'message': 'Need more money!', 'offerId': offer_id_3, 'status': 'Error'},
@@ -369,6 +385,12 @@ class TestMassOffersRestore:
         # assert
         assert response.data == {
             'total': 2,
+            'counters': {
+                'draftCount': 0,
+                'errorCount': 0,
+                'restoredCount': 1,
+                'xmlCount': 1
+            },
             'offers': [
                 {'message': 'Нельзя автоматически восстановить XML', 'offerId': offer_id_2, 'status': 'Error'},
                 {'message': None, 'offerId': offer_id_1, 'status': 'Completed'},
