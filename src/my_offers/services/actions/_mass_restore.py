@@ -93,11 +93,9 @@ def _get_result_counters(results: List[AnnouncementProgressDto]) -> Tuple[int, i
 
     for res in results:
         if res.state and res.state.is_error:
-            error_count = + 1
+            error_count += 1
         elif res.state and res.state.is_completed:
-            restored_count = +1
-        else:
-            continue
+            restored_count += 1
 
     return restored_count, error_count
 
@@ -127,8 +125,5 @@ def _filter_offers(
                 status=OfferMassRestoreState.error,
                 message='Нельзя автоматически восстановить XML'
             ))
-
-        else:
-            continue
 
     return offers_ids, offers_errors, offers_counters
