@@ -268,6 +268,132 @@ class TestMassOffersRestore:
         }
 
     @pytest.mark.parametrize('status_tab, action_type, job_status', [
+        ('notActive', 'select', 'Error'),
+    ])
+    async def test_restore_selected__ignore_not_user_offers(
+            self,
+            pg,
+            http,
+            status_tab,
+            action_type,
+            job_status,
+            monolith_cian_announcementapi_mock
+    ):
+        """ Проверяем восстановление только принадлежащих пользователю объявлений """
+        # arrange
+        offer_id_1 = 11111111
+        strange_offer_id_2 = 22222222
+        user_id = 222
+        master_user = 333
+
+        now = datetime.now()
+        await pg.execute(
+            """
+            INSERT INTO public.agents_hierarchy (
+                id,
+                row_version,
+                realty_user_id,
+                master_agent_user_id,
+                created_at,
+                updated_at
+            )
+            VALUES
+                ($1, $2, $3, $4, $5, $6),
+                ($7, $8, $9, $10, $11, $12)
+            """,
+            [
+                1, 123, user_id, master_user, now, now,
+                2, 123, master_user, None, now, now,
+            ]
+        )
+        await pg.execute(
+            """
+            INSERT INTO public.offers (
+                offer_id,
+                master_user_id,
+                user_id,
+                deal_type,
+                offer_type,
+                status_tab,
+                services,
+                is_manual,
+                is_in_hidden_base,
+                has_photo,
+                search_text,
+                raw_data,
+                row_version,
+                created_at,
+                updated_at
+            )
+            VALUES
+                ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+            """,
+            [
+                offer_id_1, master_user, master_user, 'sale', 'flat', status_tab, [], True, False, False, 'text',
+                '{"id": %s}' % offer_id_1, 1, now, now,
+            ]
+        )
+
+        await monolith_cian_announcementapi_mock.add_stub(
+            method='POST',
+            path='/announcements-actions/v1/restore/',
+            response=MockResponse(
+                body={
+                    'job_id': 123
+                }
+            ),
+        )
+        await monolith_cian_announcementapi_mock.add_stub(
+            method='GET',
+            path='/announcements-actions/v1/get-job-status/',
+            response=[
+                MockResponse(
+                    body={
+                        'state': 'InProgress',
+                        'announcementsProgress': []
+                    },
+                    repeat=3,
+                ),
+                MockResponse(
+                    body={
+                        'state': job_status,
+                        'announcementsProgress': [
+                            {'id': offer_id_1, 'state': 'Completed'},
+                        ]
+                    }
+                ),
+            ]
+        )
+
+        # act
+        response = await http.request(
+            'POST',
+            '/public/v1/actions/restore-offers/',
+            headers={
+                'X-Real-UserId': master_user
+            },
+            json={
+                'filters': {'status_tab': status_tab},
+                'offers_ids': [offer_id_1, strange_offer_id_2],
+                'action_type': action_type
+            },
+        )
+
+        # assert
+        assert response.data == {
+            'total': 1,
+            'counters': {
+                'draftCount': 0,
+                'errorCount': 0,
+                'restoredCount': 1,
+                'xmlCount': 0
+            },
+            'offers': [
+                {'message': None, 'offerId': offer_id_1, 'status': 'Completed'},
+            ]
+        }
+
+    @pytest.mark.parametrize('status_tab, action_type, job_status', [
         ('notActive', 'all', 'Error'),
     ])
     async def test_restore_selected__exclude_xml(

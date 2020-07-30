@@ -109,21 +109,21 @@ def _filter_offers(
     offers_errors = []
     offers_counters = entities.OffersMassRestoreCounters(draft_count=0, xml_count=0)
 
-    for o in objects_models:
-        is_manual = helpers.is_manual(o.source)
-        is_draft = helpers.is_draft(o.status)
+    for offer in objects_models:
+        is_manual = helpers.is_manual(offer.source)
+        is_draft = helpers.is_draft(offer.status)
         is_xml = not is_manual
 
         if is_draft:
             offers_counters.draft_count += 1
 
         if is_manual and not is_draft:
-            offers_ids.append(o.id)
+            offers_ids.append(offer.id)
 
         elif is_xml:
             offers_counters.xml_count += 1
             offers_errors.append(entities.OfferMassRestoreStatus(
-                offer_id=o.id,
+                offer_id=offer.id,
                 status=OfferMassRestoreState.error,
                 message='Нельзя автоматически восстановить XML'
             ))
