@@ -115,7 +115,7 @@ def _filter_offers(
         if is_draft:
             offers_counters.draft_count += 1
 
-        elif is_manual and not is_draft:
+        elif is_manual:
             offers_ids.append(offer.id)
 
         elif is_xml:
