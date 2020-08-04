@@ -5,7 +5,8 @@ from my_offers.entities import GetOfferDuplicatesRequest
 from my_offers.enums import DuplicateTabType
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel, Status
-from my_offers.services.duplicates._get_offer_duplicates import v1_get_offer_duplicates_public, validate_offer
+from my_offers.services.duplicates._get_offer_duplicates import v1_get_offer_duplicates_public
+from my_offers.helpers.similar import is_offer_for_similar
 
 
 @pytest.mark.parametrize(
@@ -18,7 +19,7 @@ from my_offers.services.duplicates._get_offer_duplicates import v1_get_offer_dup
 )
 def test_validate_offer(status, category, expected):
     # arrange & act
-    result = validate_offer(status=status, category=category)
+    result = is_offer_for_similar(status=status, category=category)
 
     # assert
     assert result == expected

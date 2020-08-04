@@ -3,10 +3,12 @@ from datetime import datetime
 from my_offers import entities
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_sort_date
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
+from my_offers.repositories.postgresql import offers_similars
 from my_offers.repositories.postgresql.billing import get_offer_publisher_user_id
 from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
@@ -74,8 +76,17 @@ async def post_process_announcement(object_model: ObjectModel) -> None:
     if not object_model.status.is_draft:
         await postgresql.delete_offer_import_error(object_model.id)
 
+    _update_offer_similar(object_model)
+
 
 async def _get_master_user_id(*, offer_id: int, user_id: int) -> int:
     publisher_user_id = await get_offer_publisher_user_id(offer_id)
 
     return publisher_user_id if publisher_user_id else user_id
+
+
+async def _update_offer_similar(object_model: ObjectModel) -> None:
+    if is_offer_for_similar(status=object_model.status, category=object_model.category):
+        await offers_similars.save()
+    else:
+        await offers_similars.delete(object_model.id)

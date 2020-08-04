@@ -13,7 +13,7 @@ from my_offers.services.announcement.fields.is_test import get_is_test
 from my_offers.services.duplicates.helpers.range_price import get_range_price
 from my_offers.services.duplicates.helpers.rooms_count import get_possible_room_counts
 from my_offers.services.duplicates.helpers.tabs import get_tabs
-from my_offers.services.duplicates.helpers.validation_offer import validate_offer
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.services.offers import load_object_model
 
 
@@ -23,7 +23,7 @@ async def v1_get_offer_duplicates_tabs_public(
 ) -> entities.GetOfferDuplicatesTabsResponse:
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
 
-    if not validate_offer(status=object_model.status, category=object_model.category):
+    if not is_offer_for_similar(status=object_model.status, category=object_model.category):
         return entities.GetOfferDuplicatesTabsResponse(tabs=[])
 
     _, deal_type = get_types(object_model.category)

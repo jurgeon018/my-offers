@@ -21,7 +21,7 @@ from my_offers.services.auctions import get_auction_bets_degradation_handler
 from my_offers.services.duplicates.helpers.range_price import get_range_price
 from my_offers.services.duplicates.helpers.rooms_count import get_possible_room_counts
 from my_offers.services.duplicates.helpers.tabs import get_tabs
-from my_offers.services.duplicates.helpers.validation_offer import validate_offer
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
 
 
@@ -29,14 +29,13 @@ async def v1_get_offer_duplicates_public(
         request: entities.GetOfferDuplicatesRequest,
         realty_user_id: int
 ) -> entities.GetOfferDuplicatesResponse:
-    tab_type = request.type
-    if not tab_type:
-        tab_type = enums.DuplicateTabType.all
+    tab_type = request.type if request.type else enums.DuplicateTabType.all
+
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
     _, deal_type = get_types(object_model.category)
     limit, offset = get_pagination(request.pagination)
 
-    if not validate_offer(status=object_model.status, category=object_model.category):
+    if not is_offer_for_similar(status=object_model.status, category=object_model.category):
         return get_empty_response(limit, offset)
 
     offer_id = object_model.id
