@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from cian_web.exceptions import BrokenRulesException, Error
 
@@ -7,7 +7,6 @@ from my_offers import entities
 from my_offers.enums import DealType, DuplicateType
 from my_offers.helpers.category import get_types
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
-from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql.offers_duplicates import (
     get_offer_duplicates,
     get_offer_duplicates_ids,
@@ -20,7 +19,7 @@ from my_offers.services import offer_view
 from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
 from my_offers.services.announcement.fields.is_test import get_is_test
-from my_offers.services.auctions import get_auction_bets_degradation_handler
+from my_offers.services.duplicates.helpers.auction import load_auction_bets
 from my_offers.services.duplicates.helpers.range_price import get_range_price
 from my_offers.services.duplicates.helpers.rooms_count import get_possible_room_counts
 from my_offers.services.duplicates.helpers.validation_offer import validate_offer
@@ -43,7 +42,7 @@ async def v1_get_offer_duplicates_desktop_public(
     _, deal_type = get_types(object_model.category)
 
     if not validate_offer(status=object_model.status, category=object_model.category):
-        return get_empty_response(limit, offset)
+        return _get_empty_response(limit, offset)
 
     offer_id = object_model.id
     district_id = get_district_id(object_model.geo.district)
@@ -55,8 +54,8 @@ async def v1_get_offer_duplicates_desktop_public(
     )
     is_test = get_is_test(object_model)
     duplicates_ids = await get_offer_duplicates_ids(offer_id)
-    duplicates_ids.append(offer_id)
     duplicates_count = len(duplicates_ids)
+    duplicates_ids.append(offer_id)
 
     same_building_count, similar_count = await asyncio.gather(
         get_offers_in_same_building_count(
@@ -69,7 +68,7 @@ async def v1_get_offer_duplicates_desktop_public(
         )
     )
 
-    object_infos, total = await _get_all_duplicates(
+    object_infos, total = await _get_all_duplicates_and_similar(
         offer_id=offer_id,
         duplicates_count=duplicates_count,
         limit=limit,
@@ -87,7 +86,7 @@ async def v1_get_offer_duplicates_desktop_public(
     )
 
     if not object_infos:
-        return get_empty_response(limit, offset)
+        return _get_empty_response(limit, offset)
 
     auction_bets = await load_auction_bets([object_info[0] for object_info in object_infos])
     offers = [
@@ -99,16 +98,13 @@ async def v1_get_offer_duplicates_desktop_public(
         for object_model, duplicate_type in object_infos
     ]
 
-    # исключаем объявление для которого сделан запрос
-    total = total - 1
-
     return entities.GetOfferDuplicatesDesktopResponse(
         offers=offers,
         page=get_page_info(limit=limit, offset=offset, total=total),
     )
 
 
-async def _get_all_duplicates(
+async def _get_all_duplicates_and_similar(
         *,
         offer_id: int,
         duplicates_count: int,
@@ -167,28 +163,8 @@ async def _get_all_duplicates(
     return object_infos, total
 
 
-def get_empty_response(limit, offset) -> entities.GetOfferDuplicatesDesktopResponse:
+def _get_empty_response(limit, offset) -> entities.GetOfferDuplicatesDesktopResponse:
     return entities.GetOfferDuplicatesDesktopResponse(
         offers=[],
         page=get_page_info(limit=limit, offset=offset, total=0),
     )
-
-
-async def load_auction_bets(object_models: List[ObjectModel]) -> Dict[int, int]:
-    offer_ids = []
-    for object_model in object_models:
-        terms = object_model.publish_terms.terms if object_model.publish_terms else None
-        if not terms:
-            continue
-
-        for term in terms:
-            if term.services and Services.auction in term.services:
-                offer_ids.append(object_model.id)
-                break
-
-    if not offer_ids:
-        return {}
-
-    result = await get_auction_bets_degradation_handler(offer_ids)
-
-    return result.value
