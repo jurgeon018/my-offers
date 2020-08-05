@@ -1,6 +1,5 @@
 from datetime import datetime
 
-import pytest
 from cian_helpers.timezone import TIMEZONE
 from cian_test_utils import future
 from simple_settings.utils import settings_stub
@@ -10,13 +9,13 @@ from my_offers.entities import Offer, ReindexOffer, ReindexOfferItem
 from my_offers.repositories.monolith_cian_elasticapi.entities import (
     ElasticResultIElasticAnnouncementElasticAnnouncementError,
 )
+from my_offers.services.announcement.process_announcement_service import ForceAnnouncementProcessor
 from my_offers.services.offers._reindex_offers import get_offers_from_elasticapi_for_reindex, reindex_offers_command
 
 
 PATH = 'my_offers.services.offers._reindex_offers.'
 
 
-@pytest.mark.skip
 async def test_reindex_offers_command(mocker):
     # arrange
     get_reindex_items_mock = mocker.patch(
@@ -66,24 +65,21 @@ async def test_reindex_offers_command(mocker):
         sort_date=TIMEZONE.localize(datetime(2020, 2, 7, 16, 25, 37, 99015)),
     )
 
-    # prepare_offer_mock = mocker.patch(
-    #     f'{PATH}prepare_offer',
-    #     return_value=future(offer)
-    # )
-    # update_offer_mock = mocker.patch(
-    #     f'{PATH}update_offer',
-    #     return_value=future()
-    # )
     delete_reindex_items_mock = mocker.patch(
         f'{PATH}delete_reindex_items',
         return_value=future()
     )
 
     object_model = mocker.sentinel.offer_model
-    object_model.id = 1
     object_model_mapper_mock = mocker.patch(
         f'{PATH}object_model_mapper.map_from',
         return_value=object_model
+    )
+
+    process_mock = mocker.patch.object(
+        ForceAnnouncementProcessor,
+        'process',
+        return_value=future(),
     )
 
     # act
@@ -93,12 +89,11 @@ async def test_reindex_offers_command(mocker):
     assert get_reindex_items_mock.call_count == 2
     get_offers_for_reindex_mock.assert_called_once_with([12])
     get_offers_from_elasticapi_for_reindex_mock.assert_called_once_with([11])
-    # assert prepare_offer_mock.call_count == 2
     object_model_mapper_mock.assert_has_calls([
         mocker.call({'offerId': 12}),
         mocker.call({'offerId': 11}),
     ])
-    # assert update_offer_mock.call_count == 2
+    assert process_mock.call_count == 2
     delete_reindex_items_mock.assert_called_once_with([11, 12])
 
 
