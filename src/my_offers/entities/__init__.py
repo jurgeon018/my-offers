@@ -3,6 +3,7 @@ from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.entities.coverage import Coverage
 from my_offers.entities.duplicates import (
+    GetOfferDuplicatesDesktopResponse,
     GetOfferDuplicatesRequest,
     GetOfferDuplicatesResponse,
     GetOfferDuplicatesTabsRequest,
@@ -11,6 +12,7 @@ from my_offers.entities.duplicates import (
     GetOffersDuplicatesCountResponse,
     MobileOfferGeo,
     OfferDuplicate,
+    OfferDuplicateDesktop,
     OfferDuplicatesCount,
     Tab,
 )

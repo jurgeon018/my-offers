@@ -1,5 +1,4 @@
 import asyncio
-from typing import Dict, List
 
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
@@ -18,7 +17,7 @@ from my_offers.repositories.postgresql.offers_duplicates import (
 from my_offers.services import offer_view
 from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
-from my_offers.services.auctions import get_auction_bets_degradation_handler
+from my_offers.services.duplicates.helpers.auction import load_auction_bets
 from my_offers.services.duplicates.helpers.range_price import get_range_price
 from my_offers.services.duplicates.helpers.rooms_count import get_possible_room_counts
 from my_offers.services.duplicates.helpers.tabs import get_tabs
@@ -36,7 +35,7 @@ async def v1_get_offer_duplicates_public(
     limit, offset = get_pagination(request.pagination)
 
     if not is_offer_for_similar(status=object_model.status, category=object_model.category):
-        return get_empty_response(limit, offset)
+        return _get_empty_response(limit, offset)
 
     offer_id = object_model.id
     district_id = get_district_id(object_model.geo.district)
@@ -123,7 +122,7 @@ async def v1_get_offer_duplicates_public(
         total = duplicates_count + same_building_count + similar_count
 
     if not object_infos:
-        return get_empty_response(limit, offset)
+        return _get_empty_response(limit, offset)
 
     auction_bets = await load_auction_bets([object_info[0] for object_info in object_infos])
 
@@ -146,29 +145,9 @@ async def v1_get_offer_duplicates_public(
     )
 
 
-def get_empty_response(limit: int, offset: int) -> entities.GetOfferDuplicatesResponse:
+def _get_empty_response(limit: int, offset: int) -> entities.GetOfferDuplicatesResponse:
     return entities.GetOfferDuplicatesResponse(
         offers=[],
         tabs=[],
         page=get_page_info(limit=limit, offset=offset, total=0),
     )
-
-
-async def load_auction_bets(object_models: List[ObjectModel]) -> Dict[int, int]:
-    offer_ids = []
-    for object_model in object_models:
-        terms = object_model.publish_terms.terms if object_model.publish_terms else None
-        if not terms:
-            continue
-
-        for term in terms:
-            if term.services and Services.auction in term.services:
-                offer_ids.append(object_model.id)
-                break
-
-    if not offer_ids:
-        return {}
-
-    result = await get_auction_bets_degradation_handler(offer_ids)
-
-    return result.value
