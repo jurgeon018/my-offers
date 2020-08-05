@@ -3,6 +3,7 @@ from typing import Dict, List
 
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql.offers_duplicates import (
@@ -21,7 +22,6 @@ from my_offers.services.auctions import get_auction_bets_degradation_handler
 from my_offers.services.duplicates.helpers.range_price import get_range_price
 from my_offers.services.duplicates.helpers.rooms_count import get_possible_room_counts
 from my_offers.services.duplicates.helpers.tabs import get_tabs
-from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
 
 

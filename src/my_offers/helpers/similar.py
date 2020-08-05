@@ -1,4 +1,4 @@
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status, Category
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 
 
 CATEGORY_FOR_SIMILAR = (

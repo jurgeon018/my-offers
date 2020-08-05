@@ -2,6 +2,7 @@ import asyncio
 
 from my_offers import entities
 from my_offers.helpers.category import get_types
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.postgresql.offers_duplicates import (
     get_offer_duplicates_ids,
     get_offers_in_same_building_count,
@@ -13,7 +14,6 @@ from my_offers.services.announcement.fields.is_test import get_is_test
 from my_offers.services.duplicates.helpers.range_price import get_range_price
 from my_offers.services.duplicates.helpers.rooms_count import get_possible_room_counts
 from my_offers.services.duplicates.helpers.tabs import get_tabs
-from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.services.offers import load_object_model
 
 

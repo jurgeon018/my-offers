@@ -3,10 +3,10 @@ from cian_test_utils import future
 
 from my_offers.entities import GetOfferDuplicatesRequest
 from my_offers.enums import DuplicateTabType
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel, Status
 from my_offers.services.duplicates._get_offer_duplicates import v1_get_offer_duplicates_public
-from my_offers.helpers.similar import is_offer_for_similar
 
 
 @pytest.mark.parametrize(
@@ -17,7 +17,7 @@ from my_offers.helpers.similar import is_offer_for_similar
         (Status.published, Category.daily_flat_rent, False),
     )
 )
-def test_validate_offer(status, category, expected):
+def test_is_offer_for_similar(status, category, expected):
     # arrange & act
     result = is_offer_for_similar(status=status, category=category)
 
@@ -51,7 +51,7 @@ class TestNoSelectOffersInBdWithZeroCount:
             return_value=future(self.object_model)
         )
         mocker.patch(
-            f'{self.PATH}validate_offer',
+            f'{self.PATH}is_offer_for_similar',
             return_value=future(True)
         )
         mocker.patch(
@@ -91,7 +91,7 @@ class TestNoSelectOffersInBdWithZeroCount:
             return_value=future(self.object_model)
         )
         mocker.patch(
-            f'{self.PATH}validate_offer',
+            f'{self.PATH}is_offer_for_similar',
             return_value=future(True)
         )
         mocker.patch(

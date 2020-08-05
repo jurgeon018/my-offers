@@ -14,7 +14,7 @@ from my_offers.repositories.monolith_cian_elasticapi.entities import (
 )
 from my_offers.repositories.postgresql.offer import get_offers_for_reindex, update_offer
 from my_offers.repositories.postgresql.offers_reindex_queue import delete_reindex_items, get_reindex_items
-from my_offers.services.announcement.process_announcement_service import prepare_offer
+from my_offers.services.announcement.process_announcement_service import ForceAnnouncementProcessor
 
 
 logger = logging.getLogger(__name__)
@@ -41,8 +41,8 @@ async def reindex_offers_command() -> None:
                 continue
 
             object_model = object_model_mapper.map_from(json.loads(reindex_offer.raw_data))
-            offer = await prepare_offer(object_model)
-            await update_offer(offer)
+            processor = ForceAnnouncementProcessor()
+            processor.process(object_model)
 
         await delete_reindex_items(list(offer_ids_map.keys()))
 
