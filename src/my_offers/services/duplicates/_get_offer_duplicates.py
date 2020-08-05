@@ -4,8 +4,6 @@ from my_offers import entities, enums
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import is_test
 from my_offers.helpers.similar import is_offer_for_similar
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
-from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.repositories.postgresql.offers_duplicates import (
     get_offer_duplicates,
     get_offer_duplicates_ids,
