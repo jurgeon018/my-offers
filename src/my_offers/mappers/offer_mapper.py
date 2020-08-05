@@ -37,3 +37,8 @@ offer_row_version_mapper = EntityMapper(
     entities.OfferRowVersion,
     without_camelcase=True,
 )
+
+offer_similar_mapper = EntityMapper(
+    entities.OfferSimilar,
+    without_camelcase=True,
+)

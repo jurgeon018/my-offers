@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from my_offers import enums
 from my_offers.entities.get_offers import PageInfo, Pagination
-from my_offers.entities.offer_view_model import Underground
 
 
 @dataclass

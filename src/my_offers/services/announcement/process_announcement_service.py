@@ -3,14 +3,13 @@ from datetime import datetime
 from my_offers import entities
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_sort_date, is_test
-from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
-from my_offers.repositories.postgresql import offers_similars
 from my_offers.repositories.postgresql.billing import get_offer_publisher_user_id
 from my_offers.repositories.postgresql.offer import update_offer
+from my_offers.services import similars
 from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
 from my_offers.services.announcement.fields.prices import get_prices
@@ -83,17 +82,11 @@ class AnnouncementProcessor:
 
     async def _post_process_offer(self, object_model: ObjectModel) -> None:
         await self._update_offer_import_error(object_model)
-        await self._update_offer_similar(object_model)
+        await similars.update(object_model)
 
     async def _update_offer_import_error(self, object_model: ObjectModel) -> None:
         if not object_model.status.is_draft:
             await postgresql.delete_offer_import_error(object_model.id)
-
-    async def _update_offer_similar(self, object_model: ObjectModel) -> None:
-        if is_offer_for_similar(status=object_model.status, category=object_model.category):
-            await offers_similars.save()
-        else:
-            await offers_similars.delete(object_model.id)
 
 
 class MainAnnouncementProcessor(AnnouncementProcessor):

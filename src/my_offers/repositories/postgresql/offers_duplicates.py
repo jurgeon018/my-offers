@@ -381,3 +381,10 @@ async def get_similar_offers_count(
     )
 
     return row['cnt']
+
+
+async def get_duplicate_group_id(offer_id: int) -> Optional[int]:
+    query = 'select group_id from offers_duplicates where offer_id = $1'
+    row = await pg.get().fetchrow(query, offer_id)
+
+    return row['group_id'] if row else None

@@ -44,5 +44,6 @@ from my_offers.entities.offers_for_calltracking import (
     OffersForCalltrackingRequest,
     OffersForCalltrackingResponse,
 )
+from my_offers.entities.similar import OfferSimilar
 from my_offers.entities.update_offer import UpdateOfferRequest
 from my_offers.entities.valuation import GetOfferValuationRequest, GetOfferValuationResponse, ValuationOption
