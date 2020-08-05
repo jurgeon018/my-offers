@@ -2,7 +2,7 @@ from datetime import datetime
 
 from my_offers import entities
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import get_sort_date
+from my_offers.helpers.fields import get_sort_date, is_test
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.mappers.object_model import object_model_mapper
@@ -13,7 +13,6 @@ from my_offers.repositories.postgresql.billing import get_offer_publisher_user_i
 from my_offers.repositories.postgresql.offer import update_offer
 from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
-from my_offers.services.announcement.fields.is_test import get_is_test
 from my_offers.services.announcement.fields.prices import get_prices
 from my_offers.services.announcement.fields.search_text import get_search_text
 from my_offers.services.announcement.fields.services import get_services
@@ -64,7 +63,7 @@ class AnnouncementProcessor:
             is_manual=not (object_model.source and object_model.source.is_upload),
             is_in_hidden_base=bool(object_model.is_in_hidden_base),
             has_photo=bool(object_model.photos),
-            is_test=get_is_test(object_model),
+            is_test=is_test(object_model),
             price=price,
             price_per_meter=price_per_meter,
             total_area=total_area,
