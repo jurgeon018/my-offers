@@ -4,7 +4,12 @@ import pytest
 
 
 @pytest.fixture(autouse=True, scope='session')
-async def start(runner, pg, queue_service, cassandra_service):
+async def start(runner, pg, queue_service, cassandra_service, global_runtime_settings):
+    await global_runtime_settings.set(
+        RABBITMQ_CONNECT_TO_QUEUE_MASTER=False,
+        RABBITMQ_CHECK_QUEUE_MASTER_INTERVAL=0,
+    )
+
     await cassandra_service.get_keyspace(alias='statistics', keyspace='statistics')
     await cassandra_service.get_keyspace(alias='search_coverage', keyspace='search_coverage')
 

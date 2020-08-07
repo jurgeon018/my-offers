@@ -48,7 +48,7 @@ async def _on_remove_duplicates(offer_ids: List[int]) -> None:
     await offers_similars.unset_group_id(offer_ids)
 
 
-async def _send_push(new_duplicates):
+async def _send_push(offer_ids: List[int]) -> None:
     if settings.SEND_PUSH_ON_NEW_DUPLICATE:
-        for offer_id in new_duplicates:
+        for offer_id in offer_ids:
             await offer_new_duplicate_producers(offer_id)
