@@ -18,18 +18,18 @@ async def get_price_rur(
 
     currencies = await _get_currencies()
 
-    return math.ceil(price * currencies[currency])
+    return math.ceil(price * currencies[currency.value.lower()])
 
 
 @cached(
-    group='currencies',
+    group='currencies-v3',
     options=CachedOptions(ttl=settings.CURRENCIES_TTL),
 )
 async def _get_currencies() -> Dict[Currency, float]:
     """Получение курсов валют из монолита шарпа"""
     currencies = await api_currencies()
     result = {
-        Currency(currency.currency_code.lower()): currency.rate
+        currency.currency_code.lower(): currency.rate
         for currency in currencies
     }
 
