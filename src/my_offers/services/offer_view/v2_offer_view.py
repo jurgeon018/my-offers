@@ -47,7 +47,6 @@ def v2_build_offer_view(
 
     return get_offers.GetOfferV2(
         id=offer_id,
-        created_at=display_date,  # todo: https://jira.cian.tech/browse/CD-77805 - выпилить или вернуть creation_date
         display_date=display_date,
         title=get_title(object_model),
         main_photo_url=main_photo_url,
