@@ -9,14 +9,6 @@ from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import is_test
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
-from my_offers.repositories.postgresql.offers_duplicates import (
-    get_offer_duplicates,
-    get_offer_duplicates_ids,
-    get_offers_in_same_building,
-    get_offers_in_same_building_count,
-    get_similar_offers,
-    get_similar_offers_count,
-)
 from my_offers.services import offer_view
 from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
@@ -26,7 +18,7 @@ from my_offers.services.duplicates.helpers.rooms_count import get_possible_room_
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
 
 
-async def v1_get_offer_duplicates_desktop_public(
+async def v1_get_offer_similars_desktop_public(
         request: entities.GetOfferDuplicatesRequest,
         realty_user_id: int
 ) -> entities.GetOfferDuplicatesDesktopResponse:

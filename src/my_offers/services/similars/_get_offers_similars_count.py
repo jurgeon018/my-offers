@@ -1,8 +1,7 @@
 from my_offers import entities
-from my_offers.repositories.postgresql.offers_duplicates import get_offers_duplicates_count
 
 
-async def v1_get_offers_duplicates_count(
+async def v1_get_offers_similars_count(
         request: entities.GetOffersDuplicatesCountRequest
 ) -> entities.GetOffersDuplicatesCountResponse:
     offer_ids = request.offer_ids

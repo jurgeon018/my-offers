@@ -6,7 +6,7 @@ from my_offers.enums import DuplicateTabType
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Geo
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel, Status
-from my_offers.services.duplicates._get_offer_duplicates import v1_get_offer_duplicates_public
+from my_offers.services.similars._get_offer_similars import v1_get_offer_duplicates_public
 
 
 @pytest.mark.parametrize(
