@@ -6,14 +6,14 @@ from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, pg
 from my_offers.mappers.offer_mapper import offer_similar_mapper
-from my_offers.repositories.postgresql.tables import metadata, offer_type
+from my_offers.repositories.postgresql.tables import deal_type, metadata
 
 
 offers_similars_flat = sa.Table(
     'offers_similars_flat',
     metadata,
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
-    sa.Column('offer_type', offer_type, nullable=False),
+    sa.Column('deal_type', deal_type, nullable=False),
     sa.Column('group_id', sa.BIGINT, nullable=True),
     sa.Column('house_id', sa.INT, nullable=True),
     sa.Column('district_id', sa.INT, nullable=True),
@@ -26,7 +26,7 @@ offers_similars_test = sa.Table(
     'offers_similars_test',
     metadata,
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
-    sa.Column('offer_type', offer_type, nullable=False),
+    sa.Column('deal_type', deal_type, nullable=False),
     sa.Column('group_id', sa.BIGINT, nullable=True),
     sa.Column('house_id', sa.INT, nullable=True),
     sa.Column('district_id', sa.INT, nullable=True),
@@ -52,7 +52,7 @@ async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
         .on_conflict_do_update(
             index_elements=[table.c.offer_id],
             set_={
-                'offer_type': insert_query.excluded.offer_type,
+                'deal_type': insert_query.excluded.deal_type,
                 'group_id': insert_query.excluded.group_id,
                 'house_id': insert_query.excluded.house_id,
                 'district_id': insert_query.excluded.district_id,
