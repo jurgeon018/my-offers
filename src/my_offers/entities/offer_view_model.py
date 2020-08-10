@@ -82,8 +82,6 @@ class OfferViewModelV2:
     """Ключевые параметры: комиссии, бонусы, свободная продажа, ипотека"""
     is_manual: bool
     """ Флаг 'из импорта'"""
-    created_at: Optional[datetime]
-    """Дата подачи объявления"""
     archived_at: Optional[datetime]
     """Дата архивации"""
     display_date: Optional[datetime]
