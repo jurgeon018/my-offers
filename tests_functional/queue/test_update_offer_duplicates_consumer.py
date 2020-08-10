@@ -10,6 +10,7 @@ async def test_update_offer_duplicates_consumer(queue_service, pg, runtime_setti
     # arrange
     await runtime_settings.set({'SEND_PUSH_ON_NEW_DUPLICATE': True})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute('INSERT INTO offers_similars_flat(offer_id, offer_type) VALUES(209194477, \'flat\')')
     await offers_duplicates_mock.add_stub(
         method='POST',
         path='/v1/get-offers-duplicates-by-ids/',
@@ -37,6 +38,9 @@ async def test_update_offer_duplicates_consumer(queue_service, pg, runtime_setti
 
     # assert
     row = await pg.fetchrow('SELECT * FROM offers_duplicates WHERE offer_id = 209194477')
+    assert row['group_id'] == 1
+
+    row = await pg.fetchrow('SELECT * FROM offers_similars_flat WHERE offer_id = 209194477')
     assert row['group_id'] == 1
 
     messages = await queue.get_messages()
@@ -95,6 +99,7 @@ async def test_update_offer_duplicates_consumer__not_duplicate__delete(queue_ser
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates VALUES(209194477, 209194477, \'2020-05-13\')')
+    await pg.execute('INSERT INTO offers_similars_flat(offer_id, offer_type, group_id) VALUES(209194477, \'flat\', 1)')
     await offers_duplicates_mock.add_stub(
         method='POST',
         path='/v1/get-offers-duplicates-by-ids/',
@@ -119,3 +124,6 @@ async def test_update_offer_duplicates_consumer__not_duplicate__delete(queue_ser
     # assert
     row = await pg.fetchrow('SELECT * FROM offers_duplicates WHERE offer_id = 209194477')
     assert row is None
+
+    row = await pg.fetchrow('SELECT * FROM offers_similars_flat WHERE offer_id = 209194477')
+    assert row['group_id'] is None

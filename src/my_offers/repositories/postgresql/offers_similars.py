@@ -1,3 +1,5 @@
+from typing import List
+
 import asyncpgsa
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert
@@ -70,3 +72,25 @@ async def delete(*, suffix: str, offer_id: int) -> None:
     )
 
     await pg.get().execute(query, *params)
+
+
+async def update_group_id(offer_ids: List[int]) -> None:
+    query = """
+        update
+            offers_similars_flat as os
+        set
+            group_id = od.group_id
+        from
+            offers_duplicates as od
+        where
+            od.offer_id = os.offer_id
+            and od.offer_id = ANY($1::BIGINT[])
+    """
+
+    await pg.get().execute(query, offer_ids)
+
+
+async def unset_group_id(offer_ids: List[int]) -> None:
+    query = 'update offers_similars_flat set group_id = null where offer_id = ANY($1::BIGINT[])'
+
+    await pg.get().execute(query, offer_ids)
