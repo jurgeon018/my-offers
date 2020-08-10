@@ -62,6 +62,16 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
     url(
+        r'/public/v1/get-offers-duplicates-for-desktop/$',
+        get_handler(
+            service=duplicates.v1_get_offer_duplicates_desktop_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOfferDuplicatesRequest,
+            response_schema=entities.GetOfferDuplicatesDesktopResponse,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
         r'/v1/get-offers-duplicates-count/$',
         get_handler(
             service=duplicates.v1_get_offers_duplicates_count,

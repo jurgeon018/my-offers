@@ -3,6 +3,7 @@ from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.entities.coverage import Coverage
 from my_offers.entities.duplicates import (
+    GetOfferDuplicatesDesktopResponse,
     GetOfferDuplicatesRequest,
     GetOfferDuplicatesResponse,
     GetOfferDuplicatesTabsRequest,
@@ -11,6 +12,7 @@ from my_offers.entities.duplicates import (
     GetOffersDuplicatesCountResponse,
     MobileOfferGeo,
     OfferDuplicate,
+    OfferDuplicateDesktop,
     OfferDuplicatesCount,
     Tab,
 )
@@ -25,6 +27,7 @@ from my_offers.entities.offer_action import (
     OffersChangePublisherRequest,
     OffersChangePublisherResponse,
     OffersChangePublisherStatus,
+    OffersMassRestoreCounters,
     OffersMassRestoreRequest,
     OffersMassRestoreResponse,
 )
@@ -43,5 +46,6 @@ from my_offers.entities.offers_for_calltracking import (
     OffersForCalltrackingRequest,
     OffersForCalltrackingResponse,
 )
+from my_offers.entities.similar import OfferSimilar
 from my_offers.entities.update_offer import UpdateOfferRequest
 from my_offers.entities.valuation import GetOfferValuationRequest, GetOfferValuationResponse, ValuationOption

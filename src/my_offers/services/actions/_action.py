@@ -63,7 +63,7 @@ class MassActions:
         raise NotImplementedError
 
     async def _run_job_with_handle_errors(self) -> int:
-        """ Запустить джобу и вернуть ID операции. Прикидывает все 400 из вызываемой апи. """
+        """ Запустить джобу и вернуть ID операции. Прокидывает все 400 из вызываемой апи. """
         try:
             job_id: int = await self._run_job()
             return job_id

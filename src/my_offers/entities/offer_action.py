@@ -40,9 +40,23 @@ class OfferMassRestoreStatus:
 
 
 @dataclass
+class OffersMassRestoreCounters:
+    draft_count: Optional[int] = None
+    """Кол-во черновиков"""
+    xml_count: Optional[int] = None
+    """Кол-во выгрузочных объявленеий"""
+    restored_count: Optional[int] = None
+    """Кол-во восстановленных объявлений"""
+    error_count: Optional[int] = None
+    """Кол-во объявлений с ошибками"""
+
+
+@dataclass
 class OffersMassRestoreResponse:
     total: int
     """Общее количетсво офферов"""
+    counters: OffersMassRestoreCounters
+    """Счетчики по общему прогрессу"""
     offers: List[OfferMassRestoreStatus]
     """Статусы по восстановленным объявлениям"""
 

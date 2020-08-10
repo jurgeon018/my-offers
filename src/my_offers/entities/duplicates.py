@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from my_offers import enums
 from my_offers.entities.get_offers import PageInfo, Pagination
-from my_offers.entities.offer_view_model import Underground
 
 
 @dataclass
@@ -78,6 +77,30 @@ class OfferDuplicate:
 
 
 @dataclass
+class OfferDuplicateDesktop:
+    offer_id: int
+    """Id объявления"""
+    url: str
+    """URL объявления"""
+    title: str
+    """Заголовок объявления"""
+    geo: MobileOfferGeo
+    """Гео"""
+    price_info: PriceInfo
+    """Инофрмация о цене"""
+    vas: List[enums.OfferVas]
+    """Список VAS'ов"""
+    type: enums.DuplicateType
+    """Тип дубликатов"""
+    display_date: Optional[datetime] = None
+    """Дата для отображения в карточке"""
+    auction_bet: Optional[str] = None
+    """Текущая ставка аукциона"""
+    main_photo_url: Optional[str] = None
+    """Основаная фотография объекта"""
+
+
+@dataclass
 class Tab:
     type: enums.DuplicateTabType
     """Тип вкладки"""
@@ -93,6 +116,14 @@ class GetOfferDuplicatesResponse:
     """Список объявлений"""
     tabs: List[Tab]
     """Информация о вкладках"""
+    page: PageInfo
+    """Информация о странице"""
+
+
+@dataclass
+class GetOfferDuplicatesDesktopResponse:
+    offers: List[OfferDuplicateDesktop]
+    """Список объявлений"""
     page: PageInfo
     """Информация о странице"""
 

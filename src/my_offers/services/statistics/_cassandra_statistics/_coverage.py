@@ -21,8 +21,8 @@ WHERE
 """
 stmts = CassandraStatement('statistics')
 stmts.select_coverage_current = _query_template.format(type='current')
-stmts.select_coverage_daily = _query_template.format(type='daily')
-stmts.select_coverage_total = _query_template.format(type='total')
+stmts.select_coverage_daily = _query_template.format(type='daily_v2')
+stmts.select_coverage_total = _query_template.format(type='total_v2')
 
 
 @dataclass
