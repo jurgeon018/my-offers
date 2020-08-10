@@ -19,6 +19,7 @@ offers_similars_flat = sa.Table(
     sa.Column('district_id', sa.INT, nullable=True),
     sa.Column('price', sa.FLOAT, nullable=True),
     sa.Column('rooms_count', sa.INT, nullable=True),
+    sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
 )
 
 
@@ -32,6 +33,7 @@ offers_similars_test = sa.Table(
     sa.Column('district_id', sa.INT, nullable=True),
     sa.Column('price', sa.FLOAT, nullable=True),
     sa.Column('rooms_count', sa.INT, nullable=True),
+    sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
 )
 
 
@@ -58,6 +60,7 @@ async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
                 'district_id': insert_query.excluded.district_id,
                 'price': insert_query.excluded.price,
                 'rooms_count': insert_query.excluded.rooms_count,
+                'sort_date': insert_query.excluded.sort_date,
             }
         )
     )

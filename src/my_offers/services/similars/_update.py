@@ -43,5 +43,6 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
                 currency=object_model.bargain_terms.currency
             ),
             rooms_count=object_model.rooms_count,
+            sort_date=object_model.edit_date if object_model.edit_date else object_model.creation_date,
         )
     )
