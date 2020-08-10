@@ -2,6 +2,8 @@ import asyncio
 
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
+from my_offers.helpers.fields import is_test
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.postgresql.offers_duplicates import (
     get_offer_duplicates,
     get_offer_duplicates_ids,
@@ -13,12 +15,10 @@ from my_offers.repositories.postgresql.offers_duplicates import (
 from my_offers.services import offer_view
 from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
-from my_offers.services.announcement.fields.is_test import get_is_test
 from my_offers.services.duplicates.helpers.auction import load_auction_bets
 from my_offers.services.duplicates.helpers.range_price import get_range_price
 from my_offers.services.duplicates.helpers.rooms_count import get_possible_room_counts
 from my_offers.services.duplicates.helpers.tabs import get_tabs
-from my_offers.services.duplicates.helpers.validation_offer import validate_offer
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
 
 
@@ -26,14 +26,13 @@ async def v1_get_offer_duplicates_public(
         request: entities.GetOfferDuplicatesRequest,
         realty_user_id: int
 ) -> entities.GetOfferDuplicatesResponse:
-    tab_type = request.type
-    if not tab_type:
-        tab_type = enums.DuplicateTabType.all
+    tab_type = request.type if request.type else enums.DuplicateTabType.all
+
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
     _, deal_type = get_types(object_model.category)
     limit, offset = get_pagination(request.pagination)
 
-    if not validate_offer(status=object_model.status, category=object_model.category):
+    if not is_offer_for_similar(status=object_model.status, category=object_model.category):
         return _get_empty_response(limit, offset)
 
     offer_id = object_model.id
@@ -44,7 +43,7 @@ async def v1_get_offer_duplicates_public(
         bargain_terms=object_model.bargain_terms,
         total_area=object_model.total_area
     )
-    is_test = get_is_test(object_model)
+    test = is_test(object_model)
     duplicates_ids = await get_offer_duplicates_ids(offer_id)
     duplicates_count = len(duplicates_ids)
     duplicates_ids.append(offer_id)
@@ -52,11 +51,11 @@ async def v1_get_offer_duplicates_public(
     same_building_count, similar_count = await asyncio.gather(
         get_offers_in_same_building_count(
             deal_type=deal_type, house_id=house_id, rooms_counts=rooms_list, low_price=low_price,
-            high_price=high_price, duplicates_ids=duplicates_ids, is_test=is_test,
+            high_price=high_price, duplicates_ids=duplicates_ids, is_test=test,
         ),
         get_similar_offers_count(
             deal_type=deal_type, district_id=district_id, house_id=house_id, rooms_counts=rooms_list,
-            low_price=low_price, high_price=high_price, is_test=is_test, offer_id=object_model.id,
+            low_price=low_price, high_price=high_price, is_test=test, offer_id=object_model.id,
         )
     )
 
@@ -64,14 +63,14 @@ async def v1_get_offer_duplicates_public(
         total = same_building_count
         object_infos = await get_offers_in_same_building(
             deal_type=deal_type, house_id=house_id, rooms_counts=rooms_list, low_price=low_price,
-            high_price=high_price, duplicates_ids=duplicates_ids, is_test=is_test, limit=limit, offset=offset
+            high_price=high_price, duplicates_ids=duplicates_ids, is_test=test, limit=limit, offset=offset
         ) if total else []
 
     elif tab_type.is_similar:
         total = similar_count
         object_infos = await get_similar_offers(
             deal_type=deal_type, district_id=district_id, house_id=house_id, rooms_counts=rooms_list,
-            low_price=low_price, high_price=high_price, is_test=is_test, offer_id=offer_id, limit=limit, offset=offset
+            low_price=low_price, high_price=high_price, is_test=test, offer_id=offer_id, limit=limit, offset=offset
         ) if total else []
 
     elif tab_type.is_duplicate:
@@ -100,7 +99,7 @@ async def v1_get_offer_duplicates_public(
             offset_for_all = 0 if need_more_offers else offset_for_all - duplicates_count
             same_building_offers = await get_offers_in_same_building(
                 deal_type=deal_type, house_id=house_id, rooms_counts=rooms_list, low_price=low_price,
-                high_price=high_price, duplicates_ids=duplicates_ids, is_test=is_test,
+                high_price=high_price, duplicates_ids=duplicates_ids, is_test=test,
                 limit=limit_for_all, offset=offset_for_all
             ) if same_building_count else []
             object_infos.extend(same_building_offers)
@@ -113,7 +112,7 @@ async def v1_get_offer_duplicates_public(
             offset_for_all = 0 if need_more_offers else offset_for_all - duplicates_and_same_building_count
             similar_offers = await get_similar_offers(
                 deal_type=deal_type, district_id=district_id, house_id=house_id, rooms_counts=rooms_list,
-                low_price=low_price, high_price=high_price, is_test=is_test, offer_id=offer_id,
+                low_price=low_price, high_price=high_price, is_test=test, offer_id=offer_id,
                 limit=limit_for_all, offset=offset_for_all,
             ) if similar_count else []
             object_infos.extend(similar_offers)

@@ -10,7 +10,7 @@ async def start(runner, pg, queue_service, cassandra_service):
 
     await pg.execute_scripts((Path('contrib') / 'postgresql' / 'migrations').glob('*.sql'))
 
-    await runner.start_background_python_web()
+    await runner.start_background_python_web(startup_timeout=10000)
     await runner.start_background_python_command('process_announcement_consumer')
     await runner.start_background_python_command('update_offer_duplicates_consumer')
     await runner.start_background_python_command('new_offer_duplicate_notification_consumer')
