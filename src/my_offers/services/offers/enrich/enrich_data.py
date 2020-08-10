@@ -115,7 +115,6 @@ class EnrichData:
     premoderation_info: Optional[Set[int]] = None
     archive_date: Optional[Dict[int, datetime]] = None
     payed_till: Optional[Dict[int, datetime]] = None
-    allow_change_publisher: Dict[int, bool] = field(default_factory=dict)
 
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)

@@ -51,6 +51,7 @@ def test_build_offer_view(enrich_data_mock):
             can_move_to_archive=True,
             can_delete=True,
             can_raise=True,
+            can_change_publisher=True
         ),
         page_specific_info=PageSpecificInfo(
             active_info=ActiveInfo(
@@ -68,7 +69,11 @@ def test_build_offer_view(enrich_data_mock):
     )
 
     # act
-    result = v2_build_offer_view(object_model=raw_offer, enrich_data=enrich_data_mock)
+    result = v2_build_offer_view(
+        is_master_agent=True,
+        object_model=raw_offer,
+        enrich_data=enrich_data_mock
+    )
 
     # assert
     assert result == expected_result

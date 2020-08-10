@@ -14,10 +14,11 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 def v2_build_offer_view(
         *,
+        is_master_agent: bool,
         object_model: ObjectModel,
         enrich_data: EnrichData,
 ) -> get_offers.GetOfferV2:
-    """ Собирает из шарповой модели компактное представление объявления для выдачи."""
+    """ Собирать из шарповой модели компактное представление объявления для выдачи."""
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = get_main_photo_url(object_model.photos)
     manual = is_manual(object_model.source)
@@ -71,7 +72,7 @@ def v2_build_offer_view(
             can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
             agency_settings=enrich_data.agency_settings,
             is_in_hidden_base=object_model.is_in_hidden_base,
-            is_allow_change_publisher=enrich_data.allow_change_publisher.get(offer_id, False)
+            is_master_agent=is_master_agent
         ),
         page_specific_info=get_page_specific_info(
             object_model=object_model,
@@ -79,28 +80,3 @@ def v2_build_offer_view(
             status_tab=status_tab,
         ),
     )
-
-#        private bool IsPayedByMaster(ChangeAnnouncementOwnerContext context)
-#
-#         {
-#
-#             var masterAccount = this.accountService.GetByUserIdWithoutCache(context.ActorId);
-#
-#             if (context.AnnouncementStatus == Status.Published)
-#
-#                 return context.ActiveContracts.Any(s => s.PublisherAccountId == masterAccount.AccountId);
-#
-#             var lastAppliedMainContract = this.targetObjectServiceInfoService.GetLastAppliedMainContractServiceInfo(context.Announcement.ID, TargetObjectTypeEnum.Announcement);
-#
-#             return lastAppliedMainContract?.PublisherAccountId == masterAccount.AccountId;
-#
-#         }
-#
-#     }
-#
-# }
-
-
-# serviceType == ServiceTypeEnum.Highlight
-# || serviceType == ServiceTypeEnum.Calltracking
-# || serviceType == ServiceTypeEnum.Auction;

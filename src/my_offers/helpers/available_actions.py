@@ -27,7 +27,7 @@ def get_available_actions(
         can_update_edit_date: bool,
         agency_settings: Optional[AgencySettings],
         is_in_hidden_base: Optional[bool],
-        is_allow_change_publisher: bool, # TODO: is master? мастер оплатил?
+        is_master_agent: bool,
 ) -> entities.AvailableActions:
     """
         Получить возможные действия с объявлением.
@@ -74,7 +74,7 @@ def get_available_actions(
         ),
         can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
-        can_change_publisher=is_allow_change_publisher
+        can_change_publisher=is_master_agent and status in CAN_CHANGE_PUBLISHER
     )
 
 
