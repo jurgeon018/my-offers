@@ -38,7 +38,6 @@ register_consumer(
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
     dead_queue_enabled=True,
-    default_prefetch_count=1,
 )
 
 # [announcements-temp] очередь догонки объявлений через `resend` API
@@ -48,7 +47,6 @@ register_consumer(
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
     dead_queue_enabled=True,
-    default_prefetch_count=1,
 )
 
 # [my-offers] очередь догонки объявлений через elasticapi на стороне my-offers
@@ -58,7 +56,6 @@ register_consumer(
     callback=consumers.process_announcement_callback,
     schema_cls=schemas.RabbitMQAnnouncementMessageSchema,
     dead_queue_enabled=True,
-    default_prefetch_count=1,
 )
 
 # [billing] сохраняет/обновляет контракты по объявлению
