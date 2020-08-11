@@ -41,4 +41,7 @@ offer_row_version_mapper = EntityMapper(
 offer_similar_mapper = EntityMapper(
     entities.OfferSimilar,
     without_camelcase=True,
+    mappers={
+        'sort_date': ValueMapper(),
+    }
 )
