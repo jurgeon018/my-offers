@@ -27,14 +27,14 @@ async def update(object_model: ObjectModel) -> None:
 
 
 async def _save(*, suffix: str, object_model: ObjectModel) -> None:
-    offer_type, _ = get_types(object_model.category)
+    _, deal_type = get_types(object_model.category)
     geo = object_model.geo
 
     await offers_similars.save(
         suffix=suffix,
         similar=entities.OfferSimilar(
             offer_id=object_model.id,
-            offer_type=offer_type,
+            deal_type=deal_type,
             group_id=await get_duplicate_group_id(object_model.id),
             district_id=get_district_id(geo.district) if geo else None,
             house_id=get_house_id(geo.address) if geo else None,
@@ -43,5 +43,6 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
                 currency=object_model.bargain_terms.currency
             ),
             rooms_count=object_model.rooms_count,
+            sort_date=object_model.edit_date if object_model.edit_date else object_model.creation_date,
         )
     )

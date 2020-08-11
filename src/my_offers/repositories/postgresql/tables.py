@@ -19,7 +19,7 @@ def get_names(enum: EnumMeta) -> List[str]:
     return result
 
 
-_deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
+deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
 offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type', )
 _offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type', )
 _service = psa.ENUM(*get_names(Services), name='offer_service', )
@@ -30,7 +30,7 @@ offers = sa.Table(
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
     sa.Column('master_user_id', sa.BIGINT, nullable=False),
     sa.Column('user_id', sa.BIGINT, nullable=False),
-    sa.Column('deal_type', _deal_type, nullable=False),
+    sa.Column('deal_type', deal_type, nullable=False),
     sa.Column('offer_type', offer_type, nullable=False),
     sa.Column('status_tab', _offer_status_tab, nullable=False),
     sa.Column('services', psa.ARRAY(_service), nullable=False),
