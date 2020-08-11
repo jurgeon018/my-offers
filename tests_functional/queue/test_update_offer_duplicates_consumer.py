@@ -10,7 +10,10 @@ async def test_update_offer_duplicates_consumer(queue_service, pg, runtime_setti
     # arrange
     await runtime_settings.set({'SEND_PUSH_ON_NEW_DUPLICATE': True})
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
-    await pg.execute('INSERT INTO offers_similars_flat(offer_id, offer_type) VALUES(209194477, \'flat\')')
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date) '
+        'VALUES(209194477, \'sale\', \'2020-08-10\')'
+    )
     await offers_duplicates_mock.add_stub(
         method='POST',
         path='/v1/get-offers-duplicates-by-ids/',
@@ -99,7 +102,10 @@ async def test_update_offer_duplicates_consumer__not_duplicate__delete(queue_ser
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates VALUES(209194477, 209194477, \'2020-05-13\')')
-    await pg.execute('INSERT INTO offers_similars_flat(offer_id, offer_type, group_id) VALUES(209194477, \'flat\', 1)')
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, group_id, sort_date) '
+        'VALUES(209194477, \'sale\', 1, \'2020-08-10\')'
+    )
     await offers_duplicates_mock.add_stub(
         method='POST',
         path='/v1/get-offers-duplicates-by-ids/',

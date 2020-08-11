@@ -206,32 +206,45 @@ CREATE TABLE offers_resender_stats
     created_at           timestamp with time zone not null
 );
 
-create table if not exists offers_similar_flat
+create table offers_similars_flat
 (
 	offer_id bigint primary key,
-	offer_type offer_type2 not null,
+	deal_type deal_type not null,
 	group_id bigint,
 	house_id integer,
 	district_id integer,
 	price double precision,
-	rooms_count integer
+	rooms_count integer,
+	sort_date timestamp with time zone not null
 );
 
-create index on offers_similar_flat (group_id);
-create index on offers_similar_flat (house_id, price);
-create index on offers_similar_flat (district_id, price);
+create index offers_similars_flat_group_id_idx
+	on offers_similars_flat (group_id);
 
-create table if not exists offers_similar_test
+create index offers_similars_flat_house_id_price_idx
+	on offers_similars_flat (house_id, price);
+
+create index offers_similars_flat_district_id_price_idx
+	on offers_similars_flat (district_id, price);
+
+create table offers_similars_test
 (
 	offer_id bigint primary key,
-	offer_type offer_type2 not null,
+	deal_type deal_type not null,
 	group_id bigint,
 	house_id integer,
 	district_id integer,
 	price double precision,
-	rooms_count integer
+	rooms_count integer,
+	sort_date timestamp with time zone not null
 );
 
-create index on offers_similar_test (group_id);
-create index on offers_similar_test (house_id, price);
-create index on offers_similar_test (district_id, price);
+
+create index offers_similars_test_group_id_idx
+	on offers_similars_test (group_id);
+
+create index offers_similars_test_house_id_price_idx
+	on offers_similars_test (house_id, price);
+
+create index offers_similars_test_district_id_price_idx
+	on offers_similars_test (district_id, price);
