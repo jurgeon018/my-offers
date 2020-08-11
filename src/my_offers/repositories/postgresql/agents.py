@@ -53,7 +53,7 @@ async def is_master_agent(user_id: int) -> bool:
 
     row = await pg.get().fetchrow(query, *params)
 
-    return bool(row['result'])
+    return bool(row['result']) if row else False
 
 
 async def get_agent_names(user_ids: List[int]) -> List[AgentName]:
