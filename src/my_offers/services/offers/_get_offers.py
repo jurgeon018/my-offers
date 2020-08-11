@@ -8,7 +8,7 @@ from my_offers.entities import get_offers
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories.postgresql import get_object_models, get_offers_offence
-from my_offers.repositories.postgresql.agents import get_agent_names, get_master_user_id
+from my_offers.repositories.postgresql.agents import get_agent_names, get_master_user_id, is_master_agent
 from my_offers.repositories.postgresql.billing import get_offers_payed_till
 from my_offers.repositories.postgresql.offer import get_offer_counters, get_offers_update_at
 from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
@@ -50,6 +50,12 @@ get_agent_names_degradation_handler = get_degradation_handler(
     func=get_agent_names,
     key='psql.get_agent_names',
     default=[],
+)
+
+is_master_agent_degradation_handler = get_degradation_handler(
+    func=is_master_agent,
+    key='psql.is_master_agent',
+    default=False,
 )
 
 get_offer_premoderations_degradation_handler = get_degradation_handler(

@@ -14,10 +14,11 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 def v2_build_offer_view(
         *,
+        is_master_agent: bool,
         object_model: ObjectModel,
         enrich_data: EnrichData,
 ) -> get_offers.GetOfferV2:
-    """ Собирает из шарповой модели компактное представление объявления для выдачи."""
+    """ Собирать из шарповой модели компактное представление объявления для выдачи."""
     offer_type, deal_type = get_types(object_model.category)
     main_photo_url = get_main_photo_url(object_model.photos)
     manual = is_manual(object_model.source)
@@ -61,7 +62,6 @@ def v2_build_offer_view(
             favorites=enrich_data.favorites_counts.get(offer_id),
             searches=enrich_data.searches_counts.get(offer_id),
         ),
-        # TODO: https://jira.cian.tech/browse/CD-76582
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=archived),
         status_type=get_status_type(is_manual=manual, status=object_model.status),
@@ -72,6 +72,7 @@ def v2_build_offer_view(
             can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
             agency_settings=enrich_data.agency_settings,
             is_in_hidden_base=object_model.is_in_hidden_base,
+            is_master_agent=is_master_agent
         ),
         page_specific_info=get_page_specific_info(
             object_model=object_model,

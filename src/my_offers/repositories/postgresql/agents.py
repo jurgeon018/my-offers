@@ -6,6 +6,7 @@ from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
 from my_offers.entities.agents import Agent, AgentName
+from my_offers.enums import AgentAccountType
 from my_offers.mappers.agents import agent_mapper, agent_name_mapper
 from my_offers.repositories.postgresql.tables import agents_hierarchy
 
@@ -41,6 +42,18 @@ async def get_master_user_id(user_id: int) -> Optional[int]:
     row = await pg.get().fetchrow(query, user_id)
 
     return row['master_agent_user_id'] if row else None
+
+
+async def is_master_agent(user_id: int) -> bool:
+    query = 'SELECT 1 as result FROM agents_hierarchy WHERE realty_user_id = $1 AND account_type = $2'
+    params = [
+        user_id,
+        AgentAccountType.agency.value
+    ]
+
+    row = await pg.get().fetchrow(query, *params)
+
+    return bool(row['result']) if row else False
 
 
 async def get_agent_names(user_ids: List[int]) -> List[AgentName]:

@@ -17,6 +17,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
 from my_offers.repositories.monolith_cian_announcementapi.entities.get_job_status_response import State as JobState
 from my_offers.services import agencies_settings
 from my_offers.services.offers import load_object_model
+from my_offers.services.offers._get_offers import is_master_agent_degradation_handler
 
 
 logger = logging.getLogger(__name__)
@@ -139,6 +140,7 @@ class OfferAction:
         raise NotImplementedError
 
     async def _check_rights(self, object_model: ObjectModel) -> None:
+        is_master_agent = (await is_master_agent_degradation_handler(self.user_id)).value
         agency_settings = await agencies_settings.get_settings_degradation_handler(self.user_id)
         available_actions = helpers.get_available_actions(
             status=object_model.status,
@@ -147,6 +149,7 @@ class OfferAction:
             can_update_edit_date=True,
             agency_settings=agency_settings.value,
             is_in_hidden_base=object_model.is_in_hidden_base,
+            is_master_agent=is_master_agent
         )
 
         if not getattr(available_actions, self._get_action_code()):
