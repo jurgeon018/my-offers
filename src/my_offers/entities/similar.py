@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional
 
 from my_offers import enums
@@ -8,8 +9,10 @@ from my_offers import enums
 class OfferSimilar:
     offer_id: int
     """Id объявления"""
-    offer_type: enums.OfferType
-    """Тип объекта недвижимости"""
+    deal_type: enums.DealType
+    """Тип сделки"""
+    sort_date: datetime
+    """Дата для сортировки"""
     group_id: Optional[int]
     """Id группы дублей"""
     district_id: Optional[int]
