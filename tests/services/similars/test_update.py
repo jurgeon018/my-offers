@@ -1,5 +1,5 @@
 from my_offers.repositories.monolith_cian_announcementapi.entities.platform import Type
-from my_offers.services.similars._update import get_similar_table_suffix
+from my_offers.services.similars.helpers.table import get_similar_table_suffix
 
 
 def test_get_similar_table_suffix__test__test(mocker):

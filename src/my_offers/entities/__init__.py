@@ -14,6 +14,7 @@ from my_offers.entities.duplicates import (
     OfferDuplicate,
     OfferDuplicateDesktop,
     OfferDuplicatesCount,
+    OfferSimilarCounter,
     Tab,
 )
 from my_offers.entities.get_offers import GetOffersPrivateRequest, GetOffersRequest, GetOffersV2Response, Statistics

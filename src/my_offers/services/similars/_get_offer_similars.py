@@ -1,9 +1,14 @@
+import asyncio
+
+from simple_settings import settings
+
 from my_offers import entities, enums
 from my_offers.helpers.similar import is_offer_for_similar
-from my_offers.services import offer_view
-from my_offers.services.duplicates.helpers.auction import load_auction_bets
-from my_offers.services.duplicates.helpers.tabs import get_tabs
+from my_offers.repositories import postgresql
+from my_offers.services import auctions, offer_view
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
+from my_offers.services.similars.helpers.table import get_similar_table_suffix
+from my_offers.services.similars.helpers.tabs import get_tabs
 
 
 async def v1_get_offer_similars_public(
@@ -18,28 +23,48 @@ async def v1_get_offer_similars_public(
     if not is_offer_for_similar(status=object_model.status, category=object_model.category):
         return _get_empty_response(limit, offset)
 
+    suffix = get_similar_table_suffix(object_model)
+    similars, counter = await asyncio.gather(
+        postgresql.get_similars_by_offer_id(
+            tab_type=tab_type,
+            offer_id=object_model.id,
+            limit=limit,
+            offset=offset,
+            price_kf=settings.SIMILAR_PRICE_KF,
+            room_delta=settings.SIMILAR_ROOM_DELTA,
+            suffix=suffix
+        ),
+        postgresql.get_similar_counter_by_offer_id(
+            offer_id=object_model.id,
+            price_kf=settings.SIMILAR_PRICE_KF,
+            room_delta=settings.SIMILAR_ROOM_DELTA,
+            suffix=suffix,
+        ),
+    )
 
-    if not object_infos:
+    if not similars:
         return _get_empty_response(limit, offset)
 
-    auction_bets = await load_auction_bets([object_info[0] for object_info in object_infos])
+    object_models = await postgresql.get_offers_by_ids(list(similars.keys()))
+    auction_bets = await auctions.load_auction_bets(object_models)
 
-    offers = []
-    for object_model, duplicate_type in object_infos:
-        offers.append(offer_view.build_duplicate_view(
+    offers = [
+        offer_view.build_duplicate_view(
             object_model=object_model,
             auction_bets=auction_bets,
-            duplicate_type=duplicate_type,
-        ))
+            duplicate_type=similars[object_model.id],
+        )
+        for object_model in object_models
+    ]
 
     return entities.GetOfferDuplicatesResponse(
         offers=offers,
         tabs=get_tabs(
-            duplicate_count=duplicates_count,
-            same_building_count=same_building_count,
-            similar_count=similar_count
+            duplicate_count=counter.duplicates_count,
+            same_building_count=counter.same_building_count,
+            similar_count=counter.similar_count,
         ),
-        page=get_page_info(limit=limit, offset=offset, total=total),
+        page=get_page_info(limit=limit, offset=offset, total=counter.total_count),
     )
 
 

@@ -153,3 +153,17 @@ class OfferDuplicatesCount:
 @dataclass
 class GetOffersDuplicatesCountResponse:
     data: List[OfferDuplicatesCount]
+
+
+@dataclass
+class OfferSimilarCounter:
+    offer_id: int
+    """Id объявления"""
+    total_count: int
+    """Общее кол-во"""
+    same_building_count: int
+    """Кол-во в этом доме"""
+    similar_count: int
+    """Кол-во похожих"""
+    duplicates_count: int
+    """Кол-во дублей"""

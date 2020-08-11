@@ -61,6 +61,12 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
     return [row['offer_id'] for row in rows if row['updated_at'] is None]
 
 
+async def delete_offers_duplicates(offer_ids: List[int]) -> None:
+    query = 'DELETE FROM offers_duplicates WHERE offer_id = ANY($1::BIGINT[])'
+
+    await pg.get().execute(query, offer_ids)
+
+
 async def get_offer_duplicates(
         *,
         offer_id: int,
