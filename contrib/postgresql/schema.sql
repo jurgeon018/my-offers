@@ -209,12 +209,13 @@ CREATE TABLE offers_resender_stats
 create table offers_similars_flat
 (
 	offer_id bigint primary key,
-	offer_type offer_type2 not null,
+	deal_type deal_type not null,
 	group_id bigint,
 	house_id integer,
 	district_id integer,
 	price double precision,
-	rooms_count integer
+	rooms_count integer,
+	sort_date timestamp with time zone not null
 );
 
 create index offers_similars_flat_group_id_idx
@@ -229,12 +230,13 @@ create index offers_similars_flat_district_id_price_idx
 create table offers_similars_test
 (
 	offer_id bigint primary key,
-	offer_type offer_type2 not null,
+	deal_type deal_type not null,
 	group_id bigint,
 	house_id integer,
 	district_id integer,
 	price double precision,
-	rooms_count integer
+	rooms_count integer,
+	sort_date timestamp with time zone not null
 );
 
 
