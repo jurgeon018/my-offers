@@ -1,6 +1,6 @@
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
-from my_offers.services.duplicates._get_offer_duplicates import load_auction_bets
+from my_offers.services.auctions._load_auction_bets import load_auction_bets
 
 
 async def test_load_auction_bets__empty__empty():

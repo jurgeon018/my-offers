@@ -23,7 +23,7 @@ async def test_update_offer(mocker):
         )),
     )
     process_announcement_mock = mocker.patch(
-        'my_offers.services.offers._update_offer.process_announcement',
+        'my_offers.services.offers._update_offer.announcement.process_announcement',
         return_value=future(),
     )
     mocker.patch(
