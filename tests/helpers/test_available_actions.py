@@ -16,7 +16,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_edit=True,
             can_restore=False,
             can_raise=False,
-            can_change_publisher=False
+            can_change_publisher=False,
+            can_view_similar_offers=False
         )
     ),
     (
@@ -27,7 +28,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_edit=False,
             can_restore=True,
             can_raise=False,
-            can_change_publisher=True
+            can_change_publisher=True,
+            can_view_similar_offers=False
         )
     ),
     (
@@ -38,7 +40,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_move_to_archive=False,
             can_delete=False,
             can_raise=False,
-            can_change_publisher=False
+            can_change_publisher=False,
+            can_view_similar_offers=False
         )
     ),
     (
@@ -49,7 +52,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_edit=True,
             can_restore=False,
             can_raise=True,
-            can_change_publisher=True
+            can_change_publisher=True,
+            can_view_similar_offers=False
         )
     ),
     (
@@ -60,7 +64,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
             can_edit=True,
             can_restore=False,
             can_raise=True,
-            can_change_publisher=False
+            can_change_publisher=False,
+            can_view_similar_offers=False
         )
     ),
 ])
@@ -78,7 +83,8 @@ def test_get_available_actions(is_master_agent, is_archived, is_manual, status, 
             display_all_agency_offers=True,
         ),
         is_in_hidden_base=False,
-        is_master_agent=is_master_agent
+        is_master_agent=is_master_agent,
+        force_raise=False
     )
 
     # assert
@@ -94,7 +100,8 @@ def test_get_available_actions__no_settings__actions():
         can_edit=False,
         can_restore=False,
         can_raise=False,
-        can_change_publisher=False
+        can_change_publisher=False,
+        can_view_similar_offers=False
     )
 
     # act
@@ -105,7 +112,8 @@ def test_get_available_actions__no_settings__actions():
         can_update_edit_date=False,
         agency_settings=None,
         is_in_hidden_base=False,
-        is_master_agent=False
+        is_master_agent=False,
+        force_raise=False
     )
 
     # assert
@@ -135,18 +143,20 @@ def test__can_restore(mocker, is_archived, is_removed_by_moderator, is_discontin
 
 
 @pytest.mark.parametrize(
-    ('is_in_hidden_base', 'is_published', 'is_archived', 'expected'),
+    ('force_raise', 'is_in_hidden_base', 'is_published', 'is_archived', 'expected'),
     (
-        (True, False, False, False),
-        (False, True, False, True),
-        (True, True, False, False),
-        (False, False, True, False),
-        (False, False, False, False),
+        (False, True, False, False, False),
+        (False, False, True, False, True),
+        (False, True, True, False, False),
+        (False, False, False, True, False),
+        (False, False, False, False, False),
+        (True, False, False, False, True),
     )
 )
-def test__can_raise(mocker, is_archived, is_published, is_in_hidden_base, expected):
+def test__can_raise(mocker, force_raise, is_archived, is_published, is_in_hidden_base, expected):
     # arrange & act
     result = _can_raise(
+        force_raise=force_raise,
         is_archived=is_archived,
         is_published=is_published,
         is_in_hidden_base=is_in_hidden_base,

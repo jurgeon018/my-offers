@@ -17,3 +17,5 @@ class AvailableActions:
     """Можно ли поднять в размещении"""
     can_change_publisher: bool
     """Можно ли сменить владельца объявления"""
+    can_view_similar_offers: bool
+    """Может ли пользователь увидеть дубли/похожие"""

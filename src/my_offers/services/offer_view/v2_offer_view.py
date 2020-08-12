@@ -2,6 +2,7 @@ from my_offers.entities import get_offers
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url, get_price_info, get_sort_date, is_archived, is_manual
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
@@ -45,7 +46,10 @@ def v2_build_offer_view(
     offer_id = object_model.id
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
     display_date = get_sort_date(object_model=object_model, status_tab=status_tab)
-
+    force_raise = bool(
+        enrich_data.duplicates_counts.get(offer_id)
+        or enrich_data.same_building_counts.get(offer_id)
+    )
     return get_offers.GetOfferV2(
         id=offer_id,
         display_date=display_date,
@@ -72,7 +76,12 @@ def v2_build_offer_view(
             can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
             agency_settings=enrich_data.agency_settings,
             is_in_hidden_base=object_model.is_in_hidden_base,
-            is_master_agent=is_master_agent
+            is_master_agent=is_master_agent,
+            force_raise=force_raise,
+            can_view_similar_offers=is_offer_for_similar(
+                status=object_model.status,
+                category=object_model.category
+            )
         ),
         page_specific_info=get_page_specific_info(
             object_model=object_model,

@@ -92,6 +92,14 @@ async def test_load_enrich_data__active_tab(mocker):
         f'{PATH}_load_favorites_counts',
         return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
     )
+    load_duplicates_counts_mock = mocker.patch(
+        f'{PATH}_load_duplicates_counts',
+        return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
+    )
+    load_same_building_counts_mock = mocker.patch(
+        f'{PATH}_load_same_building_counts',
+        return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
+    )
 
     expected_data = EnrichData(
         auctions={},
@@ -141,6 +149,8 @@ async def test_load_enrich_data__active_tab(mocker):
     load_views_counts_mock.assert_called_once_with([11])
     load_searches_counts_mock.assert_called_once_with([11])
     load_favorites_counts_mock.assert_called_once_with([11])
+    load_duplicates_counts_mock.assert_called_once_with([11])
+    load_same_building_counts_mock.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test

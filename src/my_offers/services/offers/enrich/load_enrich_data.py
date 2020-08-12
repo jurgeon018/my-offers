@@ -39,18 +39,10 @@ async def load_enrich_data(
         params: EnrichParams,
         status_tab: enums.OfferStatusTab
 ) -> Tuple[EnrichData, Dict[str, bool]]:
+    """ Загружает данные из внешних источников для разных типов вкладок. """
     offer_ids = params.get_offer_ids()
     if not offer_ids:
-        return EnrichData(
-            auctions={},
-            jk_urls={},
-            geo_urls={},
-            can_update_edit_dates={},
-            import_errors={},
-            favorites_counts={},
-            searches_counts={},
-            views_counts={},
-        ), {}
+        return EnrichData(), {}
 
     allow_update_edit_date = (
         status_tab.is_active
@@ -71,6 +63,8 @@ async def load_enrich_data(
             _load_views_counts(offer_ids),
             _load_auctions(offer_ids),
             _load_payed_till(offer_ids),
+            _load_duplicates_counts(offer_ids),
+            _load_same_building_counts(offer_ids),
         ])
     elif status_tab.is_not_active:
         enriched.extend([
@@ -78,7 +72,6 @@ async def load_enrich_data(
             _load_premoderation_info(offer_ids),
             _load_archive_date(offer_ids),
         ])
-
     elif status_tab.is_declined:
         enriched.extend([
             _load_moderation_info(offer_ids),
@@ -266,3 +259,17 @@ async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
     result = await get_favorites_counts_degradation_handler(offer_ids)
 
     return EnrichItem(key='favorites_counts', degraded=result.degraded, value=result.value)
+
+
+@async_statsd_timer('enrich.load_duplicates_counts')
+async def _load_duplicates_counts(offer_ids: List[int]) -> EnrichItem:
+    from types import SimpleNamespace
+    result = SimpleNamespace(degraded=False, value={})
+    return EnrichItem(key='duplicates_counts', degraded=result.degraded, value=result.value)
+
+
+@async_statsd_timer('enrich.load_same_building_counts')
+async def _load_same_building_counts(offer_ids: List[int]) -> EnrichItem:
+    from types import SimpleNamespace
+    result = SimpleNamespace(degraded=False, value={})
+    return EnrichItem(key='same_building_counts', degraded=result.degraded, value=result.value)

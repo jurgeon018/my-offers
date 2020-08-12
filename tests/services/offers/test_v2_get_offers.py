@@ -78,7 +78,8 @@ async def test_v2_get_offers_public(mocker):
             can_edit=True,
             can_restore=True,
             can_raise=True,
-            can_change_publisher=True
+            can_change_publisher=True,
+            can_view_similar_offers=False
         ),
         page_specific_info=PageSpecificInfo(),
         status_type=None
@@ -190,7 +191,8 @@ async def test_v2_get_offers_public__offers_degraded__error(mocker):
             can_edit=True,
             can_restore=True,
             can_raise=True,
-            can_change_publisher=True
+            can_change_publisher=True,
+            can_view_similar_offers=False
         ),
         page_specific_info=PageSpecificInfo(),
         status_type=None
@@ -295,7 +297,6 @@ async def test_v2_get_offer_views(mocker):
         f'{PATH}load_enrich_data',
         return_value=future((
             EnrichData(
-
                 auctions={},
                 jk_urls={},
                 geo_urls={},
@@ -337,7 +338,8 @@ async def test_v2_get_offer_views(mocker):
                     can_move_to_archive=True,
                     can_delete=True,
                     can_raise=True,
-                    can_change_publisher=False
+                    can_change_publisher=False,
+                    can_view_similar_offers=True
                 ),
                 statistics=Statistics(shows=None, views=None, favorites=None),
                 page_specific_info=PageSpecificInfo(
