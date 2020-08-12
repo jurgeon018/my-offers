@@ -1,10 +1,10 @@
-from typing import List
+from typing import Dict, List
 
 import asyncpgsa
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert
 
-from my_offers import entities, pg
+from my_offers import entities, enums, pg
 from my_offers.mappers.offer_mapper import offer_similar_mapper
 from my_offers.repositories.postgresql.tables import deal_type, metadata
 
@@ -97,3 +97,196 @@ async def unset_group_id(offer_ids: List[int]) -> None:
     query = 'update offers_similars_flat set group_id = null where offer_id = ANY($1::BIGINT[])'
 
     await pg.get().execute(query, offer_ids)
+
+
+async def get_similars_by_offer_id(
+        *,
+        offer_id: int,
+        price_kf: float,
+        room_delta: int,
+        limit: int,
+        offset: int,
+        tab_type: enums.DuplicateTabType,
+        suffix: str,
+) -> Dict[int, enums.DuplicateType]:
+    table = TABLES_MAP[suffix]
+    tab_condition = _prepare_tab_condition(
+        price_kf=price_kf,
+        room_delta=room_delta,
+        tab_type=tab_type
+    )
+
+    query = f"""
+    with offer as (
+        select
+           offer_id,
+           deal_type,
+           group_id,
+           house_id,
+           district_id,
+           price,
+           rooms_count
+        from
+           {table}
+        where
+           offer_id = $1
+    )
+    select
+       os.offer_id,
+       case
+         when os.group_id = offer.group_id then 'duplicate'
+         when os.house_id = offer.house_id then 'sameBuilding'
+         else 'similar'
+       end as type
+    from
+      offer,
+      {table} os
+    where
+      os.deal_type = offer.deal_type
+      and os.offer_id <> offer.offer_id
+      and ({tab_condition})
+    order by
+        case
+           when os.group_id = offer.group_id then 1
+           when os.house_id = offer.house_id then 2
+           else 3
+       end,
+       os.sort_date desc
+    limit $2
+    offset $3
+    """
+
+    rows = await pg.get().fetch(query, offer_id, limit, offset)
+
+    return {row['offer_id']: enums.DuplicateTabType(row['type']) for row in rows}
+
+
+async def get_similars_counters_by_offer_ids(
+        *,
+        offer_ids: List[int],
+        price_kf: float,
+        room_delta: int,
+        suffix: str,
+) -> List[entities.OfferSimilarCounter]:
+    table = TABLES_MAP[suffix]
+    tab_condition = _prepare_tab_condition(
+        price_kf=price_kf,
+        room_delta=room_delta,
+        tab_type=enums.DuplicateTabType.all,
+    )
+
+    query = f"""
+    with offer as (
+        select
+           offer_id,
+           deal_type,
+           group_id,
+           house_id,
+           district_id,
+           price,
+           rooms_count
+        from
+           {table}
+        where
+           offer_id = any($1::bigint[])
+    )
+    select
+       offer.offer_id,
+       count(*) as total_count,
+       sum(case when os.group_id = offer.group_id then 1 else 0 end) as duplicate_count,
+       sum(case when os.house_id = offer.house_id then 1 else 0 end) as house_count
+    from
+      offer,
+      {table} os
+    where
+      os.deal_type = offer.deal_type
+      and os.offer_id <> offer.offer_id
+      and ({tab_condition})
+    group by
+        offer.offer_id
+    """
+
+    rows = await pg.get().fetch(query, offer_ids)
+
+    return [_map_offer_similar_counter(row) for row in rows]
+
+
+async def get_similar_counter_by_offer_id(
+        *,
+        offer_id: int,
+        price_kf: float,
+        room_delta: int,
+        suffix: str,
+) -> entities.OfferSimilarCounter:
+    data = await get_similars_counters_by_offer_ids(
+        offer_ids=[offer_id],
+        price_kf=price_kf,
+        room_delta=room_delta,
+        suffix=suffix,
+    )
+
+    return data[0] if data else entities.OfferSimilarCounter(
+        offer_id=offer_id,
+        same_building_count=0,
+        similar_count=0,
+        duplicates_count=0,
+        total_count=0,
+    )
+
+
+def _map_offer_similar_counter(row: Dict[str, int]) -> entities.OfferSimilarCounter:
+    duplicates_count = row['duplicate_count']
+    same_building_count = max(row['house_count'] - row['duplicate_count'], 0)
+
+    return entities.OfferSimilarCounter(
+        offer_id=row['offer_id'],
+        same_building_count=max(row['house_count'] - row['duplicate_count'], 0),
+        similar_count=row['total_count'] - duplicates_count - same_building_count,
+        duplicates_count=duplicates_count,
+        total_count=row['total_count'],
+    )
+
+
+def _prepare_tab_condition(
+        *,
+        tab_type: enums.DuplicateTabType,
+        price_kf: float,
+        room_delta: int,
+) -> str:
+    if tab_type.is_duplicate:
+        tab_condition = 'os.group_id = offer.group_id'
+    elif tab_type.is_same_building:
+        tab_condition = f"""
+            os.group_id <> offer.group_id
+            and os.house_id = offer.house_id
+            and os.price >= offer.price * (1 - {price_kf})
+            and os.price <= offer.price * (1 + {price_kf})
+            and os.rooms_count >= offer.rooms_count - {room_delta}
+            and os.rooms_count <= offer.rooms_count + {room_delta}
+        """
+    elif tab_type.is_similar:
+        tab_condition = f"""
+            os.group_id <> offer.group_id
+            and os.house_id <> offer.house_id
+            and os.district_id = offer.district_id
+            and os.price >= offer.price * (1 - {price_kf})
+            and os.price <= offer.price * (1 + {price_kf})
+            and os.rooms_count >= offer.rooms_count - {room_delta}
+            and os.rooms_count <= offer.rooms_count + {room_delta}
+        """
+    else:  # tab_type.is_all:
+        tab_condition = f"""
+            os.group_id = offer.group_id
+            or (
+                (
+                    os.house_id = offer.house_id
+                    or os.district_id = offer.district_id
+                )
+                and os.price >= offer.price * (1 - {price_kf})
+                and os.price <= offer.price * (1 + {price_kf})
+                and os.rooms_count >= offer.rooms_count - {room_delta}
+                and os.rooms_count <= offer.rooms_count + {room_delta}
+            )
+        """
+
+    return tab_condition

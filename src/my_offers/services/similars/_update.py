@@ -1,6 +1,5 @@
 from my_offers import entities
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import is_test
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import offers_similars
@@ -8,13 +7,7 @@ from my_offers.repositories.postgresql.offers_duplicates import get_duplicate_gr
 from my_offers.services.announcement.fields.district_id import get_district_id
 from my_offers.services.announcement.fields.house_id import get_house_id
 from my_offers.services.convert_price import get_price_rur
-
-
-def get_similar_table_suffix(object_model: ObjectModel) -> str:
-    if is_test(object_model):
-        return 'test'
-
-    return 'flat'
+from my_offers.services.similars.helpers.table import get_similar_table_suffix
 
 
 async def update(object_model: ObjectModel) -> None:

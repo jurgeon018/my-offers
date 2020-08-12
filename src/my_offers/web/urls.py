@@ -6,7 +6,7 @@ from tornado.web import url
 from my_offers import entities
 from my_offers.entities.get_offers import GetOfferV2
 from my_offers.entities.qa import QaGetByIdRequest
-from my_offers.services import actions, duplicates, offers, qa, valuation
+from my_offers.services import actions, offers, qa, similars, valuation
 from my_offers.web.handlers import PublicHandler
 
 
@@ -44,7 +44,7 @@ urlpatterns = base_urls.urlpatterns + [
     url(
         r'/public/v1/get-offer-duplicates/$',
         get_handler(
-            service=duplicates.v1_get_offer_duplicates_public,
+            service=similars.v1_get_offer_similars_public,
             method='POST',  # pragma: no mutate
             request_schema=entities.GetOfferDuplicatesRequest,
             response_schema=entities.GetOfferDuplicatesResponse,
@@ -54,7 +54,7 @@ urlpatterns = base_urls.urlpatterns + [
     url(
         r'/public/v1/get-offer-duplicates-tabs/$',
         get_handler(
-            service=duplicates.v1_get_offer_duplicates_tabs_public,
+            service=similars.v1_get_offer_similars_tabs_public,
             method='POST',  # pragma: no mutate
             request_schema=entities.GetOfferDuplicatesTabsRequest,
             response_schema=entities.GetOfferDuplicatesTabsResponse,
@@ -64,9 +64,9 @@ urlpatterns = base_urls.urlpatterns + [
     url(
         r'/public/v1/get-offers-duplicates-for-desktop/$',
         get_handler(
-            service=duplicates.v1_get_offer_duplicates_desktop_public,
+            service=similars.v1_get_offer_similars_desktop_public,
             method='POST',  # pragma: no mutate
-            request_schema=entities.GetOfferDuplicatesRequest,
+            request_schema=entities.GetOfferDuplicatesDesktopRequest,
             response_schema=entities.GetOfferDuplicatesDesktopResponse,
             base_handler_cls=PublicHandler,
         )
@@ -74,7 +74,7 @@ urlpatterns = base_urls.urlpatterns + [
     url(
         r'/v1/get-offers-duplicates-count/$',
         get_handler(
-            service=duplicates.v1_get_offers_duplicates_count,
+            service=similars.v1_get_offers_similars_count,
             method='POST',  # pragma: no mutate
             request_schema=entities.GetOffersDuplicatesCountRequest,
             response_schema=entities.GetOffersDuplicatesCountResponse,

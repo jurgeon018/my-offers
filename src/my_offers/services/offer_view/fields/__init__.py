@@ -1,4 +1,5 @@
 from my_offers.services.offer_view.fields.active_info import get_active_info
+from my_offers.services.offer_view.fields.auction import get_auction_bet
 from my_offers.services.offer_view.fields.features import get_features
 from my_offers.services.offer_view.fields.geo import prepare_geo, prepare_geo_for_mobile
 from my_offers.services.offer_view.fields.moderation import get_moderation
