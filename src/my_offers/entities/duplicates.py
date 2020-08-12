@@ -17,6 +17,14 @@ class GetOfferDuplicatesRequest:
 
 
 @dataclass
+class GetOfferDuplicatesDesktopRequest:
+    offer_id: int
+    """Id объявления"""
+    pagination: Optional[Pagination]
+    """Параметры страницы"""
+
+
+@dataclass
 class GetOfferDuplicatesTabsRequest:
     offer_id: int
     """Id объявления"""

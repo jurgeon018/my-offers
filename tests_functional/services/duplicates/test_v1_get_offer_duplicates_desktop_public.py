@@ -3,24 +3,6 @@ from pathlib import Path
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
 
-async def test_v1_get_offer_duplicates_desktop_public__not_supported_type__400(http):
-    # act
-    response = await http.request(
-        'POST',
-        '/public/v1/get-offers-duplicates-for-desktop/',
-        json={'offerId': 165491301, 'type': 'similar'},
-        headers={'X-Real-UserId': 1111},
-        expected_status=400,
-    )
-
-    # assert
-    assert response.data['errors'][0] == {
-        'key': 'type',
-        'code': 'typeNotSupported',
-        'message': None
-    }
-
-
 async def test_v1_get_offer_duplicates_desktop_public__offer_not_found__400(http):
     # act
     response = await http.request(
@@ -54,9 +36,19 @@ async def test_v1_get_offer_duplicates_desktop_public__bad_offer__200(http, pg):
 async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found__200(http, pg, auction_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
-    await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
-    await pg.execute('INSERT INTO offers_duplicates values(231659418, 231655140, \'2020-05-09\')')
-    await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
+
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
+        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
+        'VALUES(231659418, \'sale\', \'2020-08-10\', 231655140)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
+        'VALUES(173975523, \'sale\', \'2020-08-10\', 231655140)'
+    )
 
     auction_stub = await auction_mock.add_stub(
         method='POST',
@@ -125,11 +117,26 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found
 async def test_v1_get_offer_duplicates_desktop_public__tab_all__offers_found__200(http, pg, auction_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar_tab_all.sql')
-    await pg.execute('INSERT INTO offers_duplicates values(236308049, 236308049, \'2020-05-09\')')
-    await pg.execute('INSERT INTO offers_duplicates values(236213060, 236308049, \'2020-05-09\')')
-    await pg.execute('INSERT INTO offers_duplicates values(236331615, 236308049, \'2020-05-09\')')
-    await pg.execute('INSERT INTO offers_duplicates values(224829657, 236308049, \'2020-05-09\')')
-    await pg.execute('INSERT INTO offers_duplicates values(236619358, 236308049, \'2020-05-09\')')
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
+        'VALUES(236308049, \'sale\', \'2020-08-10\', 236308049)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
+        'VALUES(236213060, \'sale\', \'2020-08-10\', 236308049)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
+        'VALUES(236331615, \'sale\', \'2020-08-10\', 236308049)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
+        'VALUES(233353644, \'sale\', \'2020-08-10\', 236308049)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
+        'VALUES(177300443, \'sale\', \'2020-08-10\', 236308049)'
+    )
 
     # act
     response = await http.request(
@@ -150,53 +157,41 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__offers_found__20
     assert response.data == {
         'offers': [
             {
-                'vas': ['payed'],
-                'priceInfo': {'range': None, 'exact': '55\xa0000\xa0₽/мес.'},
-                'title': '3-комн.\xa0кв., 67\xa0м², 20/25\xa0этаж',
-                'geo': {
-                    'underground': None,
-                    'address': ['Краснодарский край', 'Сочи', 'Пластунская улица', '123']
-                },
-                'offerId': 224829657,
-                'type': 'duplicate',
-                'url': 'http://master.dev3.cian.ru/rent/flat/224829657',
-                'displayDate': '2020-07-01T22:50:00.793000+00:00',
-                'mainPhotoUrl': 'https://cdn-p.cian.site/images/0/364/618/kvartira-sochi-plastunskaya-'
-                                'ulica-816463094-2.jpg',
-                'auctionBet': None
-            },
-            {
-                'vas': ['payed'],
-                'priceInfo': {'range': None, 'exact': '30\xa0000\xa0₽/мес.'},
-                'title': '1-комн.\xa0кв., 36\xa0м², 18/21\xa0этаж',
-                'geo': {
-                    'underground': None,
-                    'address': ['Краснодарский край', 'Сочи', 'Пластунская улица', '123']
-                },
-                'offerId': 233353644,
-                'type': 'sameBuilding',
-                'url': 'http://master.dev3.cian.ru/rent/flat/233353644',
-                'displayDate': '2020-07-03T07:50:23.673000+00:00',
-                'mainPhotoUrl': 'https://cdn-p.cian.site/images/3/086/788/kvartira-sochi-plastunskaya-'
-                                'ulica-887680397-2.jpg',
-                'auctionBet': None
-            },
-            {
-                'vas': [],
-                'priceInfo': {'range': None, 'exact': '25 000 ₽/мес.'},
-                'title': '1-комн.\xa0кв., 33\xa0м², 4/7\xa0этаж',
-                'geo': {
-                    'underground': None,
-                    'address': ['Краснодарский край', 'Сочи', 'Макаренко мкр', 'улица Ботаническая', '34']
-                },
-                'offerId': 177300443,
-                'type': 'similar',
-                'url': 'http://master.dev3.cian.ru/rent/flat/177300443',
+                'auctionBet': None,
                 'displayDate': '2020-07-08T12:28:46.727000+00:00',
-                'mainPhotoUrl': 'https://cdn-p.cian.site/images/3/572/154/kvartira-makarenko-'
-                                'botanicheskaya-ulica-451275372-2.jpg',
-                'auctionBet': None
+                'geo': {
+                    'address': [
+                        'Краснодарский край',
+                        'Сочи',
+                        'Макаренко мкр',
+                        'улица Ботаническая',
+                        '34'
+                    ],
+                    'underground': None},
+                'mainPhotoUrl': 'https://cdn-p.cian.site/images/3/572/154/'
+                                'kvartira-makarenko-botanicheskaya-ulica-451275372-2.jpg',
+                'offerId': 177300443,
+                'priceInfo': {'exact': '25\xa0000\xa0₽/мес.', 'range': None},
+                'title': '1-комн.\xa0кв., 33\xa0м², 4/7\xa0этаж',
+                'type': 'duplicate',
+                'url': 'http://master.dev3.cian.ru/rent/flat/177300443',
+                'vas': []
             }
         ],
-        'page': {'pageCount': 2, 'count': 6, 'canLoadMore': False},
-    }
+        'page': {'canLoadMore': False, 'count': 4, 'pageCount': 2}}
+
+
+async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates__not_found__200(http, pg, auction_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-offers-duplicates-for-desktop/',
+        json={'offerId': 231655140, 'type': 'all'},
+        headers={'X-Real-UserId': 47135244},
+    )
+
+    # assert
+    assert response.data == {'offers': [], 'page': {'canLoadMore': False, 'count': 0, 'pageCount': 0}}

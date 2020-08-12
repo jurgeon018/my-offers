@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import asyncpgsa
 import sqlalchemy as sa
@@ -235,11 +235,14 @@ async def get_similar_counter_by_offer_id(
 
 
 def _map_offer_similar_counter(row: Dict[str, int]) -> entities.OfferSimilarCounter:
+    duplicates_count = row['duplicate_count']
+    same_building_count = max(row['house_count'] - row['duplicate_count'], 0)
+
     return entities.OfferSimilarCounter(
         offer_id=row['offer_id'],
-        same_building_count=row['house_count'] - row['duplicate_count'],
-        similar_count=row['total_count'] - row['house_count'],
-        duplicates_count=row['duplicate_count'],
+        same_building_count=max(row['house_count'] - row['duplicate_count'], 0),
+        similar_count=row['total_count'] - duplicates_count - same_building_count,
+        duplicates_count=duplicates_count,
         total_count=row['total_count'],
     )
 
@@ -265,7 +268,7 @@ def _prepare_tab_condition(
         tab_condition = f"""
             os.group_id <> offer.group_id
             and os.house_id <> offer.house_id
-            os.district_id = offer.district_id
+            and os.district_id = offer.district_id
             and os.price >= offer.price * (1 - {price_kf})
             and os.price <= offer.price * (1 + {price_kf})
             and os.rooms_count >= offer.rooms_count - {room_delta}
@@ -275,7 +278,7 @@ def _prepare_tab_condition(
         tab_condition = f"""
             os.group_id = offer.group_id
             or (
-                ( 
+                (
                     os.house_id = offer.house_id
                     or os.district_id = offer.district_id
                 )

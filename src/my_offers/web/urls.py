@@ -66,7 +66,7 @@ urlpatterns = base_urls.urlpatterns + [
         get_handler(
             service=similars.v1_get_offer_similars_desktop_public,
             method='POST',  # pragma: no mutate
-            request_schema=entities.GetOfferDuplicatesRequest,
+            request_schema=entities.GetOfferDuplicatesDesktopRequest,
             response_schema=entities.GetOfferDuplicatesDesktopResponse,
             base_handler_cls=PublicHandler,
         )

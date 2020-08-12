@@ -13,7 +13,7 @@ from my_offers.services.similars.helpers.tabs import get_tabs
 
 async def v1_get_offer_similars_public(
         request: entities.GetOfferDuplicatesRequest,
-        realty_user_id: int
+        realty_user_id: int,
 ) -> entities.GetOfferDuplicatesResponse:
     tab_type = request.type if request.type else enums.DuplicateTabType.all
 
@@ -24,6 +24,7 @@ async def v1_get_offer_similars_public(
         return _get_empty_response(limit, offset)
 
     suffix = get_similar_table_suffix(object_model)
+    # todo: https://jira.cian.tech/browse/CD-85593 - для вкладки ВСЕ общее кол-во можно считать через window функцию
     similars, counter = await asyncio.gather(
         postgresql.get_similars_by_offer_id(
             tab_type=tab_type,

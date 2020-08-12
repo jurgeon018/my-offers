@@ -1,9 +1,8 @@
 import asyncio
 
-from cian_web.exceptions import BrokenRulesException, Error
 from simple_settings import settings
 
-from my_offers import entities
+from my_offers import entities, enums
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories import postgresql
 from my_offers.services import auctions, offer_view
@@ -12,17 +11,10 @@ from my_offers.services.similars.helpers.table import get_similar_table_suffix
 
 
 async def v1_get_offer_similars_desktop_public(
-        request: entities.GetOfferDuplicatesRequest,
+        request: entities.GetOfferDuplicatesDesktopRequest,
         realty_user_id: int
 ) -> entities.GetOfferDuplicatesDesktopResponse:
     """ Получить список объявлиний типа 'дубли', 'похожие', 'в этом доме' для конрентного объявления. """
-    tab_type = request.type
-    if not tab_type.is_all:
-        raise BrokenRulesException([Error(
-            key='type',
-            code='type_not_supported',
-        )])
-
     limit, offset = get_pagination(request.pagination)
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
 
@@ -30,9 +22,10 @@ async def v1_get_offer_similars_desktop_public(
         return _get_empty_response(limit, offset)
 
     suffix = get_similar_table_suffix(object_model)
+    # todo: https://jira.cian.tech/browse/CD-85593 - для вкладки ВСЕ общее кол-во можно считать через window функцию
     similars, counter = await asyncio.gather(
         postgresql.get_similars_by_offer_id(
-            tab_type=tab_type,
+            tab_type=enums.DuplicateTabType.all,
             offer_id=object_model.id,
             limit=limit,
             offset=offset,
