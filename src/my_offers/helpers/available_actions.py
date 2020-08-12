@@ -7,7 +7,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 
 CAN_ARCHIVE_STATUSES = (Status.deactivated, Status.published, Status.draft)
 CAN_DELETE_STATUSES = (Status.published, Status.draft, Status.blocked, Status.deactivated, Status.refused)
-STATUSES_FOR_DISCONTINUED = {
+CAN_CHANGE_PUBLISHER = (Status.published, Status.draft, Status.deactivated, Status.sold)
+STATUSES_FOR_DISCONTINUED = (
     Status.deactivated,
     Status.deleted,
     Status.removed_by_moderator,
@@ -15,7 +16,7 @@ STATUSES_FOR_DISCONTINUED = {
     Status.sold,
     Status.moderate,
     Status.blocked,
-}
+)
 
 
 def get_available_actions(
@@ -26,11 +27,14 @@ def get_available_actions(
         can_update_edit_date: bool,
         agency_settings: Optional[AgencySettings],
         is_in_hidden_base: Optional[bool],
+        is_master_agent: bool,
 ) -> entities.AvailableActions:
     """
-        Возможные действия
-        Активные: Удалить, Перенести в архив, Редактировать, Поднять
-        Неактивные: Удалить, Перенести в архив, Редактировать(черновик), Восстановить (!= черновик)
+        Получить возможные действия с объявлением.
+
+        Активные: Удалить, Перенести в архив, Редактировать, Поднять, Сменить владельца (только мастер)
+        Неактивные: Удалить, Перенести в архив, Редактировать(черновик),
+                    Восстановить (!= черновик), Сменить владельца (только мастер)
         Архив: Восстановить, Удалить
 
         Если объявление находится в статусе `Снято с публикации`, то появляется кнопка "Восстановить".
@@ -51,6 +55,7 @@ def get_available_actions(
             can_restore=False,
             can_update_edit_date=False,
             can_move_to_archive=False,
+            can_change_publisher=False
         )
 
     can_edit = not is_archived and not status.is_removed_by_moderator
@@ -69,6 +74,7 @@ def get_available_actions(
         ),
         can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
+        can_change_publisher=is_master_agent and status in CAN_CHANGE_PUBLISHER
     )
 
 

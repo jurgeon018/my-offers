@@ -15,3 +15,5 @@ class AvailableActions:
     """Можно ли удалить объялвение"""
     can_raise: bool
     """Можно ли поднять в размещении"""
+    can_change_publisher: bool
+    """Можно ли сменить владельца объявления"""

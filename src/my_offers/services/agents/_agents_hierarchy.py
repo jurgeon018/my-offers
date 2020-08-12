@@ -38,8 +38,3 @@ async def update_agents_hierarchy(agent: AgentMessage) -> None:
         last_name=agent.last_name,
     )
     await postgresql.save_agent(agent=agent)
-
-
-async def get_master_id_by_subagent(user_id: int) -> int:
-    """ Получить ID мастер-аккаунта по ID сабагента. """
-    # TODO: https://jira.cian.tech/browse/CD-73807

@@ -7,59 +7,64 @@ from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
 
-@pytest.mark.parametrize('is_archived, is_manual, status, can_update_edit_date, expected', [
+@pytest.mark.parametrize('is_master_agent, is_archived, is_manual, status, can_update_edit_date, expected', [
     (
-        False, False, Status.deleted, False, AvailableActions(
+        True, False, False, Status.deleted, False, AvailableActions(
             can_update_edit_date=False,
             can_move_to_archive=False,
             can_delete=False,
             can_edit=True,
             can_restore=False,
             can_raise=False,
+            can_change_publisher=False
         )
     ),
     (
-        True, True, Status.published, True, AvailableActions(
+        True, True, True, Status.published, True, AvailableActions(
             can_update_edit_date=False,
             can_move_to_archive=False,
             can_delete=True,
             can_edit=False,
             can_restore=True,
             can_raise=False,
+            can_change_publisher=True
         )
     ),
     (
-        True, False, Status.published, True, AvailableActions(
+        True, True, False, Status.published, True, AvailableActions(
             can_edit=False,
             can_restore=False,
             can_update_edit_date=False,
             can_move_to_archive=False,
             can_delete=False,
             can_raise=False,
+            can_change_publisher=False
         )
     ),
     (
-        False, True, Status.published, True, AvailableActions(
+        True, False, True, Status.published, True, AvailableActions(
             can_update_edit_date=True,
             can_move_to_archive=True,
             can_delete=True,
             can_edit=True,
             can_restore=False,
             can_raise=True,
+            can_change_publisher=True
         )
     ),
     (
-        False, True, Status.published, True, AvailableActions(
+        False, False, True, Status.published, True, AvailableActions(
             can_update_edit_date=True,
             can_move_to_archive=True,
             can_delete=True,
             can_edit=True,
             can_restore=False,
             can_raise=True,
+            can_change_publisher=False
         )
     ),
 ])
-def test_get_available_actions(is_archived, is_manual, status, can_update_edit_date, expected):
+def test_get_available_actions(is_master_agent, is_archived, is_manual, status, can_update_edit_date, expected):
     # arrange & act
     result = get_available_actions(
         is_archived=is_archived,
@@ -73,6 +78,7 @@ def test_get_available_actions(is_archived, is_manual, status, can_update_edit_d
             display_all_agency_offers=True,
         ),
         is_in_hidden_base=False,
+        is_master_agent=is_master_agent
     )
 
     # assert
@@ -88,6 +94,7 @@ def test_get_available_actions__no_settings__actions():
         can_edit=False,
         can_restore=False,
         can_raise=False,
+        can_change_publisher=False
     )
 
     # act
@@ -98,6 +105,7 @@ def test_get_available_actions__no_settings__actions():
         can_update_edit_date=False,
         agency_settings=None,
         is_in_hidden_base=False,
+        is_master_agent=False
     )
 
     # assert

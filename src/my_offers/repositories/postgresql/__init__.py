@@ -1,4 +1,4 @@
-from my_offers.repositories.postgresql.agents import get_master_user_id, save_agent
+from my_offers.repositories.postgresql.agents import get_master_user_id, is_master_agent, save_agent
 from my_offers.repositories.postgresql.billing import save_offer_contract, set_offer_contract_is_deleted_status
 from my_offers.repositories.postgresql.moderation import get_offers_offence, save_offer_offence
 from my_offers.repositories.postgresql.object_model import get_object_models, get_offers_by_ids

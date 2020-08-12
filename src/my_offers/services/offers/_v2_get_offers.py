@@ -16,13 +16,14 @@ from my_offers.services.offers._get_offers import (
     get_offer_counters_degradation_handler,
     get_page_info,
     get_pagination,
+    is_master_agent_degradation_handler,
 )
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
 
 
 async def v2_get_offers_private(request: entities.GetOffersPrivateRequest) -> entities.GetOffersV2Response:
-    """ Приватная апи получения моих объявлений. Требует явной передачи пользователя. """
+    """ Приватная апи получения моих объявлений. """
     return await v2_get_offers_public(
         request=request,
         realty_user_id=request.user_id
@@ -82,18 +83,24 @@ async def v2_get_offer_views(
         user_id: int,
         status_tab: enums.OfferStatusTab
 ) -> Tuple[List[get_offers.GetOfferV2], Dict[str, bool]]:
-    # шаг 1 - подготовка параметров для обогащения
+    # подготовка параметров для обогащения
     enrich_params = prepare_enrich_params(models=object_models, user_id=user_id)
 
-    # шаг 2 - получение данных для обогащения
+    # получение данных для обогащения
     enrich_data, degradation = await load_enrich_data(
         params=enrich_params,
         status_tab=status_tab
     )
 
-    # шаг 3 - подготовка моделей для ответа
+    is_master_agent = (await is_master_agent_degradation_handler(user_id)).value
+
+    # подготовка моделей для ответа
     offers = [
-        offer_view.v2_build_offer_view(object_model=object_model, enrich_data=enrich_data)
+        offer_view.v2_build_offer_view(
+            is_master_agent=is_master_agent,
+            object_model=object_model,
+            enrich_data=enrich_data
+        )
         for object_model in object_models
     ]
 
