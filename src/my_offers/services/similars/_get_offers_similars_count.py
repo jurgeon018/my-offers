@@ -1,4 +1,9 @@
+from simple_settings import settings
+
 from my_offers import entities
+from my_offers.repositories.postgresql.object_model import get_object_model_by_id
+from my_offers.repositories.postgresql.offers_similars import get_similars_counters_by_offer_ids
+from my_offers.services.similars.helpers.table import get_similar_table_suffix
 
 
 async def v1_get_offers_similars_count(
@@ -10,6 +15,26 @@ async def v1_get_offers_similars_count(
             data=[]
         )
 
-    return entities.GetOffersDuplicatesCountResponse(
-        data=await get_offers_duplicates_count(offer_ids)
+    object_model = await get_object_model_by_id(offer_ids[0])
+    if not object_model:
+        return entities.GetOffersDuplicatesCountResponse(
+            data=[]
+        )
+    suffix = get_similar_table_suffix(object_model)
+
+    counters = await get_similars_counters_by_offer_ids(
+        offer_ids=offer_ids,
+        price_kf=settings.SIMILAR_PRICE_KF,
+        room_delta=settings.SIMILAR_ROOM_DELTA,
+        suffix=suffix,
+    )
+
+    return entities.GetOffersDuplicatesCountResponse(data=[_map_counter(counter) for counter in counters])
+
+
+def _map_counter(counter: entities.OfferSimilarCounter) -> entities.OfferDuplicatesCount:
+    return entities.OfferDuplicatesCount(
+        offer_id=counter.offer_id,
+        competitors_count=counter.same_building_count + counter.similar_count,
+        duplicates_count=counter.duplicates_count,
     )

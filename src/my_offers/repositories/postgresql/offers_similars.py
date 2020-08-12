@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import asyncpgsa
 import sqlalchemy as sa
@@ -109,10 +109,10 @@ async def get_similars_by_offer_id(
         tab_type: enums.DuplicateTabType,
         suffix: str,
 ) -> Dict[int, enums.DuplicateType]:
-    tab_condition, table = _prepare_conditions(
+    table = TABLES_MAP[suffix]
+    tab_condition = _prepare_tab_condition(
         price_kf=price_kf,
         room_delta=room_delta,
-        suffix=suffix,
         tab_type=tab_type
     )
 
@@ -166,14 +166,13 @@ async def get_similars_counters_by_offer_ids(
         offer_ids: List[int],
         price_kf: float,
         room_delta: int,
-        tab_type: enums.DuplicateTabType,
         suffix: str,
 ) -> List[entities.OfferSimilarCounter]:
-    tab_condition, table = _prepare_conditions(
+    table = TABLES_MAP[suffix]
+    tab_condition = _prepare_tab_condition(
         price_kf=price_kf,
         room_delta=room_delta,
-        suffix=suffix,
-        tab_type=tab_type
+        tab_type=enums.DuplicateTabType.all,
     )
 
     query = f"""
@@ -223,7 +222,6 @@ async def get_similar_counter_by_offer_id(
         offer_ids=[offer_id],
         price_kf=price_kf,
         room_delta=room_delta,
-        tab_type=enums.DuplicateTabType.all,
         suffix=suffix,
     )
 
@@ -246,32 +244,46 @@ def _map_offer_similar_counter(row: Dict[str, int]) -> entities.OfferSimilarCoun
     )
 
 
-def _prepare_conditions(*, price_kf, room_delta, suffix, tab_type):
-    table = TABLES_MAP[suffix]
-
-    conditions = []
-    if tab_type.is_all or tab_type.is_duplicate:
-        conditions.append('os.group_id = offer.group_id')
-    if tab_type.is_all or tab_type.is_same_building:
-        conditions.append(f"""
-        (
-            os.house_id = offer.house_id
+def _prepare_tab_condition(
+        *,
+        tab_type: enums.DuplicateTabType,
+        price_kf: float,
+        room_delta: int,
+) -> str:
+    if tab_type.is_duplicate:
+        tab_condition = 'os.group_id = offer.group_id'
+    elif tab_type.is_same_building:
+        tab_condition = f"""
+            os.group_id <> offer.group_id
+            and os.house_id = offer.house_id
             and os.price >= offer.price * (1 - {price_kf})
             and os.price <= offer.price * (1 + {price_kf})
             and os.rooms_count >= offer.rooms_count - {room_delta}
             and os.rooms_count <= offer.rooms_count + {room_delta}
-        )
-        """)
-    if tab_type.is_all or tab_type.is_similar:
-        conditions.append(f"""
-        (
+        """
+    elif tab_type.is_similar:
+        tab_condition = f"""
+            os.group_id <> offer.group_id
+            and os.house_id <> offer.house_id
             os.district_id = offer.district_id
             and os.price >= offer.price * (1 - {price_kf})
             and os.price <= offer.price * (1 + {price_kf})
             and os.rooms_count >= offer.rooms_count - {room_delta}
             and os.rooms_count <= offer.rooms_count + {room_delta}
-        )
-        """)
-    tab_condition = ' or '.join(conditions)
+        """
+    else:  # tab_type.is_all:
+        tab_condition = f"""
+            os.group_id = offer.group_id
+            or (
+                ( 
+                    os.house_id = offer.house_id
+                    or os.district_id = offer.district_id
+                )
+                and os.price >= offer.price * (1 - {price_kf})
+                and os.price <= offer.price * (1 + {price_kf})
+                and os.rooms_count >= offer.rooms_count - {room_delta}
+                and os.rooms_count <= offer.rooms_count + {room_delta}
+            )
+        """
 
-    return tab_condition, table
+    return tab_condition
