@@ -149,8 +149,8 @@ async def test_load_enrich_data__active_tab(mocker):
     load_views_counts_mock.assert_called_once_with([11])
     load_searches_counts_mock.assert_called_once_with([11])
     load_favorites_counts_mock.assert_called_once_with([11])
-    load_duplicates_counts_mock.assert_called_once_with([11])
-    load_same_building_counts_mock.assert_called_once_with([11])
+    load_duplicates_counts_mock.assert_called_once_with([11], False)
+    load_same_building_counts_mock.assert_called_once_with([11], False)
 
 
 @pytest.mark.gen_test

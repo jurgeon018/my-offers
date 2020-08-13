@@ -26,6 +26,7 @@ class EnrichParams:
         self._agent_ids: Set[int] = set()
         self._geo_url_params: Dict[GeoUrlKey, Dict] = defaultdict(dict)
         self._user_id = user_id
+        self._test_offers: Set[int] = set()
 
     def get_user_id(self):
         return self._user_id
@@ -79,6 +80,13 @@ class EnrichParams:
             )
 
         return result
+
+    def add_is_test_offer(self, offer_id: int):
+        self._test_offers.add(offer_id)
+
+    @property
+    def is_test_offers(self) -> bool:
+        return bool(self._test_offers)
 
 
 class AddressUrls:

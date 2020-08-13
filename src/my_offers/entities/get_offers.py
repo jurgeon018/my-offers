@@ -106,7 +106,7 @@ class ActiveInfo:
     """ Флаг 'из пакета'"""
     is_publication_time_ends: bool
     """ Флаг 'меньше суток до конца публикации'"""
-    publish_features: Optional[List[str]]
+    publish_features: Optional[List[str]] = None
     """Параметры публикации: сколько осталось"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""

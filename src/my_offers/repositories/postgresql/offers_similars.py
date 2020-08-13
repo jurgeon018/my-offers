@@ -167,12 +167,13 @@ async def get_similars_counters_by_offer_ids(
         price_kf: float,
         room_delta: int,
         suffix: str,
+        tab_type=enums.DuplicateTabType.all,
 ) -> List[entities.OfferSimilarCounter]:
     table = TABLES_MAP[suffix]
     tab_condition = _prepare_tab_condition(
         price_kf=price_kf,
         room_delta=room_delta,
-        tab_type=enums.DuplicateTabType.all,
+        tab_type=tab_type,
     )
 
     query = f"""
@@ -240,7 +241,7 @@ def _map_offer_similar_counter(row: Dict[str, int]) -> entities.OfferSimilarCoun
 
     return entities.OfferSimilarCounter(
         offer_id=row['offer_id'],
-        same_building_count=max(row['house_count'] - row['duplicate_count'], 0),
+        same_building_count=same_building_count,
         similar_count=row['total_count'] - duplicates_count - same_building_count,
         duplicates_count=duplicates_count,
         total_count=row['total_count'],
