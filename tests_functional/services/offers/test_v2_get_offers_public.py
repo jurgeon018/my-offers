@@ -205,8 +205,8 @@ async def test_v2_get_offers_public__can_view_similar_offers(http_client, pg):
     )
 
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id) '
-        'VALUES(11111111, \'sale\', \'2020-08-10\', 11111111, 123)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id, price, rooms_count) '
+        'VALUES(11111111, \'sale\', \'2020-08-10\', 11111111, 123, 10990000, 4)'
     )
     await pg.execute(
         'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
@@ -217,8 +217,8 @@ async def test_v2_get_offers_public__can_view_similar_offers(http_client, pg):
         'VALUES(173975523, \'sale\', \'2020-08-10\', 11111111)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id) '
-        'VALUES(22222222, \'sale\', \'2020-08-10\', 22222222, 123)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id, price, rooms_count) '
+        'VALUES(22222222, \'sale\', \'2020-08-10\', 22222222, 123, 10990000, 4)'
     )
 
     # act
@@ -240,3 +240,4 @@ async def test_v2_get_offers_public__can_view_similar_offers(http_client, pg):
     assert response.data['offers'][0]['availableActions']['canViewSimilarOffers'] is True
     assert response.data['offers'][0]['availableActions']['canRaise'] is True
     assert response.data['offers'][0]['pageSpecificInfo']['activeInfo']['duplicatesCount'] == 2
+    assert response.data['offers'][0]['pageSpecificInfo']['activeInfo']['sameBuildingCount'] == 1
