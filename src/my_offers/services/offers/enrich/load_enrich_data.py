@@ -291,10 +291,6 @@ async def _load_same_building_counts(offer_ids: List[int], is_test: bool) -> Enr
         tab_type=DuplicateTabType.same_building
     )
 
-    print(
-        99999999999999999, result.value
-    )
-
     if result.degraded:
         return EnrichItem(key='same_building_counts', degraded=result.degraded, value={})
 
