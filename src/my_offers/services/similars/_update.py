@@ -4,9 +4,10 @@ from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import offers_similars
 from my_offers.repositories.postgresql.offers_duplicates import get_duplicate_group_id
-from my_offers.services.announcement.fields.district_id import get_district_id
-from my_offers.services.announcement.fields.house_id import get_house_id
 from my_offers.services.convert_price import get_price_rur
+from my_offers.services.similars.helpers.district import get_district_id
+from my_offers.services.similars.helpers.house import get_house_id
+from my_offers.services.similars.helpers.rooms_count import get_rooms_count
 from my_offers.services.similars.helpers.table import get_similar_table_suffix
 
 
@@ -35,7 +36,11 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
                 price=object_model.bargain_terms.price,
                 currency=object_model.bargain_terms.currency
             ),
-            rooms_count=object_model.rooms_count,
+            rooms_count=get_rooms_count(
+                rooms_count=object_model.rooms_count,
+                rooms_for_sale_count=object_model.rooms_for_sale_count,
+                flat_type=object_model.flat_type,
+            ),
             sort_date=object_model.edit_date if object_model.edit_date else object_model.creation_date,
         )
     )

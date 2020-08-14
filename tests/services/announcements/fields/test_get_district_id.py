@@ -2,7 +2,7 @@ import pytest
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import DistrictInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.district_info import Type
-from my_offers.services.announcement.fields.district_id import get_district_id
+from my_offers.services.similars.helpers.district import get_district_id
 
 
 @pytest.mark.parametrize(

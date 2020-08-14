@@ -2,7 +2,7 @@ import pytest
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import Type
-from my_offers.services.announcement.fields.house_id import get_house_id
+from my_offers.services.similars.helpers.house import get_house_id
 
 
 @pytest.mark.parametrize(
