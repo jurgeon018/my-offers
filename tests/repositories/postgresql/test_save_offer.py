@@ -47,16 +47,16 @@ async def test_save_offer(mocker):
         'INSERT INTO offers (offer_id, master_user_id, user_id, deal_type, offer_type, status_tab, services, '
         'search_text, is_manual, is_in_hidden_base, has_photo, row_version, raw_data, created_at, updated_at, '
         'event_date, total_area, price, price_per_meter, walking_time, street_name, sort_date, is_test) '
-        'VALUES ($9, $8, $24, $2, $10, $20, CAST($18 AS offer_service[]), $17, $6, $5, $4, $16, $14, $1, $23, $3, $22, '
-        '$12, $13, $25, $21, $19, $7) ON CONFLICT (offer_id) DO UPDATE SET master_user_id = excluded.master_user_id, '
+        'VALUES ($9, $8, $23, $2, $10, $19, CAST($17 AS offer_service[]), $16, $6, $5, $4, $15, $13, $1, $22, $3, $21, '
+        '$11, $12, $24, $20, $18, $7) ON CONFLICT (offer_id) DO UPDATE SET master_user_id = excluded.master_user_id, '
         'user_id = excluded.user_id, deal_type = excluded.deal_type, offer_type = excluded.offer_type, '
         'status_tab = excluded.status_tab, services = excluded.services, search_text = excluded.search_text, '
         'is_manual = excluded.is_manual, is_in_hidden_base = excluded.is_in_hidden_base, '
         'has_photo = excluded.has_photo, row_version = excluded.row_version, raw_data = excluded.raw_data, '
-        'event_date = $11, total_area = excluded.total_area, price = excluded.price, '
-        'price_per_meter = excluded.price_per_meter, walking_time = excluded.walking_time, '
+        'updated_at = excluded.updated_at, event_date = excluded.event_date, total_area = excluded.total_area, '
+        'price = excluded.price, price_per_meter = excluded.price_per_meter, walking_time = excluded.walking_time, '
         'street_name = excluded.street_name, sort_date = excluded.sort_date, is_test = excluded.is_test '
-        'WHERE offers.row_version < $15',
+        'WHERE offers.row_version < $14',
         FakeDatetime(2020, 2, 10, 9, 57, 30, 303690, tzinfo=pytz.UTC),
         'rent',
         FakeDatetime(2020, 6, 1, 0, 0),
@@ -67,7 +67,6 @@ async def test_save_offer(mocker):
         2222,
         1111,
         'flat',
-        FakeDatetime(2020, 6, 1, 0, 0),
         100000.0,
         2000.0,
         '{"offer_id": 1111}',
@@ -81,7 +80,7 @@ async def test_save_offer(mocker):
         5000.0,
         FakeDatetime(2020, 2, 10, 9, 57, 30, 303690, tzinfo=pytz.UTC),
         3333,
-        15.0
+        15.0,
     )
 
 

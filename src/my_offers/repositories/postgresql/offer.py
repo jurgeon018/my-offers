@@ -61,7 +61,8 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
                 'raw_data': insert_query.excluded.raw_data,
                 'row_version': insert_query.excluded.row_version,
                 'is_test': insert_query.excluded.is_test,
-                'event_date': event_date,
+                'updated_at': insert_query.excluded.updated_at,
+                'event_date': insert_query.excluded.event_date,
             }
         )
     )
