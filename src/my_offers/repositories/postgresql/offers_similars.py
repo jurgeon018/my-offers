@@ -48,8 +48,8 @@ async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
 
     query, params = asyncpgsa.compile_query(
         insert_query
-            .values([values])
-            .on_conflict_do_update(
+        .values([values])
+        .on_conflict_do_update(
             index_elements=[table.c.offer_id],
             set_={
                 'deal_type': insert_query.excluded.deal_type,
