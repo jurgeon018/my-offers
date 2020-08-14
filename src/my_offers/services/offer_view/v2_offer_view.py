@@ -47,8 +47,8 @@ def v2_build_offer_view(
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
     display_date = get_sort_date(object_model=object_model, status_tab=status_tab)
     force_raise = bool(
-        enrich_data.duplicates_counts.get(offer_id)
-        or enrich_data.same_building_counts.get(offer_id)
+        enrich_data.get_duplicates_counts(offer_id)
+        or enrich_data.get_same_building_counts(offer_id)
     )
     return get_offers.GetOfferV2(
         id=offer_id,

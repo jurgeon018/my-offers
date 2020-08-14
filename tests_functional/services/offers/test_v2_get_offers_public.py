@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 
 
-async def test_v2_get_offers_public__not_found__200(http_client):
+async def test_v2_get_offers_public__not_found__200(http):
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v2/get-offers/',
         json={
@@ -25,12 +25,12 @@ async def test_v2_get_offers_public__not_found__200(http_client):
     assert len(response.data['offers']) == 0
 
 
-async def test_v2_get_offers_public__search_text__result(http_client, pg):
+async def test_v2_get_offers_public__search_text__result(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v2/get-offers/',
         json={
@@ -52,7 +52,7 @@ async def test_v2_get_offers_public__search_text__result(http_client, pg):
     (333, True),
     (222, False),
 ])
-async def test_v2_get_offers_public__can_change_publisher(http_client, pg, x_real_user, can_change_publisher):
+async def test_v2_get_offers_public__can_change_publisher(http, pg, x_real_user, can_change_publisher):
     # arrange
     offer_id_1 = 11111111
     user_id = 222
@@ -118,7 +118,7 @@ async def test_v2_get_offers_public__can_change_publisher(http_client, pg, x_rea
     )
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v2/get-offers/',
         json={
@@ -136,7 +136,7 @@ async def test_v2_get_offers_public__can_change_publisher(http_client, pg, x_rea
     assert response.data['offers'][0]['availableActions']['canChangePublisher'] is can_change_publisher
 
 
-async def test_v2_get_offers_public__can_view_similar_offers(http_client, pg):
+async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
     # arrange
     offer_id_1 = 11111111
     user_id = 222
@@ -222,7 +222,7 @@ async def test_v2_get_offers_public__can_view_similar_offers(http_client, pg):
     )
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v2/get-offers/',
         json={

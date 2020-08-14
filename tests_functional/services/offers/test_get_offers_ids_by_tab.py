@@ -9,7 +9,7 @@ import pytest
     ('all', False, 2, [1, 3]),
     ('all', True, 2, [1, 2, 3]),
 ))
-async def test_get_offers_ids_by_tab(pg, http_client, status_tab, with_subs, user_id, expected):
+async def test_get_offers_ids_by_tab(pg, http, status_tab, with_subs, user_id, expected):
     # arrange
     now = datetime.now()
     await pg.execute(
@@ -63,7 +63,7 @@ async def test_get_offers_ids_by_tab(pg, http_client, status_tab, with_subs, use
     )
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/v1/get-offers-ids-by-tab/',
         json={

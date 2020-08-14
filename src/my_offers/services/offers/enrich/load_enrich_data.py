@@ -65,8 +65,10 @@ async def load_enrich_data(
             _load_views_counts(offer_ids),
             _load_auctions(offer_ids),
             _load_payed_till(offer_ids),
-            _load_duplicates_counts(offer_ids, params.is_test_offers),
-            _load_same_building_counts(offer_ids, params.is_test_offers),
+            _load_offers_similars_counters(
+                offer_ids=params.get_similar_offers(),
+                is_test=params.is_test_offers
+            ),
         ])
     elif status_tab.is_not_active:
         enriched.extend([
@@ -263,36 +265,25 @@ async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='favorites_counts', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_duplicates_counts')
-async def _load_duplicates_counts(offer_ids: List[int], is_test: bool) -> EnrichItem:
+@async_statsd_timer('enrich.load_similars_counters')
+async def _load_offers_similars_counters(*, offer_ids: List[int], is_test: bool) -> EnrichItem:
+    if not offer_ids:
+        return EnrichItem(key='offers_similars_counts', degraded=False, value={})
+
     suffix = get_similar_table_suffix_by_params(is_test=is_test)
     result = await get_similars_counters_by_offer_ids_degradation_handler(
         offer_ids=offer_ids,
         price_kf=settings.SIMILAR_PRICE_KF,
         room_delta=settings.SIMILAR_ROOM_DELTA,
         suffix=suffix,
-        tab_type=DuplicateTabType.duplicate
-    )
-    if result.degraded:
-        return EnrichItem(key='duplicates_counts', degraded=result.degraded, value={})
-
-    value = {c.offer_id: c.duplicates_count for c in result.value}
-    return EnrichItem(key='duplicates_counts', degraded=False, value=value)
-
-
-@async_statsd_timer('enrich.load_same_building_counts')
-async def _load_same_building_counts(offer_ids: List[int], is_test: bool) -> EnrichItem:
-    suffix = get_similar_table_suffix_by_params(is_test=is_test)
-    result = await get_similars_counters_by_offer_ids_degradation_handler(
-        offer_ids=offer_ids,
-        price_kf=settings.SIMILAR_PRICE_KF,
-        room_delta=settings.SIMILAR_ROOM_DELTA,
-        suffix=suffix,
-        tab_type=DuplicateTabType.same_building
+        tab_type=DuplicateTabType.all
     )
 
     if result.degraded:
-        return EnrichItem(key='same_building_counts', degraded=result.degraded, value={})
+        return EnrichItem(key='offers_similars_counts', degraded=result.degraded, value={})
 
-    value = {c.offer_id: c.same_building_count for c in result.value}
-    return EnrichItem(key='same_building_counts', degraded=False, value=value)
+    value = {
+        DuplicateTabType.duplicate: {c.offer_id: c.duplicates_count for c in result.value},
+        DuplicateTabType.same_building: {c.offer_id: c.same_building_count for c in result.value}
+    }
+    return EnrichItem(key='offers_similars_counts', degraded=False, value=value)

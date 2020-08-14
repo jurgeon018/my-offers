@@ -22,7 +22,6 @@ offers_similars_flat = sa.Table(
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
 )
 
-
 offers_similars_test = sa.Table(
     'offers_similars_test',
     metadata,
@@ -35,7 +34,6 @@ offers_similars_test = sa.Table(
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
 )
-
 
 TABLES_MAP = {
     'flat': offers_similars_flat,
@@ -50,8 +48,8 @@ async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
 
     query, params = asyncpgsa.compile_query(
         insert_query
-        .values([values])
-        .on_conflict_do_update(
+            .values([values])
+            .on_conflict_do_update(
             index_elements=[table.c.offer_id],
             set_={
                 'deal_type': insert_query.excluded.deal_type,
@@ -237,7 +235,7 @@ async def get_similar_counter_by_offer_id(
 
 def _map_offer_similar_counter(row: Dict[str, int]) -> entities.OfferSimilarCounter:
     duplicates_count = row['duplicate_count']
-    same_building_count = max(row['house_count'] - row['duplicate_count'], 0)
+    same_building_count = row['house_count']
 
     return entities.OfferSimilarCounter(
         offer_id=row['offer_id'],

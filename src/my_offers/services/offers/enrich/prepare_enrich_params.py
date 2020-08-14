@@ -1,20 +1,22 @@
 from typing import List
 
 from my_offers.helpers import category, fields
+from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, address_info
 from my_offers.services.offers.enrich.enrich_data import EnrichParams
 
 
 def prepare_enrich_params(*, models: List[ObjectModel], user_id: int) -> EnrichParams:
-    result = EnrichParams(user_id=user_id)
+    is_test_offers = any(fields.is_test(m) for m in models)
+    result = EnrichParams(user_id=user_id, is_test_offers=is_test_offers)
 
     for model in models:
         offer_id = model.id
         result.add_offer_id(offer_id)
         offer_type, deal_type = category.get_types(model.category)
 
-        if fields.is_test(model):
-            result.add_is_test_offer(offer_id=offer_id)
+        if is_offer_for_similar(status=model.status, category=model.category):
+            result.add_similar_offer(offer_id=offer_id)
 
         if model.published_user_id != user_id:
             result.add_agent_id(model.published_user_id)

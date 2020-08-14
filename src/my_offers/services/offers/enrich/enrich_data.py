@@ -9,6 +9,7 @@ from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent
+from my_offers.enums import DuplicateTabType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 
@@ -20,13 +21,15 @@ class GeoUrlKey(NamedTuple):
 
 class EnrichParams:
 
-    def __init__(self, user_id: int) -> None:
+    def __init__(self, user_id: int, is_test_offers: bool = False) -> None:
         self._offer_ids: Set[int] = set()
         self._jk_ids: Set[int] = set()
         self._agent_ids: Set[int] = set()
         self._geo_url_params: Dict[GeoUrlKey, Dict] = defaultdict(dict)
         self._user_id = user_id
-        self._test_offers: Set[int] = set()
+        self._similar_offers: Set[int] = set()
+
+        self.is_test_offers: bool = is_test_offers
 
     def get_user_id(self):
         return self._user_id
@@ -81,12 +84,11 @@ class EnrichParams:
 
         return result
 
-    def add_is_test_offer(self, offer_id: int):
-        self._test_offers.add(offer_id)
+    def add_similar_offer(self, offer_id: int) -> None:
+        self._similar_offers.add(offer_id)
 
-    @property
-    def is_test_offers(self) -> bool:
-        return bool(self._test_offers)
+    def get_similar_offers(self) -> List[int]:
+        return list(self._similar_offers)
 
 
 class AddressUrls:
@@ -123,8 +125,7 @@ class EnrichData:
     premoderation_info: Optional[Set[int]] = None
     archive_date: Optional[Dict[int, datetime]] = None
     payed_till: Optional[Dict[int, datetime]] = None
-    duplicates_counts: Dict[int, int] = field(default_factory=dict)
-    same_building_counts: Dict[int, int] = field(default_factory=dict)
+    offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
 
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)
@@ -172,3 +173,9 @@ class EnrichData:
             return None
 
         return self.payed_till.get(offer_id)
+
+    def get_duplicates_counts(self, offer_id: int) -> Optional[int]:
+        return self.offers_similars_counts.get(DuplicateTabType.duplicate, {}).get(offer_id)
+
+    def get_same_building_counts(self, offer_id: int) -> Optional[int]:
+        return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
