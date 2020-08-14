@@ -194,7 +194,7 @@ async def get_similars_counters_by_offer_ids(
        offer.offer_id,
        count(*) as total_count,
        sum(case when os.group_id = offer.group_id then 1 else 0 end) as duplicate_count,
-       sum(case when os.house_id = offer.house_id then 1 else 0 end) as house_count
+       sum(case when os.group_id <> offer.group_id and os.house_id = offer.house_id then 1 else 0 end) as house_count
     from
       offer,
       {table} os
@@ -236,11 +236,11 @@ async def get_similar_counter_by_offer_id(
 
 def _map_offer_similar_counter(row: Dict[str, int]) -> entities.OfferSimilarCounter:
     duplicates_count = row['duplicate_count']
-    same_building_count = max(row['house_count'] - row['duplicate_count'], 0)
+    same_building_count = row['house_count']
 
     return entities.OfferSimilarCounter(
         offer_id=row['offer_id'],
-        same_building_count=max(row['house_count'] - row['duplicate_count'], 0),
+        same_building_count=same_building_count,
         similar_count=row['total_count'] - duplicates_count - same_building_count,
         duplicates_count=duplicates_count,
         total_count=row['total_count'],

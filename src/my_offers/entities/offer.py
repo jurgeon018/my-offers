@@ -51,10 +51,6 @@ class Offer:
     """Время в пути в минутах до метро пешком, мин"""
     sort_date: Optional[datetime] = None
     """Дата для сортировки"""
-    district_id: Optional[int] = None
-    """Id района"""
-    house_id: Optional[int] = None
-    """Id дома"""
 
 
 @dataclass
