@@ -142,7 +142,6 @@ async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
     user_id = 222
     master_user = 333
     now = datetime.now()
-    house_id = 123
 
     await pg.execute(
         """
@@ -192,15 +191,14 @@ async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
             row_version,
             created_at,
             updated_at,
-            is_test,
-            house_id
+            is_test
         )
         VALUES
-            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
         """,
         [
             offer_id_1, master_user, user_id, 'sale', 'flat', 'active', [], True, False, False, 'text',
-            offer_json, 1, now, now, False, house_id
+            offer_json, 1, now, now, False
         ]
     )
 
