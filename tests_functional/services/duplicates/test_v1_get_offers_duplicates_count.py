@@ -26,7 +26,7 @@ async def test_v1_get_offers_duplicates_count(http, pg):
     )
 
     # assert
-    assert response.data['data'] == [{'competitorsCount': 0, 'duplicatesCount': 2, 'offerId': 231655140}]
+    assert response.data['data'] == [{'competitorsCount': 2, 'duplicatesCount': 2, 'offerId': 231655140}]
 
 
 async def test_v1_get_offers_duplicates_count__emty__empty(http, pg):

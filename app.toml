@@ -34,6 +34,7 @@ memory = 128
 
 [job.web.prod]
 type = "web"
+instances = 6
 cpu = 4096
 memory = 256
 
