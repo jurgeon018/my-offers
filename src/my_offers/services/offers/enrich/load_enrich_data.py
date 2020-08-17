@@ -9,7 +9,7 @@ from simple_settings import settings
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.offer_view_model import Subagent
-from my_offers.enums import ModerationOffenceStatus
+from my_offers.enums import DuplicateTabType, ModerationOffenceStatus
 from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.repositories.postgresql.agents import get_master_user_id
 from my_offers.services.agencies_settings import get_settings_degradation_handler
@@ -24,11 +24,13 @@ from my_offers.services.offers._get_offers import (
     get_offers_payed_till_degradation_handler,
     get_offers_update_at_degradation_handler,
     get_searches_counts_degradation_handler,
+    get_similars_counters_by_offer_ids_degradation_handler,
     get_views_counts_degradation_handler,
 )
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
 from my_offers.services.search_coverage import get_offers_search_coverage_degradation_handler
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
+from my_offers.services.similars.helpers.table import get_similar_table_suffix_by_params
 
 
 logger = logging.getLogger(__name__)
@@ -39,18 +41,10 @@ async def load_enrich_data(
         params: EnrichParams,
         status_tab: enums.OfferStatusTab
 ) -> Tuple[EnrichData, Dict[str, bool]]:
+    """ Загружает данные из внешних источников для разных типов вкладок. """
     offer_ids = params.get_offer_ids()
     if not offer_ids:
-        return EnrichData(
-            auctions={},
-            jk_urls={},
-            geo_urls={},
-            can_update_edit_dates={},
-            import_errors={},
-            favorites_counts={},
-            searches_counts={},
-            views_counts={},
-        ), {}
+        return EnrichData(), {}
 
     allow_update_edit_date = (
         status_tab.is_active
@@ -71,6 +65,10 @@ async def load_enrich_data(
             _load_views_counts(offer_ids),
             _load_auctions(offer_ids),
             _load_payed_till(offer_ids),
+            _load_offers_similars_counters(
+                offer_ids=params.get_similar_offers(),
+                is_test=params.is_test_offers
+            ),
         ])
     elif status_tab.is_not_active:
         enriched.extend([
@@ -78,7 +76,6 @@ async def load_enrich_data(
             _load_premoderation_info(offer_ids),
             _load_archive_date(offer_ids),
         ])
-
     elif status_tab.is_declined:
         enriched.extend([
             _load_moderation_info(offer_ids),
@@ -266,3 +263,27 @@ async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
     result = await get_favorites_counts_degradation_handler(offer_ids)
 
     return EnrichItem(key='favorites_counts', degraded=result.degraded, value=result.value)
+
+
+@async_statsd_timer('enrich.load_similars_counters')
+async def _load_offers_similars_counters(*, offer_ids: List[int], is_test: bool) -> EnrichItem:
+    if not offer_ids:
+        return EnrichItem(key='offers_similars_counts', degraded=False, value={})
+
+    suffix = get_similar_table_suffix_by_params(is_test=is_test)
+    result = await get_similars_counters_by_offer_ids_degradation_handler(
+        offer_ids=offer_ids,
+        price_kf=settings.SIMILAR_PRICE_KF,
+        room_delta=settings.SIMILAR_ROOM_DELTA,
+        suffix=suffix,
+        tab_type=DuplicateTabType.all
+    )
+
+    if result.degraded:
+        return EnrichItem(key='offers_similars_counts', degraded=result.degraded, value={})
+
+    value = {
+        DuplicateTabType.duplicate: {c.offer_id: c.duplicates_count for c in result.value},
+        DuplicateTabType.same_building: {c.offer_id: c.same_building_count for c in result.value}
+    }
+    return EnrichItem(key='offers_similars_counts', degraded=False, value=value)

@@ -11,7 +11,13 @@ from my_offers.services.offer_view.fields.vas import get_vas
 from my_offers.services.offer_view.helpers.terms import is_daily_charge
 
 
-def get_active_info(publish_terms: Optional[PublishTerms], payed_till: Optional[datetime]) -> get_offers.ActiveInfo:
+def get_active_info(
+        *,
+        publish_terms: Optional[PublishTerms],
+        payed_till: Optional[datetime],
+        duplicates_count: Optional[int],
+        same_building_count: Optional[int],
+) -> get_offers.ActiveInfo:
     terms = publish_terms.terms if publish_terms else None
     payed_remain = _get_payed_remain(payed_till)
 
@@ -34,6 +40,8 @@ def get_active_info(publish_terms: Optional[PublishTerms], payed_till: Optional[
         is_from_package=is_from_package(terms),
         is_publication_time_ends=is_publication_time_ends,
         payed_till=payed_till,
+        duplicates_count=duplicates_count,
+        same_building_count=same_building_count,
     )
 
 

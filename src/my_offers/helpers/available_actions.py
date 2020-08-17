@@ -28,6 +28,8 @@ def get_available_actions(
         agency_settings: Optional[AgencySettings],
         is_in_hidden_base: Optional[bool],
         is_master_agent: bool,
+        force_raise: bool = False,
+        can_view_similar_offers: bool = False
 ) -> entities.AvailableActions:
     """
         Получить возможные действия с объявлением.
@@ -55,13 +57,15 @@ def get_available_actions(
             can_restore=False,
             can_update_edit_date=False,
             can_move_to_archive=False,
-            can_change_publisher=False
+            can_change_publisher=False,
+            can_view_similar_offers=can_view_similar_offers
         )
 
     can_edit = not is_archived and not status.is_removed_by_moderator
     return entities.AvailableActions(
         can_edit=status.is_draft or status.is_published and can_edit,
         can_raise=_can_raise(
+            force_raise=force_raise,
             is_archived=is_archived,
             is_published=status.is_published,
             is_in_hidden_base=is_in_hidden_base
@@ -74,7 +78,8 @@ def get_available_actions(
         ),
         can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
-        can_change_publisher=is_master_agent and status in CAN_CHANGE_PUBLISHER
+        can_change_publisher=is_master_agent and status in CAN_CHANGE_PUBLISHER,
+        can_view_similar_offers=can_view_similar_offers
     )
 
 
@@ -88,7 +93,10 @@ def _can_restore(*, is_archived: bool, is_removed_by_moderator: bool, is_discont
     return False
 
 
-def _can_raise(*, is_archived: bool, is_published: bool, is_in_hidden_base: Optional[bool]) -> bool:
+def _can_raise(*, is_archived: bool, is_published: bool, is_in_hidden_base: Optional[bool], force_raise: bool) -> bool:
+    if force_raise:
+        return True
+
     if is_archived:
         return False
 

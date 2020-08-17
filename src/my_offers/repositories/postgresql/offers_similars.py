@@ -22,7 +22,6 @@ offers_similars_flat = sa.Table(
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
 )
 
-
 offers_similars_test = sa.Table(
     'offers_similars_test',
     metadata,
@@ -35,7 +34,6 @@ offers_similars_test = sa.Table(
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
 )
-
 
 TABLES_MAP = {
     'flat': offers_similars_flat,
@@ -167,12 +165,13 @@ async def get_similars_counters_by_offer_ids(
         price_kf: float,
         room_delta: int,
         suffix: str,
+        tab_type=enums.DuplicateTabType.all,
 ) -> List[entities.OfferSimilarCounter]:
     table = TABLES_MAP[suffix]
     tab_condition = _prepare_tab_condition(
         price_kf=price_kf,
         room_delta=room_delta,
-        tab_type=enums.DuplicateTabType.all,
+        tab_type=tab_type,
     )
 
     query = f"""

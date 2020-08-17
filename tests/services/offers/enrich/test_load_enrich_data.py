@@ -6,13 +6,14 @@ from cian_core.degradation import DegradationResult
 from cian_test_utils import future
 from freezegun import freeze_time
 from mock import call
+from simple_settings import settings
 
 from my_offers import enums
 from my_offers.entities import AgentName
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent
-from my_offers.enums import ModerationOffenceStatus, OfferStatusTab
+from my_offers.enums import DuplicateTabType, ModerationOffenceStatus, OfferStatusTab
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
@@ -28,6 +29,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
+    _load_offers_similars_counters,
     _load_payed_till,
     _load_premoderation_info,
     _load_searches_counts,
@@ -44,6 +46,7 @@ PATH = 'my_offers.services.offers.enrich.load_enrich_data.'
 async def test_load_enrich_data__active_tab(mocker):
     # arrange
     params = EnrichParams(111)
+    params.add_similar_offer(11)
     params.add_offer_id(11)
     params.add_jk_id(44)
     params.add_geo_url_id(
@@ -90,6 +93,10 @@ async def test_load_enrich_data__active_tab(mocker):
     )
     load_favorites_counts_mock = mocker.patch(
         f'{PATH}_load_favorites_counts',
+        return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
+    )
+    load_offers_similars_counters_mock = mocker.patch(
+        f'{PATH}_load_offers_similars_counters',
         return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
     )
 
@@ -141,6 +148,7 @@ async def test_load_enrich_data__active_tab(mocker):
     load_views_counts_mock.assert_called_once_with([11])
     load_searches_counts_mock.assert_called_once_with([11])
     load_favorites_counts_mock.assert_called_once_with([11])
+    load_offers_similars_counters_mock.assert_called_once_with(offer_ids=[11], is_test=False)
 
 
 @pytest.mark.gen_test
@@ -788,7 +796,7 @@ async def test__load_views_counts(mocker):
     date_to = datetime(2020, 4, 20, tzinfo=pytz.utc)
     date_from = datetime(2020, 4, 10, tzinfo=pytz.utc)
 
-    get_offers_payed_till_mock = mocker.patch(
+    get_views_counts_mock = mocker.patch(
         f'{PATH}get_views_counts_degradation_handler',
         return_value=future(DegradationResult(value={1: 1, 2: 2, 3: 3}, degraded=False))
     )
@@ -802,7 +810,7 @@ async def test__load_views_counts(mocker):
 
     # assert
     assert result == expected
-    get_offers_payed_till_mock.assert_called_once_with(
+    get_views_counts_mock.assert_called_once_with(
         offer_ids=offer_ids,
         date_from=date_from,
         date_to=date_to
@@ -815,7 +823,7 @@ async def test__load_searches_counts(mocker):
     date_to = datetime(2020, 4, 20, tzinfo=pytz.utc)
     date_from = datetime(2020, 4, 10, tzinfo=pytz.utc)
 
-    get_offers_payed_till_mock = mocker.patch(
+    get_searches_counts_mock = mocker.patch(
         f'{PATH}get_searches_counts_degradation_handler',
         return_value=future(DegradationResult(value={1: 1, 2: 2, 3: 3}, degraded=False))
     )
@@ -829,7 +837,7 @@ async def test__load_searches_counts(mocker):
 
     # assert
     assert result == expected
-    get_offers_payed_till_mock.assert_called_once_with(
+    get_searches_counts_mock.assert_called_once_with(
         offer_ids=offer_ids,
         date_from=date_from,
         date_to=date_to
@@ -840,7 +848,7 @@ async def test__load_favorites_counts(mocker):
     # arrange
     offer_ids = [1, 2, 3]
 
-    get_offers_payed_till_mock = mocker.patch(
+    get_favorites_counts_mock = mocker.patch(
         f'{PATH}get_favorites_counts_degradation_handler',
         return_value=future(DegradationResult(value={1: 1, 2: 2, 3: 3}, degraded=False))
     )
@@ -853,6 +861,53 @@ async def test__load_favorites_counts(mocker):
 
     # assert
     assert result == expected
-    get_offers_payed_till_mock.assert_called_once_with(
+    get_favorites_counts_mock.assert_called_once_with(
         offer_ids=offer_ids,
+    )
+
+
+async def test__load_offers_similars_counters__offers_ids_is_empty(mocker):
+    # arrange
+    offer_ids = []
+    expected = EnrichItem(key='offers_similars_counts', degraded=False, value={})
+
+    get_similars_counters_by_offer_ids_mock = mocker.patch(
+        f'{PATH}get_similars_counters_by_offer_ids_degradation_handler',
+    )
+
+    # act
+    result = await _load_offers_similars_counters(
+        offer_ids=offer_ids,
+        is_test=True
+    )
+
+    # assert
+    assert result == expected
+    get_similars_counters_by_offer_ids_mock.assert_not_called()
+
+
+async def test__load_offers_similars_counters__degraded(mocker):
+    # arrange
+    offer_ids = [1, 2, 3]
+    expected = EnrichItem(key='offers_similars_counts', degraded=True, value={})
+
+    get_similars_counters_by_offer_ids_mock = mocker.patch(
+        f'{PATH}get_similars_counters_by_offer_ids_degradation_handler',
+        return_value=future(DegradationResult(value={}, degraded=True))
+    )
+
+    # act
+    result = await _load_offers_similars_counters(
+        offer_ids=offer_ids,
+        is_test=True
+    )
+
+    # assert
+    assert result == expected
+    get_similars_counters_by_offer_ids_mock.assert_called_once_with(
+        offer_ids=offer_ids,
+        price_kf=settings.SIMILAR_PRICE_KF,
+        room_delta=settings.SIMILAR_ROOM_DELTA,
+        suffix='test',
+        tab_type=DuplicateTabType.all
     )

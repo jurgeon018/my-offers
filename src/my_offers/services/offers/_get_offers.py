@@ -7,6 +7,7 @@ from simple_settings import settings
 from my_offers.entities import get_offers
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.mappers.get_offers_request import get_offers_filters_mapper
+from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql import get_object_models, get_offers_offence
 from my_offers.repositories.postgresql.agents import get_agent_names, get_master_user_id, is_master_agent
 from my_offers.repositories.postgresql.billing import get_offers_payed_till
@@ -73,6 +74,12 @@ get_offers_update_at_degradation_handler = get_degradation_handler(
 get_offers_payed_till_degradation_handler = get_degradation_handler(
     func=get_offers_payed_till,
     key='psql.get_offers_payed_till',
+    default=dict(),
+)
+
+get_similars_counters_by_offer_ids_degradation_handler = get_degradation_handler(
+    func=postgresql.get_similars_counters_by_offer_ids,
+    key='psql.get_similars_counters_by_offer_ids',
     default=dict(),
 )
 

@@ -140,8 +140,10 @@ class OfferAction:
         raise NotImplementedError
 
     async def _check_rights(self, object_model: ObjectModel) -> None:
-        is_master_agent = (await is_master_agent_degradation_handler(self.user_id)).value
-        agency_settings = await agencies_settings.get_settings_degradation_handler(self.user_id)
+        agency_settings, is_master_agent = await asyncio.gather(
+            agencies_settings.get_settings_degradation_handler(self.user_id),
+            is_master_agent_degradation_handler(self.user_id)
+        )
         available_actions = helpers.get_available_actions(
             status=object_model.status,
             is_archived=helpers.is_archived(object_model.flags),
@@ -149,7 +151,7 @@ class OfferAction:
             can_update_edit_date=True,
             agency_settings=agency_settings.value,
             is_in_hidden_base=object_model.is_in_hidden_base,
-            is_master_agent=is_master_agent
+            is_master_agent=is_master_agent.value
         )
 
         if not getattr(available_actions, self._get_action_code()):

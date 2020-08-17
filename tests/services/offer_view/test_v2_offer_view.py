@@ -12,7 +12,6 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 @pytest.fixture(name='enrich_data_mock')
 def enrich_data_fixture():
     return EnrichData(
-
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -51,7 +50,8 @@ def test_build_offer_view(enrich_data_mock):
             can_move_to_archive=True,
             can_delete=True,
             can_raise=True,
-            can_change_publisher=True
+            can_change_publisher=True,
+            can_view_similar_offers=True
         ),
         page_specific_info=PageSpecificInfo(
             active_info=ActiveInfo(

@@ -3,7 +3,7 @@ from pathlib import Path
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
 
-async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock):
+async def test_v1_get_offer_valuation__200(http, pg, price_estimator_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
@@ -36,7 +36,7 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
 
     # act
 
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-valuation/',
         json={'offerId': 153126220},
@@ -80,7 +80,7 @@ async def test_v1_get_offer_valuation__200(http_client, pg, price_estimator_mock
     }
 
 
-async def test_v1_get_offer_valuation__price_estimator_none_response__error(http_client, pg, price_estimator_mock):
+async def test_v1_get_offer_valuation__price_estimator_none_response__error(http, pg, price_estimator_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
@@ -97,7 +97,7 @@ async def test_v1_get_offer_valuation__price_estimator_none_response__error(http
     )
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-valuation/',
         json={'offerId': 153126220},
@@ -118,7 +118,7 @@ async def test_v1_get_offer_valuation__price_estimator_none_response__error(http
     }
 
 
-async def test_v1_get_offer_valuation__price_estimator_500__error(http_client, pg, price_estimator_mock):
+async def test_v1_get_offer_valuation__price_estimator_500__error(http, pg, price_estimator_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
@@ -131,7 +131,7 @@ async def test_v1_get_offer_valuation__price_estimator_500__error(http_client, p
     )
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-valuation/',
         json={'offerId': 153126220},
@@ -152,12 +152,12 @@ async def test_v1_get_offer_valuation__price_estimator_500__error(http_client, p
     }
 
 
-async def test_v1_get_offer_valuation__error_wrong_offer_category(http_client, pg):
+async def test_v1_get_offer_valuation__error_wrong_offer_category(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-valuation/',
         json={'offerId': 165197457},
@@ -178,7 +178,7 @@ async def test_v1_get_offer_valuation__error_wrong_offer_category(http_client, p
     }
 
 
-async def test_v1_get_offer_valuation__usd__200(http_client, pg, price_estimator_mock, monolith_cian_realty_mock):
+async def test_v1_get_offer_valuation__usd__200(http, pg, price_estimator_mock, monolith_cian_realty_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation_usd.sql')
 
@@ -229,7 +229,7 @@ async def test_v1_get_offer_valuation__usd__200(http_client, pg, price_estimator
 
     # act
 
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-valuation/',
         json={'offerId': 153126220},
@@ -273,12 +273,12 @@ async def test_v1_get_offer_valuation__usd__200(http_client, pg, price_estimator
     }
 
 
-async def test_v1_get_offer_valuation__null_price__error(http_client, pg):
+async def test_v1_get_offer_valuation__null_price__error(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation_null_price.sql')
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-valuation/',
         json={'offerId': 153126220},
@@ -299,12 +299,12 @@ async def test_v1_get_offer_valuation__null_price__error(http_client, pg):
     }
 
 
-async def test_v1_get_offer_valuation__no_geo_in_object_model__error(http_client, pg, price_estimator_mock):
+async def test_v1_get_offer_valuation__no_geo_in_object_model__error(http, pg, price_estimator_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_valuation.sql')
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-valuation/',
         json={'offerId': 161953060},

@@ -106,12 +106,16 @@ class ActiveInfo:
     """ Флаг 'из пакета'"""
     is_publication_time_ends: bool
     """ Флаг 'меньше суток до конца публикации'"""
-    publish_features: Optional[List[str]]
+    publish_features: Optional[List[str]] = None
     """Параметры публикации: сколько осталось"""
     auction: Optional[Auction] = None
     """Данные об аукционе по объявлению"""
     payed_till: Optional[datetime] = None
     """Дата, до которой оплачено размещение"""
+    duplicates_count: Optional[int] = None
+    """Количество дублей по объявлению"""
+    same_building_count: Optional[int] = None
+    """Количество 'в этом доме' по объявлению"""
 
 
 @dataclass

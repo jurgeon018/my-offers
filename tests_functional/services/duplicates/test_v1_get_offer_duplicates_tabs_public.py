@@ -1,12 +1,12 @@
 from pathlib import Path
 
 
-async def test_v2_get_offer_tabs_public__duplicates_not_found__200(http_client, pg):
+async def test_v2_get_offer_tabs_public__duplicates_not_found__200(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-duplicates-tabs/',
         json={'offerId': 231655140},
@@ -17,12 +17,12 @@ async def test_v2_get_offer_tabs_public__duplicates_not_found__200(http_client, 
     assert response.data == {'tabs': []}
 
 
-async def test_v2_get_offer_tab_public__not_validate_offer__200(http_client, pg):
+async def test_v2_get_offer_tab_public__not_validate_offer__200(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-duplicates-tabs/',
         json={'offerId': 209194477},
@@ -33,9 +33,9 @@ async def test_v2_get_offer_tab_public__not_validate_offer__200(http_client, pg)
     assert response.data == {'tabs': []}
 
 
-async def test_v2_get_offers_tabs_public__offer_not_found__400(http_client):
+async def test_v2_get_offers_tabs_public__offer_not_found__400(http):
     # act
-    response = await http_client.request(
+    response = await http.request(
         'POST',
         '/public/v1/get-offer-duplicates-tabs/',
         json={'offerId': 165491301},

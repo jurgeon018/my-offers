@@ -44,7 +44,12 @@ def test_get_active_info(mocker):
     )
 
     # act
-    result = get_active_info(publish_terms=publish_terms, payed_till=None)
+    result = get_active_info(
+        publish_terms=publish_terms,
+        payed_till=None,
+        duplicates_count=None,
+        same_building_count=None
+    )
 
     # assert
     assert result == expected
@@ -74,7 +79,12 @@ def test_get_active_info__is_publication_time_ends(mocker, autoprolong, publish_
 
     # act
     with freeze_time(now_date):
-        result = get_active_info(publish_terms=publish_terms, payed_till=payed_till)
+        result = get_active_info(
+            publish_terms=publish_terms,
+            payed_till=payed_till,
+            duplicates_count=None,
+            same_building_count=None
+        )
 
     # assert
     assert result == expected
