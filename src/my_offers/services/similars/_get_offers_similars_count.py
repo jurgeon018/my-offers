@@ -35,6 +35,6 @@ async def v1_get_offers_similars_count(
 def _map_counter(counter: entities.OfferSimilarCounter) -> entities.OfferDuplicatesCount:
     return entities.OfferDuplicatesCount(
         offer_id=counter.offer_id,
-        competitors_count=counter.same_building_count + counter.similar_count,
+        competitors_count=counter.total_count,
         duplicates_count=counter.duplicates_count,
     )

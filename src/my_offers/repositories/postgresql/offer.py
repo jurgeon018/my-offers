@@ -62,9 +62,7 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
                 'row_version': insert_query.excluded.row_version,
                 'is_test': insert_query.excluded.is_test,
                 'updated_at': insert_query.excluded.updated_at,
-                'district_id': insert_query.excluded.district_id,
-                'house_id': insert_query.excluded.house_id,
-                'event_date': event_date,
+                'event_date': insert_query.excluded.event_date,
             }
         )
     )
