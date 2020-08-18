@@ -265,7 +265,7 @@ def _prepare_tab_condition(
         """
     elif tab_type.is_similar:
         tab_condition = f"""
-            (os.group_id <> offer.group_id or os.group_id is null)
+            (os.group_id <> offer.group_id or offer.group_id is null)
             and (os.house_id <> offer.house_id or offer.house_id is null)
             and os.district_id = offer.district_id
             and os.price >= offer.price * (1 - {price_kf})
