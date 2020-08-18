@@ -193,7 +193,9 @@ async def get_similars_counters_by_offer_ids(
        offer.offer_id,
        count(*) as total_count,
        sum(case when os.group_id = offer.group_id then 1 else 0 end) as duplicate_count,
-       sum(case when os.group_id <> offer.group_id and os.house_id = offer.house_id then 1 else 0 end) as house_count
+       sum(
+        case when (os.group_id <> offer.group_id or offer.group_id is null) and os.house_id = offer.house_id
+        then 1 else 0 end) as house_count
     from
       offer,
       {table} os
