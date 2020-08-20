@@ -1,8 +1,10 @@
 import asyncio
+from typing import Optional, Tuple
 
 from simple_settings import settings
 
 from my_offers import entities, enums
+from my_offers.entities import get_offers
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories import postgresql
 from my_offers.services import auctions, offer_view
@@ -15,7 +17,11 @@ async def v1_get_offer_similars_desktop_public(
         realty_user_id: int
 ) -> entities.GetOfferDuplicatesDesktopResponse:
     """ Получить список объявлиний типа 'дубли', 'похожие', 'в этом доме' для конрентного объявления. """
-    limit, offset = get_pagination(request.pagination)
+    max_count = settings.MAX_SIMILAR_FOR_DESKTOP
+    limit, offset = _get_pagination(pagination=request.pagination, max_count=max_count)
+    if offset >= max_count:
+        return _get_empty_response(limit, offset)
+
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
 
     if not is_offer_for_similar(status=object_model.status, category=object_model.category):
@@ -58,7 +64,7 @@ async def v1_get_offer_similars_desktop_public(
 
     return entities.GetOfferDuplicatesDesktopResponse(
         offers=offers,
-        page=get_page_info(limit=limit, offset=offset, total=counter.total_count),
+        page=get_page_info(limit=limit, offset=offset, total=min(counter.total_count, max_count)),
     )
 
 
@@ -67,3 +73,12 @@ def _get_empty_response(limit, offset) -> entities.GetOfferDuplicatesDesktopResp
         offers=[],
         page=get_page_info(limit=limit, offset=offset, total=0),
     )
+
+
+def _get_pagination(*, pagination: Optional[get_offers.Pagination], max_count: int) -> Tuple[int, int]:
+    limit, offset = get_pagination(pagination)
+
+    if limit + offset >= max_count:
+        limit = max_count - offset
+
+    return limit, offset

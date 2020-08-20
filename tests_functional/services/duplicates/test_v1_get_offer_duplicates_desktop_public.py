@@ -195,3 +195,19 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates__not_
 
     # assert
     assert response.data == {'offers': [], 'page': {'canLoadMore': False, 'count': 0, 'pageCount': 0}}
+
+
+async def test_v1_get_offer_duplicates_desktop_public__offset_to_high__empty(http, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-offers-duplicates-for-desktop/',
+        json={'offerId': 231655140, 'pagination': {'offset': 200}},
+        headers={'X-Real-UserId': 47135244},
+    )
+
+    # assert
+    assert response.data == {'offers': [], 'page': {'canLoadMore': False, 'count': 0, 'pageCount': 0}}
