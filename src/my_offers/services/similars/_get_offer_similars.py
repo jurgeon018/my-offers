@@ -65,7 +65,7 @@ async def v1_get_offer_similars_public(
             same_building_count=counter.same_building_count,
             similar_count=counter.similar_count,
         ),
-        page=get_page_info(limit=limit, offset=offset, total=counter.total_count),
+        page=get_page_info(limit=limit, offset=offset, total=_get_total_count(tab_type=tab_type, counter=counter)),
     )
 
 
@@ -75,3 +75,14 @@ def _get_empty_response(limit: int, offset: int) -> entities.GetOfferDuplicatesR
         tabs=[],
         page=get_page_info(limit=limit, offset=offset, total=0),
     )
+
+
+def _get_total_count(*, tab_type: enums.DuplicateTabType, counter: entities.OfferSimilarCounter) -> int:
+    if tab_type.is_duplicate:
+        return counter.duplicates_count
+    if tab_type.is_same_building:
+        return counter.same_building_count
+    if tab_type.is_similar:
+        return counter.similar_count
+
+    return counter.total_count
