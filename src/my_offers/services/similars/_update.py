@@ -1,5 +1,6 @@
-from my_offers import entities
+from my_offers import entities, enums
 from my_offers.helpers.category import get_types
+from my_offers.helpers.fields import get_sort_date
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import offers_similars
@@ -41,6 +42,6 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
                 rooms_for_sale_count=object_model.rooms_for_sale_count,
                 flat_type=object_model.flat_type,
             ),
-            sort_date=object_model.edit_date if object_model.edit_date else object_model.creation_date,
+            sort_date=get_sort_date(object_model=object_model, status_tab=enums.OfferStatusTab.active),
         )
     )
