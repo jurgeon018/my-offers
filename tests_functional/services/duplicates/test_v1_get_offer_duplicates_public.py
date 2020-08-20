@@ -157,6 +157,30 @@ async def test_v2_get_offers_public__whithout_type_parameter(http, pg, auction_m
     assert len(response.data['offers']) == 1
 
 
+async def test_v2_get_offers_public__simimar_tab__result(http, pg, auction_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, district_id, price, rooms_count) '
+        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140, 100, 2)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, district_id, price, rooms_count) '
+        'VALUES(173975523, \'sale\', \'2020-08-10\', 231655140, 100, 2)'
+    )
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-offer-duplicates/',
+        json={'offerId': 231655140, 'type': 'similar'},
+        headers={'X-Real-UserId': 47135244},
+    )
+
+    # assert
+    assert len(response.data['offers']) == 1
+
+
 async def test_v2_get_offers_public__same_building_offers_not_found__200(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_same_building.sql')

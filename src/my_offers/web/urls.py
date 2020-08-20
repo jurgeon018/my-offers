@@ -6,7 +6,7 @@ from tornado.web import url
 from my_offers import entities
 from my_offers.entities.get_offers import GetOfferV2
 from my_offers.entities.qa import QaGetByIdRequest
-from my_offers.services import actions, offers, qa, similars, valuation
+from my_offers.services import actions, offers, qa, similars, subscribe, valuation
 from my_offers.web.handlers import PublicHandler
 
 
@@ -98,6 +98,16 @@ urlpatterns = base_urls.urlpatterns + [
             method='POST',  # pragma: no mutate
             request_schema=entities.UpdateOfferRequest,
             base_handler_cls=RequestContextHandler,
+        )
+    ),
+    url(
+        r'/public/v1/subscribe-on-duplicates/$',
+        get_handler(
+            service=subscribe.subscribe_on_duplicates,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.SubscribeOnDuplicatesRequest,
+            response_schema=entities.SubscribeOnDuplicatesResponse,
+            base_handler_cls=PublicHandler,
         )
     ),
 
