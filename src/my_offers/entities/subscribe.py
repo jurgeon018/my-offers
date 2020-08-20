@@ -6,8 +6,6 @@ from typing import Optional
 class SubscribeOnDuplicatesRequest:
     email: str
     """Емайл пользователя"""
-    offer_id: int
-    """ID объявления"""
     send_mobile_push: Optional[bool] = None
     """Разрешить слать мобильные пуши виесте с подпиской на емайл"""
 
