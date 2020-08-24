@@ -40,31 +40,6 @@ async def test_reindex_offers_command(mocker):
             ReindexOffer(offer_id=12, updated_at=datetime(2020, 3, 11), raw_data='{"offerId": 12}'),
         ])
     )
-
-    offer = Offer(
-        offer_id=165456885,
-        master_user_id=15062425,
-        user_id=15062425,
-        deal_type=enums.DealType.rent,
-        offer_type=enums.OfferType.flat,
-        status_tab=enums.OfferStatusTab.active,
-        search_text='165456885 zzzzzzzzz выапывапвыапыпыпвыапывапывапыап 9994606004 9982276978 '
-                    'Россия, Ростов-на-Дону, Большая Садовая улица, 73',
-        row_version=222,
-        raw_data={'offerId': 11},
-        services=[enums.OfferServices.premium, enums.OfferServices.premium_highlight],
-        is_manual=True,
-        is_in_hidden_base=False,
-        has_photo=False,
-        is_test=True,
-        price=12332.0,
-        price_per_meter=100.26,
-        total_area=123.0,
-        walking_time=None,
-        street_name='Большая Садовая',
-        sort_date=TIMEZONE.localize(datetime(2020, 2, 7, 16, 25, 37, 99015)),
-    )
-
     delete_reindex_items_mock = mocker.patch(
         f'{PATH}delete_reindex_items',
         return_value=future()

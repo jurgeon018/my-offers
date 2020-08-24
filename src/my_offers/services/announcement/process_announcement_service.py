@@ -26,6 +26,7 @@ async def process_announcement(object_model: ObjectModel, event_date: datetime) 
 
 
 class AnnouncementProcessor:
+
     async def process(self, object_model: ObjectModel):
         master_user_id = await self._get_master_user_id(offer_id=object_model.id, user_id=object_model.user_id)
         offer = self._prepare_offer(object_model=object_model, master_user_id=master_user_id)
@@ -47,6 +48,7 @@ class AnnouncementProcessor:
         geo = object_model.geo
         offer = entities.Offer(
             offer_id=object_model.id,
+            cian_offer_id=object_model.cian_id,  # если есть `id`, то обязательно должен присутвовать `cian_id` (Читаев)
             master_user_id=master_user_id,
             user_id=object_model.published_user_id,
             deal_type=deal_type,
@@ -85,6 +87,7 @@ class AnnouncementProcessor:
 
 
 class MainAnnouncementProcessor(AnnouncementProcessor):
+
     def __init__(self, event_date: datetime) -> None:
         self._event_date = event_date
 
@@ -96,5 +99,6 @@ class MainAnnouncementProcessor(AnnouncementProcessor):
 
 
 class ForceAnnouncementProcessor(AnnouncementProcessor):
+
     async def _save_offer(self, offer: entities.Offer) -> None:
         await postgresql.update_offer(offer)

@@ -28,6 +28,7 @@ offers = sa.Table(
     'offers',
     metadata,
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
+    sa.Column('cian_offer_id', sa.BIGINT, nullable=True),
     sa.Column('master_user_id', sa.BIGINT, nullable=False),
     sa.Column('user_id', sa.BIGINT, nullable=False),
     sa.Column('deal_type', deal_type, nullable=False),

@@ -18,6 +18,7 @@ from my_offers.repositories.postgresql.offer import get_offer_by_id, get_offers_
             {'id': 1, 'raw_data': '{"zz": "yy"}'},
             Offer(
                 offer_id=1111,
+                cian_offer_id=1111,
                 master_user_id=2222,
                 user_id=3333,
                 deal_type=enums.DealType.rent,
