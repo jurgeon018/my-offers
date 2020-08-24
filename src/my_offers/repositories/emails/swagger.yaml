@@ -1,0 +1,62 @@
+definitions:
+  WebApi.Models.SendEmailByEmailRequest:
+    description: Модель запроса на отправку письма
+    properties:
+      addressList:
+        description: Список Email-адресов, которым необходимо отправить это письмо
+        items: {type: string}
+        type: array
+      parameters: {description: Параметры письма в Json в формате строки, type: string}
+      templateName: {description: 'Название шаблона письма, который необходимо отправить',
+        type: string}
+      transactionId: {description: Идентификатор транзакции, type: string}
+    required: [addressList, templateName]
+    type: object
+  WebApi.Models.SendEmailByEmailResponse:
+    description: Ответ Апи на отправку письма по Email
+    properties:
+      items:
+        description: Список статусов отправленных писем Email-Статус
+        items: {$ref: '#/definitions/WebApi.Models.SendEmailByEmailResponseItem'}
+        type: array
+      status:
+        description: Статус сообщения
+        enum: [success, userNotFound, alreadySent]
+        type: string
+        x-alreadySent: Сообщение было отправлено
+        x-success: Сообщение отправлено
+        x-userNotFound: Не нашли пользователя
+    type: object
+  WebApi.Models.SendEmailByEmailResponseItem:
+    description: Элемент списка отправки письма по Email
+    properties:
+      email: {description: Email пользователя - получателя письма, type: string}
+      status:
+        description: Статус отправки письма
+        enum: [success, userNotFound, alreadySent]
+        type: string
+        x-alreadySent: Сообщение было отправлено
+        x-success: Сообщение отправлено
+        x-userNotFound: Не нашли пользователя
+    type: object
+host: master.emails.dev3.cian.ru
+info: {title: emails, version: v1}
+paths:
+  /emails/v2/send-email/:
+    post:
+      consumes: [application/json, text/json, application/x-www-form-urlencoded]
+      operationId: MailingsWebApi_SendEmailV2Async
+      parameters:
+      - in: body
+        name: request
+        required: true
+        schema: {$ref: '#/definitions/WebApi.Models.SendEmailByEmailRequest'}
+      produces: [application/json, text/json]
+      responses:
+        '200':
+          description: OK
+          schema: {$ref: '#/definitions/WebApi.Models.SendEmailByEmailResponse'}
+      summary: Ставит письмо в очередь на отправку (v2)
+      tags: [MailingsWebApi]
+schemes: [http]
+swagger: '2.0'

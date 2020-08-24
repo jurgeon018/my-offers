@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.helpers.title import _get_floors, get_title
+from my_offers.helpers.title import _get_floors, get_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Land, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
@@ -77,7 +77,7 @@ def test__get_floors(floor_number, floors_count, expected):
 )
 def test_get_title(object_model, expected):
     # arrange & act
-    result = get_title(object_model)
+    result = get_offer_title(object_model)
 
     # assert
     assert result == expected

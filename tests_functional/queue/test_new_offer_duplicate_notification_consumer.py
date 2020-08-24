@@ -1,5 +1,6 @@
 import asyncio
 import json
+import uuid
 from pathlib import Path
 
 from cian_functional_test_utils.pytest_plugin import MockResponse
@@ -233,3 +234,160 @@ async def test_new_offer_duplicate_notification_consumer__offer_not_found(queue_
 
     # assert
     assert not await notification_center_stub.get_requests()
+
+
+async def test_new_offer_duplicate_notification_consumer__email_push(
+        queue_service,
+        pg,
+        kafka_service,
+        notification_center_mock,
+        emails_mock
+):
+    # arrange
+    user_id = 6808488
+    email = 'kek@example.com'
+    subscription_id = str(uuid.uuid1())
+
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
+    await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
+    await pg.execute(
+        'INSERT INTO offers_duplicate_email_notification (user_id, subscription_id, email) VALUES($1, $2, $3)',
+        [user_id, subscription_id, email]
+    )
+    await pg.execute(
+        'INSERT INTO offers_email_notification_settings (user_id, is_enabled) VALUES($1, $2)',
+        [user_id, True]
+    )
+    await notification_center_mock.add_stub(
+        method='POST',
+        path='/v1/mobile-push/get-settings/',
+        response=MockResponse(
+            body={'items': []}
+        ),
+    )
+    await emails_mock.add_stub(
+        method='POST',
+        path='/emails/v2/send-email/',
+        response=MockResponse(
+            body={
+                'items': [],
+                'status': 'success'
+            }
+        ),
+    )
+
+    message = {
+        'duplicateOfferId': 231655140,
+        'date': '2020-05-27T15:07:35.005788+00:00',
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
+    }
+
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
+
+    # act
+    await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
+    await asyncio.sleep(1)
+    messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
+
+    # assert
+    assert len(messages) == 1
+    payload = json.loads(messages[0].payload)
+    payload.pop('timestamp', None)
+    assert payload == {
+        'similarObjectPrice': 1350000,
+        'similarObjectId': 231655140,
+        'userId': 6808488,
+        'eventType': 'pushOfferDuplicate',
+        'objectId': 173975523,
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005',
+        'regionId': 4592,
+    }
+
+
+async def test_new_offer_duplicate_notification_consumer__send_all_notifications(
+        queue_service,
+        pg,
+        kafka_service,
+        notification_center_mock,
+        emails_mock
+):
+    """ Проверяем отсылку нескольких типов уведомлений для одного пользователя """
+    # arrange
+    user_id = 6808488
+    email = 'kek@example.com'
+    subscription_id = str(uuid.uuid1())
+
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
+    await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
+    await pg.execute(
+        'INSERT INTO offers_duplicate_email_notification (user_id, subscription_id, email) VALUES($1, $2, $3)',
+        [user_id, subscription_id, email]
+    )
+    await pg.execute(
+        'INSERT INTO offers_email_notification_settings (user_id, is_enabled) VALUES($1, $2)',
+        [user_id, True]
+    )
+    await notification_center_mock.add_stub(
+        method='POST',
+        path='/v1/mobile-push/get-settings/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'children': [
+                            {'description': '',
+                             'id': 'OfferNewDuplicateFoundNotifications',
+                             'isActive': True,
+                             'title': 'Новые дубли по объектам'}
+                        ],
+                        'id': 'OfferDuplicatesGroup',
+                        'title': 'Дубли по вашим объектам'
+                    }
+                ]
+            }
+        ),
+    )
+    await notification_center_mock.add_stub(
+        method='POST',
+        path='/v2/register-notifications/',
+        response=MockResponse(),
+    )
+    await emails_mock.add_stub(
+        method='POST',
+        path='/emails/v2/send-email/',
+        response=MockResponse(
+            body={
+                'items': [],
+                'status': 'success'
+            }
+        ),
+    )
+
+    message = {
+        'duplicateOfferId': 231655140,
+        'date': '2020-05-27T15:07:35.005788+00:00',
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
+    }
+
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
+
+    # act
+    await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
+    await asyncio.sleep(2)
+    messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
+
+    # assert
+    assert len(messages) == 2
+    payload = json.loads(messages[0].payload)
+    payload.pop('timestamp', None)
+    assert payload == {
+        'similarObjectPrice': 1350000,
+        'similarObjectId': 231655140,
+        'userId': 6808488,
+        'eventType': 'pushOfferDuplicate',
+        'objectId': 173975523,
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005',
+        'regionId': 4592,
+    }

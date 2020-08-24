@@ -4,7 +4,7 @@ from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url, get_price_info, get_sort_date, is_archived, is_manual
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.helpers.status_tab import get_status_tab
-from my_offers.helpers.title import get_title
+from my_offers.helpers.title import get_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view.fields import get_features, get_offer_url, get_status, prepare_geo
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
@@ -53,7 +53,7 @@ def v2_build_offer_view(
     return get_offers.GetOfferV2(
         id=offer_id,
         display_date=display_date,
-        title=get_title(object_model),
+        title=get_offer_title(object_model),
         main_photo_url=main_photo_url,
         url=get_offer_url(offer_id=offer_id, offer_type=offer_type, deal_type=deal_type),
         geo=prepare_geo(geo=object_model.geo, geo_urls=geo_urls, jk_urls=enrich_data.jk_urls),
