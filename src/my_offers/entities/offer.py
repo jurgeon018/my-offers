@@ -12,7 +12,7 @@ class Offer:
     master_user_id: int
     """Id мастер агента"""
     cian_offer_id: int
-    """Cian Id объявленияю. Отличатеся от realty id для старых объядвений."""
+    """Cian Id объявленияю. Отличатеся от realty id для старых объявлений."""
     # поля для фильтров
     user_id: int
     """Id агента"""
