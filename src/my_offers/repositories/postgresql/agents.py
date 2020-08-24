@@ -45,10 +45,10 @@ async def get_master_user_id(user_id: int) -> Optional[int]:
 
 
 async def is_master_agent(user_id: int) -> bool:
-    query = 'SELECT 1 as result FROM agents_hierarchy WHERE realty_user_id = $1 AND account_type = $2'
+    """ Является ли пользователь мастер-агентом. """
+    query = 'SELECT EXISTS(SELECT 1 FROM agents_hierarchy WHERE master_agent_user_id = $1) as result'
     params = [
         user_id,
-        AgentAccountType.agency.value
     ]
 
     row = await pg.get().fetchrow(query, *params)
