@@ -46,7 +46,7 @@ async def get_master_user_id(user_id: int) -> Optional[int]:
 
 async def is_master_agent(user_id: int) -> bool:
     """ Является ли пользователь мастер-агентом. """
-    query = 'SELECT EXISTS(SELECT 1 FROM agents_hierarchy WHERE master_agent_user_id = $1) as result'
+    query = 'SELECT 1 as result FROM agents_hierarchy WHERE master_agent_user_id = $1 LIMIT 1'
     params = [
         user_id,
     ]
