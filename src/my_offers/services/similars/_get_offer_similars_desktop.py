@@ -17,7 +17,7 @@ async def v1_get_offer_similars_desktop_public(
         realty_user_id: int
 ) -> entities.GetOfferDuplicatesDesktopResponse:
     """ Получить список объявлиний типа 'дубли', 'похожие', 'в этом доме' для конрентного объявления. """
-    max_count = settings.MAX_SIMILAR_FOR_DESKTOP
+    max_count = settings.MAX_SIMILAR_FOR_DESKTOP if settings.MAX_SIMILAR_FOR_DESKTOP > 0 else 100
     limit, offset = _get_pagination(pagination=request.pagination, max_count=max_count)
     if offset >= max_count:
         return _get_empty_response(limit, offset)
