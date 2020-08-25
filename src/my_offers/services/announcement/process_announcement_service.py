@@ -48,7 +48,6 @@ class AnnouncementProcessor:
         geo = object_model.geo
         offer = entities.Offer(
             offer_id=object_model.id,
-            cian_offer_id=object_model.cian_id,  # если есть `id`, то обязательно должен присутвовать `cian_id` (Читаев)
             master_user_id=master_user_id,
             user_id=object_model.published_user_id,
             deal_type=deal_type,

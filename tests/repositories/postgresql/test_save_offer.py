@@ -18,7 +18,6 @@ async def test_save_offer(mocker):
     event_date = datetime(2020, 6, 1)
     offer = Offer(
         offer_id=1111,
-        cian_offer_id=1111,
         master_user_id=2222,
         user_id=3333,
         deal_type=enums.DealType.rent,
@@ -44,24 +43,20 @@ async def test_save_offer(mocker):
     await postgresql.save_offer(offer=offer, event_date=event_date)
 
     # assert
-
     pg.get().execute.assert_called_once_with(
-        'INSERT INTO offers (offer_id, cian_offer_id, master_user_id, user_id, deal_type, offer_type, status_tab, '
-        'services, search_text, is_manual, is_in_hidden_base, has_photo, row_version, raw_data, created_at, '
-        'updated_at, event_date, total_area, price, price_per_meter, walking_time, street_name, sort_date, is_test) '
-        'VALUES ($10, $1, $9, $24, $3, $11, $20, CAST($18 AS offer_service[]), $17, $7, $6, $5, $16, $14, $2, $23, $4, '
-        '$22, $12, $13, $25, $21, $19, $8) '
-        'ON CONFLICT (offer_id) '
-        'DO UPDATE SET master_user_id = excluded.master_user_id, user_id = excluded.user_id, '
-        'deal_type = excluded.deal_type, offer_type = excluded.offer_type, status_tab = excluded.status_tab, '
-        'services = excluded.services, search_text = excluded.search_text, is_manual = excluded.is_manual, '
-        'is_in_hidden_base = excluded.is_in_hidden_base, has_photo = excluded.has_photo, '
-        'row_version = excluded.row_version, raw_data = excluded.raw_data, updated_at = excluded.updated_at, '
-        'event_date = excluded.event_date, total_area = excluded.total_area, price = excluded.price, '
-        'price_per_meter = excluded.price_per_meter, walking_time = excluded.walking_time, '
+        'INSERT INTO offers (offer_id, master_user_id, user_id, deal_type, offer_type, status_tab, services, '
+        'search_text, is_manual, is_in_hidden_base, has_photo, row_version, raw_data, created_at, updated_at, '
+        'event_date, total_area, price, price_per_meter, walking_time, street_name, sort_date, is_test) '
+        'VALUES ($9, $8, $23, $2, $10, $19, CAST($17 AS offer_service[]), $16, $6, $5, $4, $15, $13, $1, $22, $3, $21, '
+        '$11, $12, $24, $20, $18, $7) ON CONFLICT (offer_id) DO UPDATE SET master_user_id = excluded.master_user_id, '
+        'user_id = excluded.user_id, deal_type = excluded.deal_type, offer_type = excluded.offer_type, '
+        'status_tab = excluded.status_tab, services = excluded.services, search_text = excluded.search_text, '
+        'is_manual = excluded.is_manual, is_in_hidden_base = excluded.is_in_hidden_base, '
+        'has_photo = excluded.has_photo, row_version = excluded.row_version, raw_data = excluded.raw_data, '
+        'updated_at = excluded.updated_at, event_date = excluded.event_date, total_area = excluded.total_area, '
+        'price = excluded.price, price_per_meter = excluded.price_per_meter, walking_time = excluded.walking_time, '
         'street_name = excluded.street_name, sort_date = excluded.sort_date, is_test = excluded.is_test '
-        'WHERE offers.row_version < $15',
-        1111,
+        'WHERE offers.row_version < $14',
         FakeDatetime(2020, 2, 10, 9, 57, 30, 303690, tzinfo=pytz.UTC),
         'rent',
         FakeDatetime(2020, 6, 1, 0, 0),
@@ -85,7 +80,7 @@ async def test_save_offer(mocker):
         5000.0,
         FakeDatetime(2020, 2, 10, 9, 57, 30, 303690, tzinfo=pytz.UTC),
         3333,
-        15.0
+        15.0,
     )
 
 
@@ -96,7 +91,6 @@ async def test_save_offer_archive(mocker):
     event_date = datetime(2020, 6, 1)
     offer = Offer(
         offer_id=1111,
-        cian_offer_id=1111,
         master_user_id=2222,
         user_id=3333,
         deal_type=enums.DealType.rent,
@@ -123,21 +117,20 @@ async def test_save_offer_archive(mocker):
 
     # assert
     pg.get().execute.assert_called_once_with(
-        'INSERT INTO offers (offer_id, cian_offer_id, master_user_id, user_id, deal_type, offer_type, status_tab, '
-        'services, search_text, is_manual, is_in_hidden_base, has_photo, row_version, raw_data, created_at, '
-        'updated_at, event_date, total_area, price, price_per_meter, walking_time, street_name, sort_date, is_test) '
-        'VALUES ($11, $1, $10, $25, $3, $12, $21, CAST($19 AS offer_service[]), $18, $8, $7, $6, $17, $16, $2, $24, '
-        '$5, $23, $14, $15, $26, $22, $20, $9) '
+        'INSERT INTO offers (offer_id, master_user_id, user_id, deal_type, offer_type, status_tab, services, '
+        'search_text, is_manual, is_in_hidden_base, has_photo, row_version, raw_data, created_at, updated_at, '
+        'event_date, total_area, price, price_per_meter, walking_time, street_name, sort_date, is_test) '
+        'VALUES ($10, $9, $24, $2, $11, $20, CAST($18 AS offer_service[]), $17, $7, $6, $5, $16, $15, $1, $23, $4, '
+        '$22, $13, $14, $25, $21, $19, $8) '
         'ON CONFLICT (offer_id) '
         'DO UPDATE SET master_user_id = excluded.master_user_id, user_id = excluded.user_id, '
         'deal_type = excluded.deal_type, offer_type = excluded.offer_type, status_tab = excluded.status_tab, '
         'services = excluded.services, search_text = excluded.search_text, is_manual = excluded.is_manual, '
         'is_in_hidden_base = excluded.is_in_hidden_base, has_photo = excluded.has_photo, raw_data = excluded.raw_data, '
-        'updated_at = excluded.updated_at, event_date = $13, total_area = excluded.total_area, price = excluded.price, '
+        'updated_at = excluded.updated_at, event_date = $12, total_area = excluded.total_area, price = excluded.price, '
         'price_per_meter = excluded.price_per_meter, walking_time = excluded.walking_time, '
         'street_name = excluded.street_name, sort_date = excluded.sort_date, is_test = excluded.is_test '
-        'WHERE offers.event_date < $4',
-        1111,
+        'WHERE offers.event_date < $3',
         FakeDatetime(2020, 2, 10, 9, 57, 30, 303690, tzinfo=pytz.UTC),
         'rent',
         FakeDatetime(2020, 6, 1, 0, 0),

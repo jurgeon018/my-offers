@@ -15,7 +15,6 @@ async def test_update_offer():
     # arrange
     offer = entities.Offer(
         offer_id=1111,
-        cian_offer_id=1111,
         master_user_id=2222,
         user_id=3333,
         deal_type=enums.DealType.rent,
@@ -42,13 +41,11 @@ async def test_update_offer():
 
     # assert
     pg.get().execute.assert_called_once_with(
-        'UPDATE offers SET offer_id=$8, cian_offer_id=$1, master_user_id=$7, user_id=$23, deal_type=$2, '
-        'offer_type=$10, status_tab=$19, services=CAST($17 AS offer_service[]), search_text=$16, is_manual=$5, '
-        'is_in_hidden_base=$4, has_photo=$3, row_version=$14, raw_data=$13, updated_at=$22, total_area=$21, price=$11, '
-        'price_per_meter=$12, walking_time=$24, street_name=$20, sort_date=$18, is_test=$6 '
-        'WHERE offers.offer_id = $9 '
-        'AND offers.row_version <= $15',
-        1111,
+        'UPDATE offers SET offer_id=$7, master_user_id=$6, user_id=$22, deal_type=$1, offer_type=$9, status_tab=$18, '
+        'services=CAST($16 AS offer_service[]), search_text=$15, is_manual=$4, is_in_hidden_base=$3, has_photo=$2, '
+        'row_version=$13, raw_data=$12, updated_at=$21, total_area=$20, price=$10, price_per_meter=$11, '
+        'walking_time=$23, street_name=$19, sort_date=$17, is_test=$5 '
+        'WHERE offers.offer_id = $8 AND offers.row_version <= $14',
         'rent',
         False,
         False,
@@ -60,11 +57,8 @@ async def test_update_offer():
         'flat',
         100000.0,
         2000.0,
-        '{"offer_id": 1111}',
-        4444444,
-        4444444,
-        'zzzzzzz',
-        ['auction'],
+        '{"offer_id": 1111}', 4444444,
+        4444444, 'zzzzzzz', ['auction'],
         FakeDatetime(2020, 2, 7, 0, 0),
         'active',
         'AAAAA',

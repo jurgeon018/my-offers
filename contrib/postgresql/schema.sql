@@ -40,7 +40,6 @@ CREATE TABLE offers
 -- базовые поля
     offer_id          bigint                   not null primary key,
     master_user_id    bigint                   not null,
-    cian_offer_id     bigint,
 
 -- поля для фильтров
     user_id           bigint                   not null,
