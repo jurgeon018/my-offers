@@ -55,7 +55,7 @@ def v2_build_offer_view(
         display_date=display_date,
         title=get_title(object_model),
         main_photo_url=main_photo_url,
-        url=get_offer_url(offer_id=object_model.cian_id, offer_type=offer_type, deal_type=deal_type),
+        url=get_offer_url(cian_offer_id=object_model.cian_id, offer_type=offer_type, deal_type=deal_type),
         geo=prepare_geo(geo=object_model.geo, geo_urls=geo_urls, jk_urls=enrich_data.jk_urls),
         subagent=enrich_data.get_subagent(object_model.published_user_id),
         price_info=price_info,

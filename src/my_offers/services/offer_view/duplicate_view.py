@@ -56,7 +56,7 @@ def build_duplicate_view_desktop(
     return entities.OfferDuplicateDesktop(
         offer_id=realty_offer_id,
         url=fields.get_offer_url(
-            offer_id=object_model.cian_id,
+            cian_offer_id=object_model.cian_id,
             deal_type=deal_type,
             offer_type=offer_type
         ),
