@@ -43,28 +43,28 @@ def v2_build_offer_view(
     )
     geo_urls = enrich_data.get_urls_by_types(deal_type=deal_type, offer_type=offer_type)
 
-    offer_id = object_model.id
+    realty_offer_id = object_model.id
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
     display_date = get_sort_date(object_model=object_model, status_tab=status_tab)
     force_raise = bool(
-        enrich_data.get_duplicates_counts(offer_id)
-        or enrich_data.get_same_building_counts(offer_id)
+        enrich_data.get_duplicates_counts(realty_offer_id)
+        or enrich_data.get_same_building_counts(realty_offer_id)
     )
     return get_offers.GetOfferV2(
-        id=offer_id,
+        id=realty_offer_id,
         display_date=display_date,
         title=get_title(object_model),
         main_photo_url=main_photo_url,
-        url=get_offer_url(offer_id=offer_id, offer_type=offer_type, deal_type=deal_type),
+        url=get_offer_url(cian_offer_id=object_model.cian_id, offer_type=offer_type, deal_type=deal_type),
         geo=prepare_geo(geo=object_model.geo, geo_urls=geo_urls, jk_urls=enrich_data.jk_urls),
         subagent=enrich_data.get_subagent(object_model.published_user_id),
         price_info=price_info,
         features=features,
         is_manual=manual,
         statistics=get_statistics(
-            views=enrich_data.views_counts.get(offer_id),
-            favorites=enrich_data.favorites_counts.get(offer_id),
-            searches=enrich_data.searches_counts.get(offer_id),
+            views=enrich_data.views_counts.get(realty_offer_id),
+            favorites=enrich_data.favorites_counts.get(realty_offer_id),
+            searches=enrich_data.searches_counts.get(realty_offer_id),
         ),
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=archived),
@@ -73,7 +73,7 @@ def v2_build_offer_view(
             status=object_model.status,
             is_archived=archived,
             is_manual=manual,
-            can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
+            can_update_edit_date=enrich_data.can_update_edit_dates.get(realty_offer_id, False),
             agency_settings=enrich_data.agency_settings,
             is_in_hidden_base=object_model.is_in_hidden_base,
             is_master_agent=is_master_agent,
