@@ -20,7 +20,7 @@ HOME_PATTERN: Pattern = re.compile(r'(([двлкс]+)([\d\/]+[^кс]?))', re.IGN
 
 
 def get_search_text(object_model: ObjectModel) -> str:
-    result = [str(object_model.id)]  # ID объявления
+    result = [str(object_model.cian_id)]  # ID объявления
 
     # Номер телефона в объявлении (оригинальный): независимо от того, как ты вводишь номер телефона,
     # убираются все знаки препинания и пробелы и ищется последовательность цифр.

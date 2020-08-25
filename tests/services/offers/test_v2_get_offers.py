@@ -309,6 +309,7 @@ async def test_v2_get_offer_views(mocker):
 
     object_model = ObjectModel(
         id=111,
+        cian_id=111,
         bargain_terms=BargainTerms(price=123),
         category=Category.flat_rent,
         phones=[Phone(country_code='1', number='12312')],

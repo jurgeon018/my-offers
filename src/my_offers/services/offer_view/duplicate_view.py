@@ -18,9 +18,9 @@ def build_duplicate_view(
     offer_type, deal_type = get_types(object_model.category)
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
 
-    offer_id = object_model.id
+    realty_offer_id = object_model.id
     return entities.OfferDuplicate(
-        offer_id=offer_id,
+        offer_id=realty_offer_id,
         deal_type=deal_type,
         offer_type=offer_type,
         main_photo_url=get_main_photo_url(object_model.photos, better_quality=True),
@@ -38,7 +38,7 @@ def build_duplicate_view(
             deal_type=deal_type,
         ),
         vas=fields.get_vas(object_model.publish_terms.terms if object_model.publish_terms else None),
-        auction_bet=fields.get_auction_bet(auction_bets.get(offer_id)),
+        auction_bet=fields.get_auction_bet(auction_bets.get(realty_offer_id)),
         type=duplicate_type,
     )
 
@@ -51,12 +51,12 @@ def build_duplicate_view_desktop(
 ) -> entities.OfferDuplicateDesktop:
     offer_type, deal_type = get_types(object_model.category)
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
-    offer_id = object_model.id
+    realty_offer_id = object_model.id
 
     return entities.OfferDuplicateDesktop(
-        offer_id=offer_id,
+        offer_id=realty_offer_id,
         url=fields.get_offer_url(
-            offer_id=offer_id,
+            cian_offer_id=object_model.cian_id,
             deal_type=deal_type,
             offer_type=offer_type
         ),
@@ -75,6 +75,6 @@ def build_duplicate_view_desktop(
             deal_type=deal_type,
         ),
         vas=fields.get_vas(object_model.publish_terms.terms if object_model.publish_terms else None),
-        auction_bet=fields.get_auction_bet(auction_bets.get(offer_id)),
+        auction_bet=fields.get_auction_bet(auction_bets.get(realty_offer_id)),
         type=duplicate_type,
     )

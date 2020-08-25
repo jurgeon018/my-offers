@@ -24,6 +24,7 @@ def test_build_offer_view(enrich_data_mock):
     # arrange
     raw_offer = ObjectModel(
         id=111,
+        cian_id=111,
         status=Status.published,
         bargain_terms=BargainTerms(price=123),
         category=Category.flat_rent,
