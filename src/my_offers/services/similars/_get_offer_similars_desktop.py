@@ -50,7 +50,7 @@ async def v1_get_offer_similars_desktop_public(
     if not similars:
         return _get_empty_response(limit, offset)
 
-    object_models = await postgresql.get_offers_by_ids(list(similars.keys()))
+    object_models = await postgresql.get_offers_by_ids_keep_order(list(similars.keys()))
     auction_bets = await auctions.load_auction_bets(object_models)
 
     offers = [
