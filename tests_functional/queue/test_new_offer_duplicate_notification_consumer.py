@@ -252,12 +252,8 @@ async def test_new_offer_duplicate_notification_consumer__email_push(
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
     await pg.execute(
-        'INSERT INTO offers_duplicate_email_notification (user_id, subscription_id, email) VALUES($1, $2, $3)',
+        'INSERT INTO offers_email_notification_settings (user_id, subscription_id, email) VALUES($1, $2, $3)',
         [user_id, subscription_id, email]
-    )
-    await pg.execute(
-        'INSERT INTO offers_email_notification_settings (user_id, is_enabled) VALUES($1, $2)',
-        [user_id, True]
     )
     await notification_center_mock.add_stub(
         method='POST',
@@ -322,12 +318,8 @@ async def test_new_offer_duplicate_notification_consumer__send_all_notifications
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
     await pg.execute(
-        'INSERT INTO offers_duplicate_email_notification (user_id, subscription_id, email) VALUES($1, $2, $3)',
+        'INSERT INTO offers_email_notification_settings (user_id, subscription_id, email) VALUES($1, $2, $3)',
         [user_id, subscription_id, email]
-    )
-    await pg.execute(
-        'INSERT INTO offers_email_notification_settings (user_id, is_enabled) VALUES($1, $2)',
-        [user_id, True]
     )
     await notification_center_mock.add_stub(
         method='POST',

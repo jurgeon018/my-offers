@@ -1,14 +1,8 @@
-CREATE TABLE offers_duplicate_email_notification
+CREATE TABLE offers_email_notification_settings
 (
     user_id         bigint not null primary key,
     subscription_id text   not null,
     email           text   not null
-);
-
-CREATE TABLE offers_email_notification_settings
-(
-    user_id    bigint  not null primary key,
-    is_enabled boolean not null
 );
 
 DROP INDEX offers_duplicate_notification_offer_id_duplicate_offer_id_idx;

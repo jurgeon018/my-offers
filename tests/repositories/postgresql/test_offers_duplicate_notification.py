@@ -62,9 +62,9 @@ async def test_get_user_email():
 
     # assert
     pg.get().fetchrow.assert_called_once_with(
-        'SELECT offers_duplicate_email_notification.email '
-        '\nFROM offers_duplicate_email_notification '
-        '\nWHERE offers_duplicate_email_notification.user_id = $1',
+        'SELECT offers_email_notification_settings.email '
+        '\nFROM offers_email_notification_settings '
+        '\nWHERE offers_email_notification_settings.user_id = $1',
         user_id
     )
 
@@ -72,15 +72,13 @@ async def test_get_user_email():
 async def test_is_available_email_notification():
     # arrange
     user_id = 111
-    pg.get().fetchrow.return_value = future({'is_enabled': True})
+    pg.get().fetchrow.return_value = future({'result': True})
 
     # act
     await postgresql.is_available_email_notification(user_id=user_id)
 
     # assert
     pg.get().fetchrow.assert_called_once_with(
-        'SELECT offers_email_notification_settings.is_enabled '
-        '\nFROM offers_email_notification_settings '
-        '\nWHERE offers_email_notification_settings.user_id = $1',
-        user_id
+        'SELECT 1 as result FROM offers_email_notification_settings WHERE user_id = $1 LIMIT 1',
+        user_id,
     )
