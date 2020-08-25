@@ -376,18 +376,12 @@ async def test_new_offer_duplicate_notification_consumer__send_all_notifications
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
     await asyncio.sleep(2)
-    messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
 
     # assert
-    assert len(messages) == 2
-    payload = json.loads(messages[0].payload)
-    payload.pop('timestamp', None)
-    assert payload == {
-        'similarObjectPrice': 1350000,
-        'similarObjectId': 231655140,
-        'userId': 6808488,
-        'eventType': 'pushOfferDuplicate',
-        'objectId': 173975523,
-        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005',
-        'regionId': 4592,
-    }
+    rows = await pg.fetch('SELECT * FROM offers_duplicate_notification')
+    assert rows[0]['offer_id'] == 173975523
+    assert rows[0]['duplicate_offer_id'] == 231655140
+    assert rows[0]['notification_type'] == 'mobilePush'
+    assert rows[1]['offer_id'] == 173975523
+    assert rows[1]['duplicate_offer_id'] == 231655140
+    assert rows[1]['notification_type'] == 'emailPush'

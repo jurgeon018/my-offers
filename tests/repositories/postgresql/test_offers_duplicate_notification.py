@@ -22,8 +22,10 @@ async def test_save_offers_duplicate_notification():
 
     # assert
     pg.get().execute.assert_called_once_with(
-        'INSERT INTO offers_duplicate_notification (offer_id, duplicate_offer_id, send_at) VALUES ($2, $1, $3)',
+        'INSERT INTO offers_duplicate_notification (offer_id, duplicate_offer_id, send_at, notification_type) '
+        'VALUES ($3, $1, $4, $2)',
         2,
+        UserNotificationType.mobile_push.value,
         1,
         datetime(2020, 5, 28)
     )

@@ -55,12 +55,8 @@ async def send_duplicates_notification(
         )
 
         try:
-            # TODO: drop offers_duplicate_notification_offer_id_duplicate_offer_id_idx
-            # create unique index on offers_duplicate_notification (offer_id, duplicate_offer_id, notification_type);
-            # WARNING: notification_type must be NULL!
             await postgresql.save_offers_duplicate_notification(notification)
         except UniqueViolationError:
-            logger.warning('ALARM ALARM ALARM ALARM ALARM ALARM ALARM ALARM ALARM ALARM')
             # уже отправляли
             return
 
@@ -101,9 +97,13 @@ async def send_email_duplicate_notification(
 
     offer_type, deal_type = get_types(offer.category)
     offer_name = get_offer_title(object_model=offer)
-    offer_url = fields.get_offer_url(offer_id=offer.id, offer_type=offer_type, deal_type=deal_type)
+    offer_url = fields.get_offer_url(cian_offer_id=offer.cian_id, offer_type=offer_type, deal_type=deal_type)
     offer_duplicate_name = get_offer_title(object_model=duplicate_offer)
-    offer_duplicate_url = fields.get_offer_url(offer_id=duplicate_offer.id, offer_type=offer_type, deal_type=deal_type)
+    offer_duplicate_url = fields.get_offer_url(
+        cian_offer_id=duplicate_offer.cian_id,
+        offer_type=offer_type,
+        deal_type=deal_type
+    )
 
     # параметры чувствительны к регистру
     parameters = {
@@ -121,7 +121,7 @@ async def send_email_duplicate_notification(
         ))
 
     if response.status and response.status.is_user_not_found:
-        logger.warning('User not found in `emails` service')
+        logger.error('User not found in `emails` service')
 
 
 async def send_mobile_duplicate_notification(
@@ -148,7 +148,11 @@ async def send_mobile_duplicate_notification(
                 },
                 text=get_address_for_push(offer.geo),
                 title='Новый дубль вашего объекта',
-                web_url=fields.get_offer_url(offer_id=duplicate_offer.id, offer_type=offer_type, deal_type=deal_type),
+                web_url=fields.get_offer_url(
+                    cian_offer_id=duplicate_offer.cian_id,
+                    offer_type=offer_type,
+                    deal_type=deal_type
+                ),
                 media_url=get_main_photo_url(offer.photos),
                 transports_to_send=[TransportsToSend.mobile_push],
             )]
@@ -173,11 +177,12 @@ async def get_notification_types(user_id: int) -> List[UserNotificationType]:
 
 
 async def _is_mobile_push_enabled(user_id: int) -> bool:
-    response: GetMobilePushSettingsResponse = await v1_mobile_push_get_settings(GetMobilePushSettingsRequest(
-        user_id=str(user_id),
-        is_authenticated=True,
-        os_type=OsType.android,
-    ))
+    response: GetMobilePushSettingsResponse = await v1_mobile_push_get_settings(
+        GetMobilePushSettingsRequest(
+            user_id=str(user_id),
+            is_authenticated=True,
+            os_type=OsType.android,
+        ))
 
     for item in response.items:
         for child_item in item.children:
