@@ -62,7 +62,7 @@ async def test_v2_get_offers_public__tab_duplicate__duplicates_found__200(http, 
     )
     await pg.execute(
         'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(173975523, \'sale\', \'2020-08-10\', 231655140)'
+        'VALUES(173975523, \'sale\', \'2020-08-11\', 231655140)'
     )
 
     auction_stub = await auction_mock.add_stub(

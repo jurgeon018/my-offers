@@ -100,13 +100,13 @@ async def get_offers_by_ids(offer_ids: List[int]) -> List[ObjectModel]:
 
 async def get_offers_by_ids_keep_order(offer_ids: List[int]) -> List[ObjectModel]:
     query = """
-    SELECT 
-        raw_data 
-    FROM 
-        offers 
-    WHERE 
-        offer_id = ANY($1::BIGINT[]) AND status_tab <> $2 
-    ORDER BY 
+    SELECT
+        raw_data
+    FROM
+        offers
+    WHERE
+        offer_id = ANY($1::BIGINT[]) AND status_tab <> $2
+    ORDER BY
         array_position($1::BIGINT[], offer_id)
     """
 
