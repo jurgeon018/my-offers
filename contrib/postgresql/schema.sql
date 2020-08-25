@@ -78,9 +78,6 @@ CREATE TABLE offers
 CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));
 CREATE INDEX ON offers (master_user_id, status_tab);
 CREATE INDEX ON offers (updated_at);
-CREATE INDEX ON offers (house_id, price) WHERE house_id is not null and status_tab='active';
-CREATE INDEX ON offers (district_id, deal_type, price) WHERE district_id is not null and status_tab='active';
-
 
 CREATE TABLE offers_billing_contracts
 (
@@ -208,43 +205,43 @@ CREATE TABLE offers_resender_stats
 
 create table offers_similars_flat
 (
-	offer_id bigint primary key,
-	deal_type deal_type not null,
-	group_id bigint,
-	house_id integer,
-	district_id integer,
-	price double precision,
-	rooms_count integer,
-	sort_date timestamp with time zone not null
+    offer_id    bigint primary key,
+    deal_type   deal_type                not null,
+    group_id    bigint,
+    house_id    integer,
+    district_id integer,
+    price       double precision,
+    rooms_count integer,
+    sort_date   timestamp with time zone not null
 );
 
 create index offers_similars_flat_group_id_idx
-	on offers_similars_flat (group_id);
+    on offers_similars_flat (group_id);
 
 create index offers_similars_flat_house_id_price_idx
-	on offers_similars_flat (house_id, price);
+    on offers_similars_flat (house_id, price);
 
 create index offers_similars_flat_district_id_price_idx
-	on offers_similars_flat (district_id, price);
+    on offers_similars_flat (district_id, price);
 
 create table offers_similars_test
 (
-	offer_id bigint primary key,
-	deal_type deal_type not null,
-	group_id bigint,
-	house_id integer,
-	district_id integer,
-	price double precision,
-	rooms_count integer,
-	sort_date timestamp with time zone not null
+    offer_id    bigint primary key,
+    deal_type   deal_type                not null,
+    group_id    bigint,
+    house_id    integer,
+    district_id integer,
+    price       double precision,
+    rooms_count integer,
+    sort_date   timestamp with time zone not null
 );
 
 
 create index offers_similars_test_group_id_idx
-	on offers_similars_test (group_id);
+    on offers_similars_test (group_id);
 
 create index offers_similars_test_house_id_price_idx
-	on offers_similars_test (house_id, price);
+    on offers_similars_test (house_id, price);
 
 create index offers_similars_test_district_id_price_idx
-	on offers_similars_test (district_id, price);
+    on offers_similars_test (district_id, price);

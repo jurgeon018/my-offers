@@ -103,7 +103,7 @@ async def _send_notification(*, offer: ObjectModel, duplicate_offer: ObjectModel
             },
             text=get_address_for_push(offer.geo),
             title='Новый дубль вашего объекта',
-            web_url=get_offer_url(offer_id=duplicate_offer.id, offer_type=offer_type, deal_type=deal_type),
+            web_url=get_offer_url(cian_offer_id=duplicate_offer.cian_id, offer_type=offer_type, deal_type=deal_type),
             media_url=get_main_photo_url(offer.photos),
             transports_to_send=[TransportsToSend.mobile_push],
         )]

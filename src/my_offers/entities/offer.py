@@ -8,7 +8,7 @@ from my_offers import enums
 @dataclass
 class Offer:
     offer_id: int
-    """Id объявления"""
+    """Realty Id объявления"""
     master_user_id: int
     """Id мастер агента"""
     # поля для фильтров
