@@ -47,7 +47,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found
     )
     await pg.execute(
         'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(173975523, \'sale\', \'2020-08-10\', 231655140)'
+        'VALUES(173975523, \'sale\', \'2020-08-11\', 231655140)'
     )
 
     auction_stub = await auction_mock.add_stub(
@@ -157,28 +157,29 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__offers_found__20
     assert response.data == {
         'offers': [
             {
-                'auctionBet': None,
+                'type': 'duplicate', 'url': 'http://master.dev3.cian.ru/rent/flat/177300443',
+                'title': '1-комн.\xa0кв., 33\xa0м², 4/7\xa0этаж',
                 'displayDate': '2020-07-08T12:28:46.727000+00:00',
+                'vas': [],
+                'mainPhotoUrl': 'https://cdn-p.cian.site/images/3/572/154/'
+                                'kvartira-makarenko-botanicheskaya-ulica-451275372-2.jpg',
+                'offerId': 177300443,
                 'geo': {
+                    'underground': None,
                     'address': [
                         'Краснодарский край',
                         'Сочи',
                         'Макаренко мкр',
                         'улица Ботаническая',
                         '34'
-                    ],
-                    'underground': None},
-                'mainPhotoUrl': 'https://cdn-p.cian.site/images/3/572/154/'
-                                'kvartira-makarenko-botanicheskaya-ulica-451275372-2.jpg',
-                'offerId': 177300443,
-                'priceInfo': {'exact': '25\xa0000\xa0₽/мес.', 'range': None},
-                'title': '1-комн.\xa0кв., 33\xa0м², 4/7\xa0этаж',
-                'type': 'duplicate',
-                'url': 'http://master.dev3.cian.ru/rent/flat/177300443',
-                'vas': []
+                    ]
+                },
+                'auctionBet': None,
+                'priceInfo': {'range': None, 'exact': '25\xa0000\xa0₽/мес.'}
             }
         ],
-        'page': {'canLoadMore': False, 'count': 4, 'pageCount': 2}}
+        'page': {'count': 4, 'canLoadMore': False, 'pageCount': 2}
+    }
 
 
 async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates__not_found__200(http, pg, auction_mock):
