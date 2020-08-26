@@ -88,7 +88,7 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
         'objectId': 173975523,
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005',
         'regionId': 4592,
-        # 'timestamp': '2020-05-29T09:42:46.905695+00:00'
+        'transport': 'mobilePush',
     }
 
 
@@ -298,6 +298,7 @@ async def test_new_offer_duplicate_notification_consumer__email_push(
         'objectId': 173975523,
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005',
         'regionId': 4592,
+        'transport': 'emailPush',
     }
 
 

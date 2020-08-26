@@ -58,7 +58,7 @@ async def send_duplicates_notification(
             await postgresql.save_offers_duplicate_notification(notification)
         except UniqueViolationError:
             # уже отправляли
-            return
+            continue
 
         try:
             if notification_type.is_email_push:
@@ -82,7 +82,11 @@ async def send_duplicates_notification(
             await postgresql.delete_offers_duplicate_notification(notification)
             raise
 
-        OfferDuplicateEventProducer.produce_new_duplicate_event(offer=offer, duplicate_offer=duplicate_offer)
+        OfferDuplicateEventProducer.produce_new_duplicate_event(
+            offer=offer,
+            duplicate_offer=duplicate_offer,
+            transport_type=notification_type
+        )
 
 
 async def send_email_duplicate_notification(

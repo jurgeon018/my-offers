@@ -4,6 +4,7 @@ from cian_core.context import get_operation_id
 from cian_core.kafka import get_kafka_entity_producer
 from cian_kafka import EntityKafkaProducer
 
+from my_offers.enums.notifications import UserNotificationType
 from my_offers.queue import enums
 from my_offers.queue.entities import OfferDuplicateEvent
 from my_offers.repositories.monolith_cian_announcementapi.entities import Geo, ObjectModel
@@ -23,7 +24,12 @@ class OfferDuplicateEventProducer:
         return cls.__instance
 
     @classmethod
-    def produce_new_duplicate_event(cls, *, offer: ObjectModel, duplicate_offer: ObjectModel) -> None:
+    def produce_new_duplicate_event(
+            cls, *,
+            offer: ObjectModel,
+            duplicate_offer: ObjectModel,
+            transport_type: UserNotificationType
+    ) -> None:
         instance = cls._instance()
 
         message = OfferDuplicateEvent(
@@ -34,6 +40,7 @@ class OfferDuplicateEventProducer:
             similar_object_price=duplicate_offer.bargain_terms.price if duplicate_offer.bargain_terms else None,
             region_id=cls._get_region_id(duplicate_offer.geo),
             operation_id=get_operation_id(),
+            transport=transport_type
         )
         instance(message)
 
