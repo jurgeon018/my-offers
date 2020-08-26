@@ -96,3 +96,20 @@ async def get_offers_by_ids(offer_ids: List[int]) -> List[ObjectModel]:
     rows = await pg.get().fetch(query, offer_ids, enums.OfferStatusTab.deleted.value)
 
     return [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in rows]
+
+
+async def get_offers_by_ids_keep_order(offer_ids: List[int]) -> List[ObjectModel]:
+    query = """
+    SELECT
+        raw_data
+    FROM
+        offers
+    WHERE
+        offer_id = ANY($1::BIGINT[]) AND status_tab <> $2
+    ORDER BY
+        array_position($1::BIGINT[], offer_id)
+    """
+
+    rows = await pg.get().fetch(query, offer_ids, enums.OfferStatusTab.deleted.value)
+
+    return [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in rows]
