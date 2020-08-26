@@ -53,7 +53,11 @@ RESEND_TASK_BULK_SIZE: int = 5000
 
 CURRENCIES_TTL: int = 60 * 60  # 1 day
 
+# similar offers
 SIMILAR_PRICE_KF: float = 0.2
 SIMILAR_ROOM_DELTA: int = 1
 
 MAX_SIMILAR_FOR_DESKTOP: int = 100
+
+# notifications
+EMAIL_DUPLICATE_TEMPLATE: str = 'DoubleObject'

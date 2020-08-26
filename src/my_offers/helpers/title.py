@@ -115,7 +115,7 @@ def get_properties(object_model: ObjectModel) -> List[str]:
     return list(filter(None, [title, area, floors]))
 
 
-def get_title(object_model: ObjectModel) -> str:
+def get_offer_title(object_model: ObjectModel) -> str:
     return ', '.join(get_properties(object_model))
 
 

@@ -79,6 +79,7 @@ CREATE INDEX ON offers USING gin (to_tsvector('russian', search_text));
 CREATE INDEX ON offers (master_user_id, status_tab);
 CREATE INDEX ON offers (updated_at);
 
+
 CREATE TABLE offers_billing_contracts
 (
     id                bigint                   not null primary key,
@@ -177,14 +178,19 @@ create table offers_duplicates
 
 create index on offers_duplicates (group_id);
 
+CREATE TYPE notification_type as enum (
+    'mobilePush',
+    'emailPush'
+    );
 create table offers_duplicate_notification
 (
     offer_id           bigint                   not null,
     duplicate_offer_id bigint                   not null,
-    send_at            timestamp with time zone not null
+    send_at            timestamp with time zone not null,
+    notification_type  notification_type        not null
 );
 
-create unique index on offers_duplicate_notification (offer_id, duplicate_offer_id);
+CREATE UNIQUE INDEX ON offers_duplicate_notification (offer_id, duplicate_offer_id, notification_type);
 
 CREATE TABLE offers_resender_cron
 (
@@ -245,3 +251,11 @@ create index offers_similars_test_house_id_price_idx
 
 create index offers_similars_test_district_id_price_idx
     on offers_similars_test (district_id, price);
+
+
+CREATE TABLE offers_email_notification_settings
+(
+    user_id         bigint not null primary key,
+    subscription_id text   not null,
+    email           text   not null
+);

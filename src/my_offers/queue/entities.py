@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from my_offers import entities
+from my_offers.enums.notifications import UserNotificationType
 from my_offers.queue import enums
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 
@@ -95,3 +96,5 @@ class OfferDuplicateEvent:
     """id региона, в котором публикуется объявление-дубль или меняется цена на него"""
     operation_id: str
     """идентификатор операции"""
+    transport: UserNotificationType
+    """Тип пуша"""

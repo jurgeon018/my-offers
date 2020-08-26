@@ -4,7 +4,7 @@ from my_offers import entities, enums
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url, get_price_info, get_sort_date
 from my_offers.helpers.status_tab import get_status_tab
-from my_offers.helpers.title import get_properties, get_title
+from my_offers.helpers.title import get_offer_title, get_properties
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view import fields
 
@@ -60,7 +60,7 @@ def build_duplicate_view_desktop(
             deal_type=deal_type,
             offer_type=offer_type
         ),
-        title=get_title(object_model),
+        title=get_offer_title(object_model),
         main_photo_url=get_main_photo_url(object_model.photos, better_quality=True),
         geo=fields.prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),

@@ -2,7 +2,7 @@ import logging
 import re
 from typing import List, Optional, Pattern, Union
 
-from my_offers.helpers.title import get_title
+from my_offers.helpers.title import get_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     AddressInfo,
     DistrictInfo,
@@ -48,7 +48,7 @@ def get_search_text(object_model: ObjectModel) -> str:
     # Заголовок
     # количество комнат: 1, 2, 3, 4, 5, 6+, студия, свободная планировка
     # тип: квартира, апартаменты, комната, доля, дом, часть дома, таунхаус, участок, офис и т.д.
-    result.append(get_title(object_model))
+    result.append(get_offer_title(object_model))
     if object_model.title:
         result.append(object_model.title)
     if object_model.rooms_count and object_model.rooms_count < 6:

@@ -1,28 +1,44 @@
+from typing import Optional
+
 import asyncpgsa
 import sqlalchemy as sa
-from sqlalchemy import and_, delete
+import sqlalchemy.dialects.postgresql as psa
+from sqlalchemy import and_, delete, select
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
 from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
+from my_offers.enums.notifications import UserNotificationType
+from my_offers.helpers.tables import get_names
 from my_offers.repositories.postgresql.tables import metadata
 
 
+_notification_type = psa.ENUM(*get_names(UserNotificationType), name='notification_type', )
 offers_duplicate_notification = sa.Table(
     'offers_duplicate_notification',
     metadata,
     sa.Column('offer_id', sa.BIGINT, nullable=False),
     sa.Column('duplicate_offer_id', sa.BIGINT, nullable=False),
     sa.Column('send_at', sa.TIMESTAMP, nullable=False),
-    sa.UniqueConstraint('offer_id', 'duplicate_offer_id'),
+    sa.Column('notification_type', sa.TEXT, nullable=True)
+)
+
+offers_email_notification_settings = sa.Table(
+    'offers_email_notification_settings',
+    metadata,
+    sa.Column('user_id', sa.BIGINT, nullable=False),
+    sa.Column('subscription_id', sa.TEXT, nullable=False),
+    sa.Column('email', sa.TEXT, nullable=False),
 )
 
 
 async def save_offers_duplicate_notification(notification: OfferDuplicateNotification) -> None:
+    notification_type = notification.notification_type.value if notification.notification_type else None
     query, params = asyncpgsa.compile_query(
         insert(offers_duplicate_notification).values({
             'offer_id': notification.offer_id,
             'duplicate_offer_id': notification.duplicate_offer_id,
+            'notification_type': notification_type,
             'send_at': notification.send_at,
         })
     )
@@ -41,3 +57,27 @@ async def delete_offers_duplicate_notification(notification: OfferDuplicateNotif
     )
 
     await pg.get().execute(query, *params)
+
+
+async def get_user_email(user_id: int) -> Optional[str]:
+    query, params = asyncpgsa.compile_query(
+        select([
+            offers_email_notification_settings.c.email
+        ]).where(
+            offers_email_notification_settings.c.user_id == user_id
+        ))
+
+    row = await pg.get().fetchrow(query, *params)
+
+    return row['email'] if row else None
+
+
+async def is_available_email_notification(user_id: int) -> bool:
+    query = 'SELECT 1 as result FROM offers_email_notification_settings WHERE user_id = $1 LIMIT 1'
+    params = [
+        user_id,
+    ]
+
+    row = await pg.get().fetchrow(query, *params)
+
+    return bool(row['result']) if row else False

@@ -16,7 +16,17 @@ from my_offers.repositories.postgresql.offer import (
     update_offer_master_user_id,
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error
-from my_offers.repositories.postgresql.offers_duplicates import delete_offers_duplicates, update_offers_duplicates
+from my_offers.repositories.postgresql.offers_duplicate_notification import (
+    delete_offers_duplicate_notification,
+    get_user_email,
+    is_available_email_notification,
+    save_offers_duplicate_notification,
+)
+from my_offers.repositories.postgresql.offers_duplicates import (
+    delete_offers_duplicates,
+    get_offer_duplicates,
+    update_offers_duplicates,
+)
 from my_offers.repositories.postgresql.offers_resender import get_last_row_version, save_cron_session, save_cron_stats
 from my_offers.repositories.postgresql.offers_similars import (
     get_similar_counter_by_offer_id,
