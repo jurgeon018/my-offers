@@ -256,6 +256,5 @@ create index offers_similars_test_district_id_price_idx
 CREATE TABLE offers_email_notification_settings
 (
     user_id         bigint not null primary key,
-    subscription_id text   not null,
     email           text   not null
 );

@@ -1,0 +1,1 @@
+ALTER TABLE offers_email_notification_settings DROP COLUMN subscription_id;

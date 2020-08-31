@@ -106,7 +106,15 @@ urlpatterns = base_urls.urlpatterns + [
             service=notifications.subscribe_on_duplicates,
             method='POST',  # pragma: no mutate
             request_schema=entities.SubscribeOnDuplicatesRequest,
-            response_schema=entities.SubscribeOnDuplicatesResponse,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
+        r'/public/v1/unsubscribe-on-duplicates/$',
+        get_handler(
+            service=notifications.unsubscribe_on_duplicates,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.UnsubscribeOnDuplicatesRequest,
             base_handler_cls=PublicHandler,
         )
     ),

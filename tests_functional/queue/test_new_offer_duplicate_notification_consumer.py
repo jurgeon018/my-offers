@@ -246,14 +246,13 @@ async def test_new_offer_duplicate_notification_consumer__email_push(
     # arrange
     user_id = 6808488
     email = 'kek@example.com'
-    subscription_id = str(uuid.uuid1())
 
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
     await pg.execute(
-        'INSERT INTO offers_email_notification_settings (user_id, subscription_id, email) VALUES($1, $2, $3)',
-        [user_id, subscription_id, email]
+        'INSERT INTO offers_email_notification_settings (user_id, email) VALUES($1, $2)',
+        [user_id, email]
     )
     await notification_center_mock.add_stub(
         method='POST',
@@ -313,14 +312,13 @@ async def test_new_offer_duplicate_notification_consumer__send_all_notifications
     # arrange
     user_id = 6808488
     email = 'kek@example.com'
-    subscription_id = str(uuid.uuid1())
 
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
     await pg.execute(
-        'INSERT INTO offers_email_notification_settings (user_id, subscription_id, email) VALUES($1, $2, $3)',
-        [user_id, subscription_id, email]
+        'INSERT INTO offers_email_notification_settings (user_id, email) VALUES($1, $2)',
+        [user_id, email]
     )
     await notification_center_mock.add_stub(
         method='POST',
