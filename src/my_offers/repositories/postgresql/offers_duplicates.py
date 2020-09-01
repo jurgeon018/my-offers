@@ -23,6 +23,7 @@ offers_duplicates = sa.Table(
     sa.Column('group_id', sa.BIGINT, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=True),
+    sa.Column('row_version', sa.BIGINT, nullable=True),
 )
 
 
@@ -63,20 +64,19 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
 
 async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: int) -> Optional[bool]:
     insert_query = insert(offers_duplicates)
-    data = [
-        {
-            'offer_id': offer_id,
-            'group_id': group_id,
-            'row_version': row_version,
-            'created_at': datetime.now(tz=pytz.UTC),
-        }
-    ]
+    data = {
+        'offer_id': offer_id,
+        'group_id': group_id,
+        'row_version': row_version,
+        'created_at': datetime.now(tz=pytz.UTC),
+    }
 
     query, params = asyncpgsa.compile_query(
         insert_query
         .values(data)
         .on_conflict_do_update(
             index_elements=[offers_duplicates.c.offer_id],
+            where=offers_duplicates.c.group_id != group_id,
             set_={
                 'group_id': insert_query.excluded.group_id,
                 'row_version': insert_query.excluded.row_version,
@@ -84,8 +84,6 @@ async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: 
             }
         ).returning(
             offers_duplicates.c.updated_at,
-        ).where(
-            offers_duplicates.c.row_version != row_version
         )
     )
 
