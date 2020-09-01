@@ -115,6 +115,7 @@ async def send_email_duplicate_notification(
         'ObjectLink': offer_url,
         'DoubleObject': offer_duplicate_name,
         'DoubleObjectLink': offer_duplicate_url,
+        'UnsubscribeLetter': settings.EMAIL_UNSUBSCRIBE_URL
     }
 
     response: SendEmailByEmailResponse = await emails_v2_send_email(
@@ -197,4 +198,4 @@ async def _is_mobile_push_enabled(user_id: int) -> bool:
 
 
 async def _is_email_push_enabled(user_id: int) -> bool:
-    return await postgresql.is_available_email_notification(user_id=user_id)
+    return await postgresql.is_any_subscriptions_exists(user_id=user_id)

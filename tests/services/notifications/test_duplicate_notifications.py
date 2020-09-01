@@ -48,6 +48,7 @@ async def test_send_email_duplicate_notification__check_sensitive_email_params(m
             offer_type=offer_type,
             deal_type=deal_type
         ),
+        'UnsubscribeLetter': settings.EMAIL_UNSUBSCRIBE_URL
     }
 
     emails_v2_send_email_mock = mocker.patch(

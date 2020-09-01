@@ -49,6 +49,10 @@ from my_offers.entities.offers_for_calltracking import (
     OffersForCalltrackingResponse,
 )
 from my_offers.entities.similar import OfferSimilar
-from my_offers.entities.subscribe import SubscribeOnDuplicatesRequest, SubscribeOnDuplicatesResponse
+from my_offers.entities.subscribe import (
+    NewEmailSubscription,
+    SubscribeOnDuplicatesRequest,
+    UnsubscribeOnDuplicatesRequest,
+)
 from my_offers.entities.update_offer import UpdateOfferRequest
 from my_offers.entities.valuation import GetOfferValuationRequest, GetOfferValuationResponse, ValuationOption

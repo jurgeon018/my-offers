@@ -75,7 +75,7 @@ async def test_is_available_email_notification():
     pg.get().fetchrow.return_value = future({'result': True})
 
     # act
-    await postgresql.is_available_email_notification(user_id=user_id)
+    await postgresql.is_any_subscriptions_exists(user_id=user_id)
 
     # assert
     pg.get().fetchrow.assert_called_once_with(

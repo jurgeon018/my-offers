@@ -17,9 +17,11 @@ from my_offers.repositories.postgresql.offer import (
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error
 from my_offers.repositories.postgresql.offers_duplicate_notification import (
+    create_new_offers_subscription,
+    delete_new_offers_subscription,
     delete_offers_duplicate_notification,
     get_user_email,
-    is_available_email_notification,
+    is_any_subscriptions_exists,
     save_offers_duplicate_notification,
 )
 from my_offers.repositories.postgresql.offers_duplicates import (
