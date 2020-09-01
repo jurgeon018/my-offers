@@ -20,6 +20,58 @@ async def test_public_v1_subscribe_on_duplicates(http, pg):
     assert row['email'] == email
 
 
+async def test_public_v1_subscribe_on_duplicates__invalid_email(http, pg):
+    # arrange
+    user_id = 6808488
+    email = '@example.com'
+    expected_message = 'Некорректный email.'
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/subscribe-on-duplicates/',
+        json={'email': email},
+        headers={'X-Real-UserId': user_id},
+        expected_status=400
+    )
+
+    # assert
+    assert response.data == {
+        'errors': [{
+            'key': 'email',
+            'code': 'incorrectEmail',
+            'message': expected_message
+        }],
+        'message': expected_message
+    }
+
+
+async def test_public_v1_unsubscribe_on_duplicates__invalid_email(http, pg):
+    # arrange
+    user_id = 6808488
+    email = '@example.com'
+    expected_message = 'Некорректный email.'
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/unsubscribe-on-duplicates/',
+        json={'email': email},
+        headers={'X-Real-UserId': user_id},
+        expected_status=400
+    )
+
+    # assert
+    assert response.data == {
+        'errors': [{
+            'key': 'email',
+            'code': 'incorrectEmail',
+            'message': expected_message
+        }],
+        'message': expected_message
+    }
+
+
 async def test_public_v1_subscribe_on_duplicates__user_already_subscribed(http, pg):
     # arrange
     user_id = 6808488

@@ -129,11 +129,21 @@ class GetOfferDuplicatesResponse:
 
 
 @dataclass
+class DuplicateSubscription:
+    subscribed_on_duplicate: bool
+    """Подписан ли пользователь на дубли по своим объявлениям"""
+    email: Optional[str] = None
+    """Email пользователя (только если есть активная подписка)"""
+
+
+@dataclass
 class GetOfferDuplicatesDesktopResponse:
     offers: List[OfferDuplicateDesktop]
     """Список объявлений"""
     page: PageInfo
     """Информация о странице"""
+    subscription: DuplicateSubscription
+    """Информация о подписке на дубликаты объявлений"""
 
 
 @dataclass
