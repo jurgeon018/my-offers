@@ -45,7 +45,7 @@ async def unsubscribe_on_duplicates(
             message=settings.EMAIL_USER_NOT_SUBSCRIBED_MSG
         )])
 
-    await postgresql.delete_new_offers_subscription(user_id=realty_user_id, email=request.email)
+    await postgresql.delete_new_offers_subscription(user_id=realty_user_id)
 
 
 def _validate_email(email: str) -> None:

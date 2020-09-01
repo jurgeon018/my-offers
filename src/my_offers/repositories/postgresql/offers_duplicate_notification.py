@@ -95,11 +95,10 @@ async def create_new_offers_subscription(subscription: NewEmailSubscription) -> 
     await pg.get().execute(query, *params)
 
 
-async def delete_new_offers_subscription(*, user_id: int, email: str) -> None:
-    query = 'DELETE FROM offers_email_notification_settings WHERE user_id = $1 and email = $2'
+async def delete_new_offers_subscription(*, user_id: int) -> None:
+    query = 'DELETE FROM offers_email_notification_settings WHERE user_id = $1'
     params = [
         user_id,
-        email
     ]
 
     await pg.get().execute(query, *params)
