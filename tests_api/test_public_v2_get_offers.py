@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 
 
 class TestPublicV2GetOffers(MyOffersHelper):
-    # todo: https://jira.cian.tech/browse/CD-75751
     @pytest.mark.base
     def test_200_post(self, sl: 'CianServices', context):
         # arrange

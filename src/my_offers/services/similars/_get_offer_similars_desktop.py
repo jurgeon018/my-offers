@@ -5,6 +5,7 @@ from simple_settings import settings
 
 from my_offers import entities, enums
 from my_offers.entities import get_offers
+from my_offers.entities.duplicates import DuplicateSubscription
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories import postgresql
 from my_offers.services import auctions, offer_view
@@ -18,14 +19,15 @@ async def v1_get_offer_similars_desktop_public(
 ) -> entities.GetOfferDuplicatesDesktopResponse:
     """ Получить список объявлиний типа 'дубли', 'похожие', 'в этом доме' для конрентного объявления. """
     max_count = settings.MAX_SIMILAR_FOR_DESKTOP if settings.MAX_SIMILAR_FOR_DESKTOP > 0 else 100
+    subscription = await _get_subscription(user_id=realty_user_id)
     limit, offset = _get_pagination(pagination=request.pagination, max_count=max_count)
     if offset >= max_count:
-        return _get_empty_response(limit, offset)
+        return _get_empty_response(limit, offset, subscription)
 
     object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
 
     if not is_offer_for_similar(status=object_model.status, category=object_model.category):
-        return _get_empty_response(limit, offset)
+        return _get_empty_response(limit, offset, subscription)
 
     suffix = get_similar_table_suffix(object_model)
     # todo: https://jira.cian.tech/browse/CD-85593 - для вкладки ВСЕ общее кол-во можно считать через window функцию
@@ -48,7 +50,7 @@ async def v1_get_offer_similars_desktop_public(
     )
 
     if not similars:
-        return _get_empty_response(limit, offset)
+        return _get_empty_response(limit, offset, subscription)
 
     object_models = await postgresql.get_offers_by_ids_keep_order(list(similars.keys()))
     auction_bets = await auctions.load_auction_bets(object_models)
@@ -63,13 +65,19 @@ async def v1_get_offer_similars_desktop_public(
     ]
 
     return entities.GetOfferDuplicatesDesktopResponse(
+        subscription=subscription,
         offers=offers,
         page=get_page_info(limit=limit, offset=offset, total=min(counter.total_count, max_count)),
     )
 
 
-def _get_empty_response(limit, offset) -> entities.GetOfferDuplicatesDesktopResponse:
+def _get_empty_response(
+        limit: int,
+        offset: int,
+        subscription: DuplicateSubscription
+) -> entities.GetOfferDuplicatesDesktopResponse:
     return entities.GetOfferDuplicatesDesktopResponse(
+        subscription=subscription,
         offers=[],
         page=get_page_info(limit=limit, offset=offset, total=0),
     )
@@ -82,3 +90,13 @@ def _get_pagination(*, pagination: Optional[get_offers.Pagination], max_count: i
         limit = max_count - offset
 
     return limit, offset
+
+
+async def _get_subscription(user_id: int) -> DuplicateSubscription:
+    email = await postgresql.get_user_email(user_id=user_id)
+    is_subscribed = bool(email)
+
+    return DuplicateSubscription(
+        subscribed_on_duplicate=is_subscribed,
+        email=email
+    )

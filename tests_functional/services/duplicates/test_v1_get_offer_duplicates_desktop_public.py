@@ -107,6 +107,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found
                 'auctionBet': None
             }
         ],
+        'subscription': {'email': None, 'subscribedOnDuplicate': False},
         'page': {'pageCount': 1, 'count': 2, 'canLoadMore': False}
     }
 
@@ -178,6 +179,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__offers_found__20
                 'priceInfo': {'range': None, 'exact': '25\xa0000\xa0₽/мес.'}
             }
         ],
+        'subscription': {'email': None, 'subscribedOnDuplicate': False},
         'page': {'count': 4, 'canLoadMore': False, 'pageCount': 2}
     }
 
@@ -195,7 +197,11 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates__not_
     )
 
     # assert
-    assert response.data == {'offers': [], 'page': {'canLoadMore': False, 'count': 0, 'pageCount': 0}}
+    assert response.data == {
+        'offers': [],
+        'subscription': {'email': None, 'subscribedOnDuplicate': False},
+        'page': {'canLoadMore': False, 'count': 0, 'pageCount': 0}
+    }
 
 
 async def test_v1_get_offer_duplicates_desktop_public__offset_to_high__empty(http, pg):
@@ -211,4 +217,35 @@ async def test_v1_get_offer_duplicates_desktop_public__offset_to_high__empty(htt
     )
 
     # assert
-    assert response.data == {'offers': [], 'page': {'canLoadMore': False, 'count': 0, 'pageCount': 0}}
+    assert response.data == {
+        'offers': [],
+        'subscription': {'email': None, 'subscribedOnDuplicate': False},
+        'page': {'canLoadMore': False, 'count': 0, 'pageCount': 0}
+    }
+
+
+async def test_v1_get_offer_duplicates_desktop_public__subscription(http, pg):
+    # arrange
+    user_id = 47135244
+    email = 'kek@example.com'
+
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute(
+        'INSERT INTO offers_email_notification_settings (user_id, email) VALUES($1, $2)',
+        [user_id, email]
+    )
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-offers-duplicates-for-desktop/',
+        json={'offerId': 231655140},
+        headers={'X-Real-UserId': user_id},
+    )
+
+    # assert
+    assert response.data == {
+        'offers': [],
+        'subscription': {'email': email, 'subscribedOnDuplicate': True},
+        'page': {'canLoadMore': False, 'count': 0, 'pageCount': 0}
+    }

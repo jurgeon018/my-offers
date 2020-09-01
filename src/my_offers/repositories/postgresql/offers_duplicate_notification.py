@@ -7,6 +7,7 @@ from sqlalchemy import and_, delete, select
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
+from my_offers.entities import NewEmailSubscription
 from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
 from my_offers.enums.notifications import UserNotificationType
 from my_offers.helpers.tables import get_names
@@ -72,7 +73,7 @@ async def get_user_email(user_id: int) -> Optional[str]:
     return row['email'] if row else None
 
 
-async def is_available_email_notification(user_id: int) -> bool:
+async def is_any_subscriptions_exists(user_id: int) -> bool:
     query = 'SELECT 1 as result FROM offers_email_notification_settings WHERE user_id = $1 LIMIT 1'
     params = [
         user_id,
@@ -81,3 +82,23 @@ async def is_available_email_notification(user_id: int) -> bool:
     row = await pg.get().fetchrow(query, *params)
 
     return bool(row['result']) if row else False
+
+
+async def create_new_offers_subscription(subscription: NewEmailSubscription) -> None:
+    query, params = asyncpgsa.compile_query(
+        insert(offers_email_notification_settings).values({
+            'user_id': subscription.user_id,
+            'email': subscription.email,
+        })
+    )
+
+    await pg.get().execute(query, *params)
+
+
+async def delete_new_offers_subscription(*, user_id: int) -> None:
+    query = 'DELETE FROM offers_email_notification_settings WHERE user_id = $1'
+    params = [
+        user_id,
+    ]
+
+    await pg.get().execute(query, *params)

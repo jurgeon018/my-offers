@@ -14,6 +14,7 @@ DEFAULT_LOCATION_ID: int = 1
 DB_TIMEOUT: float = 3
 
 CIAN_BASE_URL: str = 'https://cian.ru'
+MY_CIAN_BASE_URL: str = 'https://my.cian.ru'
 
 OFFER_LIST_LIMIT: int = 20
 
@@ -61,3 +62,11 @@ MAX_SIMILAR_FOR_DESKTOP: int = 100
 
 # notifications
 EMAIL_DUPLICATE_TEMPLATE: str = 'DoubleObject'
+EMAIL_UNSUBSCRIBE_URL: str = f'{MY_CIAN_BASE_URL}/settings/duplicates'
+EMAIL_USER_ALREADY_SUBSCRIBED_MSG: str = (
+    'Для данного email уже есть активная подписка на уведомления о новых дублях к объектам.'
+)
+EMAIL_USER_NOT_SUBSCRIBED_MSG: str = (
+    'Для данного email нет активной подписки на уведомления о новых дублях к объектам.'
+)
+EMAIL_VALIDATION_ERROR_MSG: str = 'Некорректный email.'
