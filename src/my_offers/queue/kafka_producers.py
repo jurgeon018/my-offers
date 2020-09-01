@@ -24,7 +24,7 @@ class OfferDuplicateEventProducer:
         return cls.__instance
 
     @classmethod
-    def produce_new_duplicate_event(
+    async def produce_new_duplicate_event(
             cls, *,
             offer: ObjectModel,
             duplicate_offer: ObjectModel,
@@ -42,7 +42,7 @@ class OfferDuplicateEventProducer:
             operation_id=get_operation_id(),
             transport=transport_type
         )
-        instance(message)
+        await instance(message)
 
     @classmethod
     def _get_region_id(cls, geo: Optional[Geo]) -> Optional[int]:

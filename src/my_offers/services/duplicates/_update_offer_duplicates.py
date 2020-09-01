@@ -10,6 +10,26 @@ from my_offers.repositories.postgresql import offers_similars
 from my_offers.repositories.postgresql.offer import get_offers_row_version
 
 
+async def update_offers_duplicate(offer_id: int) -> None:
+    offers_row_version = await get_offers_row_version([offer_id])
+    if not offers_row_version:
+        return
+
+    duplicates: List[Duplicate] = await _get_duplicates(offers_row_version)
+
+    if duplicates:
+        duplicate = duplicates[0]
+        is_new = await postgresql.update_offers_duplicate(
+            offer_id=duplicate.offer_id,
+            group_id=duplicate.duplicate_group_id,
+            row_version=offers_row_version[0].row_version
+        )
+        if is_new:
+            await _on_new_duplicates([duplicate.offer_id])
+    else:
+        await _on_remove_duplicates([offer_id])
+
+
 async def update_offers_duplicates(offer_ids: List[int]) -> None:
     if not offer_ids:
         return
