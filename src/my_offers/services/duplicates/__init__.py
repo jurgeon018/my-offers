@@ -1,3 +1,3 @@
 from my_offers.services.duplicates._send_new_offer_duplicate_notifications import send_new_offer_duplicate_notifications
 from my_offers.services.duplicates._sync_offer_duplicates import sync_offer_duplicates
-from my_offers.services.duplicates._update_offer_duplicates import update_offer_duplicates, update_offers_duplicates
+from my_offers.services.duplicates._update_offer_duplicates import update_offer_duplicates

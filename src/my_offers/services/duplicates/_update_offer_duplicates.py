@@ -11,6 +11,7 @@ from my_offers.repositories.offers_duplicates import v1_get_offers_duplicates_by
 from my_offers.repositories.offers_duplicates.entities import Duplicate, GetOffersDuplicatesByIdsRequest, Offer
 from my_offers.repositories.postgresql import offers_similars
 from my_offers.repositories.postgresql.offer import get_offers_row_version
+from my_offers.repositories.postgresql.offers_duplicates import get_duplicate_group_id
 
 
 logger = logging.getLogger(__name__)
@@ -27,37 +28,18 @@ async def update_offer_duplicates(offer_id: int) -> None:
         duplicate = duplicates[0]
         duplicate_offer_id = duplicate.offer_id
         group_id = duplicate.duplicate_group_id
-        is_new = await postgresql.update_offers_duplicate(
+        current_group_id = await get_duplicate_group_id(duplicate_offer_id)
+        await postgresql.update_offers_duplicate(
             offer_id=duplicate_offer_id,
             group_id=group_id,
             row_version=offers_row_version[0].row_version,
         )
-        if is_new:
+        if current_group_id != group_id:
             is_valid = await _check_duplicates_group(offer_id=duplicate_offer_id, group_id=group_id)
             if is_valid:
-                await _on_new_duplicates([duplicate_offer_id])
+                await _on_change_duplicates([duplicate_offer_id])
     else:
         await _on_remove_duplicates([offer_id])
-
-
-async def update_offers_duplicates(offer_ids: List[int]) -> None:
-    if not offer_ids:
-        return
-
-    offers_row_version = await get_offers_row_version(offer_ids)
-    if not offers_row_version:
-        return
-
-    duplicates: List[Duplicate] = await _get_duplicates(offers_row_version)
-    if duplicates:
-        new_duplicates = await postgresql.update_offers_duplicates(duplicates)
-        if new_duplicates:
-            await _on_new_duplicates(new_duplicates)
-
-    duplicate_ids = {d.offer_id for d in duplicates}
-    not_duplicates = list(set(offer_ids) - duplicate_ids)
-    if not_duplicates:
-        await _on_remove_duplicates(not_duplicates)
 
 
 async def _get_duplicates(offers_row_version) -> List[Duplicate]:
@@ -67,7 +49,7 @@ async def _get_duplicates(offers_row_version) -> List[Duplicate]:
     return response.duplicates
 
 
-async def _on_new_duplicates(offer_ids: List[int]) -> None:
+async def _on_change_duplicates(offer_ids: List[int]) -> None:
     await offers_similars.update_group_id(offer_ids)
     await _send_push(offer_ids)
 
@@ -94,8 +76,6 @@ async def _check_duplicates_group(*, offer_id: int, group_id: int) -> bool:
     )
 
     if not main_similar:
-        logger.warning('DuplicateError: Similar not found offer_id %s', offer_id)
-        statsd.incr('new_duplicate_offer.not_valid.not_found')
         return False
 
     for similar in similar_group:

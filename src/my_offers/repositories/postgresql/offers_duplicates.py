@@ -23,53 +23,19 @@ offers_duplicates = sa.Table(
     sa.Column('group_id', sa.BIGINT, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=True),
-    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('row_version', sa.BIGINT, nullable=True),
 )
 
 
-async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
-    now = datetime.now(tz=pytz.UTC)
-
-    data = [
-        {
-            'offer_id': duplicate.offer_id,
-            'group_id': duplicate.duplicate_group_id,
-            'created_at': now,
-        } for duplicate in duplicates
-    ]
-
-    insert_query = insert(offers_duplicates)
-
-    query, params = asyncpgsa.compile_query(
-        insert_query
-        .values(data)
-        .on_conflict_do_update(
-            index_elements=[offers_duplicates.c.offer_id],
-            set_={
-                'group_id': insert_query.excluded.group_id,
-                'updated_at': insert_query.excluded.created_at,
-            }
-        ).returning(
-            offers_duplicates.c.offer_id,
-            offers_duplicates.c.updated_at,
-        )
-    )
-
-    rows = await pg.get().fetch(query, *params)
-    if not rows:
-        return []
-
-    return [row['offer_id'] for row in rows if row['updated_at'] is None]
-
-
 async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: int) -> Optional[bool]:
     insert_query = insert(offers_duplicates)
+    now = datetime.now(tz=pytz.UTC)
     data = {
         'offer_id': offer_id,
         'group_id': group_id,
         'row_version': row_version,
-        'created_at': datetime.now(tz=pytz.UTC),
+        'created_at': now,
+        'updated_at': now,
     }
 
     query, params = asyncpgsa.compile_query(
@@ -80,10 +46,8 @@ async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: 
             set_={
                 'group_id': insert_query.excluded.group_id,
                 'row_version': insert_query.excluded.row_version,
-                'updated_at': insert_query.excluded.created_at,
+                'updated_at': insert_query.excluded.updated_at,
             }
-        ).returning(
-            offers_duplicates.c.updated_at,
         )
     )
 
@@ -147,3 +111,11 @@ async def get_duplicate_group_id(offer_id: int) -> Optional[int]:
     row = await pg.get().fetchrow(query, offer_id)
 
     return row['group_id'] if row else None
+
+
+async def get_offer_duplicate_for_update() -> Optional[int]:
+    query = 'select offer_id from offers_duplicates order by updated_at limit 1'
+
+    row = await pg.get().fetchrow(query)
+
+    return row['offer_id'] if row else None

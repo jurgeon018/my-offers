@@ -12,6 +12,7 @@ from my_offers.queue import consumers
 from my_offers.queue import entities as mq_entities
 from my_offers.queue import queues, schemas
 from my_offers.services import realty_resender
+from my_offers.services.duplicates import sync_offer_duplicates
 from my_offers.services.offers import reindex_offers_command
 from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.web.urls import urlpatterns
