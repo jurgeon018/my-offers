@@ -16,7 +16,7 @@ from my_offers.repositories.postgresql.offer import get_offers_row_version
 logger = logging.getLogger(__name__)
 
 
-async def update_offers_duplicate(offer_id: int) -> None:
+async def update_offer_duplicates(offer_id: int) -> None:
     offers_row_version = await get_offers_row_version([offer_id])
     if not offers_row_version:
         return

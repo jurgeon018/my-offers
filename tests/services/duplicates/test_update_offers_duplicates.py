@@ -5,7 +5,7 @@ from cian_test_utils import future
 from simple_settings.utils import settings_stub
 
 from my_offers import entities, enums
-from my_offers.services.duplicates import update_offers_duplicate, update_offers_duplicates
+from my_offers.services.duplicates import update_offer_duplicates, update_offers_duplicates
 from my_offers.services.duplicates._update_offer_duplicates import _check_duplicates_group
 
 
@@ -48,7 +48,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
     )
 
     # act
-    await update_offers_duplicate(1)
+    await update_offer_duplicates(1)
 
     # arrange
     get_offers_row_version_mock.assert_called_once_with([1])

@@ -174,7 +174,8 @@ create table offers_duplicates
     group_id   bigint                   not null,
     created_at timestamp with time zone not null,
     updated_at timestamp with time zone,
-    row_version bigint
+    row_version bigint,
+    last_sync_date timestamp with time zone not null
 );
 
 create index on offers_duplicates (group_id);

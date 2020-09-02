@@ -181,3 +181,9 @@ def fix_offers(ids: str):
             realty_resender.save_offers_from_elasticapi,
             offers_ids=offers_ids
         ))
+
+
+@cli.command()
+def sync_offer_duplicates_cron() -> None:
+    """ Переодически сверяем данныо о дублях с МЛ """
+    IOLoop.current().run_sync(sync_offer_duplicates)

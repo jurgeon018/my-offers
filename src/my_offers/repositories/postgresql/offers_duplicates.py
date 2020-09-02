@@ -23,6 +23,7 @@ offers_duplicates = sa.Table(
     sa.Column('group_id', sa.BIGINT, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=True),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('row_version', sa.BIGINT, nullable=True),
 )
 
