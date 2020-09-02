@@ -8,8 +8,8 @@ import sqlalchemy as sa
 from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
-from my_offers import entities, enums, pg
-from my_offers.enums import DealType, DuplicateType, OfferType
+from my_offers import enums, pg
+from my_offers.enums import DuplicateType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.offers_duplicates.entities import Duplicate
@@ -23,6 +23,7 @@ offers_duplicates = sa.Table(
     sa.Column('group_id', sa.BIGINT, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=True),
+    sa.Column('row_version', sa.BIGINT, nullable=True),
 )
 
 
@@ -59,6 +60,35 @@ async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
         return []
 
     return [row['offer_id'] for row in rows if row['updated_at'] is None]
+
+
+async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: int) -> Optional[bool]:
+    insert_query = insert(offers_duplicates)
+    data = {
+        'offer_id': offer_id,
+        'group_id': group_id,
+        'row_version': row_version,
+        'created_at': datetime.now(tz=pytz.UTC),
+    }
+
+    query, params = asyncpgsa.compile_query(
+        insert_query
+        .values(data)
+        .on_conflict_do_update(
+            index_elements=[offers_duplicates.c.offer_id],
+            set_={
+                'group_id': insert_query.excluded.group_id,
+                'row_version': insert_query.excluded.row_version,
+                'updated_at': insert_query.excluded.created_at,
+            }
+        ).returning(
+            offers_duplicates.c.updated_at,
+        )
+    )
+
+    row = await pg.get().fetchrow(query, *params)
+
+    return row is None or row['updated_at'] is None
 
 
 async def delete_offers_duplicates(offer_ids: List[int]) -> None:

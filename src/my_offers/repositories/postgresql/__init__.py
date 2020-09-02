@@ -27,6 +27,7 @@ from my_offers.repositories.postgresql.offers_duplicate_notification import (
 from my_offers.repositories.postgresql.offers_duplicates import (
     delete_offers_duplicates,
     get_offer_duplicates,
+    update_offers_duplicate,
     update_offers_duplicates,
 )
 from my_offers.repositories.postgresql.offers_resender import get_last_row_version, save_cron_session, save_cron_stats

@@ -82,7 +82,7 @@ async def send_duplicates_notification(
             await postgresql.delete_offers_duplicate_notification(notification)
             raise
 
-        OfferDuplicateEventProducer.produce_new_duplicate_event(
+        await OfferDuplicateEventProducer.produce_new_duplicate_event(
             offer=offer,
             duplicate_offer=duplicate_offer,
             transport_type=notification_type
