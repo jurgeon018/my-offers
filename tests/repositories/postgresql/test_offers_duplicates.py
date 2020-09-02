@@ -27,5 +27,6 @@ async def test_get_offer_duplicate_for_update(mocker):
     assert result == 1
 
     pg.get().fetchrow.assert_called_once_with(
-        'select offer_id from offers_duplicates order by updated_at limit 1',
+        '\n    select\n        offer_id\n    from\n        offers_duplicates\n    where\n        '
+        'updated_at < current_timestamp - interval \'24 hours\'\n    order by\n        updated_at\n    limit 1\n    ',
     )

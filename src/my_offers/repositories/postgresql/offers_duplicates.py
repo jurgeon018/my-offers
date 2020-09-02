@@ -12,7 +12,6 @@ from my_offers import enums, pg
 from my_offers.enums import DuplicateType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.repositories.offers_duplicates.entities import Duplicate
 from my_offers.repositories.postgresql.tables import metadata
 
 
@@ -27,7 +26,7 @@ offers_duplicates = sa.Table(
 )
 
 
-async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: int) -> Optional[bool]:
+async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: int) -> None:
     insert_query = insert(offers_duplicates)
     now = datetime.now(tz=pytz.UTC)
     data = {
@@ -51,9 +50,7 @@ async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: 
         )
     )
 
-    row = await pg.get().fetchrow(query, *params)
-
-    return row is None or row['updated_at'] is None
+    await pg.get().execute(query, *params)
 
 
 async def delete_offers_duplicates(offer_ids: List[int]) -> None:
@@ -114,7 +111,17 @@ async def get_duplicate_group_id(offer_id: int) -> Optional[int]:
 
 
 async def get_offer_duplicate_for_update() -> Optional[int]:
-    query = 'select offer_id from offers_duplicates order by updated_at limit 1'
+    query = """
+    select
+        offer_id
+    from
+        offers_duplicates
+    where
+        updated_at < current_timestamp - interval '24 hours'
+    order by
+        updated_at
+    limit 1
+    """
 
     row = await pg.get().fetchrow(query)
 
