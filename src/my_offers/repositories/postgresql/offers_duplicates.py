@@ -8,8 +8,8 @@ import sqlalchemy as sa
 from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
-from my_offers import entities, enums, pg
-from my_offers.enums import DealType, DuplicateType, OfferType
+from my_offers import enums, pg
+from my_offers.enums import DuplicateType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.offers_duplicates.entities import Duplicate
@@ -76,7 +76,6 @@ async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: 
         .values(data)
         .on_conflict_do_update(
             index_elements=[offers_duplicates.c.offer_id],
-            where=offers_duplicates.c.group_id != group_id,
             set_={
                 'group_id': insert_query.excluded.group_id,
                 'row_version': insert_query.excluded.row_version,

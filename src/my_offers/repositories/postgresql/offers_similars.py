@@ -294,14 +294,14 @@ def _prepare_tab_condition(
 
 
 async def get_offer_similar(offer_id: int) -> Optional[entities.OfferSimilar]:
-    query = 'select * from offers_similars where offer_id = $1'
+    query = 'select * from offers_similars_flat where offer_id = $1'
     row = await pg.get().fetchrow(query, offer_id)
 
     return offer_similar_mapper.map_from(row) if row else None
 
 
 async def get_offers_similars_by_group_id(group_id: int) -> List[entities.OfferSimilar]:
-    query = 'select * from offers_similars where group_id = $1'
+    query = 'select * from offers_similars_flat where group_id = $1'
     rows = await pg.get().fetch(query, group_id)
 
     return [offer_similar_mapper.map_from(row) for row in rows]

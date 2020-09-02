@@ -30,10 +30,11 @@ async def update_offers_duplicate(offer_id: int) -> None:
         is_new = await postgresql.update_offers_duplicate(
             offer_id=duplicate_offer_id,
             group_id=group_id,
-            row_version=offers_row_version[0].row_version
+            row_version=offers_row_version[0].row_version,
         )
-        is_valid = await _check_duplicates_group(offer_id=duplicate_offer_id, group_id=group_id)
-        if is_new and is_valid:
+        if is_new:
+            is_valid = await _check_duplicates_group(offer_id=duplicate_offer_id, group_id=group_id)
+            if is_valid:
                 await _on_new_duplicates([duplicate_offer_id])
     else:
         await _on_remove_duplicates([offer_id])
@@ -84,28 +85,31 @@ async def _send_push(offer_ids: List[int]) -> None:
 
 
 async def _check_duplicates_group(*, offer_id: int, group_id: int) -> bool:
+    if not settings.DUPLICATE_CHECK_ENABLED:
+        return True
+
     main_similar, similar_group = await asyncio.gather(
         offers_similars.get_offer_similar(offer_id),
         offers_similars.get_offers_similars_by_group_id(group_id),
     )
 
     if not main_similar:
-        logger.warning('Similar not found offer_id %s', offer_id)
+        logger.warning('DuplicateError: Similar not found offer_id %s', offer_id)
         statsd.incr('new_duplicate_offer.not_valid.not_found')
         return False
 
     for similar in similar_group:
         if main_similar.district_id != similar.district_id:
-            logger.warning('Wrong region offer_id %s similar %s', offer_id, similar.offer_id)
+            logger.warning('DuplicateError: Wrong region offer_id %s similar %s', offer_id, similar.offer_id)
             statsd.incr('new_duplicate_offer.not_valid.wrong_region')
             return False
         if abs(main_similar.rooms_count - similar.rooms_count) > settings.SIMILAR_ROOM_DELTA:
-            logger.warning('Wrong rooms_count offer_id %s similar %s', offer_id, similar.offer_id)
+            logger.warning('DuplicateError: Wrong rooms_count offer_id %s similar %s', offer_id, similar.offer_id)
             statsd.incr('new_duplicate_offer.not_valid.wrong_rooms_count')
             return False
         if abs(main_similar.price - similar.price) / main_similar.price > settings.SIMILAR_PRICE_KF:
-            logger.warning('Wrong rooms_count offer_id %s similar %s', offer_id, similar.offer_id)
-            statsd.incr('new_duplicate_offer.not_valid.wrong_rooms_count')
+            logger.warning('DuplicateError: Wrong rooms_count offer_id %s similar %s', offer_id, similar.offer_id)
+            statsd.incr('new_duplicate_offer.not_valid.wrong_price')
             return False
 
     statsd.incr('new_duplicate_offer.valid')
