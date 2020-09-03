@@ -136,3 +136,7 @@ memory = 1024
 [job.resend_offers.prod]
 cpu = 4096
 memory = 2048
+
+[job.sync_offer_duplicates_cron]
+type = "consumer"
+command = "sync-offer-duplicates-cron"

@@ -12,7 +12,6 @@ from my_offers import enums, pg
 from my_offers.enums import DuplicateType
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.repositories.offers_duplicates.entities import Duplicate
 from my_offers.repositories.postgresql.tables import metadata
 
 
@@ -27,48 +26,15 @@ offers_duplicates = sa.Table(
 )
 
 
-async def update_offers_duplicates(duplicates: List[Duplicate]) -> List[int]:
+async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: int) -> None:
+    insert_query = insert(offers_duplicates)
     now = datetime.now(tz=pytz.UTC)
-
-    data = [
-        {
-            'offer_id': duplicate.offer_id,
-            'group_id': duplicate.duplicate_group_id,
-            'created_at': now,
-        } for duplicate in duplicates
-    ]
-
-    insert_query = insert(offers_duplicates)
-
-    query, params = asyncpgsa.compile_query(
-        insert_query
-        .values(data)
-        .on_conflict_do_update(
-            index_elements=[offers_duplicates.c.offer_id],
-            set_={
-                'group_id': insert_query.excluded.group_id,
-                'updated_at': insert_query.excluded.created_at,
-            }
-        ).returning(
-            offers_duplicates.c.offer_id,
-            offers_duplicates.c.updated_at,
-        )
-    )
-
-    rows = await pg.get().fetch(query, *params)
-    if not rows:
-        return []
-
-    return [row['offer_id'] for row in rows if row['updated_at'] is None]
-
-
-async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: int) -> Optional[bool]:
-    insert_query = insert(offers_duplicates)
     data = {
         'offer_id': offer_id,
         'group_id': group_id,
         'row_version': row_version,
-        'created_at': datetime.now(tz=pytz.UTC),
+        'created_at': now,
+        'updated_at': now,
     }
 
     query, params = asyncpgsa.compile_query(
@@ -79,16 +45,12 @@ async def update_offers_duplicate(*, offer_id: int, group_id: int, row_version: 
             set_={
                 'group_id': insert_query.excluded.group_id,
                 'row_version': insert_query.excluded.row_version,
-                'updated_at': insert_query.excluded.created_at,
+                'updated_at': insert_query.excluded.updated_at,
             }
-        ).returning(
-            offers_duplicates.c.updated_at,
         )
     )
 
-    row = await pg.get().fetchrow(query, *params)
-
-    return row is None or row['updated_at'] is None
+    await pg.get().execute(query, *params)
 
 
 async def delete_offers_duplicates(offer_ids: List[int]) -> None:
@@ -146,3 +108,21 @@ async def get_duplicate_group_id(offer_id: int) -> Optional[int]:
     row = await pg.get().fetchrow(query, offer_id)
 
     return row['group_id'] if row else None
+
+
+async def get_offer_duplicate_for_update() -> Optional[int]:
+    query = """
+    select
+        offer_id
+    from
+        offers_duplicates
+    where
+        updated_at < current_timestamp - interval '24 hours'
+    order by
+        updated_at
+    limit 1
+    """
+
+    row = await pg.get().fetchrow(query)
+
+    return row['offer_id'] if row else None

@@ -56,6 +56,7 @@ CURRENCIES_TTL: int = 60 * 60  # 1 day
 
 # similar offers
 DUPLICATE_CHECK_ENABLED: bool = False
+SYNC_OFFER_DUPLICATES_TIMEOUT = 10
 SIMILAR_PRICE_KF: float = 0.2
 SIMILAR_ROOM_DELTA: int = 1
 
