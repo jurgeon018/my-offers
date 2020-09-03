@@ -25,7 +25,7 @@ from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
     save_announcement_contract,
 )
-from my_offers.services.duplicates import send_new_offer_duplicate_notifications, update_offers_duplicate
+from my_offers.services.duplicates import send_new_offer_duplicate_notifications, update_offer_duplicates
 from my_offers.services.moderation.moderation_service import save_offer_offence
 from my_offers.services.offers_import import save_offers_import_error
 
@@ -136,7 +136,7 @@ async def update_offer_duplicates_callback(messages: List[Message]) -> None:
     for message in messages:
         data: NeedUpdateDuplicateMessage = message.data
         with new_operation_id():
-            await update_offers_duplicate(data.id)
+            await update_offer_duplicates(data.id)
 
 
 async def new_offer_duplicate_notification_callback(messages: List[Message]) -> None:

@@ -1,7 +1,6 @@
 import asyncio
 from pathlib import Path
 
-import pytest
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
 
