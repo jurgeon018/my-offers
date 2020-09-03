@@ -32,14 +32,17 @@ def v2_build_offer_view(
         max_area=object_model.max_area,
         total_area=object_model.total_area,
         offer_type=offer_type,
-        deal_type=deal_type
+        deal_type=deal_type,
+        coworking_offer_type=object_model.coworking_offer_type,
+        workplace_count=object_model.workplace_count,
     )
     features = get_features(
         bargain_terms=object_model.bargain_terms,
         category=object_model.category,
         total_area=object_model.total_area,
         offer_type=offer_type,
-        deal_type=deal_type
+        deal_type=deal_type,
+        coworking_offer_type=object_model.coworking_offer_type,
     )
     geo_urls = enrich_data.get_urls_by_types(deal_type=deal_type, offer_type=offer_type)
 
