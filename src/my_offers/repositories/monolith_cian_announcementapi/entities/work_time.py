@@ -9,12 +9,13 @@ cian-codegen version: 1.5.0
 
 """
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
-class BusinessShoppingCenter:
-    """ТЦ/БЦ"""
+class WorkTime:
+    """Рабочие часы."""
 
-    id: Optional[int] = None
-    """ID ТЦ/БЦ"""
+    time_from: str
+    """Работает с"""
+    time_to: str
+    """Работает до"""
