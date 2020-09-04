@@ -9,6 +9,7 @@ from my_offers.entities.duplicates import DuplicateSubscription
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories import postgresql
 from my_offers.services import auctions, offer_view
+from my_offers.services.notifications import get_notification_settings
 from my_offers.services.offers import get_page_info, get_pagination, load_object_model
 from my_offers.services.similars.helpers.table import get_similar_table_suffix
 
@@ -19,7 +20,7 @@ async def v1_get_offer_similars_desktop_public(
 ) -> entities.GetOfferDuplicatesDesktopResponse:
     """ Получить список объявлиний типа 'дубли', 'похожие', 'в этом доме' для конрентного объявления. """
     max_count = settings.MAX_SIMILAR_FOR_DESKTOP if settings.MAX_SIMILAR_FOR_DESKTOP > 0 else 100
-    subscription = await _get_subscription(user_id=realty_user_id)
+    subscription = await get_notification_settings(user_id=realty_user_id)
     limit, offset = _get_pagination(pagination=request.pagination, max_count=max_count)
     if offset >= max_count:
         return _get_empty_response(limit, offset, subscription)
@@ -90,13 +91,3 @@ def _get_pagination(*, pagination: Optional[get_offers.Pagination], max_count: i
         limit = max_count - offset
 
     return limit, offset
-
-
-async def _get_subscription(user_id: int) -> DuplicateSubscription:
-    email = await postgresql.get_user_email(user_id=user_id)
-    is_subscribed = bool(email)
-
-    return DuplicateSubscription(
-        subscribed_on_duplicate=is_subscribed,
-        email=email
-    )

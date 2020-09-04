@@ -118,6 +118,15 @@ urlpatterns = base_urls.urlpatterns + [
             base_handler_cls=PublicHandler,
         )
     ),
+    url(
+        r'/public/v1/get-notifications-settings/$',
+        get_handler(
+            service=notifications.get_notification_settings_public,
+            method='GET',  # pragma: no mutate
+            response_schema=entities.DuplicateSubscription,
+            base_handler_cls=PublicHandler,
+        )
+    ),
 
     # Actions
     url(
