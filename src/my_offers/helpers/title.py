@@ -90,19 +90,23 @@ def get_properties(object_model: ObjectModel) -> List[str]:
         object_model.land and object_model.land.area and object_model.land.area_unit_type,
         category in [Category.land_sale, Category.commercial_land_rent, Category.commercial_land_sale]
     ])
+    area = f'{total_area}\xa0{SQUARE_METER_SYMBOL}' if total_area else None
 
-    if title := OFFER_TITLES.get(category):
+    title: Optional[str]
+    is_coworking_office = object_model.coworking_offer_type and object_model.coworking_offer_type.is_office
+    if is_coworking_office:
+        workplaces = f'на {object_model.workplace_count} чел.' if object_model.workplace_count else None
+        title = ' '.join(filter(None, ('Гибкий офис', area, workplaces)))
+        area = None  # чтобы еще раз не добавлять площадь
+    elif title := OFFER_TITLES.get(category):
         if object_model.can_parts and total_area and min_area:
-            area: Optional[str] = f'от\xa0{min_area}\xa0до\xa0{total_area}\xa0{SQUARE_METER_SYMBOL}'
+            area = f'от\xa0{min_area}\xa0до\xa0{total_area}\xa0{SQUARE_METER_SYMBOL}'
         elif is_land:
             unit_type = UNIT_TYPE[object_model.land.area_unit_type]
             area = f'{object_model.land.area}\xa0{unit_type}'
-        else:
-            area = f'{total_area}\xa0{SQUARE_METER_SYMBOL}'
     else:
         flat_type = object_model.flat_type
         rooms_count = object_model.rooms_count
-        area = f'{total_area}\xa0{SQUARE_METER_SYMBOL}' if total_area else None
 
         if rooms_count:
             title = f'{rooms_count}-комн.\xa0кв.' if 1 <= rooms_count <= 5 else 'Многокомн.\xa0кв.'

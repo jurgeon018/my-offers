@@ -4,7 +4,7 @@
 CURL поискового запроса:
 ```
 curl -X POST \
-  http://localhost:8000/v1/get-offers/ \
+  http://localhost:8000/v2/get-offers/ \
   -H 'Content-Type: application/json' \
   -H 'Host: localhost:8000' \
   -d '{

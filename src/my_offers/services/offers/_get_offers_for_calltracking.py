@@ -55,5 +55,7 @@ def _map_offer_for_calltracking_card(object_model: ObjectModel) -> entities.Offe
             total_area=object_model.total_area,
             offer_type=offer_type,
             deal_type=deal_type,
+            coworking_offer_type=object_model.coworking_offer_type,
+            workplace_count=object_model.workplace_count,
         ),
     )
