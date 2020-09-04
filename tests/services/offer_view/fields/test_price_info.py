@@ -1,4 +1,5 @@
 import pytest
+from cian_test_utils import v
 
 from my_offers import enums
 from my_offers.entities import PriceInfo
@@ -12,7 +13,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms
     PriceType,
     VatType,
 )
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, CoworkingOfferType
 
 
 @pytest.mark.parametrize(
@@ -145,7 +146,60 @@ def test_get_price_info(
         total_area=total_area,
         offer_type=offer_type,
         deal_type=deal_type,
+        coworking_offer_type=None,
+        workplace_count=None,
     )
 
     # assert
     assert result == expected
+
+
+def test_get_price_info__coworking_office__price_for_all():
+    """Цена указана за весь офис, ожидаем цену за рабочее место"""
+    # arrange
+    bargain_terms = v(BargainTerms(price=10000.0, currency=Currency.rur, price_type=PriceType.all))
+
+    # act
+    result = get_price_info(
+        bargain_terms=bargain_terms,
+        category=Category.office_rent,
+        can_parts=False,
+        min_area=None,
+        max_area=20,
+        total_area=20,
+        offer_type=enums.OfferType.commercial,
+        deal_type=enums.DealType.rent,
+        coworking_offer_type=CoworkingOfferType.office,
+        workplace_count=10,
+    )
+
+    # assert
+    assert result == v(PriceInfo(exact='1\xa0000\xa0₽/мес. за рабочее место', range=None))
+
+
+def test_get_price_info__coworking_office__price_for_workplace():
+    """Есть цена за рабочее место"""
+    # arrange
+    bargain_terms = v(BargainTerms(
+        price=10000.0,
+        currency=Currency.rur,
+        price_type=PriceType.all,
+        price_for_workplace=2000,
+    ))
+
+    # act
+    result = get_price_info(
+        bargain_terms=bargain_terms,
+        category=Category.office_rent,
+        can_parts=False,
+        min_area=None,
+        max_area=20,
+        total_area=20,
+        offer_type=enums.OfferType.commercial,
+        deal_type=enums.DealType.rent,
+        coworking_offer_type=CoworkingOfferType.office,
+        workplace_count=10,
+    )
+
+    # assert
+    assert result == v(PriceInfo(exact='2\xa0000\xa0₽/мес. за рабочее место', range=None))

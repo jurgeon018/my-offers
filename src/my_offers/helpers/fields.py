@@ -6,7 +6,12 @@ from my_offers.helpers.numbers import get_pretty_number
 from my_offers.helpers.time import get_aware_date
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Flags, ObjectModel, Photo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Source, Status
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import (
+    Category,
+    CoworkingOfferType,
+    Source,
+    Status,
+)
 
 
 CURRENCY = {
@@ -65,8 +70,13 @@ def get_price_info(
         max_area: Optional[float],
         total_area: Optional[float],
         offer_type: enums.OfferType,
-        deal_type: enums.DealType
+        deal_type: enums.DealType,
+        coworking_offer_type: Optional[CoworkingOfferType],
+        workplace_count: Optional[int],
 ) -> entities.PriceInfo:
+    if coworking_offer_type and coworking_offer_type.is_office and workplace_count:
+        return _get_price_for_workplace(bargain_terms=bargain_terms, workplace_count=workplace_count)
+
     currency = CURRENCY.get(bargain_terms.currency)
     if not currency:
         return entities.PriceInfo(exact=None, range=None)
@@ -114,3 +124,15 @@ def get_price_info(
         price_exact = f'{pretty_price}\xa0{currency}'
 
     return entities.PriceInfo(exact=price_exact, range=price_range)
+
+
+def _get_price_for_workplace(*, bargain_terms: BargainTerms, workplace_count: int) -> entities.PriceInfo:
+    price_for_workplace = bargain_terms.price_for_workplace
+    if not price_for_workplace:
+        price_for_workplace = bargain_terms.price / workplace_count
+
+    pretty_price = get_pretty_number(price_for_workplace)
+    currency = CURRENCY.get(bargain_terms.currency)
+    return entities.PriceInfo(
+        exact=f'{pretty_price}\xa0{currency}/мес. за рабочее место'
+    )

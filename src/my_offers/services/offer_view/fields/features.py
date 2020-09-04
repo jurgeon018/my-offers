@@ -3,7 +3,7 @@ from typing import List, Optional
 from my_offers import enums
 from my_offers.helpers.numbers import get_pretty_number
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, CoworkingOfferType
 from my_offers.services.offer_view.constants import CURRENCY, SQUARE_METER_SYMBOL
 
 
@@ -13,7 +13,8 @@ def get_features(
         category: Category,
         total_area: Optional[float],
         offer_type: enums.OfferType,
-        deal_type: enums.DealType
+        deal_type: enums.DealType,
+        coworking_offer_type: Optional[CoworkingOfferType],
 ) -> List[str]:
     is_commercial = offer_type.is_commercial
     is_newobject = category.is_new_building_flat_sale
@@ -60,8 +61,10 @@ def get_features(
             features.append(f'Залог: {bargain_terms.deposit} {currency}')
 
         if is_commercial:
-
-            if is_square_meter and currency and price:
+            if coworking_offer_type and coworking_offer_type.is_office:
+                pretty_price = get_pretty_number(price)
+                features.append(f'{pretty_price}\xa0{currency}/мес. за весь офис')
+            elif is_square_meter and currency and price:
                 if bargain_terms.payment_period and bargain_terms.payment_period.is_monthly:
                     months_count = 12
                 else:

@@ -1,9 +1,20 @@
 import pytest
+from cian_test_utils import v
 
 from my_offers.helpers.title import _get_floors, get_offer_title
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Land, ObjectModel, Phone
+from my_offers.repositories.monolith_cian_announcementapi.entities import (
+    BargainTerms,
+    Building,
+    Land,
+    ObjectModel,
+    Phone,
+)
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import (
+    Category,
+    CoworkingOfferType,
+    FlatType,
+)
 
 
 @pytest.mark.parametrize(
@@ -72,6 +83,34 @@ def test__get_floors(floor_number, floors_count, expected):
                 flat_type=FlatType.studio,
             ),
             'Квартира-студия'
+        ),
+        (
+            v(ObjectModel(
+                id=111,
+                bargain_terms=BargainTerms(price=123.0),
+                category=Category.office_rent,
+                phones=[Phone(country_code='1', number='12312')],
+                user_id=222,
+                total_area=100.0,
+                workplace_count=10,
+                floor_number=1,
+                building=v(Building(floors_count=19)),
+                coworking_offer_type=CoworkingOfferType.office,
+            )),
+            'Гибкий офис 100\xa0м² на 10 чел., 1/19 этаж'
+        ),
+        (
+            v(ObjectModel(
+                id=111,
+                bargain_terms=BargainTerms(price=123.0),
+                category=Category.office_rent,
+                phones=[Phone(country_code='1', number='12312')],
+                user_id=222,
+                total_area=100.0,
+                workplace_count=None,
+                coworking_offer_type=CoworkingOfferType.office,
+            )),
+            'Гибкий офис 100\xa0м²'
         ),
     )
 )
