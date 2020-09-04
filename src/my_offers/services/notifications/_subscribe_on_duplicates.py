@@ -3,6 +3,7 @@ from cian_web.exceptions import BrokenRulesException, Error
 from simple_settings import settings
 
 from my_offers.entities import NewEmailSubscription, SubscribeOnDuplicatesRequest, UnsubscribeOnDuplicatesRequest
+from my_offers.entities.duplicates import DuplicateSubscription
 from my_offers.helpers.emails import is_correct_email
 from my_offers.repositories import postgresql
 
@@ -46,6 +47,21 @@ async def unsubscribe_on_duplicates(
         )])
 
     await postgresql.delete_new_offers_subscription(user_id=realty_user_id)
+
+
+async def get_notification_settings(user_id: int) -> DuplicateSubscription:
+    email = await postgresql.get_user_email(user_id=user_id)
+    is_subscribed = bool(email)
+
+    return DuplicateSubscription(
+        subscribed_on_duplicate=is_subscribed,
+        email=email
+    )
+
+
+async def get_notification_settings_public(realty_user_id: int) -> DuplicateSubscription:
+    """ Получить настройки подписки по пользотелю """
+    return await get_notification_settings(user_id=realty_user_id)
 
 
 def _validate_email(email: str) -> None:

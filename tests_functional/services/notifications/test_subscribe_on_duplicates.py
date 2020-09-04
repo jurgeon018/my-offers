@@ -153,3 +153,27 @@ async def test_public_v1_unsubscribe_on_duplicates__user_not_subscribed(http, pg
         }],
         'message': expected_message
     }
+
+
+async def test_public_v1_get_notification_settings(http, pg):
+    # arrange
+    user_id = 6808488
+    email = 'kek@example.com'
+
+    await pg.execute(
+        'INSERT INTO offers_email_notification_settings (user_id, email) VALUES($1, $2)',
+        [user_id, email]
+    )
+    # act
+    response = await http.request(
+        'GET',
+        '/public/v1/get-notifications-settings/',
+        headers={'X-Real-UserId': user_id},
+        expected_status=200
+    )
+
+    # assert
+    assert response.data == {
+        'email': email,
+        'subscribedOnDuplicate': True
+    }
