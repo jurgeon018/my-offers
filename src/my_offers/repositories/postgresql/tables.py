@@ -12,6 +12,7 @@ deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
 offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type', )
 _offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type', )
 _service = psa.ENUM(*get_names(Services), name='offer_service', )
+_offer_payed_by = psa.ENUM(*get_names(enums.OfferPayedByType), name='offer_payed_by', )
 
 offers = sa.Table(
     'offers',
@@ -39,6 +40,7 @@ offers = sa.Table(
     sa.Column('street_name', sa.String),
     sa.Column('sort_date', sa.TIMESTAMP),
     sa.Column('is_test', sa.BOOLEAN),
+    sa.Column('payed_by', _offer_payed_by, nullable=True),
 )
 
 offers_billing_contracts = sa.Table(

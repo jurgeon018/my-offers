@@ -28,6 +28,8 @@ class Offer:
     """Объявление закрытой базы"""
     has_photo: bool
     """С фотографиями"""
+    payed_by: Optional[enums.OfferPayedByType]
+    """За чей счет оплачена подача объявления"""
     # поля для поиска
     search_text: str
     """Текст для поиска"""
@@ -51,6 +53,8 @@ class Offer:
     """Время в пути в минутах до метро пешком, мин"""
     sort_date: Optional[datetime] = None
     """Дата для сортировки"""
+
+    
 
 
 @dataclass
