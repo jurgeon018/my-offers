@@ -82,7 +82,8 @@ async def test_v2_get_offers_public(mocker):
             can_view_similar_offers=False
         ),
         page_specific_info=PageSpecificInfo(),
-        status_type=None
+        status_type=None,
+        payed_by=None
     )
 
     expected_result = GetOffersV2Response(
@@ -195,7 +196,8 @@ async def test_v2_get_offers_public__offers_degraded__error(mocker):
             can_view_similar_offers=False
         ),
         page_specific_info=PageSpecificInfo(),
-        status_type=None
+        status_type=None,
+        payed_by=None
     )
 
     get_object_models_mock = mocker.patch(
@@ -352,7 +354,8 @@ async def test_v2_get_offer_views(mocker):
                         auction=None
                     ),
                 ),
-                status_type=None
+                status_type=None,
+                payed_by=None
             )
         ],
         {}
