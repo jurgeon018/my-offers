@@ -34,7 +34,7 @@ from tests_functional.utils import load_json_data
 )
 async def test_process_announcement_consumer(queue_service, pg, offer, expected):
     """
-    Сохрарнение активного объявления.
+    Сохранение активного объявления.
     """
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
@@ -52,7 +52,7 @@ async def test_process_announcement_consumer(queue_service, pg, offer, expected)
 ])
 async def test_process_announcement_consumer__archive_offer(queue_service, pg, offer_archive):
     """
-    Сохрарнение архивного объявления.
+    Сохранение архивного объявления.
     """
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')

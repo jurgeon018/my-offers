@@ -80,6 +80,12 @@ class AnnouncementProcessor:
         return offer
 
     async def _get_master_user_id(self, *, offer_id: int, user_id: int) -> int:
+        """
+        Возвращаем идентификатор, который сохраним в таблицу объявлений
+        как идентификатор мастера. Значение в дальнейшем используется 
+        при запросах объявлений от мастера для возвращения ему объявлений сабов.
+        """
+
         master_user_id = await get_master_user_id(user_id)
 
         return master_user_id if master_user_id else user_id
