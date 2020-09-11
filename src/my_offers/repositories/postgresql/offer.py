@@ -26,7 +26,7 @@ from my_offers.repositories.postgresql.offer_conditions import prepare_condition
 
 
 async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
-    """ Сохрнаить любое объявление, кроме архива. """
+    """ Сохранить любое объявление, кроме архива. """
     insert_query = insert(tables.offers)
 
     now = datetime.now(tz=pytz.UTC)
@@ -73,7 +73,7 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
 
 
 async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> None:
-    """ Сохрнаить архивное объявление.
+    """ Сохранить архивное объявление.
         Если объявление уже есть в БД, то row_version не обновляем.
 
         Realty объявление, которое перенесли в архив чаще всего приходит с row_version = 1.

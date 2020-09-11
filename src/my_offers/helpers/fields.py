@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from my_offers import entities, enums
+from my_offers.enums import OfferPayedByType
 from my_offers.helpers.numbers import get_pretty_number
 from my_offers.helpers.time import get_aware_date
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Flags, ObjectModel, Photo
@@ -12,6 +13,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
     Source,
     Status,
 )
+from my_offers.repositories.postgresql.billing import get_offer_publisher_user_id
 
 
 CURRENCY = {
@@ -159,5 +161,19 @@ def get_offer_payed_by(
         return enums.OfferPayedBy.by_master
     if user_id == payed_by:
         return enums.OfferPayedBy.by_agent
+    
+    return None
+
+
+async def get_payed_by(master_user_id: Optional[int], published_user_id: int, offer_id: int) -> Optional[OfferPayedByType]:
+    if not master_user_id:
+        return None
+    publisher_user_id: int = await get_offer_publisher_user_id(offer_id)
+    if not publisher_user_id:
+        return None
+    if publisher_user_id == published_user_id:
+        return OfferPayedByType.by_agent
+    elif publisher_user_id == master_user_id:
+        return OfferPayedByType.by_master
 
     return None

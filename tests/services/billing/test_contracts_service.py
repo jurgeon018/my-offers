@@ -229,6 +229,8 @@ async def test__mark_to_delete_announcement_contract__ignore_types(mocker, targe
 
 async def test_post_save_contract(mocker):
     # arrange
+    master_user_id = 1
+    offer_id = 999999
     offer_contract = OfferBillingContract(
         id=1,
         user_id=555,
@@ -236,7 +238,7 @@ async def test_post_save_contract(mocker):
         publisher_user_id=888,
         start_date=datetime(2020, 1, 2),
         payed_till=datetime(2020, 2, 2),
-        offer_id=999999,
+        offer_id=offer_id,
         row_version=0,
         is_deleted=False,
         created_at=datetime(2020, 2, 2),
@@ -248,11 +250,17 @@ async def test_post_save_contract(mocker):
         return_value=future()
     )
 
+    get_master_user_id = mocker.patch(
+        'my_offers.services.billing.contracts_service.postgresql.get_master_user_id',
+        return_value=future(master_user_id)
+    )
+
+
     # act
     await post_save_contract(offer_contract)
 
     # assert
     update_offer_master_user_id_mock.assert_called_once_with(
-        offer_id=999999,
-        master_user_id=888,
+        offer_id=offer_id,
+        master_user_id=master_user_id,
     )

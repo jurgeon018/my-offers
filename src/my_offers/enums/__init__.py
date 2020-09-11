@@ -5,10 +5,10 @@ from my_offers.enums.duplicate import DuplicateTabType, DuplicateType, PriceTren
 from my_offers.enums.moderation import ModerationOffenceStatus
 from my_offers.enums.offer_address import AddressType
 from my_offers.enums.offer_payed_by import OfferPayedBy
+from my_offers.enums.offer_payed_by_type import OfferPayedByFilterType, OfferPayedByType
 from my_offers.enums.offer_services import OfferServices
 from my_offers.enums.offer_status import OfferStatusTab
 from my_offers.enums.offer_type import OfferType
 from my_offers.enums.offer_vas import OfferVas
 from my_offers.enums.sort_types import GetOffersSortType
 from my_offers.enums.valuation import PriceEstimate
-from my_offers.enums.offer_payed_by_type import OfferPayedByType, OfferPayedByFilterType

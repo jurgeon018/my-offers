@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import pytest
 from cian_json import json
 
+from my_offers.enums import OfferPayedByType
 from tests_functional.utils import load_json_data
 
 
@@ -238,7 +239,7 @@ async def test_process_announcement_consumer__archive_updated_to_active(
         offer_active
 ):
     """
-    Сохрарнение активного объявления после архивного объявления.
+    Сохранение активного объявления после архивного объявления.
     Архивное объявление обновлено до активного.
     """
     archive_row_version = 0
@@ -261,3 +262,163 @@ async def test_process_announcement_consumer__archive_updated_to_active(
 
     assert row['status_tab'] == 'active'
     assert row['row_version'] == active_row_version
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(('offer', 'master_user_id', 'published_user_id', 'publisher_user_id', 'offer_id', 'expected'), [
+    (load_json_data(__file__, 'announcement.json'),
+     1, 2, 1, 1, OfferPayedByType.by_master.value),
+    (load_json_data(__file__, 'announcement.json'),
+     1, 2, 2, 1, OfferPayedByType.by_agent.value),
+])
+async def test_process_announcement_consumer__payed_by(
+        queue_service,
+        pg,
+        offer,
+        master_user_id,
+        published_user_id,
+        publisher_user_id,
+        offer_id,
+        expected
+):
+    """
+    Проверка проставления корректного значения в поле payed_by
+    в зависимости от пришедших в сообщении идентификаторов.
+    """
+    # arrange
+    now = datetime.now()
+    await pg.execute(
+        """
+        INSERT INTO public.agents_hierarchy (
+            id,
+            row_version,
+            realty_user_id,
+            master_agent_user_id,
+            created_at,
+            updated_at,
+            account_type
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7),
+            ($8, $9, $10, $11, $12, $13, $14)
+        """,
+        [
+            1, 1, published_user_id, master_user_id, now, now, 'Specialist',
+            2, 1, master_user_id, None, now, now, 'Agency'
+        ]
+    )
+    await asyncio.sleep(1)
+
+    # arrange
+    await pg.execute(
+        """
+        INSERT INTO public.offers_billing_contracts (
+            id,
+            user_id,
+            actor_user_id,
+            publisher_user_id,
+            offer_id,
+            start_date,
+            payed_till,
+            row_version,
+            is_deleted,
+            created_at,
+            updated_at
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        """,
+        [
+            1, 1, 1, publisher_user_id, offer_id, now, now, 1, False, now, now
+        ]
+    )
+    await asyncio.sleep(1)
+
+    offer['model']['publishedUserId'] = published_user_id
+    offer['model']['userId'] = published_user_id
+    offer['model']['id'] = offer_id
+
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+
+    assert row['payed_by'] == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(('offer', 'published_user_id', 'expected'), [
+    (load_json_data(__file__, 'announcement.json'), 1, None),
+])
+async def test_process_announcement_consumer__payed_by_without_master(
+        queue_service,
+        pg,
+        offer,
+        published_user_id,
+        expected
+):
+    """
+    Проверка проставления корректного значения в поле payed_by
+    в случае учетной записи без мастера.
+    """
+    # arrange
+    now = datetime.now()
+    await pg.execute(
+        """
+        INSERT INTO public.agents_hierarchy (
+            id,
+            row_version,
+            realty_user_id,
+            master_agent_user_id,
+            created_at,
+            updated_at,
+            account_type
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7)
+        """,
+        [
+            1, 1, published_user_id, None, now, now, 'Specialist',
+        ]
+    )
+
+    offer['model']['publishedUserId'] = published_user_id
+    offer['model']['userId'] = published_user_id
+
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+
+    assert row['payed_by'] == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(('offer', 'expected'), [
+    (load_json_data(__file__, 'announcement.json'), None),
+])
+async def test_process_announcement_consumer__payed_by_missing_billing(
+        queue_service,
+        pg,
+        offer,
+        expected
+):
+    """
+    При отсутствующей записи объявления в таблице биллинга
+    в поле payed_by записывается пустое значение.
+    """
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+
+    assert row['payed_by'] == expected

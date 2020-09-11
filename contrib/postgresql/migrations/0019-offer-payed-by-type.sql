@@ -1,6 +1,6 @@
 CREATE TYPE offer_payed_by_type as enum (
-    'by_master',
-    'by_agent'
+    'byMaster',
+    'byAgent'
     );
 
 ALTER TABLE offers
