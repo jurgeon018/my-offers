@@ -166,12 +166,11 @@ def get_offer_payed_by(
 
 
 async def get_payed_by(master_user_id: Optional[int], published_user_id: int, offer_id: int) -> Optional[OfferPayedByType]:
-    if not master_user_id:
-        return None
     publisher_user_id: int = await get_offer_publisher_user_id(offer_id)
-    if not publisher_user_id:
+    
+    if not master_user_id or not publisher_user_id:
         return None
-    if publisher_user_id == published_user_id:
+    elif publisher_user_id == published_user_id:
         return OfferPayedByType.by_agent
     elif publisher_user_id == master_user_id:
         return OfferPayedByType.by_master
