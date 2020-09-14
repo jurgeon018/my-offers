@@ -13,6 +13,7 @@ from my_offers.helpers.fields import get_payed_by
         (1, 2, 2, OfferPayedByType.by_agent),
         (1, 2, None, None),
         (None, 1, 1, None),
+        (1, 3, 2, None)
     )
 )
 async def test_get_paid_by(mocker, master_user_id, published_user_id, publisher_user_id, expected):

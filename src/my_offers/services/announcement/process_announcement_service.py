@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from my_offers import entities
-from my_offers.enums import OfferPayedByType
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_payed_by, get_sort_date, is_test
 from my_offers.helpers.status_tab import get_status_tab
@@ -9,7 +8,6 @@ from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
 from my_offers.repositories.postgresql.agents import get_master_user_id
-from my_offers.repositories.postgresql.billing import get_offer_publisher_user_id
 from my_offers.services import similars
 from my_offers.services.announcement.fields.prices import get_prices
 from my_offers.services.announcement.fields.search_text import get_search_text
@@ -30,7 +28,7 @@ async def process_announcement(object_model: ObjectModel, event_date: datetime) 
 class AnnouncementProcessor:
 
     async def process(self, object_model: ObjectModel):
-        master_user_id = await self._get_master_user_id(offer_id=object_model.id, user_id=object_model.user_id)
+        master_user_id = await self._get_master_user_id(user_id=object_model.user_id)
         offer = await self._prepare_offer(object_model=object_model, master_user_id=master_user_id)
 
         await self._save_offer(offer)
@@ -79,10 +77,10 @@ class AnnouncementProcessor:
 
         return offer
 
-    async def _get_master_user_id(self, *, offer_id: int, user_id: int) -> int:
+    async def _get_master_user_id(self, *, user_id: int) -> int:
         """
         Возвращаем идентификатор, который сохраним в таблицу объявлений
-        как идентификатор мастера. Значение в дальнейшем используется 
+        как идентификатор мастера. Значение в дальнейшем используется
         при запросах объявлений от мастера для возвращения ему объявлений сабов.
         """
 

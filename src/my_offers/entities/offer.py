@@ -54,8 +54,6 @@ class Offer:
     sort_date: Optional[datetime] = None
     """Дата для сортировки"""
 
-    
-
 
 @dataclass
 class ReindexOfferItem:
