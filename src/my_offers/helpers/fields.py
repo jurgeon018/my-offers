@@ -58,7 +58,17 @@ def get_main_photo_url(
 ) -> Optional[str]:
     if not photos:
         return None
-    return photos[0].thumbnail_url if better_quality else photos[0].mini_url
+
+    for photo in photos:
+        if photo.is_default:
+            break
+    else:
+        photo = photos[0]
+
+    if better_quality and photo.thumbnail_url:
+        return photo.thumbnail_url
+
+    return photo.mini_url
 
 
 def get_price_info(

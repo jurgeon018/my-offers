@@ -63,7 +63,7 @@ def build_duplicate_view_desktop(
             offer_type=offer_type
         ),
         title=get_offer_title(object_model),
-        main_photo_url=get_main_photo_url(object_model.photos, better_quality=True),
+        main_photo_url=get_main_photo_url(object_model.photos),
         geo=fields.prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),
         price_info=get_price_info(
