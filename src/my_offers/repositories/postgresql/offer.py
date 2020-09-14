@@ -12,6 +12,7 @@ from my_offers import entities, enums, pg
 from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
+from my_offers.enums import OfferStatusTab
 from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.offer_mapper import (
     offer_mapper,
@@ -257,3 +258,25 @@ async def get_offers_ids_by_tab(filters: Dict[str, Any]) -> List[int]:
     rows = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
 
     return [row['offer_id'] for row in rows]
+
+
+async def set_offers_is_deleted(offers_ids: List[int]) -> None:
+    now = datetime.now(tz=pytz.UTC)
+    values = {
+        'status_tab': OfferStatusTab.deleted.value,
+        'updated_at': now
+    }
+
+    query, params = asyncpgsa.compile_query(
+        update(
+            tables.offers
+        ).values(
+            values
+        ).where(
+            and_(
+                tables.offers.c.offer_id.in_(offers_ids)
+            )
+        )
+    )
+
+    await pg.get().execute(query, *params)
