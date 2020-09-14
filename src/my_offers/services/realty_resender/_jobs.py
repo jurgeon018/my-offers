@@ -68,7 +68,7 @@ async def _send_offers(offers_ids: List[int]) -> None:
 
         err_offers_ids = [
             err.realty_object_id for err in realty_offers.errors
-            if err.code in ['announcement_not_found', 'old_unpublished_invalid_announcement']
+            if err.code in ELASTIC_OFFER_INVALID_CODES
         ]
 
         if err_offers_ids:
