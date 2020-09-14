@@ -86,7 +86,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found
                 'type': 'duplicate',
                 'url': 'http://master.dev3.cian.ru/rent/flat/173975523',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/1/644/244/'
-                                'kvartira-tula-prospekt-lenina-442446187-2.jpg',
+                                'kvartira-tula-prospekt-lenina-442446187-3.jpg',
                 'vas': ['auction', 'top3'],
                 'displayDate': '2020-05-14T03:06:16.493000+00:00'
             },
@@ -103,7 +103,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found
                 'url': 'http://master.dev3.cian.ru/sale/flat/231659418',
                 'displayDate': '2020-05-09T10:06:29.159746+00:00',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/6/179/378/'
-                                'kvartira-nizhniy-tagil-ulica-ciolkovskogo-873971625-2.jpg',
+                                'kvartira-nizhniy-tagil-ulica-ciolkovskogo-873971625-3.jpg',
                 'auctionBet': None
             }
         ],
@@ -163,7 +163,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__offers_found__20
                 'displayDate': '2020-07-08T12:28:46.727000+00:00',
                 'vas': [],
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/3/572/154/'
-                                'kvartira-makarenko-botanicheskaya-ulica-451275372-2.jpg',
+                                'kvartira-makarenko-botanicheskaya-ulica-451275372-3.jpg',
                 'offerId': 177300443,
                 'geo': {
                     'underground': None,
