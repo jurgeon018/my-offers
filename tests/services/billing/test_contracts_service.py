@@ -45,6 +45,7 @@ async def test_save_announcement_contract(mocker):
         is_deleted=False,
         created_at=now,
         updated_at=now,
+        service_types=[],
     )
     save_offer_contract_mock = mocker.patch(
         'my_offers.services.billing.contracts_service.postgresql.save_offer_contract',
@@ -245,6 +246,7 @@ async def test_post_save_contract_old(mocker):
         is_deleted=False,
         created_at=datetime(2020, 2, 2),
         updated_at=datetime(2020, 2, 2),
+        service_types=[]
     )
 
     update_offer_master_user_id_mock = mocker.patch(

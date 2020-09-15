@@ -12,6 +12,8 @@ deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
 offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type', )
 _offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type', )
 _service = psa.ENUM(*get_names(Services), name='offer_service', )
+_offer_billing_service_type = psa.ENUM(*get_names(Services), name='offer_billing_service_type', )
+
 
 offers = sa.Table(
     'offers',
@@ -57,6 +59,7 @@ offers_billing_contracts = sa.Table(
     sa.Column('is_deleted', sa.BOOLEAN, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('service_types', sa.ARRAY(_offer_billing_service_type), default=[], nullable=False),
 )
 
 offers_last_import_error = sa.Table(

@@ -23,7 +23,7 @@ class AnnouncementBillingContract:
     """Id объекта применения"""
     target_object_type: enums.TargetObjectType
     """Тип объекта"""
-    service_types: List[str]
+    service_types: List[enums.OfferServiceTypes]
     """Услуги"""
     service_package_group_id: Optional[int] = None
     """Id группы слотов в пакете. Заполняется при размещении объявления из пакета"""
@@ -57,3 +57,5 @@ class OfferBillingContract:
     """Время создания контракта"""
     updated_at: datetime
     """Время изменения контракта"""
+    service_types: List[enums.OfferServiceTypes]
+    """Услуги"""
