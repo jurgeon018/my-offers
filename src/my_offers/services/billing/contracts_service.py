@@ -40,12 +40,17 @@ async def save_announcement_contract(billing_contract: AnnouncementBillingContra
 
 
 async def post_save_contract(contract: OfferBillingContract) -> None:
+    """ Актуализируем данные о мастере объявления на основе контракта на
+        случай если у агента поменялся мастер. Если не удается определить
+        мастера для пользователя контракта, то используем в объявлении
+        publisher_id в качестве мастера
+    """
     master_user_id = await postgresql.get_master_user_id(contract.user_id)
 
     if contract.publisher_user_id != contract.user_id:
         await postgresql.update_offer_master_user_id(
             offer_id=contract.offer_id,
-            master_user_id=master_user_id if master_user_id else contract.user_id
+            master_user_id=master_user_id if master_user_id else contract.publisher_user_id
         )
 
 
