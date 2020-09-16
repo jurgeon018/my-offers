@@ -7,6 +7,7 @@ from my_offers.enums.offer_address import AddressType
 from my_offers.enums.offer_payed_by_type import OfferPayedByFilterType, OfferPayedByType
 from my_offers.enums.offer_services import OfferServices
 from my_offers.enums.offer_service_types import OfferServiceTypes
+from my_offers.enums.offer_services import OfferServices
 from my_offers.enums.offer_status import OfferStatusTab
 from my_offers.enums.offer_type import OfferType
 from my_offers.enums.offer_vas import OfferVas

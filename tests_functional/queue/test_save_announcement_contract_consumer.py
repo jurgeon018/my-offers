@@ -21,8 +21,7 @@ async def test_process_save_announcement_correct_service_type(
     pg,
     expected_service_types
 ):
-    """
-      Проверка сохранения корректного типа услуги у приходящего контракта.
+    """ Проверка сохранения корректного типа услуги у приходящего контракта.
     """
     # arrange
     now_isoformat = datetime.now(pytz.utc).isoformat()
@@ -62,8 +61,7 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
     queue_service,
     http
 ):
-    """
-      Проверка выдачи пустой даты payed_till в ответ на запрос объявлений, если у объявления есть только 1 контракт, в котором есть услуга calltracking.
+    """ Проверка выдачи пустой даты payed_till в ответ на запрос объявлений, если у объявления есть только 1 контракт, в котором есть услуга calltracking.
     """
     # arrange
     now_isoformat = datetime.now(pytz.utc).isoformat()
@@ -113,8 +111,7 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
     queue_service,
     http
 ):
-    """
-      Проверка выдачи корректной даты payed_till если у объявления есть контракты без calltracking.
+    """ Проверка выдачи корректной даты payed_till, если у объявления есть контракты без calltracking.
     """
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
@@ -180,8 +177,7 @@ async def test_process_save_announcement_correct_payed_till_returned_with_calltr
     queue_service,
     http
 ):
-    """
-      Проверка выдачи корректной даты payed_till если у объявления есть контракты c calltracking.
+    """ Проверка выдачи корректной даты payed_till если у объявления есть контракты c calltracking.
     """
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')

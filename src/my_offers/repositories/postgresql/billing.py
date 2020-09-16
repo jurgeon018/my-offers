@@ -3,14 +3,16 @@ from typing import Dict, List, Optional
 
 import asyncpgsa
 from simple_settings import settings
-from sqlalchemy import and_, update
+from sqlalchemy import and_, any_, not_, select, update
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.sql import func
 
-from my_offers import pg
+from my_offers import enums, pg
 from my_offers.entities import OfferBillingContract
-from my_offers.mappers.billing import offer_billing_contract_mapper
-from my_offers.repositories.postgresql.tables import offers_billing_contracts
 from my_offers.enums import OfferServiceTypes
+from my_offers.mappers.billing import offer_billing_contract_mapper
+from my_offers.repositories.postgresql import tables
+from my_offers.repositories.postgresql.tables import offers_billing_contracts
 
 
 async def save_offer_contract(offer_contract: OfferBillingContract) -> Optional[int]:
@@ -56,27 +58,47 @@ async def set_offer_contract_is_deleted_status(*, contract_id: int, row_version:
 
 
 async def get_offers_payed_till(offer_ids: List[int],
-                                exclude_service_types: Optional[List[OfferServiceTypes]] = None) -> Dict[int, datetime]:
-    if exclude_service_types is None:
-        exclude_service_types = []
-
-    query = """
-    select
-        offer_id,
-        max(payed_till) as payed_till
-    from
-        offers_billing_contracts
-    where
-        not is_deleted
-        and 'calltracking' != any(service_types)
-        and offer_id = any($1::bigint[])
-    group by
-        offer_id
+                                exclude_service_type: Optional[OfferServiceTypes] = None) -> Dict[int, datetime]:
+    """ Вытаскиваем из базы даты окончания оплаты для списка объявлений.
+        У одного объявления может быть несколько контрактов, берется максимальная дата
+        и при этом исключаются контракты с переданной услугой.
     """
 
-    rows = await pg.get().fetch(query, offer_ids, timeout=settings.DB_TIMEOUT)
+    collumn = tables.offers_billing_contracts.c
+    options = [
+        not_(collumn.is_deleted),
+        collumn.offer_id == any_(offer_ids)
+    ]
+
+    if exclude_service_type:
+        options.append(exclude_service_type != any_(collumn.service_types))
+
+    query, params = asyncpgsa.compile_query(
+        select((
+            collumn.offer_id,
+            func.max(collumn.payed_till).label('payed_till')
+        )).where(
+            and_(
+                *options
+                )
+        ).group_by(collumn.offer_id)
+    )
+
+    rows = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
 
     return {row['offer_id']: row['payed_till'] for row in rows}
+
+
+async def get_offers_payed_till_excluding_calltracking(offer_ids: List[int]) -> Dict[int, datetime]:
+    """ Вытаскиваем из базы дату окончания оплаты для объявлений, исключая
+        контракты с услугой calltracking. Сделано для отображения пользователям
+        корректного числа оставшихся дней публикации объявления
+    """
+
+    return await get_offers_payed_till(
+        offer_ids,
+        enums.OfferServiceTypes.calltracking.value
+    )
 
 
 async def get_offer_publisher_user_id(offer_id: int) -> Optional[int]:

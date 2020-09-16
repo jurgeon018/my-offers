@@ -22,7 +22,7 @@ from my_offers.services.offers._get_offers import (
     get_offer_premoderations_degradation_handler,
     get_offers_offence_degradation_handler,
     get_offers_payed_by_degradation_handler,
-    get_offers_payed_till_degradation_handler,
+    get_offers_payed_till_excluding_calltracking_degradation_handler,
     get_offers_update_at_degradation_handler,
     get_searches_counts_degradation_handler,
     get_similars_counters_by_offer_ids_degradation_handler,
@@ -229,7 +229,7 @@ async def _load_archive_date(offer_ids: List[int]) -> EnrichItem:
 
 @async_statsd_timer('enrich.load_payed_till')
 async def _load_payed_till(offer_ids: List[int]) -> EnrichItem:
-    result = await get_offers_payed_till_degradation_handler(offer_ids)
+    result = await get_offers_payed_till_excluding_calltracking_degradation_handler(offer_ids)
 
     return EnrichItem(key='payed_till', degraded=result.degraded, value=result.value)
 
