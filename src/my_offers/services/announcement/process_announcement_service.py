@@ -31,9 +31,7 @@ class AnnouncementProcessor:
 
     async def process(self, object_model: ObjectModel):
         master_user_id = await self._get_master_user_id(user_id=object_model.user_id)
-        payed_by = await get_payed_by(master_user_id=master_user_id,
-                                      published_user_id=object_model.published_user_id,
-                                      offer_id=object_model.id)
+        payed_by = await get_payed_by(offer_id=object_model.id)
         offer = self._prepare_offer(object_model=object_model,
                                     master_user_id=master_user_id,
                                     payed_by=payed_by)
@@ -48,7 +46,7 @@ class AnnouncementProcessor:
                        *,
                        object_model: ObjectModel,
                        master_user_id: int,
-                       payed_by: Optional[OfferPayedByType]) -> entities.Offer:
+                       payed_by: Optional[int]) -> entities.Offer:
         """
         Метод для заполнения полей модели данными.
         Желательно оставлять синхронным и выносить всю сложную логику наверх.

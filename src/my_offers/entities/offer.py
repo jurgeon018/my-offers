@@ -28,7 +28,7 @@ class Offer:
     """Объявление закрытой базы"""
     has_photo: bool
     """С фотографиями"""
-    payed_by: Optional[enums.OfferPayedByType]
+    payed_by: Optional[int]
     """За чей счет оплачена подача объявления"""
     # поля для поиска
     search_text: str

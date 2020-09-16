@@ -165,18 +165,11 @@ def get_offer_payed_by(
     return None
 
 
-async def get_payed_by(*, master_user_id: Optional[int], published_user_id: int, offer_id: int) -> Optional[OfferPayedByType]:
+async def get_payed_by(*, offer_id: int) -> Optional[int]:
     """
-    Определяем, за чей счет оплачено объявление, и возвращаем соответствующий тип.
+    Определяем, за чей счет оплачено объявление, и возвращаем соответствующий идентификатор.
     """
 
-    publisher_user_id: int = await get_offer_publisher_user_id(offer_id)
+    return await get_offer_publisher_user_id(offer_id)
 
-    if not (master_user_id and publisher_user_id):
-        return None
-    elif publisher_user_id == published_user_id:
-        return OfferPayedByType.by_agent
-    elif publisher_user_id == master_user_id:
-        return OfferPayedByType.by_master
-
-    return None
+    
