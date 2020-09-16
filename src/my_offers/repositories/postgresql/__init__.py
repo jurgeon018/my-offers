@@ -12,6 +12,7 @@ from my_offers.repositories.postgresql.offer import (
     get_offers_row_version,
     save_offer,
     save_offer_archive,
+    set_offers_is_deleted,
     update_offer,
     update_offer_master_user_id,
 )
