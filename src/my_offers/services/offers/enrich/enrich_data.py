@@ -126,7 +126,7 @@ class EnrichData:
     archive_date: Optional[Dict[int, datetime]] = None
     payed_till: Optional[Dict[int, datetime]] = None
     offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
-
+    offers_payed_by: Dict[str, str] = field(default_factory=dict)
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)

@@ -12,7 +12,8 @@ from my_offers import entities, enums, pg
 from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
-from my_offers.enums import OfferStatusTab
+from my_offers.enums import OfferPayedBy, OfferStatusTab
+from my_offers.helpers.fields import _get_offer_payed_by
 from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.offer_mapper import (
     offer_mapper,
@@ -280,3 +281,23 @@ async def set_offers_is_deleted(offers_ids: List[int]) -> None:
     )
 
     await pg.get().execute(query, *params)
+
+
+async def get_offers_payed_by(offer_ids: List[int]) -> Dict[int, Optional[OfferPayedBy]]:
+    query = """
+    select
+        offer_id,
+        master_user_id,
+        user_id,
+        payed_by
+    from
+        offers
+    where
+        offer_id = any($1::bigint[])
+    """
+
+    rows = await pg.get().fetch(query, offer_ids, timeout=settings.DB_TIMEOUT)
+
+    return {row['offer_id']: _get_offer_payed_by(row['master_user_id'],
+                                                 row['user_id'],
+                                                 row['payed_by']) for row in rows}

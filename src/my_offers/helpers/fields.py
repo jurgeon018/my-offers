@@ -146,3 +146,16 @@ def _get_price_for_workplace(*, bargain_terms: BargainTerms, workplace_count: in
     return entities.PriceInfo(
         exact=f'{pretty_price}\xa0{currency}/мес. за рабочее место'
     )
+
+
+def _get_offer_payed_by(master_id: Optional[int],
+                        user_id: Optional[int],
+                        payed_by: Optional[int]) -> Optional[enums.OfferPayedBy]:
+    if not payed_by:
+        return None
+    elif master_id == payed_by:
+        return enums.OfferPayedBy.by_master
+    elif user_id == payed_by:
+        return enums.OfferPayedBy.by_agent
+    else:
+        return None

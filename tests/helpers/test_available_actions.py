@@ -1,15 +1,17 @@
 import pytest
+from simple_settings.utils import settings_stub
 
 from my_offers.entities.available_actions import AvailableActions
+from my_offers.enums import OfferPayedBy
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.available_actions import _can_raise, _can_restore
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
 
-@pytest.mark.parametrize('is_master_agent, is_archived, is_manual, status, can_update_edit_date, expected', [
+@pytest.mark.parametrize('is_master_agent, is_archived, is_manual, payed_by, status, can_update_edit_date, expected', [
     (
-        True, False, False, Status.deleted, False, AvailableActions(
+        True, False, False, None, Status.deleted, False, AvailableActions(
             can_update_edit_date=False,
             can_move_to_archive=False,
             can_delete=False,
@@ -21,7 +23,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
         )
     ),
     (
-        True, True, True, Status.published, True, AvailableActions(
+        True, True, True, None, Status.published, True, AvailableActions(
             can_update_edit_date=False,
             can_move_to_archive=False,
             can_delete=True,
@@ -33,7 +35,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
         )
     ),
     (
-        True, True, False, Status.published, True, AvailableActions(
+        True, True, False, None, Status.published, True, AvailableActions(
             can_edit=False,
             can_restore=False,
             can_update_edit_date=False,
@@ -45,7 +47,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
         )
     ),
     (
-        True, False, True, Status.published, True, AvailableActions(
+        True, False, True, None, Status.published, True, AvailableActions(
             can_update_edit_date=True,
             can_move_to_archive=True,
             can_delete=True,
@@ -57,7 +59,43 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
         )
     ),
     (
-        False, False, True, Status.published, True, AvailableActions(
+        False, False, True, None, Status.published, True, AvailableActions(
+            can_update_edit_date=True,
+            can_move_to_archive=True,
+            can_delete=True,
+            can_edit=True,
+            can_restore=False,
+            can_raise=True,
+            can_change_publisher=False,
+            can_view_similar_offers=False
+        )
+    ),
+    (
+        True, False, True, OfferPayedBy.by_master, Status.published, True, AvailableActions(
+            can_update_edit_date=True,
+            can_move_to_archive=True,
+            can_delete=True,
+            can_edit=True,
+            can_restore=False,
+            can_raise=True,
+            can_change_publisher=True,
+            can_view_similar_offers=False
+        )
+    ),
+    (
+        False, False, True, OfferPayedBy.by_master, Status.published, True, AvailableActions(
+            can_update_edit_date=True,
+            can_move_to_archive=True,
+            can_delete=True,
+            can_edit=True,
+            can_restore=False,
+            can_raise=True,
+            can_change_publisher=False,
+            can_view_similar_offers=False
+        )
+    ),
+    (
+        False, False, True, OfferPayedBy.by_agent, Status.published, True, AvailableActions(
             can_update_edit_date=True,
             can_move_to_archive=True,
             can_delete=True,
@@ -69,7 +107,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
         )
     ),
 ])
-def test_get_available_actions(is_master_agent, is_archived, is_manual, status, can_update_edit_date, expected):
+def test_get_available_actions(is_master_agent, is_archived, is_manual, payed_by, status, can_update_edit_date, expected):
     # arrange & act
     result = get_available_actions(
         is_archived=is_archived,
@@ -84,8 +122,47 @@ def test_get_available_actions(is_master_agent, is_archived, is_manual, status, 
         ),
         is_in_hidden_base=False,
         is_master_agent=is_master_agent,
-        force_raise=False
+        force_raise=False,
+        payed_by=payed_by
     )
+
+    # assert
+    assert result == expected
+
+
+@pytest.mark.parametrize('is_master_agent, is_archived, is_manual, payed_by, status, can_update_edit_date, expected', [
+     (
+        True, False, True, OfferPayedBy.by_agent, Status.published, True, AvailableActions(
+            can_update_edit_date=False,
+            can_move_to_archive=False,
+            can_delete=False,
+            can_edit=False,
+            can_restore=False,
+            can_raise=False,
+            can_change_publisher=False,
+            can_view_similar_offers=False
+        )
+        ),
+])
+def test_get_available_actions_for_agent_offer_payed_by_agent(is_master_agent, is_archived, is_manual, payed_by, status, can_update_edit_date, expected):
+    # arrange & act
+    with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True):
+        result = get_available_actions(
+            is_archived=is_archived,
+            is_manual=is_manual,
+            status=status,
+            can_update_edit_date=can_update_edit_date,
+            agency_settings=AgencySettings(
+                can_sub_agents_edit_offers_from_xml=True,
+                can_sub_agents_publish_offers=True,
+                can_sub_agents_view_agency_balance=True,
+                display_all_agency_offers=True,
+            ),
+            is_in_hidden_base=False,
+            is_master_agent=is_master_agent,
+            force_raise=False,
+            payed_by=payed_by
+        )
 
     # assert
     assert result == expected

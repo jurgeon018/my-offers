@@ -1,6 +1,9 @@
 from typing import Optional
 
+from simple_settings import settings
+
 from my_offers import entities
+from my_offers.enums import OfferPayedBy
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
@@ -29,7 +32,8 @@ def get_available_actions(
         is_in_hidden_base: Optional[bool],
         is_master_agent: bool,
         force_raise: bool = False,
-        can_view_similar_offers: bool = False
+        can_view_similar_offers: bool = False,
+        payed_by: Optional[OfferPayedBy] = None
 ) -> entities.AvailableActions:
     """
         Получить возможные действия с объявлением.
@@ -41,12 +45,25 @@ def get_available_actions(
 
         Если объявление находится в статусе `Снято с публикации`, то появляется кнопка "Восстановить".
         Если объявление находится в статусе `Черновик`, то появляется кнопка "Редактировать".
+        Объявления агентов, которые оплачены за их счет и отображаются мастеру, недоступны для редактирования.
 
         Дополнительно доступ для иерархии:
         https://docs.google.com/spreadsheets/d/1QPcPU4vxK1_PBj1HXcsYsQk9iL07kiF8pC_kcsMLU3k/edit#gid=174751677
     """
     if not status:
         status = Status.deleted
+    if settings.MASTER_CAN_SEE_AGENT_PAYED_OFFERS:
+        if is_master_agent and payed_by == OfferPayedBy.by_agent:
+            return entities.AvailableActions(
+                can_edit=False,
+                can_raise=False,
+                can_delete=False,
+                can_restore=False,
+                can_update_edit_date=False,
+                can_move_to_archive=False,
+                can_change_publisher=False,
+                can_view_similar_offers=False
+            )
 
     if not is_manual:
         can_edit = agency_settings.can_sub_agents_edit_offers_from_xml if agency_settings else False
