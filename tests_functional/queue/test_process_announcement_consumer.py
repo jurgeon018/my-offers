@@ -264,7 +264,8 @@ async def test_process_announcement_consumer__archive_updated_to_active(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(('offer', 'master_user_id', 'published_user_id', 'publisher_user_id', 'offer_id', 'expected'), [
+@pytest.mark.parametrize(('offer', 'master_user_id', 'published_user_id',
+                          'publisher_user_id', 'offer_id', 'expected'), [
     (load_json_data(__file__, 'announcement.json'),
      1, 2, 1, 1, 1),
     (load_json_data(__file__, 'announcement.json'),

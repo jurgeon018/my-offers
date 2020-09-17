@@ -1,7 +1,6 @@
 import pytest
 from cian_test_utils import future
 
-from my_offers.enums import OfferPayedByType
 from my_offers.helpers.fields import get_payed_by
 
 

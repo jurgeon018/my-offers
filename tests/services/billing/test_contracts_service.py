@@ -260,6 +260,8 @@ async def test_post_save_contract(mocker):
     await post_save_contract(offer_contract)
 
     # assert
+    assert get_master_user_id.called
+
     update_offer_master_user_id_mock.assert_called_once_with(
         offer_id=offer_id,
         master_user_id=master_user_id,

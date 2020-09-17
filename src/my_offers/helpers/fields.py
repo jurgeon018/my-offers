@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import List, Optional
 
 from my_offers import entities, enums
-from my_offers.enums import OfferPayedByType
 from my_offers.helpers.numbers import get_pretty_number
 from my_offers.helpers.time import get_aware_date
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Flags, ObjectModel, Photo
@@ -171,5 +170,3 @@ async def get_payed_by(*, offer_id: int) -> Optional[int]:
     """
 
     return await get_offer_publisher_user_id(offer_id)
-
-    

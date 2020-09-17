@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Optional
 
 from my_offers import entities
-from my_offers.enums import OfferPayedByType
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_payed_by, get_sort_date, is_test
 from my_offers.helpers.status_tab import get_status_tab
