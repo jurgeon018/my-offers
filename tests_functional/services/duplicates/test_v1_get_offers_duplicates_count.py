@@ -1,13 +1,13 @@
 from pathlib import Path
 
 
-async def test_v1_get_offers_duplicates_count(http, pg):
+async def test_v1_get_offers_duplicates_count__200(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id, district_id) '
+        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140, 4424291, 4298)'
     )
     await pg.execute(
         'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
@@ -16,6 +16,14 @@ async def test_v1_get_offers_duplicates_count(http, pg):
     await pg.execute(
         'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
         'VALUES(173975523, \'sale\', \'2020-08-10\', 231655140)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, house_id, group_id) '
+        'VALUES(173975529, \'sale\', \'2020-08-10\', 4424291, null)'
+    )
+    await pg.execute(
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, district_id) '
+        'VALUES(173975530, \'sale\', \'2020-08-10\', 4298)'
     )
 
     # act
@@ -26,7 +34,7 @@ async def test_v1_get_offers_duplicates_count(http, pg):
     )
 
     # assert
-    assert response.data['data'] == [{'competitorsCount': 2, 'duplicatesCount': 2, 'offerId': 231655140}]
+    assert response.data['data'] == [{'competitorsCount': 3, 'duplicatesCount': 2, 'offerId': 231655140}]
 
 
 async def test_v1_get_offers_duplicates_count__emty__empty(http, pg):
