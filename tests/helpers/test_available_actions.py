@@ -9,105 +9,108 @@ from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
 
-@pytest.mark.parametrize('is_master_agent, is_archived, is_manual, payed_by, status, can_update_edit_date, expected', [
-    (
-        True, False, False, None, Status.deleted, False, AvailableActions(
-            can_update_edit_date=False,
-            can_move_to_archive=False,
-            can_delete=False,
-            can_edit=True,
-            can_restore=False,
-            can_raise=False,
-            can_change_publisher=False,
-            can_view_similar_offers=False
-        )
-    ),
-    (
-        True, True, True, None, Status.published, True, AvailableActions(
-            can_update_edit_date=False,
-            can_move_to_archive=False,
-            can_delete=True,
-            can_edit=False,
-            can_restore=True,
-            can_raise=False,
-            can_change_publisher=True,
-            can_view_similar_offers=False
-        )
-    ),
-    (
-        True, True, False, None, Status.published, True, AvailableActions(
-            can_edit=False,
-            can_restore=False,
-            can_update_edit_date=False,
-            can_move_to_archive=False,
-            can_delete=False,
-            can_raise=False,
-            can_change_publisher=False,
-            can_view_similar_offers=False
-        )
-    ),
-    (
-        True, False, True, None, Status.published, True, AvailableActions(
-            can_update_edit_date=True,
-            can_move_to_archive=True,
-            can_delete=True,
-            can_edit=True,
-            can_restore=False,
-            can_raise=True,
-            can_change_publisher=True,
-            can_view_similar_offers=False
-        )
-    ),
-    (
-        False, False, True, None, Status.published, True, AvailableActions(
-            can_update_edit_date=True,
-            can_move_to_archive=True,
-            can_delete=True,
-            can_edit=True,
-            can_restore=False,
-            can_raise=True,
-            can_change_publisher=False,
-            can_view_similar_offers=False
-        )
-    ),
-    (
-        True, False, True, OfferPayedBy.by_master, Status.published, True, AvailableActions(
-            can_update_edit_date=True,
-            can_move_to_archive=True,
-            can_delete=True,
-            can_edit=True,
-            can_restore=False,
-            can_raise=True,
-            can_change_publisher=True,
-            can_view_similar_offers=False
-        )
-    ),
-    (
-        False, False, True, OfferPayedBy.by_master, Status.published, True, AvailableActions(
-            can_update_edit_date=True,
-            can_move_to_archive=True,
-            can_delete=True,
-            can_edit=True,
-            can_restore=False,
-            can_raise=True,
-            can_change_publisher=False,
-            can_view_similar_offers=False
-        )
-    ),
-    (
-        False, False, True, OfferPayedBy.by_agent, Status.published, True, AvailableActions(
-            can_update_edit_date=True,
-            can_move_to_archive=True,
-            can_delete=True,
-            can_edit=True,
-            can_restore=False,
-            can_raise=True,
-            can_change_publisher=False,
-            can_view_similar_offers=False
-        )
-    ),
-])
-def test_get_available_actions(is_master_agent, is_archived, is_manual, payed_by, status, can_update_edit_date, expected):
+@pytest.mark.parametrize('is_master_agent, is_archived, is_manual,'
+                         'payed_by, status, can_update_edit_date, expected', [
+                            (
+                                True, False, False, None, Status.deleted, False, AvailableActions(
+                                    can_update_edit_date=False,
+                                    can_move_to_archive=False,
+                                    can_delete=False,
+                                    can_edit=True,
+                                    can_restore=False,
+                                    can_raise=False,
+                                    can_change_publisher=False,
+                                    can_view_similar_offers=False
+                                    )
+                            ),
+                            (
+                                True, True, True, None, Status.published, True, AvailableActions(
+                                    can_update_edit_date=False,
+                                    can_move_to_archive=False,
+                                    can_delete=True,
+                                    can_edit=False,
+                                    can_restore=True,
+                                    can_raise=False,
+                                    can_change_publisher=True,
+                                    can_view_similar_offers=False
+                                )
+                            ),
+                            (
+                                True, True, False, None, Status.published, True, AvailableActions(
+                                    can_edit=False,
+                                    can_restore=False,
+                                    can_update_edit_date=False,
+                                    can_move_to_archive=False,
+                                    can_delete=False,
+                                    can_raise=False,
+                                    can_change_publisher=False,
+                                    can_view_similar_offers=False
+                                )
+                            ),
+                            (
+                                True, False, True, None, Status.published, True, AvailableActions(
+                                    can_update_edit_date=True,
+                                    can_move_to_archive=True,
+                                    can_delete=True,
+                                    can_edit=True,
+                                    can_restore=False,
+                                    can_raise=True,
+                                    can_change_publisher=True,
+                                    can_view_similar_offers=False
+                                )
+                            ),
+                            (
+                                False, False, True, None, Status.published, True, AvailableActions(
+                                    can_update_edit_date=True,
+                                    can_move_to_archive=True,
+                                    can_delete=True,
+                                    can_edit=True,
+                                    can_restore=False,
+                                    can_raise=True,
+                                    can_change_publisher=False,
+                                    can_view_similar_offers=False
+                                )
+                            ),
+                            (
+                                True, False, True, OfferPayedBy.by_master, Status.published, True, AvailableActions(
+                                    can_update_edit_date=True,
+                                    can_move_to_archive=True,
+                                    can_delete=True,
+                                    can_edit=True,
+                                    can_restore=False,
+                                    can_raise=True,
+                                    can_change_publisher=True,
+                                    can_view_similar_offers=False
+                                )
+                            ),
+                            (
+                                False, False, True, OfferPayedBy.by_master, Status.published, True, AvailableActions(
+                                    can_update_edit_date=True,
+                                    can_move_to_archive=True,
+                                    can_delete=True,
+                                    can_edit=True,
+                                    can_restore=False,
+                                    can_raise=True,
+                                    can_change_publisher=False,
+                                    can_view_similar_offers=False
+                                )
+                            ),
+                            (
+                                False, False, True, OfferPayedBy.by_agent, Status.published, True, AvailableActions(
+                                    can_update_edit_date=True,
+                                    can_move_to_archive=True,
+                                    can_delete=True,
+                                    can_edit=True,
+                                    can_restore=False,
+                                    can_raise=True,
+                                    can_change_publisher=False,
+                                    can_view_similar_offers=False
+                                )
+                            ),
+                            ])
+def test_get_available_actions(is_master_agent, is_archived, is_manual,
+                               payed_by, status, can_update_edit_date,
+                               expected):
     # arrange & act
     result = get_available_actions(
         is_archived=is_archived,
@@ -130,21 +133,24 @@ def test_get_available_actions(is_master_agent, is_archived, is_manual, payed_by
     assert result == expected
 
 
-@pytest.mark.parametrize('is_master_agent, is_archived, is_manual, payed_by, status, can_update_edit_date, expected', [
-     (
-        True, False, True, OfferPayedBy.by_agent, Status.published, True, AvailableActions(
-            can_update_edit_date=False,
-            can_move_to_archive=False,
-            can_delete=False,
-            can_edit=False,
-            can_restore=False,
-            can_raise=False,
-            can_change_publisher=False,
-            can_view_similar_offers=False
-        )
-        ),
-])
-def test_get_available_actions_for_agent_offer_payed_by_agent(is_master_agent, is_archived, is_manual, payed_by, status, can_update_edit_date, expected):
+@pytest.mark.parametrize('is_master_agent, is_archived, is_manual,'
+                         'payed_by, status, can_update_edit_date, expected', [
+                            (
+                                True, False, True, OfferPayedBy.by_agent, Status.published, True, AvailableActions(
+                                    can_update_edit_date=False,
+                                    can_move_to_archive=False,
+                                    can_delete=False,
+                                    can_edit=False,
+                                    can_restore=False,
+                                    can_raise=False,
+                                    can_change_publisher=False,
+                                    can_view_similar_offers=False
+                                )
+                            ),
+                            ])
+def test_get_available_actions_for_agent_offer_payed_by_agent(is_master_agent, is_archived, is_manual,
+                                                              payed_by, status, can_update_edit_date,
+                                                              expected):
     # arrange & act
     with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True):
         result = get_available_actions(

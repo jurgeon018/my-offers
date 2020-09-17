@@ -134,7 +134,11 @@ def test_build_offer_view(enrich_data_mock):
              )
      ),
 ])
-def test_build_offer_view_depends_on_payed_by(enrich_data_with_offers_payed_by_mock, offer_id_from_mock, expected_available_actions):
+def test_build_offer_view_depends_on_payed_by(
+        enrich_data_with_offers_payed_by_mock,
+        offer_id_from_mock,
+        expected_available_actions
+):
     # arrange
     raw_offer = ObjectModel(
         id=offer_id_from_mock,
