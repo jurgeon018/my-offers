@@ -1,11 +1,10 @@
 import asyncio
+from copy import deepcopy
 from datetime import datetime, timedelta
 from pathlib import Path
-from copy import deepcopy
+
 import pytest
 import pytz
-
-from tests_functional.utils import load_json_data
 
 
 @pytest.mark.asyncio
@@ -61,7 +60,9 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
     queue_service,
     http
 ):
-    """ Проверка выдачи пустой даты payed_till в ответ на запрос объявлений, если у объявления есть только 1 контракт, в котором есть услуга calltracking.
+    """ Проверка выдачи пустой даты payed_till в ответ на запрос
+        объявлений, если у объявления есть только 1 контракт,
+        в котором есть услуга calltracking.
     """
     # arrange
     now_isoformat = datetime.now(pytz.utc).isoformat()
@@ -135,13 +136,12 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
         'date': contract1_date.isoformat(),
     }
 
-
     contract2_date = contract1_date + timedelta(days=5)
     contract2 = deepcopy(contract1)
     contract2.update({
         'service_types': ['FreeObject'],
         'payed_till': contract2_date.isoformat(),
-        'id':2
+        'id': 2
     }
     )
     message2 = deepcopy(message1)
@@ -201,13 +201,12 @@ async def test_process_save_announcement_correct_payed_till_returned_with_calltr
         'date': contract1_date.isoformat(),
     }
 
-
     contract2_date = contract1_date + timedelta(days=5)
     contract2 = deepcopy(contract1)
     contract2.update({
         'service_types': ['FreeObject', 'calltracking'],
         'payed_till': contract2_date.isoformat(),
-        'id':2
+        'id': 2
     }
     )
     message2 = deepcopy(message1)

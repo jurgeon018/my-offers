@@ -5,11 +5,13 @@ from cian_test_utils import future
 from simple_settings.utils import settings_stub
 
 from my_offers import pg
-from my_offers import enums
 from my_offers.entities import OfferBillingContract
 from my_offers.mappers.billing import offer_billing_contract_mapper
 from my_offers.repositories import postgresql
-from my_offers.repositories.postgresql.billing import get_offers_payed_till
+from my_offers.repositories.postgresql.billing import (
+    get_offers_payed_till,
+    get_offers_payed_till_excluding_calltracking
+)
 
 
 pytestmark = pytest.mark.gen_test
@@ -59,7 +61,7 @@ async def test_save_offer_contract(mocker):
         offer_contract.actor_user_id,
         offer_contract.publisher_user_id,
         offer_contract.offer_id,
-        offer_contract.start_date, 
+        offer_contract.start_date,
         offer_contract.payed_till,
         offer_contract.row_version,
         offer_contract.is_deleted,
@@ -114,7 +116,30 @@ async def test_get_offers_payed_till(mocker):
     pg.get().fetch.assert_called_once_with(
         'SELECT offers_billing_contracts.offer_id, max(offers_billing_contracts.payed_till) AS payed_till '
         '\nFROM offers_billing_contracts \nWHERE NOT offers_billing_contracts.is_deleted '
-        'AND offers_billing_contracts.offer_id = ANY ($1) GROUP BY offers_billing_contracts.offer_id', 
-        [1,2],
+        'AND offers_billing_contracts.offer_id = ANY ($1) GROUP BY offers_billing_contracts.offer_id',
+        [1, 2],
+        timeout=3
+    )
+
+
+async def test_get_offers_payed_till_excluding_calltracking(mocker):
+    # arrange
+    pg.get().fetch.return_value = future([{'offer_id': 1, 'payed_till': datetime(2020, 3, 30)}])
+
+    expected = {1: datetime(2020, 3, 30)}
+
+    # act
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_offers_payed_till_excluding_calltracking([1, 2])
+
+    # assert
+    assert result == expected
+    pg.get().fetch.assert_called_once_with(
+        'SELECT offers_billing_contracts.offer_id, max(offers_billing_contracts.payed_till) AS payed_till '
+        '\nFROM offers_billing_contracts \nWHERE NOT offers_billing_contracts.is_deleted '
+        'AND offers_billing_contracts.offer_id = ANY ($1) AND '
+        '$2 != ANY (offers_billing_contracts.service_types) GROUP BY offers_billing_contracts.offer_id',
+        [1, 2],
+        'calltracking',
         timeout=3
     )
