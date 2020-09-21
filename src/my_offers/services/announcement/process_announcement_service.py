@@ -5,7 +5,7 @@ from simple_settings import settings
 
 from my_offers import entities
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import get_payed_by, get_sort_date, is_test
+from my_offers.helpers.fields import get_sort_date, is_test
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories import postgresql
@@ -36,10 +36,12 @@ class AnnouncementProcessor:
             offer_id=object_model.id,
             user_id=object_model.user_id
         )
-        payed_by = await get_payed_by(offer_id=object_model.id)
-        offer = self._prepare_offer(object_model=object_model,
-                                    master_user_id=master_user_id,
-                                    payed_by=payed_by)
+        payed_by = await get_offer_publisher_user_id(object_model.id)
+        offer = self._prepare_offer(
+            object_model=object_model,
+            master_user_id=master_user_id,
+            payed_by=payed_by
+        )
 
         await self._save_offer(offer)
         await self._post_process_offer(object_model)
@@ -47,11 +49,13 @@ class AnnouncementProcessor:
     async def _save_offer(self, offer: entities.Offer) -> None:
         raise NotImplementedError()
 
-    def _prepare_offer(self,
-                       *,
-                       object_model: ObjectModel,
-                       master_user_id: int,
-                       payed_by: Optional[int]) -> entities.Offer:
+    def _prepare_offer(
+            self,
+            *,
+            object_model: ObjectModel,
+            master_user_id: int,
+            payed_by: Optional[int]
+    ) -> entities.Offer:
         """
         Метод для заполнения полей модели данными.
         Желательно оставлять синхронным и выносить всю сложную логику наверх.

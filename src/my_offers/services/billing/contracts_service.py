@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 import pytz
+from simple_settings import settings
 
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.repositories import postgresql
@@ -45,9 +46,12 @@ async def post_save_contract(contract: OfferBillingContract) -> None:
         мастера для пользователя контракта, то используем в объявлении
         publisher_id в качестве мастера
     """
-    master_user_id = await postgresql.get_master_user_id(contract.user_id)
+    if settings.ENABLE_NEW_GET_MASTER_USER_ID:
+        master_user_id = await postgresql.get_master_user_id(contract.user_id)
+    else:
+        master_user_id = contract.publisher_user_id
 
-    if contract.publisher_user_id != contract.user_id:
+    if settings.ENABLE_NEW_GET_MASTER_USER_ID or contract.publisher_user_id != contract.user_id:
         await postgresql.update_offer_master_user_id(
             offer_id=contract.offer_id,
             master_user_id=master_user_id if master_user_id else contract.publisher_user_id

@@ -12,7 +12,6 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
     Source,
     Status,
 )
-from my_offers.repositories.postgresql.billing import get_offer_publisher_user_id
 
 
 CURRENCY = {
@@ -162,11 +161,3 @@ def get_offer_payed_by(
         return enums.OfferPayedBy.by_agent
 
     return None
-
-
-async def get_payed_by(*, offer_id: int) -> Optional[int]:
-    """
-    Определяем, за чей счет оплачено объявление, и возвращаем соответствующий идентификатор.
-    """
-
-    return await get_offer_publisher_user_id(offer_id)

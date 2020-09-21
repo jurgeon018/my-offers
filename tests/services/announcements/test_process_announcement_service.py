@@ -59,7 +59,7 @@ async def test_announcement_processor(mocker):
         return_value=future(master_user_id)
     )
     get_payed_by_mock = mocker.patch(
-        'my_offers.services.announcement.process_announcement_service.get_payed_by',
+        'my_offers.services.announcement.process_announcement_service.get_offer_publisher_user_id',
         return_value=future(payed_by)
     )
     prepare_offer_mock = mocker.patch.object(
