@@ -84,7 +84,8 @@ def v2_build_offer_view(
             can_view_similar_offers=is_offer_for_similar(
                 status=object_model.status,
                 category=object_model.category
-            )
+            ),
+            payed_by=enrich_data.offers_payed_by.get(realty_offer_id)
         ),
         page_specific_info=get_page_specific_info(
             object_model=object_model,
