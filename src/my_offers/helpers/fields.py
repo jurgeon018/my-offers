@@ -152,12 +152,12 @@ def get_offer_payed_by(
         master_user_id: Optional[int],
         user_id: Optional[int],
         payed_by: Optional[int]
-) -> Optional[enums.OfferPayedBy]:
+) -> Optional[enums.OfferPayedByType]:
     if not payed_by:
         return None
     if master_user_id == payed_by:
-        return enums.OfferPayedBy.by_master
+        return enums.OfferPayedByType.by_master
     if user_id == payed_by:
-        return enums.OfferPayedBy.by_agent
+        return enums.OfferPayedByType.by_agent
 
     return None

@@ -3,7 +3,7 @@ from typing import Optional
 from simple_settings import settings
 
 from my_offers import entities
-from my_offers.enums import OfferPayedBy
+from my_offers.enums import OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 
@@ -33,7 +33,7 @@ def get_available_actions(
         is_master_agent: bool,
         force_raise: bool = False,
         can_view_similar_offers: bool = False,
-        payed_by: Optional[OfferPayedBy] = None
+        payed_by: Optional[OfferPayedByType] = None
 ) -> entities.AvailableActions:
     """
         Получить возможные действия с объявлением.
@@ -53,7 +53,7 @@ def get_available_actions(
     if not status:
         status = Status.deleted
     if settings.MASTER_CAN_SEE_AGENT_PAYED_OFFERS:
-        if is_master_agent and payed_by == OfferPayedBy.by_agent:
+        if is_master_agent and payed_by == OfferPayedByType.by_agent:
             return entities.AvailableActions(
                 can_edit=False,
                 can_raise=False,
