@@ -7,6 +7,7 @@ from cian_test_utils import future
 from freezegun import freeze_time
 from mock import call
 from simple_settings import settings
+from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.entities import AgentName
@@ -29,6 +30,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
+    _load_offers_payed_by,
     _load_offers_similars_counters,
     _load_payed_till,
     _load_premoderation_info,
@@ -99,6 +101,10 @@ async def test_load_enrich_data__active_tab(mocker):
         f'{PATH}_load_offers_similars_counters',
         return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
     )
+    load_offers_payed_by = mocker.patch(
+        f'{PATH}_load_offers_payed_by',
+        return_value=future(EnrichItem(key='offers_payed_by', degraded=False, value={})),
+    )
 
     expected_data = EnrichData(
         auctions={},
@@ -107,6 +113,7 @@ async def test_load_enrich_data__active_tab(mocker):
         can_update_edit_dates={},
         moderation_info=None,
         import_errors={},
+        offers_payed_by={},
         agency_settings=None,
         subagents=None,
         premoderation_info=None,
@@ -124,6 +131,7 @@ async def test_load_enrich_data__active_tab(mocker):
         'favorites_counts': False,
         'views_counts': False,
         'searches_counts': False,
+        'offers_payed_by': False
     }
 
     # act
@@ -149,6 +157,7 @@ async def test_load_enrich_data__active_tab(mocker):
     load_searches_counts_mock.assert_called_once_with([11])
     load_favorites_counts_mock.assert_called_once_with([11])
     load_offers_similars_counters_mock.assert_called_once_with(offer_ids=[11], is_test=False)
+    load_offers_payed_by.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -195,6 +204,11 @@ async def test_load_enrich_data__not_active_tab(mocker):
         f'{PATH}_load_import_errors',
         return_value=future(EnrichItem(key='import_errors', degraded=False, value={})),
     )
+    load_offers_payed_by = mocker.patch(
+        f'{PATH}_load_offers_payed_by',
+        return_value=future(EnrichItem(key='offers_payed_by', degraded=False, value={})),
+    )
+
 
     expected_data = EnrichData(
         auctions={},
@@ -202,6 +216,7 @@ async def test_load_enrich_data__not_active_tab(mocker):
         geo_urls={},
         can_update_edit_dates={},
         import_errors={},
+        offers_payed_by={},
         moderation_info=None,
         agency_settings=None,
         subagents=None,
@@ -218,6 +233,7 @@ async def test_load_enrich_data__not_active_tab(mocker):
         'premoderation_info': False,
         'import_errors': False,
         'archive_date': False,
+        'offers_payed_by': False
     }
 
     # act
@@ -240,6 +256,7 @@ async def test_load_enrich_data__not_active_tab(mocker):
     load_premoderation_info_mock.assert_called_once_with([11])
     load_import_errors_mock.assert_called_once_with([11])
     load_archive_date_mock.assert_called_once_with([11])
+    load_offers_payed_by.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -278,6 +295,11 @@ async def test_load_enrich_data__declined_tab(mocker):
         f'{PATH}_load_moderation_info',
         return_value=future(EnrichItem(key='moderation_info', degraded=False, value={})),
     )
+    load_offers_payed_by = mocker.patch(
+        f'{PATH}_load_offers_payed_by',
+        return_value=future(EnrichItem(key='offers_payed_by', degraded=False, value={})),
+    )
+
 
     expected_data = EnrichData(
         auctions={},
@@ -286,6 +308,7 @@ async def test_load_enrich_data__declined_tab(mocker):
         can_update_edit_dates={},
         import_errors={},
         moderation_info={},
+        offers_payed_by={},
         agency_settings=None,
         subagents=None,
         premoderation_info=None,
@@ -299,6 +322,7 @@ async def test_load_enrich_data__declined_tab(mocker):
         'jk_urls': False,
         'subagents': False,
         'moderation_info': False,
+        'offers_payed_by': False
     }
 
     # act
@@ -319,6 +343,7 @@ async def test_load_enrich_data__declined_tab(mocker):
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_moderation_info_mock.assert_called_once_with([11])
+    load_offers_payed_by.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -358,12 +383,18 @@ async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
         return_value=future(EnrichItem(key='subagents', degraded=False, value=None)),
     )
 
+    load_offers_payed_by = mocker.patch(
+        f'{PATH}_load_offers_payed_by',
+        return_value=future(EnrichItem(key='offers_payed_by', degraded=False, value={})),
+    )
+
     expected_data = EnrichData(
         auctions={},
         jk_urls={},
         geo_urls={},
         can_update_edit_dates={},
         import_errors={},
+        offers_payed_by={},
         moderation_info=None,
         agency_settings=None,
         subagents=None,
@@ -377,6 +408,7 @@ async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
         'geo_urls': False,
         'jk_urls': False,
         'subagents': False,
+        'offers_payed_by': False
     }
 
     # act
@@ -396,6 +428,7 @@ async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
     load_can_update_edit_dates_mock.assert_called_once_with([11], False)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
+    load_offers_payed_by.assert_called_once_with([11])
 
 
 @pytest.mark.gen_test
@@ -911,3 +944,45 @@ async def test__load_offers_similars_counters__degraded(mocker):
         suffix='test',
         tab_type=DuplicateTabType.all
     )
+
+
+async def test_load_offers_payed_by_with_feature_toggle(mocker):
+    # arrange
+    offer_ids = [1, ]
+    expected = {1: None}
+
+    get_offers_payed_till_degradation_handler = mocker.patch(
+        f'{PATH}get_offers_payed_till_degradation_handler',
+        return_value=future(DegradationResult(value=expected, degraded=False))
+    )
+
+    # act
+    with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True):
+        result = await _load_offers_payed_by(offer_ids)
+
+    # assert
+    get_offers_payed_till_degradation_handler.assert_called_once_with(
+        offer_ids
+    )
+    assert result.value == expected
+    assert not result.degraded
+
+
+async def test_load_offers_payed_by_without_feature_toggle(mocker):
+    # arrange
+    offer_ids = [1, ]
+    expected = {}
+
+    get_offers_payed_till_degradation_handler = mocker.patch(
+        f'{PATH}get_offers_payed_till_degradation_handler',
+        return_value=future(DegradationResult(value=expected, degraded=False))
+    )
+
+    # act
+    with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=False):
+        result = await _load_offers_payed_by(offer_ids)
+
+    # assert
+    assert not get_offers_payed_till_degradation_handler.called
+    assert result.value == expected
+    assert not result.degraded

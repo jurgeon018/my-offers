@@ -56,6 +56,7 @@ async def load_enrich_data(
         _load_can_update_edit_dates(offer_ids, allow_update_edit_date),
         _load_agency_settings(params.get_user_id()),
         _load_subagents(params.get_agent_ids()),
+        _load_offers_payed_by(offer_ids)
     ]
 
     if status_tab.is_active:
@@ -287,3 +288,13 @@ async def _load_offers_similars_counters(*, offer_ids: List[int], is_test: bool)
         DuplicateTabType.same_building: {c.offer_id: c.same_building_count for c in result.value}
     }
     return EnrichItem(key='offers_similars_counts', degraded=False, value=value)
+
+
+@async_statsd_timer('enrich.load_offers_payed_by')
+async def _load_offers_payed_by(offer_ids: List[int]) -> EnrichItem:
+    if not settings.MASTER_CAN_SEE_AGENT_PAYED_OFFERS:
+        return EnrichItem(key='offers_payed_by', degraded=False, value={})
+
+    result = await get_offers_payed_till_degradation_handler(offer_ids)
+
+    return EnrichItem(key='offers_payed_by', degraded=result.degraded, value=result.value)
