@@ -112,18 +112,18 @@ def _filter_offers(
         is_draft = helpers.is_draft(offer.status)
         is_xml = not is_manual
 
-        if is_draft:
-            offers_counters.draft_count += 1
-
-        elif is_manual:
-            offers_ids.append(offer.id)
-
-        elif is_xml:
+        if is_xml:
             offers_counters.xml_count += 1
             offers_errors.append(entities.OfferMassRestoreStatus(
                 offer_id=offer.id,
                 status=OfferMassRestoreState.error,
                 message='Нельзя автоматически восстановить XML'
             ))
+
+        elif is_draft:
+            offers_counters.draft_count += 1
+
+        elif is_manual:
+            offers_ids.append(offer.id)
 
     return offers_ids, offers_errors, offers_counters
