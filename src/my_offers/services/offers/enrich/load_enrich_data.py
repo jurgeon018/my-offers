@@ -21,6 +21,7 @@ from my_offers.services.offers._get_offers import (
     get_last_import_errors_degradation_handler,
     get_offer_premoderations_degradation_handler,
     get_offers_offence_degradation_handler,
+    get_offers_payed_by_degradation_handler,
     get_offers_payed_till_degradation_handler,
     get_offers_update_at_degradation_handler,
     get_searches_counts_degradation_handler,
@@ -295,6 +296,6 @@ async def _load_offers_payed_by(offer_ids: List[int]) -> EnrichItem:
     if not settings.MASTER_CAN_SEE_AGENT_PAYED_OFFERS:
         return EnrichItem(key='offers_payed_by', degraded=False, value={})
 
-    result = await get_offers_payed_till_degradation_handler(offer_ids)
+    result = await get_offers_payed_by_degradation_handler(offer_ids)
 
     return EnrichItem(key='offers_payed_by', degraded=result.degraded, value=result.value)

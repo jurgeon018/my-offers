@@ -9,7 +9,7 @@ from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent
-from my_offers.enums import DuplicateTabType
+from my_offers.enums import DuplicateTabType, OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 
@@ -126,7 +126,7 @@ class EnrichData:
     archive_date: Optional[Dict[int, datetime]] = None
     payed_till: Optional[Dict[int, datetime]] = None
     offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
-    offers_payed_by: Dict[str, str] = field(default_factory=dict)
+    offers_payed_by: Dict[str, Optional[OfferPayedByType]] = field(default_factory=dict)
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)

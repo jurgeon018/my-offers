@@ -92,4 +92,3 @@ class OfferViewModelV2:
     """Тип статуса объявления"""
     payed_by: Optional[enums.OfferPayedByType]
     """За чей счет оплачена подача объявления"""
-    

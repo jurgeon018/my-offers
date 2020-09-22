@@ -239,3 +239,90 @@ async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
     assert response.data['offers'][0]['availableActions']['canRaise'] is True
     assert response.data['offers'][0]['pageSpecificInfo']['activeInfo']['duplicatesCount'] == 2
     assert response.data['offers'][0]['pageSpecificInfo']['activeInfo']['sameBuildingCount'] == 1
+
+
+@pytest.mark.skip
+@pytest.mark.parametrize('payed_by, expected_ids', (
+    ('by_master', [1]),
+    ('by_agent', [2]),
+    ('any', [1, 2, 3]),
+))
+async def test_get_active_offers_by_payed_by(pg, http, payed_by, expected_ids):
+    # arrange
+    now = datetime.now()
+    master_user_id = 2
+    await pg.execute(
+        """
+        INSERT INTO public.agents_hierarchy (
+            id,
+            row_version,
+            realty_user_id,
+            master_agent_user_id,
+            created_at,
+            updated_at
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6),
+            ($7, $8, $9, $10, $11, $12)
+        """,
+        [
+            1, 1, 2, master_user_id, now, now,
+            master_user_id, 1, 3, master_user_id, now, now,
+        ]
+    )
+    await pg.execute(
+        """
+        INSERT INTO public.offers (
+            offer_id,
+            master_user_id,
+            user_id,
+            deal_type,
+            offer_type,
+            status_tab,
+            services,
+            is_manual,
+            is_in_hidden_base,
+            has_photo,
+            search_text,
+            raw_data,
+            row_version,
+            created_at,
+            updated_at,
+            payed_by
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16),
+            ($17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32),
+            ($33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47),
+            ($48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62)
+        """,
+        [
+            1, 2, 2, 'sale', 'flat', 'active', [], True, False, False, 'text', '{}', 1, now, now, 2,
+            2, 2, 3, 'sale', 'flat', 'active', [], True, False, False, 'text', '{}', 1, now, now, 3,
+            3, 2, 2, 'sale', 'flat', 'active', [], True, False, False, 'text', '{}', 1, now, now, None,
+            4, 2, 2, 'sale', 'flat', 'deleted', [], True, False, False, 'text', '{}', 1, now, now, None
+        ]
+    )
+
+    # act
+    response = await http.request(
+        'POST',
+        '/v1/get-offers/',
+        json={
+            'filters': {
+                'statusTab': 'active',
+                'payedBy': payed_by
+
+            }
+        },
+        headers={
+            'X-Real-UserId': master_user_id
+        },
+    )
+
+    # assert
+    assert {offer['id'] for offer in response.data['offers']} == set(expected_ids)
+    assert response.data['offers'][0]['availableActions']['canViewSimilarOffers'] is True
+    assert response.data['offers'][0]['availableActions']['canRaise'] is True
+    assert response.data['offers'][0]['pageSpecificInfo']['activeInfo']['duplicatesCount'] == 2
+    assert response.data['offers'][0]['pageSpecificInfo']['activeInfo']['sameBuildingCount'] == 1

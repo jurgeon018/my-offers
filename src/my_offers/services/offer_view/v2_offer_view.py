@@ -72,7 +72,7 @@ def v2_build_offer_view(
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=archived),
         status_type=get_status_type(is_manual=manual, status=object_model.status),
-        payed_by=None,
+        payed_by=enrich_data.offers_payed_by.get(realty_offer_id),
         available_actions=get_available_actions(
             status=object_model.status,
             is_archived=archived,
