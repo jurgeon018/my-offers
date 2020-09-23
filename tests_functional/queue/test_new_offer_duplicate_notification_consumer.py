@@ -93,7 +93,7 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
 
 
 async def test_new_offer_duplicate_notification_consumer__push_disabled__skip(
-        queue_service, pg, kafka_service, notification_center_mock
+        queue_service, pg, notification_center_mock
 ):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
@@ -118,13 +118,8 @@ async def test_new_offer_duplicate_notification_consumer__push_disabled__skip(
 
     await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
-    # act
+    # act & assert
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
-    await asyncio.sleep(1)
-    messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
-
-    # assert
-    assert len(messages) == 0
 
 
 async def test_new_offer_duplicate_notification_consumer__already_sent(queue_service, pg, notification_center_mock):
