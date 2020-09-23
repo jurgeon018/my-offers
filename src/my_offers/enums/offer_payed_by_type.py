@@ -6,6 +6,7 @@ class OfferPayedByType(StrEnum):
     by_master = 'by_master'
     by_agent = 'by_agent'
 
+
 class OfferPayedByFilterType(StrEnum):
     """Фильтр, за чей счёт оплачена подача объявления"""
     any = 'any'
