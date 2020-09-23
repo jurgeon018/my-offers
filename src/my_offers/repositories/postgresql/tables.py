@@ -40,6 +40,7 @@ offers = sa.Table(
     sa.Column('sort_date', sa.TIMESTAMP),
     sa.Column('is_test', sa.BOOLEAN),
     sa.Column('payed_by', sa.BIGINT, nullable=True),
+    sa.Column('old_master_user_id', sa.BIGINT, nullable=True),
 )
 
 offers_billing_contracts = sa.Table(

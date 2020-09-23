@@ -140,3 +140,7 @@ memory = 2048
 [job.sync_offer_duplicates_cron]
 type = "consumer"
 command = "sync-offer-duplicates-cron"
+
+[job.reindex_offers_master_and_payed_by]
+type = "manage"
+command = "reindex_offers_master_and_payed_by"

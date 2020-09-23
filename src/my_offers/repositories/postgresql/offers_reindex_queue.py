@@ -5,7 +5,7 @@ from my_offers.entities import ReindexOfferItem
 from my_offers.mappers.offer_mapper import reindex_offer_item_mapper
 
 
-async def get_reindex_items() -> List[ReindexOfferItem]:
+async def get_reindex_items(limit: int = 100) -> List[ReindexOfferItem]:
     query = """
     with offer_ids as (
         select
@@ -16,7 +16,7 @@ async def get_reindex_items() -> List[ReindexOfferItem]:
             not in_process
         order by
             created_at
-        limit 100
+        limit $1
         for update
     )
     update
@@ -31,7 +31,7 @@ async def get_reindex_items() -> List[ReindexOfferItem]:
         offers_reindex_queue.offer_id, sync, created_at
     """
 
-    rows = await pg.get().fetch(query)
+    rows = await pg.get().fetch(query, limit)
 
     return [reindex_offer_item_mapper.map_from(row) for row in rows]
 

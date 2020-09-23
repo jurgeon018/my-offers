@@ -76,3 +76,7 @@ EMAIL_USER_NOT_SUBSCRIBED_MSG: str = (
     'Для данного email нет активной подписки на уведомления о новых дублях к объектам.'
 )
 EMAIL_VALIDATION_ERROR_MSG: str = 'Некорректный email.'
+
+# reindex offers master_user_id and payed_by
+REINDEX_CHUNK = 1000
+REINDEX_TIMEOUT = 0.5  # секунды
