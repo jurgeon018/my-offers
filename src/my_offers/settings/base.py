@@ -33,6 +33,7 @@ CASSANDRA_DEFAULT_TIMEOUT: float = 1.0
 SEND_PUSH_ON_NEW_DUPLICATE: bool = False  # пока не раскатили приложения пуши рассылать не надо
 MASTER_CAN_SEE_AGENT_PAYED_OFFERS: bool = False  # пока не реализовано не блокируем действия
 #                                                  над объявлениями агента для мастера
+ENABLE_NEW_GET_MASTER_USER_ID: bool = False
 
 # mass operations
 MASS_OFFERS_RESTORE_DELAY: float = .5

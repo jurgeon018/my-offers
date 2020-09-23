@@ -30,6 +30,7 @@ from my_offers.repositories.postgresql.offer import get_offer_by_id, get_offers_
                 is_manual=True,
                 is_in_hidden_base=False,
                 has_photo=False,
+                payed_by=None,
                 is_test=False,
                 price=100000,
                 price_per_meter=2000,

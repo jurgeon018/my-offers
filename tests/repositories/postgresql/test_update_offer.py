@@ -27,6 +27,7 @@ async def test_update_offer():
         is_manual=True,
         is_in_hidden_base=False,
         has_photo=False,
+        payed_by=None,
         is_test=False,
         price=100000,
         price_per_meter=2000,

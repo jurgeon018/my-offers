@@ -12,7 +12,7 @@ from my_offers import entities, enums, pg
 from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
-from my_offers.enums import OfferPayedBy, OfferStatusTab
+from my_offers.enums import OfferPayedByType, OfferStatusTab
 from my_offers.helpers.fields import get_offer_payed_by
 from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.offer_mapper import (
@@ -26,7 +26,7 @@ from my_offers.repositories.postgresql.offer_conditions import prepare_condition
 
 
 async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
-    """ Сохрнаить любое объявление, кроме архива. """
+    """ Сохранить любое объявление, кроме архива. """
     insert_query = insert(tables.offers)
 
     now = datetime.now(tz=pytz.UTC)
@@ -73,7 +73,7 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
 
 
 async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> None:
-    """ Сохрнаить архивное объявление.
+    """ Сохранить архивное объявление.
         Если объявление уже есть в БД, то row_version не обновляем.
 
         Realty объявление, которое перенесли в архив чаще всего приходит с row_version = 1.
@@ -283,7 +283,7 @@ async def set_offers_is_deleted(offers_ids: List[int]) -> None:
     await pg.get().execute(query, *params)
 
 
-async def get_offers_payed_by(offer_ids: List[int]) -> Dict[int, Optional[OfferPayedBy]]:
+async def get_offers_payed_by(offer_ids: List[int]) -> Dict[int, Optional[OfferPayedByType]]:
     query = """
     select
         offer_id,

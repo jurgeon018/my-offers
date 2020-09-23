@@ -4,7 +4,7 @@ from simple_settings.utils import settings_stub
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.get_offers import ActiveInfo, GetOfferV2, PageSpecificInfo, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
-from my_offers.enums import OfferPayedBy
+from my_offers.enums import OfferPayedByType
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.services.offer_view import v2_build_offer_view
@@ -31,8 +31,8 @@ def enrich_data_with_offers_payed_by_fixture():
         can_update_edit_dates={},
         import_errors={},
         offers_payed_by={
-            1: OfferPayedBy.by_agent,
-            2: OfferPayedBy.by_master,
+            1: OfferPayedByType.by_agent,
+            2: OfferPayedByType.by_master,
             3: None
             }
     )

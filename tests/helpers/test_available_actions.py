@@ -2,7 +2,7 @@ import pytest
 from simple_settings.utils import settings_stub
 
 from my_offers.entities.available_actions import AvailableActions
-from my_offers.enums import OfferPayedBy
+from my_offers.enums import OfferPayedByType
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.available_actions import _can_raise, _can_restore
 from my_offers.repositories.agencies_settings.entities import AgencySettings
@@ -12,7 +12,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 @pytest.mark.parametrize('is_master_agent, is_archived, is_manual,'
                          'payed_by, status, can_update_edit_date, expected', [
                             (
-                                True, False, False, None, Status.deleted, False, AvailableActions(
+                                True, False, False, None, Status.deleted, False,
+                                AvailableActions(
                                     can_update_edit_date=False,
                                     can_move_to_archive=False,
                                     can_delete=False,
@@ -24,7 +25,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     )
                             ),
                             (
-                                True, True, True, None, Status.published, True, AvailableActions(
+                                True, True, True, None, Status.published, True,
+                                AvailableActions(
                                     can_update_edit_date=False,
                                     can_move_to_archive=False,
                                     can_delete=True,
@@ -36,7 +38,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                 )
                             ),
                             (
-                                True, True, False, None, Status.published, True, AvailableActions(
+                                True, True, False, None, Status.published, True,
+                                AvailableActions(
                                     can_edit=False,
                                     can_restore=False,
                                     can_update_edit_date=False,
@@ -48,7 +51,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                 )
                             ),
                             (
-                                True, False, True, None, Status.published, True, AvailableActions(
+                                True, False, True, None, Status.published, True,
+                                AvailableActions(
                                     can_update_edit_date=True,
                                     can_move_to_archive=True,
                                     can_delete=True,
@@ -60,7 +64,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                 )
                             ),
                             (
-                                False, False, True, None, Status.published, True, AvailableActions(
+                                False, False, True, None, Status.published, True,
+                                AvailableActions(
                                     can_update_edit_date=True,
                                     can_move_to_archive=True,
                                     can_delete=True,
@@ -72,7 +77,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                 )
                             ),
                             (
-                                True, False, True, OfferPayedBy.by_master, Status.published, True, AvailableActions(
+                                True, False, True, OfferPayedByType.by_master, Status.published, True,
+                                AvailableActions(
                                     can_update_edit_date=True,
                                     can_move_to_archive=True,
                                     can_delete=True,
@@ -84,7 +90,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                 )
                             ),
                             (
-                                False, False, True, OfferPayedBy.by_master, Status.published, True, AvailableActions(
+                                False, False, True, OfferPayedByType.by_master, Status.published, True,
+                                AvailableActions(
                                     can_update_edit_date=True,
                                     can_move_to_archive=True,
                                     can_delete=True,
@@ -96,7 +103,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                 )
                             ),
                             (
-                                False, False, True, OfferPayedBy.by_agent, Status.published, True, AvailableActions(
+                                False, False, True, OfferPayedByType.by_agent, Status.published, True,
+                                AvailableActions(
                                     can_update_edit_date=True,
                                     can_move_to_archive=True,
                                     can_delete=True,
@@ -136,7 +144,7 @@ def test_get_available_actions(is_master_agent, is_archived, is_manual,
 @pytest.mark.parametrize('is_master_agent, is_archived, is_manual,'
                          'payed_by, status, can_update_edit_date, expected', [
                             (
-                                True, False, True, OfferPayedBy.by_agent, Status.published, True, AvailableActions(
+                                True, False, True, OfferPayedByType.by_agent, Status.published, True, AvailableActions(
                                     can_update_edit_date=False,
                                     can_move_to_archive=False,
                                     can_delete=False,
