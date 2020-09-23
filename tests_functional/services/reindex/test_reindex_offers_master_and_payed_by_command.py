@@ -3,6 +3,7 @@ from pathlib import Path
 
 import asyncio
 import pytz
+import pytest
 
 
 async def test_reindex_offers_master_and_payed_by_command_update_for_agent_self_payed(runner, pg):
@@ -65,7 +66,7 @@ async def test_reindex_offers_master_and_payed_by_command_update_for_agent_self_
     )
 
     # act
-    await runner.start_background_python_command('reindex-offers-master-and-payed-by')
+    await runner.run_python_command('reindex-offers-master-and-payed-by')
     await asyncio.sleep(2)
 
     # assert
@@ -135,7 +136,7 @@ async def test_reindex_offers_master_and_payed_by_command_update_for_master(runn
     )
 
     # act
-    await runner.start_background_python_command('reindex-offers-master-and-payed-by')
+    await runner.run_python_command('reindex-offers-master-and-payed-by')
     await asyncio.sleep(2)
 
     # assert
