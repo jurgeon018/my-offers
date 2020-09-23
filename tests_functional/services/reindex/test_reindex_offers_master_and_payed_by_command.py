@@ -81,7 +81,7 @@ async def test_reindex_offers_master_and_payed_by_command_update_for_master(runn
     offer_id = 209194477
     master_user_id = 29437831
 
-    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_reindex_master_user_id_and_payed_by.sql')
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute(
         """
         INSERT INTO public.agents_hierarchy (
