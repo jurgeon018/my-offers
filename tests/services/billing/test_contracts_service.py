@@ -289,6 +289,7 @@ async def test_post_save_contract_new(mocker):
         is_deleted=False,
         created_at=datetime(2020, 2, 2),
         updated_at=datetime(2020, 2, 2),
+        service_types=[]
     )
 
     update_offer_master_user_id_mock = mocker.patch(
