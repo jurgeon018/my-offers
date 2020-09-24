@@ -951,8 +951,8 @@ async def test_load_offers_payed_by_with_feature_toggle(mocker):
     offer_ids = [1, ]
     expected = {1: None}
 
-    get_offers_payed_till_degradation_handler = mocker.patch(
-        f'{PATH}get_offers_payed_till_degradation_handler',
+    get_offers_payed_by_degradation_handler = mocker.patch(
+        f'{PATH}get_offers_payed_by_degradation_handler',
         return_value=future(DegradationResult(value=expected, degraded=False))
     )
 
@@ -961,7 +961,7 @@ async def test_load_offers_payed_by_with_feature_toggle(mocker):
         result = await _load_offers_payed_by(offer_ids)
 
     # assert
-    get_offers_payed_till_degradation_handler.assert_called_once_with(
+    get_offers_payed_by_degradation_handler.assert_called_once_with(
         offer_ids
     )
     assert result.value == expected
@@ -973,8 +973,8 @@ async def test_load_offers_payed_by_without_feature_toggle(mocker):
     offer_ids = [1, ]
     expected = {}
 
-    get_offers_payed_till_degradation_handler = mocker.patch(
-        f'{PATH}get_offers_payed_till_degradation_handler',
+    get_offers_payed_by_degradation_handler = mocker.patch(
+        f'{PATH}get_offers_payed_by_degradation_handler',
         return_value=future(DegradationResult(value=expected, degraded=False))
     )
 
@@ -983,6 +983,6 @@ async def test_load_offers_payed_by_without_feature_toggle(mocker):
         result = await _load_offers_payed_by(offer_ids)
 
     # assert
-    assert not get_offers_payed_till_degradation_handler.called
+    assert not get_offers_payed_by_degradation_handler.called
     assert result.value == expected
     assert not result.degraded

@@ -34,6 +34,8 @@ SEND_PUSH_ON_NEW_DUPLICATE: bool = False  # пока не раскатили п�
 MASTER_CAN_SEE_AGENT_PAYED_OFFERS: bool = False  # пока не реализовано не блокируем действия
 #                                                  над объявлениями агента для мастера
 ENABLE_NEW_GET_MASTER_USER_ID: bool = False
+ENABLE_PAYED_BY_FILTERS: bool = False  # отключение фильтров по тому,
+#                                        за чей счет выставлено объявление
 
 # mass operations
 MASS_OFFERS_RESTORE_DELAY: float = .5

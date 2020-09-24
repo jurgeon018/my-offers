@@ -89,4 +89,6 @@ class OfferViewModelV2:
     status: Optional[str]
     """Строка статуса"""
     status_type: Optional[OfferStatus]
-    """Тип стутуса объявления"""
+    """Тип статуса объявления"""
+    payed_by: Optional[enums.OfferPayedByType]
+    """За чей счет оплачена подача объявления"""

@@ -28,6 +28,9 @@ class Filter:
     """Только видимые агентам"""
     search_text: Optional[str] = None
     """Полнотекстовый поиск по объявлению"""
+    payed_by: Optional[enums.OfferPayedByFilterType] = None
+    """За чей счет оплачена подача объявления"""
+
 
 
 @dataclass
