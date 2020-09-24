@@ -145,6 +145,31 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
             ],
             False,
         ),
+        (
+            entities.OfferSimilar(
+                offer_id=1,
+                sort_date=datetime(2020, 8, 2),
+                deal_type=enums.DealType.sale,
+                district_id=1,
+                house_id=10,
+                price=100,
+                rooms_count=None,
+                group_id=None,
+            ),
+            [
+                entities.OfferSimilar(
+                    offer_id=10,
+                    sort_date=datetime(2020, 8, 2),
+                    deal_type=enums.DealType.sale,
+                    district_id=1,
+                    house_id=10,
+                    price=100,
+                    rooms_count=5,
+                    group_id=None,
+                ),
+            ],
+            False,
+        ),
     )
 )
 async def test__check_duplicates_group(mocker, similar, group, expected):
