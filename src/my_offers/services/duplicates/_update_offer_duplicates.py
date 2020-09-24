@@ -83,6 +83,10 @@ async def _check_duplicates_group(*, offer_id: int, group_id: int) -> bool:
             logger.warning('DuplicateError: Wrong region offer_id %s similar %s', offer_id, similar.offer_id)
             statsd.incr('new_duplicate_offer.not_valid.wrong_region')
             return False
+        if main_similar.rooms_count is None or similar.rooms_count is None:
+            logger.warning('DuplicateError: Null rooms_count offer_id %s similar %s', offer_id, similar.offer_id)
+            statsd.incr('new_duplicate_offer.not_valid.null_rooms_count')
+            return False
         if abs(main_similar.rooms_count - similar.rooms_count) > settings.SIMILAR_ROOM_DELTA:
             logger.warning('DuplicateError: Wrong rooms_count offer_id %s similar %s', offer_id, similar.offer_id)
             statsd.incr('new_duplicate_offer.not_valid.wrong_rooms_count')
