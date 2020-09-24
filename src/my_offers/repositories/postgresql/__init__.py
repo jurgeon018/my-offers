@@ -15,6 +15,7 @@ from my_offers.repositories.postgresql.offer import (
     set_offers_is_deleted,
     update_offer,
     update_offer_master_user_id,
+    update_offers_master_user_id_and_payed_by,
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error
 from my_offers.repositories.postgresql.offers_duplicate_notification import (
