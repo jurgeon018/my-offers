@@ -30,8 +30,7 @@ def prepare_conditions(filters: Dict[str, Any]) -> List:
 
     if settings.ENABLE_PAYED_BY_FILTERS:
         if payed_by_filter := filters.get('payed_by'):
-            payed_by_condition = _prepare_payed_by_condition(payed_by_filter)
-            if payed_by_condition is not None:
+            if (payed_by_condition := _prepare_payed_by_condition(payed_by_filter)) is not None:
                 conditions.append(payed_by_condition)
     if services := filters.get('services'):
         conditions.append(OFFER_TABLE.services.overlap(services))
@@ -59,13 +58,11 @@ def _prepare_basic_conditions(filters: Dict[str, Any]) -> List:
     return conditions
 
 
-def _prepare_payed_by_condition(payed_by_filter: enums.OfferPayedByFilterType) -> BinaryExpression:
+def _prepare_payed_by_condition(payed_by_filter: str) -> BinaryExpression:
     condition = None
     if payed_by_filter == enums.OfferPayedByFilterType.by_agent.value:
         condition = OFFER_TABLE.user_id == OFFER_TABLE.payed_by
-    if payed_by_filter == enums.OfferPayedByFilterType.by_master.value:
+    elif payed_by_filter == enums.OfferPayedByFilterType.by_master.value:
         condition = OFFER_TABLE.master_user_id == OFFER_TABLE.payed_by
-    if payed_by_filter == enums.OfferPayedByFilterType.any.value:
-        condition = None
 
     return condition

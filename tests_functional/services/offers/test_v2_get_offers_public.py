@@ -416,7 +416,7 @@ async def test_get_active_offers_payed_by_labels(pg, http, global_runtime_settin
 
     # act
     await global_runtime_settings.set(
-        ENABLE_PAYED_BY_FILTERS=True, 
+        ENABLE_PAYED_BY_FILTERS=True,
         MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True
     )
     response = await http.request(
