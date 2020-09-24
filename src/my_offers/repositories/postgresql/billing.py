@@ -57,8 +57,11 @@ async def set_offer_contract_is_deleted_status(*, contract_id: int, row_version:
     await pg.get().execute(query, *params)
 
 
-async def get_offers_payed_till(offer_ids: List[int],
-                                exclude_service_type: Optional[OfferServiceTypes] = None) -> Dict[int, datetime]:
+async def get_offers_payed_till(
+        *,
+        offer_ids: List[int],
+        exclude_service_type: Optional[OfferServiceTypes] = None
+) -> Dict[int, datetime]:
     """ Вытаскиваем из базы даты окончания оплаты для списка объявлений.
         У одного объявления может быть несколько контрактов, берется максимальная дата
         и при этом исключаются контракты с переданной услугой.
@@ -96,8 +99,8 @@ async def get_offers_payed_till_excluding_calltracking(offer_ids: List[int]) -> 
     """
 
     return await get_offers_payed_till(
-        offer_ids,
-        enums.OfferServiceTypes.calltracking.value
+        offer_ids=offer_ids,
+        exclude_service_type=enums.OfferServiceTypes.calltracking.value
     )
 
 

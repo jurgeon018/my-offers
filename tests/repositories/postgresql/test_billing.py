@@ -109,7 +109,7 @@ async def test_get_offers_payed_till(mocker):
 
     # act
     with settings_stub(DB_TIMEOUT=3):
-        result = await get_offers_payed_till([1, 2])
+        result = await get_offers_payed_till(offer_ids=[1, 2])
 
     # assert
     assert result == expected
