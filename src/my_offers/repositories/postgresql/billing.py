@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 import asyncpgsa
 from simple_settings import settings
-from sqlalchemy import and_, any_, not_, select, update
+from sqlalchemy import all_, and_, any_, not_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql import func
 
@@ -71,7 +71,7 @@ async def get_offers_payed_till(offer_ids: List[int],
     ]
 
     if exclude_service_type:
-        options.append(exclude_service_type != any_(collumn.service_types))
+        options.append(exclude_service_type != all_(collumn.service_types))
 
     query, params = asyncpgsa.compile_query(
         select((

@@ -138,7 +138,7 @@ async def test_get_offers_payed_till_excluding_calltracking(mocker):
         'SELECT offers_billing_contracts.offer_id, max(offers_billing_contracts.payed_till) AS payed_till '
         '\nFROM offers_billing_contracts \nWHERE NOT offers_billing_contracts.is_deleted '
         'AND offers_billing_contracts.offer_id = ANY ($1) AND '
-        '$2 != ANY (offers_billing_contracts.service_types) GROUP BY offers_billing_contracts.offer_id',
+        '$2 != ALL (offers_billing_contracts.service_types) GROUP BY offers_billing_contracts.offer_id',
         [1, 2],
         'calltracking',
         timeout=3
