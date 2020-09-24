@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 import sqlalchemy as sa
 from simple_settings import settings
-from sqlalchemy import any_, cast, func
+from sqlalchemy import any_, cast, func, or_
 from sqlalchemy.sql.elements import BinaryExpression
 
 from my_offers import enums
@@ -32,6 +32,9 @@ def prepare_conditions(filters: Dict[str, Any]) -> List:
         if payed_by_filter := filters.get('payed_by'):
             if (payed_by_condition := _prepare_payed_by_condition(payed_by_filter)) is not None:
                 conditions.append(payed_by_condition)
+    else:
+        conditions.append(or_(OFFER_TABLE.master_user_id == OFFER_TABLE.payed_by,
+                              OFFER_TABLE.payed_by == None))
     if services := filters.get('services'):
         conditions.append(OFFER_TABLE.services.overlap(services))
     if search_text := filters.get('search_text'):

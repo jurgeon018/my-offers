@@ -33,8 +33,9 @@ async def test_get_offer_counters(mocker):
         assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.status_tab, count(*) AS cnt \nFROM offers \nWHERE offers.master_user_id = $1 '
-        'GROUP BY offers.status_tab',
+        'SELECT offers.status_tab, count(*) AS cnt \nFROM offers \n'
+        'WHERE offers.master_user_id = $1 AND (offers.master_user_id = offers.payed_by '
+        'OR offers.payed_by IS NULL) GROUP BY offers.status_tab',
         111,
         timeout=3,
     )
