@@ -143,4 +143,4 @@ command = "sync-offer-duplicates-cron"
 
 [job.reindex_offers_master_and_payed_by]
 type = "manage"
-command = "reindex_offers_master_and_payed_by"
+command = "reindex-offers-master-and-payed-by"
