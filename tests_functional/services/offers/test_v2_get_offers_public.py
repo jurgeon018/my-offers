@@ -246,7 +246,7 @@ async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
     ('byAgent', [2]),
     ('any', [1, 2, 3]),
 ))
-async def test_get_active_offers_by_payed_by(pg, http, global_runtime_settings, payed_by, expected_ids):
+async def test_get_active_offers_by_payed_by(pg, http, runtime_settings, payed_by, expected_ids):
     # arrange
     now = datetime.now()
     user_id = 2
@@ -321,7 +321,7 @@ async def test_get_active_offers_by_payed_by(pg, http, global_runtime_settings, 
     )
 
     # act
-    await global_runtime_settings.set(ENABLE_PAYED_BY_FILTERS=True)
+    await runtime_settings.set(ENABLE_PAYED_BY_FILTERS=True)
     response = await http.request(
         'POST',
         '/public/v2/get-offers/',
@@ -340,7 +340,7 @@ async def test_get_active_offers_by_payed_by(pg, http, global_runtime_settings, 
     assert {offer['id'] for offer in response.data['offers']} == set(expected_ids)
 
 
-async def test_get_active_offers_payed_by_labels(pg, http, global_runtime_settings):
+async def test_get_active_offers_payed_by_labels(pg, http, runtime_settings):
     # arrange
     now = datetime.now()
     user_id = 2
@@ -415,7 +415,7 @@ async def test_get_active_offers_payed_by_labels(pg, http, global_runtime_settin
     )
 
     # act
-    await global_runtime_settings.set(
+    await runtime_settings.set(
         ENABLE_PAYED_BY_FILTERS=True,
         MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True
     )

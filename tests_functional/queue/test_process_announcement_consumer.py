@@ -272,7 +272,7 @@ async def test_process_announcement_consumer__archive_updated_to_active(
      1, 2, 2, 1, 2),
 ])
 async def test_process_announcement_consumer__payed_by(
-        global_runtime_settings,
+        runtime_settings,
         queue_service,
         pg,
         offer,
@@ -339,7 +339,7 @@ async def test_process_announcement_consumer__payed_by(
     offer['model']['userId'] = published_user_id
     offer['model']['id'] = offer_id
 
-    await global_runtime_settings.set(
+    await runtime_settings.set(
         ENABLE_NEW_GET_MASTER_USER_ID=True
     )
 
