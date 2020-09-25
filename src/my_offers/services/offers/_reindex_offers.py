@@ -15,6 +15,7 @@ from my_offers.repositories.monolith_cian_elasticapi.entities import (
 from my_offers.repositories.postgresql.offer import get_offers_for_reindex, set_offers_is_deleted
 from my_offers.repositories.postgresql.offers_reindex_queue import delete_reindex_items, get_reindex_items
 from my_offers.services.announcement import process_announcement_service
+from my_offers.services.realty_resender._jobs import ELASTIC_OFFER_INVALID_CODES
 
 
 logger = logging.getLogger(__name__)
@@ -88,7 +89,7 @@ async def get_offers_from_elasticapi_for_reindex(offer_ids: List[int]) -> Tuple[
 
         if response.errors:
             for error in response.errors:
-                if error.code == 'announcement_not_found':
+                if error.code in ELASTIC_OFFER_INVALID_CODES:
                     not_found_ids.append(error.realty_object_id)
                 else:
                     logger.error('Sync offer %s error: %s', error.realty_object_id, error.message)
