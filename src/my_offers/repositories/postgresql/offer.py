@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 import asyncpgsa
 import pytz
 from simple_settings import settings
-from sqlalchemy import and_, select, update
+from sqlalchemy import and_, or_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.functions import count
 
@@ -133,7 +133,10 @@ async def update_offer(offer: entities.Offer):
         .where(
             and_(
                 tables.offers.c.offer_id == offer.offer_id,
-                tables.offers.c.row_version <= offer.row_version,
+                or_(
+                    tables.offers.c.row_version <= offer.row_version,
+                    offer.row_version == 0,
+                ),
             )
         )
     )
