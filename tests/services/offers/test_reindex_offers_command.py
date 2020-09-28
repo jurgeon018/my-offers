@@ -1,17 +1,14 @@
 from datetime import datetime
 
-from cian_helpers.timezone import TIMEZONE
 from cian_test_utils import future
 from simple_settings.utils import settings_stub
 
-from my_offers import enums
-from my_offers.entities import Offer, ReindexOffer, ReindexOfferItem
+from my_offers.entities import ReindexOffer, ReindexOfferItem
 from my_offers.repositories.monolith_cian_elasticapi.entities import (
-    ElasticResultIElasticAnnouncementElasticAnnouncementError,
+    ElasticResultIElasticAnnouncementElasticAnnouncementError, ElasticAnnouncementError,
 )
 from my_offers.services.announcement.process_announcement_service import ForceAnnouncementProcessor
 from my_offers.services.offers._reindex_offers import get_offers_from_elasticapi_for_reindex, reindex_offers_command
-
 
 PATH = 'my_offers.services.offers._reindex_offers.'
 
@@ -30,15 +27,20 @@ async def test_reindex_offers_command(mocker):
     )
     get_offers_from_elasticapi_for_reindex_mock = mocker.patch(
         f'{PATH}get_offers_from_elasticapi_for_reindex',
-        return_value=future([
-            ReindexOffer(offer_id=11, updated_at=datetime(2020, 3, 11), raw_data='{"offerId": 11}'),
-        ])
+        return_value=future((
+            [ReindexOffer(offer_id=11, updated_at=datetime(2020, 3, 11), raw_data='{"offerId": 11}')],
+            [111],
+        )),
     )
     get_offers_for_reindex_mock = mocker.patch(
         f'{PATH}get_offers_for_reindex',
         return_value=future([
             ReindexOffer(offer_id=12, updated_at=datetime(2020, 3, 11), raw_data='{"offerId": 12}'),
         ])
+    )
+    set_offers_is_deleted_mock = mocker.patch(
+        f'{PATH}set_offers_is_deleted',
+        return_value=future()
     )
     delete_reindex_items_mock = mocker.patch(
         f'{PATH}delete_reindex_items',
@@ -69,6 +71,7 @@ async def test_reindex_offers_command(mocker):
         mocker.call({'offerId': 11}),
     ])
     assert process_mock.call_count == 2
+    set_offers_is_deleted_mock.assert_called_once_with([111])
     delete_reindex_items_mock.assert_called_once_with([11, 12])
 
 
@@ -76,16 +79,39 @@ async def test_get_offers_from_elasticapi_for_reindex(mocker):
     # arrange
     get_api_elastic_announcement_get_mock = mocker.patch(
         f'{PATH}get_api_elastic_announcement_get',
-        return_value=future(ElasticResultIElasticAnnouncementElasticAnnouncementError(success=[mocker.sentinel]))
+        side_effect=[
+            future(ElasticResultIElasticAnnouncementElasticAnnouncementError(
+                success=[mocker.sentinel, mocker.sentinel],
+                errors=[]
+            )),
+            future(ElasticResultIElasticAnnouncementElasticAnnouncementError(
+                success=[],
+                errors=[
+                    ElasticAnnouncementError(realty_object_id=14, code='Zz'),
+                    ElasticAnnouncementError(realty_object_id=16, code='announcement_not_found'),
+                ]
+            )),
+        ]
     )
 
     # act
-    with settings_stub(ELASTIC_API_BULK_SIZE=1):
-        result = await get_offers_from_elasticapi_for_reindex([11, 12])
+    with settings_stub(ELASTIC_API_BULK_SIZE=2):
+        result = await get_offers_from_elasticapi_for_reindex([11, 12, 14, 16])
 
     # assert
     assert get_api_elastic_announcement_get_mock.call_count == 2
-    assert result == [
-        ReindexOffer(offer_id=mocker.sentinel.realty_object_id, raw_data=mocker.sentinel.object_model, updated_at=None),
-        ReindexOffer(offer_id=mocker.sentinel.realty_object_id, raw_data=mocker.sentinel.object_model, updated_at=None)
-    ]
+    assert result == (
+        [
+            ReindexOffer(
+                offer_id=mocker.sentinel.realty_object_id,
+                raw_data=mocker.sentinel.object_model,
+                updated_at=None,
+            ),
+            ReindexOffer(
+                offer_id=mocker.sentinel.realty_object_id,
+                raw_data=mocker.sentinel.object_model,
+                updated_at=None,
+            ),
+        ],
+        [16],
+    )
