@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-from typing import List
+from typing import List, Tuple
 
 from simple_settings import settings
 
@@ -12,9 +12,10 @@ from my_offers.repositories.monolith_cian_elasticapi.entities import (
     ElasticResultIElasticAnnouncementElasticAnnouncementError,
     GetApiElasticAnnouncementGet,
 )
-from my_offers.repositories.postgresql.offer import get_offers_for_reindex
+from my_offers.repositories.postgresql.offer import get_offers_for_reindex, set_offers_is_deleted
 from my_offers.repositories.postgresql.offers_reindex_queue import delete_reindex_items, get_reindex_items
 from my_offers.services.announcement import process_announcement_service
+from my_offers.services.realty_resender._jobs import ELASTIC_OFFER_INVALID_CODES
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ async def reindex_offers_command() -> None:
             else:
                 offer_ids.append(reindex_item.offer_id)
 
-        offers = await load_offers(offer_ids=offer_ids, offer_for_sync_ids=offer_for_sync_ids)
+        offers, not_found_ids = await load_offers(offer_ids=offer_ids, offer_for_sync_ids=offer_for_sync_ids)
 
         for reindex_offer in offers:
             if reindex_offer.updated_at and reindex_offer.updated_at > offer_ids_map[reindex_offer.offer_id]:
@@ -44,26 +45,32 @@ async def reindex_offers_command() -> None:
             processor = process_announcement_service.ForceAnnouncementProcessor()
             await processor.process(object_model)
 
+        if not_found_ids:
+            await set_offers_is_deleted(not_found_ids)
+
         await delete_reindex_items(list(offer_ids_map.keys()))
 
         cnt += len(reindex_items)
         logger.info('Processed %s offers', cnt)
 
 
-async def load_offers(*, offer_ids: List[int], offer_for_sync_ids: List[int]) -> List[ReindexOffer]:
-    result = []
+async def load_offers(*, offer_ids: List[int], offer_for_sync_ids: List[int]) -> Tuple[List[ReindexOffer], List[int]]:
+    result: List[ReindexOffer] = []
+    not_found_ids: List[int] = []
 
     if offer_ids:
         result.extend(await get_offers_for_reindex(offer_ids))
 
     if offer_for_sync_ids:
-        result.extend(await get_offers_from_elasticapi_for_reindex(offer_for_sync_ids))
+        reindex_offers, not_found_ids = await get_offers_from_elasticapi_for_reindex(offer_for_sync_ids)
+        result.extend(reindex_offers)
 
-    return result
+    return result, not_found_ids
 
 
-async def get_offers_from_elasticapi_for_reindex(offer_ids: List[int]) -> List[ReindexOffer]:
+async def get_offers_from_elasticapi_for_reindex(offer_ids: List[int]) -> Tuple[List[ReindexOffer], List[int]]:
     result = []
+    not_found_ids = []
     chunk_size = settings.ELASTIC_API_BULK_SIZE
     for i in range(0, len(offer_ids), chunk_size):
         if i:
@@ -80,4 +87,11 @@ async def get_offers_from_elasticapi_for_reindex(offer_ids: List[int]) -> List[R
                     raw_data=item.object_model,
                 ))
 
-    return result
+        if response.errors:
+            for error in response.errors:
+                if error.code in ELASTIC_OFFER_INVALID_CODES:
+                    not_found_ids.append(error.realty_object_id)
+                else:
+                    logger.error('Sync offer %s error: %s', error.realty_object_id, error.message)
+
+    return result, not_found_ids

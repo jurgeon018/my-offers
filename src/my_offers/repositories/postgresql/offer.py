@@ -127,15 +127,19 @@ async def update_offer(offer: entities.Offer):
     values = offer_mapper.map_to(offer)
     values['updated_at'] = now
 
+    if offer.row_version <= 1:
+        values.pop('row_version')
+        condition = tables.offers.c.offer_id == offer.offer_id
+    else:
+        condition = and_(
+            tables.offers.c.offer_id == offer.offer_id,
+            tables.offers.c.row_version <= offer.row_version,
+        )
+
     query, params = asyncpgsa.compile_query(
         update(tables.offers)
         .values(values)
-        .where(
-            and_(
-                tables.offers.c.offer_id == offer.offer_id,
-                tables.offers.c.row_version <= offer.row_version,
-            )
-        )
+        .where(condition)
     )
 
     await pg.get().execute(query, *params)
