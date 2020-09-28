@@ -143,7 +143,7 @@ update_offer_duplicates_queue = Queue(
 )
 
 new_offer_duplicate_notification_queue = Queue(
-    name=get_modified_queue_name('new_offer_duplicate_notification'),
+    name=get_modified_queue_name('new_offer_duplicate_notification.SNACHEVA'),
     bindings=[
         QueueBinding(
             exchange=my_offers_exchange,
