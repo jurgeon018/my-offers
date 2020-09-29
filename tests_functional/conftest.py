@@ -16,6 +16,7 @@ async def start(runner, pg, queue_service, cassandra_service, global_runtime_set
     await pg.execute_scripts((Path('contrib') / 'postgresql' / 'migrations').glob('*.sql'))
 
     await runner.start_background_python_command('process_announcement_consumer')
+    await runner.start_background_python_command('save_announcement_contract_consumer')
     await runner.start_background_python_command('update_offer_duplicates_consumer')
     await runner.start_background_python_command('new_offer_duplicate_notification_consumer')
     await runner.start_background_python_command('process_announcement_from_elasticapi_consumer')
