@@ -12,7 +12,7 @@ from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotifi
 from my_offers.enums.notifications import UserNotificationType
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
-from my_offers.helpers.title import get_offer_title
+from my_offers.helpers.title import get_offer_title, SQUARE_METER_SYMBOL
 from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories import postgresql
 from my_offers.repositories.emails import emails_v2_send_email
@@ -36,6 +36,7 @@ from my_offers.services.offer_view.fields.geo import get_address_for_push
 
 logger = logging.getLogger(__name__)
 
+SQUARE_METER_SYMBOL_FOR_EMAIL = 'м&sup2;'
 
 async def send_duplicates_notification(
         *,
@@ -100,7 +101,7 @@ async def send_email_duplicate_notification(
         return
 
     offer_type, deal_type = get_types(offer.category)
-    offer_name = get_offer_title(object_model=offer)
+    offer_name = get_offer_title(object_model=offer).replace(SQUARE_METER_SYMBOL, SQUARE_METER_SYMBOL_FOR_EMAIL)
     offer_url = fields.get_offer_url(cian_offer_id=offer.cian_id, offer_type=offer_type, deal_type=deal_type)
     offer_duplicate_name = get_offer_title(object_model=duplicate_offer)
     offer_duplicate_url = fields.get_offer_url(

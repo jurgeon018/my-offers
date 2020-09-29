@@ -6,7 +6,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.land import A
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
 
 
-SQUARE_METER_SYMBOL = 'м' + chr(178)
+SQUARE_METER_SYMBOL = 'м²'
 
 CURRENCY = {
     Currency.rur: '₽',
