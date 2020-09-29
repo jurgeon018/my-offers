@@ -12,7 +12,7 @@ from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotifi
 from my_offers.enums.notifications import UserNotificationType
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
-from my_offers.helpers.title import get_offer_title, SQUARE_METER_SYMBOL
+from my_offers.helpers.title import SQUARE_METER_SYMBOL, get_offer_title
 from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories import postgresql
 from my_offers.repositories.emails import emails_v2_send_email
