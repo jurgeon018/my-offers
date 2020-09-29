@@ -1,5 +1,6 @@
 import uuid
 
+from my_offers.settings.base import *
 from cian_automation.settings.base import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
 
