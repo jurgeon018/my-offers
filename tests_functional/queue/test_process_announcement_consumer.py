@@ -3,6 +3,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 
 import pytest
+import pytz
 from cian_json import json
 
 from tests_functional.utils import load_json_data
@@ -423,6 +424,131 @@ async def test_process_announcement_consumer__payed_by_missing_billing(
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
     await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
     await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+
+    assert row['payed_by'] == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(('offer', 'expected'), [
+    (load_json_data(__file__, 'announcement.json'), 5),
+])
+async def test_process_announcement_consumer__payed_by_missing_billing_after_offer(
+        queue_service,
+        pg,
+        runtime_settings,
+        offer,
+        expected
+):
+    """
+    Проверка записи идентификатора плательщика в случае контрактов
+    пришедших после объявления
+    """
+    contract1_date = datetime.now(pytz.utc)
+    contract1 = {
+        'id': 1,
+        'user_id': 1,
+        'actor_user_id': 1,
+        'publisher_user_id': 5,
+        'start_date': contract1_date.isoformat(),
+        'payed_till': contract1_date.isoformat(),
+        'target_object_id': offer['model']['id'],
+        'service_types': [],
+        'target_object_type': 'Announcement',
+        'row_version': 1,
+    }
+    message1 = {
+        'service_contract_reporting_model': contract1,
+        'operation_id': '1',
+        'date': contract1_date.isoformat(),
+    }
+
+    # act
+    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
+
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(2)
+
+    await queue_service.wait_consumer('my-offers.save_announcement_contract')
+    await queue_service.publish('service-contract-reporting.v1.created', message1, exchange='billing')
+    await asyncio.sleep(2)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+
+    assert row['payed_by'] == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(('offer', 'expected'), [
+    (load_json_data(__file__, 'announcement.json'), 5),
+])
+async def test_process_announcement_consumer__payed_by_exists_billing_after_offer(
+        queue_service,
+        pg,
+        offer,
+        expected
+):
+    """
+    Проверка отсутствия обновления идентификатора плательщика в случае
+    если пришел новый контракт, но это поле уже заполнено
+    """
+    contract1_date = datetime.now(pytz.utc)
+    contract1 = {
+        'id': 1,
+        'user_id': 1,
+        'actor_user_id': 1,
+        'publisher_user_id': 5,
+        'start_date': contract1_date.isoformat(),
+        'payed_till': contract1_date.isoformat(),
+        'target_object_id': offer['model']['id'],
+        'service_types': [],
+        'target_object_type': 'Announcement',
+        'row_version': 1,
+    }
+    message1 = {
+        'service_contract_reporting_model': contract1,
+        'operation_id': '1',
+        'date': contract1_date.isoformat(),
+    }
+
+    # act
+    await pg.execute(
+        """
+        INSERT INTO public.offers_billing_contracts (
+            id,
+            user_id,
+            actor_user_id,
+            publisher_user_id,
+            offer_id,
+            start_date,
+            payed_till,
+            row_version,
+            is_deleted,
+            created_at,
+            updated_at
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+        """,
+        [
+            1, 1, 1, expected, offer['model']['id'], contract1_date,
+            contract1_date, 1, False, contract1_date, contract1_date
+        ]
+    )
+
+    await asyncio.sleep(1)
+
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(2)
+
+    await queue_service.wait_consumer('my-offers.save_announcement_contract')
+    await queue_service.publish('service-contract-reporting.v1.created', message1, exchange='billing')
+    await asyncio.sleep(2)
 
     # assert
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')

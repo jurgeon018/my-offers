@@ -6,7 +6,7 @@ from freezegun import freeze_time
 from freezegun.api import FakeDatetime
 
 from my_offers import entities, enums, pg
-from my_offers.repositories.postgresql.offer import update_offer, update_offer_master_user_id
+from my_offers.repositories.postgresql.offer import update_offer, update_offer_master_user_id_and_payed_by
 
 
 @pytest.mark.gen_test
@@ -133,12 +133,15 @@ async def test_update_offer__min_rowversion__update():
 
 async def test_update_offer_master_user_id():
     # arrange & act
-    await update_offer_master_user_id(offer_id=1, master_user_id=2)
+    await update_offer_master_user_id_and_payed_by(offer_id=1, master_user_id=2, payed_by=3)
 
     # assert
     pg.get().execute.assert_called_once_with(
-        '\n    update offers set master_user_id = $1 where offer_id = $2 and master_user_id <> $3\n    ',
+        '\n    update\n        offers\n    set\n        master_user_id = $1,\n        '
+        'payed_by = COALESCE(payed_by, $4)\n    where\n        offer_id = $2\n        and '
+        'master_user_id <> $3\n    ',
         2,
         1,
         2,
+        3
     )

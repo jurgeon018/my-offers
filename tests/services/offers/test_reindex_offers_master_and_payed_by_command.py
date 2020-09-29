@@ -4,7 +4,6 @@ from cian_test_utils import future
 from simple_settings.utils import settings_stub
 
 from my_offers.entities import ReindexOfferItem
-
 from my_offers.services.offers._reindex_offers_master_and_payed_by import reindex_offers_master_and_payed_by_command
 
 
