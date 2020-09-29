@@ -32,10 +32,10 @@ END_STATUSES = [
     JobStatus.finished_with_errors,
 ]
 
-ELASTIC_OFFER_INVALID_CODES = [
+ELASTIC_OFFER_INVALID_CODES = (
     'announcement_not_found',
     'old_unpublished_invalid_announcement'
-]
+)
 
 
 async def save_offers_from_elasticapi(offers_ids: List[int]) -> None:
