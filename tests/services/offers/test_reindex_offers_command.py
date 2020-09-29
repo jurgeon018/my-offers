@@ -5,10 +5,12 @@ from simple_settings.utils import settings_stub
 
 from my_offers.entities import ReindexOffer, ReindexOfferItem
 from my_offers.repositories.monolith_cian_elasticapi.entities import (
-    ElasticResultIElasticAnnouncementElasticAnnouncementError, ElasticAnnouncementError,
+    ElasticAnnouncementError,
+    ElasticResultIElasticAnnouncementElasticAnnouncementError,
 )
 from my_offers.services.announcement.process_announcement_service import ForceAnnouncementProcessor
 from my_offers.services.offers._reindex_offers import get_offers_from_elasticapi_for_reindex, reindex_offers_command
+
 
 PATH = 'my_offers.services.offers._reindex_offers.'
 

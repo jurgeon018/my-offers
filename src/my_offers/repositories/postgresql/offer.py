@@ -244,12 +244,19 @@ async def get_offers_row_version(offer_ids: List[int]) -> List[OfferRowVersion]:
     return [offer_row_version_mapper.map_from(row) for row in rows]
 
 
-async def update_offer_master_user_id(*, offer_id: int, master_user_id: int) -> None:
+async def update_offer_master_user_id_and_payed_by(*, offer_id: int, master_user_id: int, payed_by: int) -> None:
     query = """
-    update offers set master_user_id = $1 where offer_id = $2 and master_user_id <> $3
+    update
+        offers
+    set
+        master_user_id = $1,
+        payed_by = $4
+    where
+        offer_id = $2
+        and master_user_id <> $3
     """
 
-    await pg.get().execute(query, master_user_id, offer_id, master_user_id)
+    await pg.get().execute(query, master_user_id, offer_id, master_user_id, payed_by)
 
 
 @async_statsd_timer('psql.get_offers_ids_by_tab')
