@@ -253,10 +253,17 @@ async def update_offer_master_user_id_and_payed_by(*, offer_id: int, master_user
         payed_by = $4
     where
         offer_id = $2
-        and master_user_id <> $3
+        and ((
+                master_user_id is null
+                or master_user_id <> $3
+            )
+            or (
+                payed_by is null
+                or payed_by <> $5
+            ))
     """
 
-    await pg.get().execute(query, master_user_id, offer_id, master_user_id, payed_by)
+    await pg.get().execute(query, master_user_id, offer_id, master_user_id, payed_by, payed_by)
 
 
 @async_statsd_timer('psql.get_offers_ids_by_tab')

@@ -137,11 +137,13 @@ async def test_update_offer_master_user_id():
 
     # assert
     pg.get().execute.assert_called_once_with(
-        '\n    update\n        offers\n    set\n        master_user_id = $1,\n        '
-        'payed_by = $4\n    where\n        offer_id = $2\n        and '
-        'master_user_id <> $3\n    ',
+        '\n    update\n        offers\n    set\n        master_user_id = $1,\n        payed_by = $4\n'
+        '    where\n        offer_id = $2\n        and ((\n                master_user_id is null\n'
+        '                or master_user_id <> $3\n            )\n            or (\n                '
+        'payed_by is null\n                or payed_by <> $5\n            ))\n    ',
         2,
         1,
         2,
+        3,
         3
     )
