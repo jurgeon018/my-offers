@@ -247,8 +247,8 @@ async def test_post_save_contract_old(mocker):
         updated_at=datetime(2020, 2, 2),
     )
 
-    update_offer_master_user_id_mock = mocker.patch(
-        'my_offers.services.billing.contracts_service.postgresql.update_offer_master_user_id',
+    update_offer_master_user_id_and_payed_by_mock = mocker.patch(
+        'my_offers.services.billing.contracts_service.postgresql.update_offer_master_user_id_and_payed_by',
         return_value=future()
     )
 
@@ -264,9 +264,10 @@ async def test_post_save_contract_old(mocker):
     # assert
     assert not get_master_user_id.called
 
-    update_offer_master_user_id_mock.assert_called_once_with(
+    update_offer_master_user_id_and_payed_by_mock.assert_called_once_with(
         offer_id=offer_id,
         master_user_id=publisher_user_id,
+        payed_by=publisher_user_id
     )
 
 
@@ -289,8 +290,8 @@ async def test_post_save_contract_new(mocker):
         updated_at=datetime(2020, 2, 2),
     )
 
-    update_offer_master_user_id_mock = mocker.patch(
-        'my_offers.services.billing.contracts_service.postgresql.update_offer_master_user_id',
+    update_offer_master_user_id_and_payed_by_mock = mocker.patch(
+        'my_offers.services.billing.contracts_service.postgresql.update_offer_master_user_id_and_payed_by',
         return_value=future()
     )
 
@@ -306,7 +307,8 @@ async def test_post_save_contract_new(mocker):
     # assert
     assert get_master_user_id.called
 
-    update_offer_master_user_id_mock.assert_called_once_with(
+    update_offer_master_user_id_and_payed_by_mock.assert_called_once_with(
         offer_id=offer_id,
         master_user_id=master_user_id,
+        payed_by=publisher_user_id
     )
