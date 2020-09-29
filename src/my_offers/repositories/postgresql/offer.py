@@ -250,7 +250,7 @@ async def update_offer_master_user_id_and_payed_by(*, offer_id: int, master_user
         offers
     set
         master_user_id = $1,
-        payed_by = COALESCE(payed_by, $4)
+        payed_by = $4
     where
         offer_id = $2
         and master_user_id <> $3

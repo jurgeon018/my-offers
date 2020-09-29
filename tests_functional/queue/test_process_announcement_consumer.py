@@ -451,7 +451,7 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
         'id': 1,
         'user_id': 1,
         'actor_user_id': 1,
-        'publisher_user_id': 5,
+        'publisher_user_id': expected,
         'start_date': contract1_date.isoformat(),
         'payed_till': contract1_date.isoformat(),
         'target_object_id': offer['model']['id'],
@@ -489,11 +489,12 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
 async def test_process_announcement_consumer__payed_by_exists_billing_after_offer(
         queue_service,
         pg,
+        runtime_settings,
         offer,
         expected
 ):
     """
-    Проверка отсутствия обновления идентификатора плательщика в случае
+    Проверка обновления идентификатора плательщика в случае
     если пришел новый контракт, но это поле уже заполнено
     """
     contract1_date = datetime.now(pytz.utc)
@@ -501,7 +502,7 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
         'id': 1,
         'user_id': 1,
         'actor_user_id': 1,
-        'publisher_user_id': 5,
+        'publisher_user_id': expected,
         'start_date': contract1_date.isoformat(),
         'payed_till': contract1_date.isoformat(),
         'target_object_id': offer['model']['id'],
@@ -516,6 +517,8 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
     }
 
     # act
+    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
+
     await pg.execute(
         """
         INSERT INTO public.offers_billing_contracts (
@@ -535,7 +538,7 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
             ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         """,
         [
-            1, 1, 1, expected, offer['model']['id'], contract1_date,
+            2, 1, 1, 4, offer['model']['id'], contract1_date,
             contract1_date, 1, False, contract1_date, contract1_date
         ]
     )

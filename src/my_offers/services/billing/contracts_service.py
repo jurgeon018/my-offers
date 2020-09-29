@@ -45,7 +45,6 @@ async def post_save_contract(contract: OfferBillingContract) -> None:
         на основе контракта на случай если у агента поменялся мастер.
         Если не удается определить мастера для пользователя контракта,
         то используем в объявлении publisher_id в качестве мастера.
-        Идентификатор плательщика задаем только в случае отсутствия.
     """
     if settings.ENABLE_NEW_GET_MASTER_USER_ID:
         master_user_id = await postgresql.get_master_user_id(contract.user_id)
