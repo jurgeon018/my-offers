@@ -101,9 +101,11 @@ async def send_email_duplicate_notification(
         return
 
     offer_type, deal_type = get_types(offer.category)
-    offer_name = get_offer_title(object_model=offer).replace(SQUARE_METER_SYMBOL, SQUARE_METER_SYMBOL_FOR_EMAIL)
+    offer_name = get_offer_title(object_model=offer)
+    offer_name = offer_name.replace(SQUARE_METER_SYMBOL, SQUARE_METER_SYMBOL_FOR_EMAIL)
     offer_url = fields.get_offer_url(cian_offer_id=offer.cian_id, offer_type=offer_type, deal_type=deal_type)
     offer_duplicate_name = get_offer_title(object_model=duplicate_offer)
+    offer_duplicate_name = offer_duplicate_name.replace(SQUARE_METER_SYMBOL, SQUARE_METER_SYMBOL_FOR_EMAIL)
     offer_duplicate_url = fields.get_offer_url(
         cian_offer_id=duplicate_offer.cian_id,
         offer_type=offer_type,
