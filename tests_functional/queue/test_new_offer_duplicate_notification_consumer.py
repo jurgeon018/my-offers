@@ -44,7 +44,7 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
     }
 
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification.SNACHEVA')
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
@@ -116,7 +116,7 @@ async def test_new_offer_duplicate_notification_consumer__push_disabled__skip(
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
     }
 
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification.SNACHEVA')
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
     # act & assert
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
@@ -142,7 +142,7 @@ async def test_new_offer_duplicate_notification_consumer__already_sent(queue_ser
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
     }
 
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification.SNACHEVA')
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
@@ -190,7 +190,7 @@ async def test_new_offer_duplicate_notification_consumer__error(queue_service, p
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
     }
 
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification.SNACHEVA')
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
@@ -221,7 +221,7 @@ async def test_new_offer_duplicate_notification_consumer__offer_not_found(queue_
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
     }
 
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification.SNACHEVA')
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
@@ -273,7 +273,7 @@ async def test_new_offer_duplicate_notification_consumer__email_push(
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
     }
 
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification.SNACHEVA')
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
@@ -357,7 +357,7 @@ async def test_new_offer_duplicate_notification_consumer__send_all_notifications
         'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005'
     }
 
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification.SNACHEVA')
+    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification')
 
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.new', message, exchange='my-offers')
