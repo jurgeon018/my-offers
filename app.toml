@@ -120,6 +120,7 @@ instances = 5
 [job.reindex_offers]
 type = "manage"
 command = "reindex-offers"
+cpu = 2048
 
 [job.resend_offers]
 type = "manage"
