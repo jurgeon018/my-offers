@@ -11,7 +11,13 @@ import pytz
 @pytest.mark.parametrize(
     ('expected_service_types'),
     (
-        ['calltracking'],
+        [
+            'FreeObject', 'DebitObject', 'PremiumObject', 'Top3',
+            'Highlight', 'calltracking', 'XmlImport', 'SubscriptionForPackage',
+            'StatusPro', 'ServicePackageActivation', 'Penalty', 'OrderCancellation',
+            'OrderTransfer', 'TechSpend', 'TechTransfer', 'BonusPaymentExpiration',
+            'auction', 'demand', 'demandPackage', 'cplCalltracking'
+        ],
         []
     )
 )
