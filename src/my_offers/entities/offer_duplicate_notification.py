@@ -11,6 +11,6 @@ class OfferDuplicateNotification:
     duplicate_offer_id: int
     """Id объявления дубликата"""
     send_at: datetime
-    """Дата отправления душа"""
+    """Дата отправления пуша"""
     notification_type: UserNotificationType
     """Тип уведомления"""
