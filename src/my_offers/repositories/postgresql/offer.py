@@ -253,10 +253,8 @@ async def update_offer_master_user_id_and_payed_by(*, offer_id: int, master_user
         payed_by = $4
     where
         offer_id = $2
-        and ((
-                master_user_id is null
-                or master_user_id <> $3
-            )
+        and (
+                master_user_id <> $3
             or (
                 payed_by is null
                 or payed_by <> $5
