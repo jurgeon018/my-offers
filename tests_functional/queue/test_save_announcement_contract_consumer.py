@@ -56,6 +56,7 @@ async def test_process_save_announcement_correct_service_type(
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_empty_payed_till_returned_for_calltracking(
+    runtime_settings,
     pg,
     queue_service,
     http
@@ -65,14 +66,15 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
         в котором есть услуга calltracking.
     """
     # arrange
+    user_id = 29437831
     now_isoformat = datetime.now(pytz.utc).isoformat()
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     contract = {
         'id': 1,
-        'user_id': 1,
-        'actor_user_id': 1,
-        'publisher_user_id': 1,
+        'user_id': user_id,
+        'actor_user_id': user_id,
+        'publisher_user_id': user_id,
         'start_date': now_isoformat,
         'payed_till': now_isoformat,
         'target_object_id': 209194477,
@@ -88,8 +90,11 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
     }
 
     # act
+    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
+
     await queue_service.wait_consumer('my-offers.save_announcement_contract')
     await queue_service.publish('service-contract-reporting.v1.created', message, exchange='billing')
+
     await asyncio.sleep(1)
 
     # assert
@@ -97,7 +102,7 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
         'POST',
         '/public/v2/get-offers/',
         headers={
-            'X-Real-UserId': 29437831
+            'X-Real-UserId': user_id
         },
         json={
             'filters': {'status_tab': 'active'},
@@ -108,6 +113,7 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_correct_payed_till_returned_without_calltracking(
+    runtime_settings,
     pg,
     queue_service,
     http
@@ -115,14 +121,15 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
     """ Проверка выдачи корректной даты payed_till, если у объявления есть контракты без calltracking.
     """
     # arrange
+    user_id = 29437831
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     contract1_date = datetime.now(pytz.utc)
     contract1 = {
         'id': 1,
-        'user_id': 1,
-        'actor_user_id': 1,
-        'publisher_user_id': 1,
+        'user_id': user_id,
+        'actor_user_id': user_id,
+        'publisher_user_id': user_id,
         'start_date': contract1_date.isoformat(),
         'payed_till': contract1_date.isoformat(),
         'target_object_id': 209194477,
@@ -151,10 +158,12 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
     })
 
     # act
+    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
+
     await queue_service.wait_consumer('my-offers.save_announcement_contract')
+
     await queue_service.publish('service-contract-reporting.v1.created', message1, exchange='billing')
     await queue_service.publish('service-contract-reporting.v1.created', message2, exchange='billing')
-
     await asyncio.sleep(2)
 
     # assert
@@ -162,7 +171,7 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
         'POST',
         '/public/v2/get-offers/',
         headers={
-            'X-Real-UserId': 29437831
+            'X-Real-UserId': user_id
         },
         json={
             'filters': {'status_tab': 'active'},
@@ -173,6 +182,7 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_correct_payed_till_returned_with_calltracking(
+    runtime_settings,
     pg,
     queue_service,
     http
@@ -180,14 +190,15 @@ async def test_process_save_announcement_correct_payed_till_returned_with_calltr
     """ Проверка выдачи корректной даты payed_till если у объявления есть контракты c calltracking.
     """
     # arrange
+    user_id = 29437831
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     contract1_date = datetime.now(pytz.utc)
     contract1 = {
         'id': 1,
-        'user_id': 1,
-        'actor_user_id': 1,
-        'publisher_user_id': 1,
+        'user_id': user_id,
+        'actor_user_id': user_id,
+        'publisher_user_id': user_id,
         'start_date': contract1_date.isoformat(),
         'payed_till': contract1_date.isoformat(),
         'target_object_id': 209194477,
@@ -215,8 +226,11 @@ async def test_process_save_announcement_correct_payed_till_returned_with_calltr
         'operation_id': '2'
     })
 
+    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
+
     # act
     await queue_service.wait_consumer('my-offers.save_announcement_contract')
+
     await queue_service.publish('service-contract-reporting.v1.created', message1, exchange='billing')
     await queue_service.publish('service-contract-reporting.v1.created', message2, exchange='billing')
 
@@ -227,7 +241,7 @@ async def test_process_save_announcement_correct_payed_till_returned_with_calltr
         'POST',
         '/public/v2/get-offers/',
         headers={
-            'X-Real-UserId': 29437831
+            'X-Real-UserId': user_id
         },
         json={
             'filters': {'status_tab': 'active'},
