@@ -810,7 +810,7 @@ async def test__load_archive_date(mocker):
 async def test__load_payed_till(mocker):
     # arrange
     get_offers_payed_till_mock = mocker.patch(
-        f'{PATH}get_offers_payed_till_degradation_handler',
+        f'{PATH}get_offers_payed_till_excluding_calltracking_degradation_handler',
         return_value=future(DegradationResult(value={1: datetime(2020, 3, 30)}, degraded=False))
     )
     expected = EnrichItem(key='payed_till', value={1: datetime(2020, 3, 30)}, degraded=False)

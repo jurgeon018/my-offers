@@ -33,7 +33,8 @@ async def save_announcement_contract(billing_contract: AnnouncementBillingContra
         row_version=billing_contract.row_version,
         is_deleted=False,
         created_at=now,
-        updated_at=now
+        updated_at=now,
+        service_types=billing_contract.service_types,
     )
     contract_id = await postgresql.save_offer_contract(offer_contract=contract)
     if contract_id:

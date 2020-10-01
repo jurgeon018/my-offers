@@ -10,7 +10,7 @@ from my_offers.mappers.get_offers_request import get_offers_filters_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql import get_object_models, get_offers_offence
 from my_offers.repositories.postgresql.agents import get_agent_names, get_master_user_id, is_master_agent
-from my_offers.repositories.postgresql.billing import get_offers_payed_till
+from my_offers.repositories.postgresql.billing import get_offers_payed_till_excluding_calltracking
 from my_offers.repositories.postgresql.offer import get_offer_counters, get_offers_payed_by, get_offers_update_at
 from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
@@ -71,9 +71,9 @@ get_offers_update_at_degradation_handler = get_degradation_handler(
     default=dict(),
 )
 
-get_offers_payed_till_degradation_handler = get_degradation_handler(
-    func=get_offers_payed_till,
-    key='psql.get_offers_payed_till',
+get_offers_payed_till_excluding_calltracking_degradation_handler = get_degradation_handler(
+    func=get_offers_payed_till_excluding_calltracking,
+    key='psql.get_offers_payed_till_excluding_calltracking',
     default=dict(),
 )
 
