@@ -432,15 +432,14 @@ async def test_process_announcement_consumer__payed_by_missing_billing(
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(('offer', 'expected'), [
-    (load_json_data(__file__, 'announcement.json'), 5),
+@pytest.mark.parametrize(('offer'), [
+    (load_json_data(__file__, 'announcement.json')),
 ])
 async def test_process_announcement_consumer__payed_by_missing_billing_after_offer(
         queue_service,
         pg,
         runtime_settings,
         offer,
-        expected
 ):
     """
     Проверка записи идентификатора плательщика в случае контрактов
@@ -449,9 +448,9 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
     contract1_date = datetime.now(pytz.utc)
     contract1 = {
         'id': 1,
-        'user_id': 1,
-        'actor_user_id': 1,
-        'publisher_user_id': expected,
+        'user_id': offer['model']['publishedUserId'],
+        'actor_user_id': offer['model']['publishedUserId'],
+        'publisher_user_id': offer['model']['publishedUserId'],
         'start_date': contract1_date.isoformat(),
         'payed_till': contract1_date.isoformat(),
         'target_object_id': offer['model']['id'],
@@ -465,9 +464,30 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
         'date': contract1_date.isoformat(),
     }
 
-    # act
+    await pg.execute(
+        """
+        INSERT INTO public.agents_hierarchy (
+            id,
+            row_version,
+            realty_user_id,
+            master_agent_user_id,
+            created_at,
+            updated_at,
+            account_type
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7),
+            ($8, $9, $10, $11, $12, $13, $14)
+        """,
+        [
+            1, 1, offer['model']['publishedUserId'], 6, contract1_date, contract1_date, 'Specialist',
+            2, 1, 6, None, contract1_date, contract1_date, 'Agency'
+        ]
+    )
+
     await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
 
+    # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
     await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
     await asyncio.sleep(2)
@@ -479,19 +499,18 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
     # assert
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
 
-    assert row['payed_by'] == expected
+    assert row['payed_by'] == offer['model']['publishedUserId']
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize(('offer', 'expected'), [
-    (load_json_data(__file__, 'announcement.json'), 5),
+@pytest.mark.parametrize(('offer'), [
+    (load_json_data(__file__, 'announcement.json')),
 ])
 async def test_process_announcement_consumer__payed_by_exists_billing_after_offer(
         queue_service,
         pg,
         runtime_settings,
         offer,
-        expected
 ):
     """
     Проверка обновления идентификатора плательщика в случае
@@ -500,9 +519,9 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
     contract1_date = datetime.now(pytz.utc)
     contract1 = {
         'id': 1,
-        'user_id': 1,
-        'actor_user_id': 1,
-        'publisher_user_id': expected,
+        'user_id': offer['model']['publishedUserId'],
+        'actor_user_id': offer['model']['publishedUserId'],
+        'publisher_user_id': offer['model']['publishedUserId'],
         'start_date': contract1_date.isoformat(),
         'payed_till': contract1_date.isoformat(),
         'target_object_id': offer['model']['id'],
@@ -516,8 +535,30 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
         'date': contract1_date.isoformat(),
     }
 
-    # act
+    await pg.execute(
+        """
+        INSERT INTO public.agents_hierarchy (
+            id,
+            row_version,
+            realty_user_id,
+            master_agent_user_id,
+            created_at,
+            updated_at,
+            account_type
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7),
+            ($8, $9, $10, $11, $12, $13, $14)
+        """,
+        [
+            1, 1, offer['model']['publishedUserId'], 6, contract1_date, contract1_date, 'Specialist',
+            2, 1, 6, None, contract1_date, contract1_date, 'Agency'
+        ]
+    )
+
     await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
+
+    # act
 
     await pg.execute(
         """
@@ -538,7 +579,7 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
             ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         """,
         [
-            2, 1, 1, 4, offer['model']['id'], contract1_date,
+            2, offer['model']['publishedUserId'], 1, 4, offer['model']['id'], contract1_date,
             contract1_date, 1, False, contract1_date, contract1_date
         ]
     )
@@ -556,4 +597,4 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
     # assert
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
 
-    assert row['payed_by'] == expected
+    assert row['payed_by'] == offer['model']['publishedUserId']
