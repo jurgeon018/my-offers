@@ -1,5 +1,4 @@
 import pytest
-from simple_settings.utils import settings_stub
 
 from my_offers.enums import OfferPayedByFilterType
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions

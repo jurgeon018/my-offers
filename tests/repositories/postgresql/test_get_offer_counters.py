@@ -8,7 +8,7 @@ from my_offers.repositories.postgresql.offer import get_offer_counters
 
 
 @pytest.mark.gen_test
-async def test_get_offer_counters(mocker):
+async def test_get_offer_counters():
     # arrange
     rows = [
         {'status_tab': 'active', 'cnt': 11},
@@ -33,8 +33,7 @@ async def test_get_offer_counters(mocker):
         assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.status_tab, count(*) AS cnt \nFROM offers \n'
-        'WHERE offers.master_user_id = $1 GROUP BY offers.status_tab',
+        'SELECT offers.status_tab, count(*) AS cnt \nFROM offers \n''WHERE offers.master_user_id = $1 GROUP BY offers.status_tab',
         111,
         timeout=3,
     )

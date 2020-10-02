@@ -1,7 +1,5 @@
 from typing import Optional
 
-from simple_settings import settings
-
 from my_offers import entities
 from my_offers.enums import OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings

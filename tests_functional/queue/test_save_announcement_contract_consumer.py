@@ -62,7 +62,6 @@ async def test_process_save_announcement_correct_service_type(
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_empty_payed_till_returned_for_calltracking(
-    runtime_settings,
     pg,
     queue_service,
     http
@@ -117,7 +116,6 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_correct_payed_till_returned_without_calltracking(
-    runtime_settings,
     pg,
     queue_service,
     http
@@ -184,7 +182,6 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_correct_payed_till_returned_with_calltracking(
-    runtime_settings,
     pg,
     queue_service,
     http

@@ -33,7 +33,7 @@ async def test_get_object_models__empty_filter__result(mocker):
 
 
 @pytest.mark.gen_test
-async def test_get_object_models__full_filter__result(mocker):
+async def test_get_object_models__full_filter__result():
     # arrange
     filters = {
         'status_tab': 'active',
@@ -83,7 +83,7 @@ async def test_get_object_models__full_filter__result(mocker):
 
 
 @pytest.mark.gen_test
-async def test_get_object_models__filter_none__result(mocker):
+async def test_get_object_models__filter_none__result():
     # arrange
     filters = {
         'offer_type': None,
@@ -110,7 +110,7 @@ async def test_get_object_models__filter_none__result(mocker):
 
 
 @pytest.mark.gen_test
-async def test_get_object_models___wrong_filter__result(mocker):
+async def test_get_object_models___wrong_filter__result():
     # arrange
     filters = {
         'zzzz': 'AAAA',

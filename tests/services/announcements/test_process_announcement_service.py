@@ -1,6 +1,5 @@
 import pytest
 from cian_test_utils import future
-from simple_settings.utils import settings_stub
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
@@ -53,9 +52,8 @@ async def test_announcement_processor(mocker):
     )
     offer = mocker.sentinel.offer
 
-    get_master_user_id_mock = mocker.patch.object(
-        AnnouncementProcessor,
-        '_get_master_user_id',
+    get_master_user_id_mock = mocker.patch(
+        'my_offers.services.announcement.process_announcement_service.get_master_user_id',
         return_value=future(master_user_id)
     )
     get_payed_by_mock = mocker.patch(
@@ -93,15 +91,3 @@ async def test_announcement_processor(mocker):
          payed_by=payed_by)
     save_offer_mock.assert_called_once_with(mocker.ANY, offer)
     post_process_offer_mock.assert_called_once_with(mocker.ANY, object_model)
-
-
-async def test_get_master_user_id(mocker):
-    master_user_id = 1
-
-    mocker.patch(
-        'my_offers.services.announcement.process_announcement_service.get_master_user_id',
-        return_value=future(master_user_id)
-    )
-
-    processor = AnnouncementProcessor()
-    assert await processor._get_master_user_id(offer_id=1, user_id=2) == master_user_id

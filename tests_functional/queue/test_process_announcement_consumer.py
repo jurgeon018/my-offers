@@ -273,7 +273,6 @@ async def test_process_announcement_consumer__archive_updated_to_active(
      1, 2, 2, 1, 2),
 ])
 async def test_process_announcement_consumer__payed_by(
-        runtime_settings,
         queue_service,
         pg,
         offer,
@@ -434,7 +433,6 @@ async def test_process_announcement_consumer__payed_by_missing_billing(
 async def test_process_announcement_consumer__payed_by_missing_billing_after_offer(
         queue_service,
         pg,
-        runtime_settings,
         offer,
 ):
     """
@@ -504,7 +502,6 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
 async def test_process_announcement_consumer__payed_by_exists_billing_after_offer(
         queue_service,
         pg,
-        runtime_settings,
         offer,
 ):
     """

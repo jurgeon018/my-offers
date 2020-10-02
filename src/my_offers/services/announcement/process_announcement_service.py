@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import Optional
 
-from simple_settings import settings
-
 from my_offers import entities
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_sort_date, is_test
@@ -32,14 +30,11 @@ async def process_announcement(object_model: ObjectModel, event_date: datetime) 
 class AnnouncementProcessor:
 
     async def process(self, object_model: ObjectModel):
-        master_user_id = await self._get_master_user_id(
-            offer_id=object_model.id,
-            user_id=object_model.user_id
-        )
+        master_user_id = await get_master_user_id(object_model.user_id)
         payed_by = await get_offer_publisher_user_id(object_model.id)
         offer = self._prepare_offer(
             object_model=object_model,
-            master_user_id=master_user_id,
+            master_user_id=master_user_id if master_user_id else object_model.user_id,
             payed_by=payed_by
         )
 
@@ -95,15 +90,6 @@ class AnnouncementProcessor:
 
         return offer
 
-    async def _get_master_user_id(self, *, offer_id: int, user_id: int) -> int:
-        """
-        Возвращаем идентификатор, который сохраним в таблицу объявлений
-        как идентификатор мастера. Значение в дальнейшем используется
-        при запросах объявлений от мастера для возвращения ему объявлений сабов.
-        """
-        master_user_id = await get_master_user_id(user_id)
-
-        return master_user_id if master_user_id else user_id
 
     async def _post_process_offer(self, object_model: ObjectModel) -> None:
         await self._update_offer_import_error(object_model)

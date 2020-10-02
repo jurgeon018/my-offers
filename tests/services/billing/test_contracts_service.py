@@ -4,7 +4,6 @@ import pytest
 import pytz
 from cian_test_utils import future, v
 from freezegun import freeze_time
-from simple_settings.utils import settings_stub
 
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.enums import TargetObjectType

@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 import pytz
-from simple_settings import settings
 
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.repositories import postgresql

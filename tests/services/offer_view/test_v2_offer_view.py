@@ -1,5 +1,4 @@
 import pytest
-from simple_settings.utils import settings_stub
 
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.get_offers import ActiveInfo, GetOfferV2, PageSpecificInfo, Statistics

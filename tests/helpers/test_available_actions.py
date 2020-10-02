@@ -1,5 +1,4 @@
 import pytest
-from simple_settings.utils import settings_stub
 
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.enums import OfferPayedByType
@@ -220,7 +219,7 @@ def test_get_available_actions__no_settings__actions():
         (False, False, True, True),
     )
 )
-def test__can_restore(mocker, is_archived, is_removed_by_moderator, is_discontinued, expected):
+def test__can_restore(is_archived, is_removed_by_moderator, is_discontinued, expected):
     # arrange & act
     result = _can_restore(
         is_archived=is_archived,
@@ -243,7 +242,7 @@ def test__can_restore(mocker, is_archived, is_removed_by_moderator, is_discontin
         (True, False, False, False, True),
     )
 )
-def test__can_raise(mocker, force_raise, is_archived, is_published, is_in_hidden_base, expected):
+def test__can_raise(force_raise, is_archived, is_published, is_in_hidden_base, expected):
     # arrange & act
     result = _can_raise(
         force_raise=force_raise,

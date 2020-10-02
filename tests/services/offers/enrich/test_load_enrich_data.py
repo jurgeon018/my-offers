@@ -7,7 +7,6 @@ from cian_test_utils import future
 from freezegun import freeze_time
 from mock import call
 from simple_settings import settings
-from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.entities import AgentName
@@ -432,7 +431,7 @@ async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
 
 
 @pytest.mark.gen_test
-async def test_load_enrich_data__empty__empty(mocker):
+async def test_load_enrich_data__empty__empty():
     # arrange
     params = EnrichParams(111)
     expected = EnrichData(
@@ -541,7 +540,7 @@ async def test__load_geo_urls__degradation__empty(mocker):
 
 
 @pytest.mark.gen_test
-async def test__load_coverage(mocker):
+async def test__load_coverage():
     # arrange
     expected = EnrichItem(key='coverage', degraded=True, value={})
 
@@ -553,7 +552,7 @@ async def test__load_coverage(mocker):
 
 
 @pytest.mark.gen_test
-async def test__load_auctions(mocker):
+async def test__load_auctions():
     # arrange
     expected = EnrichItem(key='auctions', degraded=False, value={})
 
