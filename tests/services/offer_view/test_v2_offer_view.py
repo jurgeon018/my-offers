@@ -181,12 +181,11 @@ def test_build_offer_view_depends_on_payed_by(
     )
 
     # act
-    with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True):
-        result = v2_build_offer_view(
-            is_master_agent=True,
-            object_model=raw_offer,
-            enrich_data=enrich_data_with_offers_payed_by_mock
-        )
+    result = v2_build_offer_view(
+        is_master_agent=True,
+        object_model=raw_offer,
+        enrich_data=enrich_data_with_offers_payed_by_mock
+    )
 
     # assert
     assert result == expected_result

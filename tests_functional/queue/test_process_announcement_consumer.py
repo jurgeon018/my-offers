@@ -340,10 +340,6 @@ async def test_process_announcement_consumer__payed_by(
     offer['model']['userId'] = published_user_id
     offer['model']['id'] = offer_id
 
-    await runtime_settings.set(
-        ENABLE_NEW_GET_MASTER_USER_ID=True
-    )
-
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
     await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
@@ -485,7 +481,6 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
         ]
     )
 
-    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
 
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
@@ -555,8 +550,6 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
             2, 1, 6, None, contract1_date, contract1_date, 'Agency'
         ]
     )
-
-    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
 
     # act
 

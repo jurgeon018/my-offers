@@ -160,23 +160,22 @@ def test_get_available_actions_for_agent_offer_payed_by_agent(is_master_agent, i
                                                               payed_by, status, can_update_edit_date,
                                                               expected):
     # arrange & act
-    with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True):
-        result = get_available_actions(
-            is_archived=is_archived,
-            is_manual=is_manual,
-            status=status,
-            can_update_edit_date=can_update_edit_date,
-            agency_settings=AgencySettings(
-                can_sub_agents_edit_offers_from_xml=True,
-                can_sub_agents_publish_offers=True,
-                can_sub_agents_view_agency_balance=True,
-                display_all_agency_offers=True,
-            ),
-            is_in_hidden_base=False,
-            is_master_agent=is_master_agent,
-            force_raise=False,
-            payed_by=payed_by
-        )
+    result = get_available_actions(
+        is_archived=is_archived,
+        is_manual=is_manual,
+        status=status,
+        can_update_edit_date=can_update_edit_date,
+        agency_settings=AgencySettings(
+            can_sub_agents_edit_offers_from_xml=True,
+            can_sub_agents_publish_offers=True,
+            can_sub_agents_view_agency_balance=True,
+            display_all_agency_offers=True,
+        ),
+        is_in_hidden_base=False,
+        is_master_agent=is_master_agent,
+        force_raise=False,
+        payed_by=payed_by
+    )
 
     # assert
     assert result == expected

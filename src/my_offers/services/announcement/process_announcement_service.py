@@ -101,10 +101,7 @@ class AnnouncementProcessor:
         как идентификатор мастера. Значение в дальнейшем используется
         при запросах объявлений от мастера для возвращения ему объявлений сабов.
         """
-        if settings.ENABLE_NEW_GET_MASTER_USER_ID:
-            master_user_id = await get_master_user_id(user_id)
-        else:
-            master_user_id = await get_offer_publisher_user_id(offer_id)
+        master_user_id = await get_master_user_id(user_id)
 
         return master_user_id if master_user_id else user_id
 

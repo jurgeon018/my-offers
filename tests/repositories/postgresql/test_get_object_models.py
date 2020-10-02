@@ -60,14 +60,13 @@ async def test_get_object_models__full_filter__result(mocker):
     assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers \n'
-        'WHERE offers.status_tab = $10 AND offers.deal_type = $1 AND offers.offer_type = $3 '
-        'AND offers.user_id = ANY (CAST($4 AS BIGINT[])) AND offers.has_photo = true '
-        'AND offers.is_manual = false AND offers.is_in_hidden_base = false AND '
-        'offers.master_user_id = $2 AND (offers.master_user_id = offers.payed_by '
-        'OR offers.payed_by IS NULL) AND offers.services && CAST($9 AS offer_service[]) '
-        'AND (to_tsvector($11, offers.search_text) @@ plainto_tsquery($7, $8)) '
-        'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $5 OFFSET $6',
+        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers \nWHERE'
+        ' offers.status_tab = $10 AND offers.deal_type = $1 AND offers.offer_type = $3'
+        ' AND offers.user_id = ANY (CAST($4 AS BIGINT[])) AND offers.has_photo = true '
+        'AND offers.is_manual = false AND offers.is_in_hidden_base = false AND offers.'
+        'master_user_id = $2 AND offers.services && CAST($9 AS offer_service[]) AND (t'
+        'o_tsvector($11, offers.search_text) @@ plainto_tsquery($7, $8)) ORDER BY offer'
+        's.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $5 OFFSET $6',
         'sale',
         12478339,
         'suburban',
@@ -102,10 +101,8 @@ async def test_get_object_models__filter_none__result(mocker):
     assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers \n'
-        'WHERE offers.master_user_id = offers.payed_by OR offers.payed_by IS'
-        ' NULL ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT '
-        '$1 OFFSET $2',
+       'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers ORDER BY'
+       ' offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         40,
         0,
         timeout=3,
@@ -132,9 +129,8 @@ async def test_get_object_models___wrong_filter__result(mocker):
     assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers \n'
-        'WHERE offers.master_user_id = offers.payed_by OR offers.payed_by IS NULL '
-        'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
+        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers ORDER BY '
+        'offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         40,
         0,
         timeout=3,

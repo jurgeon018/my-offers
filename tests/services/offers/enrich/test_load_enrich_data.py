@@ -946,7 +946,7 @@ async def test__load_offers_similars_counters__degraded(mocker):
     )
 
 
-async def test_load_offers_payed_by_with_feature_toggle(mocker):
+async def test_load_offers_payed_by(mocker):
     # arrange
     offer_ids = [1, ]
     expected = {1: None}
@@ -957,32 +957,11 @@ async def test_load_offers_payed_by_with_feature_toggle(mocker):
     )
 
     # act
-    with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True):
-        result = await _load_offers_payed_by(offer_ids)
+    result = await _load_offers_payed_by(offer_ids)
 
     # assert
     get_offers_payed_by_degradation_handler.assert_called_once_with(
         offer_ids
     )
-    assert result.value == expected
-    assert not result.degraded
-
-
-async def test_load_offers_payed_by_without_feature_toggle(mocker):
-    # arrange
-    offer_ids = [1, ]
-    expected = {}
-
-    get_offers_payed_by_degradation_handler = mocker.patch(
-        f'{PATH}get_offers_payed_by_degradation_handler',
-        return_value=future(DegradationResult(value=expected, degraded=False))
-    )
-
-    # act
-    with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=False):
-        result = await _load_offers_payed_by(offer_ids)
-
-    # assert
-    assert not get_offers_payed_by_degradation_handler.called
     assert result.value == expected
     assert not result.degraded

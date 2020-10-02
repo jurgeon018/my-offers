@@ -324,7 +324,6 @@ async def test_get_active_offers_by_payed_by(pg, http, runtime_settings, payed_b
     )
 
     # act
-    await runtime_settings.set(ENABLE_PAYED_BY_FILTERS=True)
     response = await http.request(
         'POST',
         '/public/v2/get-offers/',
@@ -418,10 +417,6 @@ async def test_get_active_offers_payed_by_labels(pg, http, runtime_settings):
     )
 
     # act
-    await runtime_settings.set(
-        ENABLE_PAYED_BY_FILTERS=True,
-        MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True
-    )
     response = await http.request(
         'POST',
         '/public/v2/get-offers/',
