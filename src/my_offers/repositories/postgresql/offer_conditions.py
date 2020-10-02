@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import sqlalchemy as sa
 from sqlalchemy import and_, any_, cast, func
@@ -56,7 +56,7 @@ def _prepare_basic_conditions(filters: Dict[str, Any]) -> List:
     return conditions
 
 
-def _prepare_payed_by_condition(payed_by_filter: str) -> BinaryExpression:
+def _prepare_payed_by_condition(payed_by_filter: str) -> Optional[BinaryExpression]:
     condition = None
     if payed_by_filter == enums.OfferPayedByFilterType.by_agent.value:
         condition = and_(
