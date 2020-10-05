@@ -189,18 +189,30 @@ async def get_offers_id_older_than(
         *,
         date: datetime,
         status_tab: enums.OfferStatusTab,
-        limit: int
+        limit: int,
+        timeout: int,
 ) -> List[int]:
-    query = """SELECT offer_id FROM offers where status_tab = $1 and updated_at <= $2 limit $3"""
+    query = """
+        select
+            offer_id
+        from
+            offers
+        where
+            status_tab = $1 and updated_at <= $2
+        order by
+            updated_at
+        limit $3
+        """
 
     rows = await pg.get().fetch(
         query,
         status_tab.name,
         date,
-        limit
+        limit,
+        timeout=timeout,
     )
-    offer_ids = [row['offer_id'] for row in rows]
-    return offer_ids
+
+    return [row['offer_id'] for row in rows]
 
 
 async def get_offers_update_at(offer_ids: List[int]) -> Dict[int, datetime]:

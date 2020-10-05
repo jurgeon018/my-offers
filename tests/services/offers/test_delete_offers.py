@@ -7,6 +7,7 @@ from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.repositories.postgresql import tables
+from my_offers.repositories.postgresql.offers_duplicates import offers_duplicates
 from my_offers.services.offers.delete_offers import delete_offers_data
 
 
@@ -35,6 +36,7 @@ class TestDeleteOffersService:
             date=FakeDatetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
             status_tab=enums.OfferStatusTab.deleted,
             limit=50,
+            timeout=30,
         )
 
     @pytest.mark.gen_test
@@ -56,6 +58,7 @@ class TestDeleteOffersService:
                 future(),
                 future(),
                 future(),
+                future(),
             )
         )
 
@@ -68,27 +71,38 @@ class TestDeleteOffersService:
         delete_rows_by_offer_id_mock.assert_has_calls([
             mocker.call(
                 table=tables.offers,
-                offer_ids=offers_to_delete
+                offer_ids=offers_to_delete,
+                timeout=30,
             ),
             mocker.call(
                 table=tables.offers_billing_contracts,
-                offer_ids=offers_to_delete
+                offer_ids=offers_to_delete,
+                timeout=30,
+            ),
+            mocker.call(
+                table=offers_duplicates,
+                offer_ids=offers_to_delete,
+                timeout=30,
             ),
             mocker.call(
                 table=tables.offers_last_import_error,
-                offer_ids=offers_to_delete
+                offer_ids=offers_to_delete,
+                timeout=30,
             ),
             mocker.call(
                 table=tables.offers_offences,
-                offer_ids=offers_to_delete
-            ),
-            mocker.call(
-                table=tables.offers_reindex_queue,
-                offer_ids=offers_to_delete
+                offer_ids=offers_to_delete,
+                timeout=30,
             ),
             mocker.call(
                 table=tables.offers_premoderations,
-                offer_ids=offers_to_delete
+                offer_ids=offers_to_delete,
+                timeout=30,
+            ),
+            mocker.call(
+                table=tables.offers_reindex_queue,
+                offer_ids=offers_to_delete,
+                timeout=30,
             ),
         ])
 

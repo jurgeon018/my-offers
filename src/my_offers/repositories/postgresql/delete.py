@@ -7,7 +7,7 @@ from sqlalchemy import delete
 from my_offers import pg
 
 
-async def delete_rows_by_offer_id(table: sa.Table, offer_ids: List[int]) -> None:
+async def delete_rows_by_offer_id(table: sa.Table, offer_ids: List[int], timeout: int) -> None:
 
     query, params = asyncpgsa.compile_query(
         delete(table)
@@ -15,4 +15,4 @@ async def delete_rows_by_offer_id(table: sa.Table, offer_ids: List[int]) -> None
             table.c.offer_id.in_(offer_ids),
         )
     )
-    await pg.get().execute(query, *params)
+    await pg.get().execute(query, *params, timeout=timeout)

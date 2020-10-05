@@ -65,15 +65,21 @@ async def test_get_offers_id_older_than(mocker):
 
     # act
 
-    result = await get_offers_id_older_than(date=datetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
-                                            status_tab=enums.OfferStatusTab.deleted,
-                                            limit=5)
+    result = await get_offers_id_older_than(
+        date=datetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
+        status_tab=enums.OfferStatusTab.deleted,
+        limit=5,
+        timeout=30,
+    )
 
     # assert
     assert result == expected
     pg.get().fetch.assert_called_once_with(
-        'SELECT offer_id FROM offers where status_tab = $1 and updated_at <= $2 limit $3',
+        '\n        select\n            offer_id\n        from\n            offers\n        where\n            '
+        'status_tab = $1 and updated_at <= $2\n        order by\n            updated_at\n        '
+        'limit $3\n        ',
         'deleted',
         datetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
         5,
+        timeout=30,
     )
