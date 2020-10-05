@@ -1,6 +1,8 @@
-from datetime import datetime
+import asyncio
+from datetime import datetime, timedelta
 from typing import Optional
 
+import pytz
 from simple_settings import settings
 
 from my_offers import entities
@@ -44,7 +46,7 @@ class AnnouncementProcessor:
         )
 
         await self._save_offer(offer)
-        await self._post_process_offer(object_model)
+        await self._post_process_offer(offer=offer, object_model=object_model)
 
     async def _save_offer(self, offer: entities.Offer) -> None:
         raise NotImplementedError()
@@ -108,13 +110,23 @@ class AnnouncementProcessor:
 
         return master_user_id if master_user_id else user_id
 
-    async def _post_process_offer(self, object_model: ObjectModel) -> None:
-        await self._update_offer_import_error(object_model)
-        await similars.update(object_model)
+    async def _post_process_offer(self, *, offer: entities.Offer, object_model: ObjectModel) -> None:
+        await asyncio.gather(
+            self._update_offer_import_error(object_model),
+            similars.update(object_model),
+            self._add_to_delete_queue(offer),
+        )
 
     async def _update_offer_import_error(self, object_model: ObjectModel) -> None:
         if not object_model.status.is_draft:
             await postgresql.delete_offer_import_error(object_model.id)
+
+    async def _add_to_delete_queue(self, offer: entities.Offer) -> None:
+        if offer.status_tab.is_deleted:
+            await postgresql.add_offer_to_delete_queue(
+                offer_id=offer.offer_id,
+                delete_at=datetime.now(tz=pytz.UTC) + timedelta(days=settings.COUNT_DAYS_HOLD_DELETED_OFFERS)
+            )
 
 
 class MainAnnouncementProcessor(AnnouncementProcessor):

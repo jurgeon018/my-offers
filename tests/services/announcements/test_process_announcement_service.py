@@ -92,7 +92,7 @@ async def test_announcement_processor(mocker):
          master_user_id=master_user_id,
          payed_by=payed_by)
     save_offer_mock.assert_called_once_with(mocker.ANY, offer)
-    post_process_offer_mock.assert_called_once_with(mocker.ANY, object_model)
+    post_process_offer_mock.assert_called_once_with(mocker.ANY, offer=offer, object_model=object_model)
 
 
 async def test_get_master_user_id_new(mocker):

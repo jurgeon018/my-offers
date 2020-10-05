@@ -1,12 +1,11 @@
 from datetime import datetime
 
 import pytest
-import pytz
 from cian_test_utils import future
 
 from my_offers import enums, pg
 from my_offers.entities import Offer
-from my_offers.repositories.postgresql.offer import get_offer_by_id, get_offers_id_older_than
+from my_offers.repositories.postgresql.offer import get_offer_by_id
 
 
 @pytest.mark.gen_test
@@ -52,34 +51,3 @@ async def test_get_offer_by_id(mocker, row, expected):
 
     # assert
     assert result == expected
-
-
-@pytest.mark.gen_test
-async def test_get_offers_id_older_than(mocker):
-    # arrange
-    pg.get().fetch.return_value = future([
-        {'offer_id': 888},
-        {'offer_id': 999}
-    ])
-    expected = [888, 999]
-
-    # act
-
-    result = await get_offers_id_older_than(
-        date=datetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
-        status_tab=enums.OfferStatusTab.deleted,
-        limit=5,
-        timeout=30,
-    )
-
-    # assert
-    assert result == expected
-    pg.get().fetch.assert_called_once_with(
-        '\n        select\n            offer_id\n        from\n            offers\n        where\n            '
-        'status_tab = $1 and updated_at <= $2\n        order by\n            updated_at\n        '
-        'limit $3\n        ',
-        'deleted',
-        datetime(2020, 2, 24, 9, 0, 0, 303690, pytz.UTC),
-        5,
-        timeout=30,
-    )

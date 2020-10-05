@@ -598,3 +598,26 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
 
     assert row['payed_by'] == offer['model']['publishedUserId']
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'offer',
+    (
+        (
+            load_json_data(__file__, 'announcement_deleted.json'),
+        ),
+    ),
+)
+async def test_process_announcement_consumer__deleted__delete(queue_service, pg, offer):
+    """
+    Сохранение удаленнго объявления объявления - помечаем удаленным.
+    """
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+    assert row['status_tab'] == 'deleted'
