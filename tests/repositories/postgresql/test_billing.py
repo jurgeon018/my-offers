@@ -6,15 +6,11 @@ from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities import OfferBillingContract
-from my_offers.mappers.billing import offer_billing_contract_mapper
 from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql.billing import (
     get_offers_payed_till,
     get_offers_payed_till_excluding_calltracking,
 )
-
-
-pytestmark = pytest.mark.gen_test
 
 
 async def test_save_offer_contract(mocker):
