@@ -1,195 +1,216 @@
 {
-	"id": 222999135,
-	"geo": {
-		"address": [{
-			"id": 4572,
-			"name": "Иркутская",
-			"type": "location",
-			"fullName": "Иркутская область",
-			"shortName": "Иркутская область",
-			"locationTypeId": 2,
-			"isFormingAddress": true
-		}, {
-			"id": 4774,
-			"name": "Иркутск",
-			"type": "location",
-			"fullName": "Иркутск",
-			"shortName": "Иркутск",
-			"locationTypeId": 1,
-			"isFormingAddress": true
-		}, {
-			"id": 166090,
-			"name": "Грибоедова",
-			"type": "street",
-			"fullName": "улица Грибоедова",
-			"shortName": "ул. Грибоедова",
-			"isFormingAddress": true
-		}, {
-			"id": 2536638,
-			"name": "4",
-			"type": "house",
-			"fullName": "4",
-			"shortName": "4",
-			"isFormingAddress": true
-		}],
-		"district": [{
-			"id": 959,
-			"name": "Свердловский",
-			"type": "okrug",
-			"locationId": 4774
-		}, {
-			"id": 2453,
-			"name": "Предместье Глазково",
-			"type": "mikroraion",
-			"parentId": 959,
-			"locationId": 4774
-		}],
-		"highways": [],
-		"railways": [],
-		"countryId": 138,
-		"userInput": "Иркутская область, Иркутск, Свердловский район, Грибоедова, 4",
-		"coordinates": {
-			"lat": 52.27323,
-			"lng": 104.252004
-		},
-		"locationPath": {
-			"countryId": 138,
-			"childToParent": [4774, 4572]
-		},
-		"undergrounds": [],
-		"calculatedUndergrounds": []
-	},
-	"flags": {
-		"isArchived": false,
-		"draftReason": "import"
-	},
-	"title": "Квартира, 41 кв.м.",
-	"cianId": 222999135,
-	"phones": [{
-		"number": "3952990011",
-		"countryCode": "+7"
-	}],
-	"photos": [{
-		"id": 798041996,
-		"fullUrl": "https://cdn-p.cian.site/images/9/140/897/798041996-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/9/140/897/798041996-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/9/140/897/798041996-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/9/140/897/798041996-4.jpg"
-	}, {
-		"id": 798042011,
-		"fullUrl": "https://cdn-p.cian.site/images/0/240/897/798042011-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/0/240/897/798042011-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/0/240/897/798042011-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/0/240/897/798042011-4.jpg"
-	}, {
-		"id": 798042028,
-		"fullUrl": "https://cdn-p.cian.site/images/0/240/897/798042028-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/0/240/897/798042028-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/0/240/897/798042028-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/0/240/897/798042028-4.jpg"
-	}, {
-		"id": 798042042,
-		"fullUrl": "https://cdn-p.cian.site/images/0/240/897/798042042-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/0/240/897/798042042-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/0/240/897/798042042-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/0/240/897/798042042-4.jpg"
-	}, {
-		"id": 798042055,
-		"fullUrl": "https://cdn-p.cian.site/images/0/240/897/798042055-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/0/240/897/798042055-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/0/240/897/798042055-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/0/240/897/798042055-4.jpg"
-	}, {
-		"id": 798042080,
-		"fullUrl": "https://cdn-p.cian.site/images/0/240/897/798042080-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/0/240/897/798042080-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/0/240/897/798042080-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/0/240/897/798042080-4.jpg"
-	}, {
-		"id": 798042090,
-		"fullUrl": "https://cdn-p.cian.site/images/0/240/897/798042090-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/0/240/897/798042090-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/0/240/897/798042090-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/0/240/897/798042090-4.jpg"
-	}, {
-		"id": 798042100,
-		"fullUrl": "https://cdn-p.cian.site/images/1/240/897/798042100-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/1/240/897/798042100-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/1/240/897/798042100-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/1/240/897/798042100-4.jpg"
-	}, {
-		"id": 798042111,
-		"fullUrl": "https://cdn-p.cian.site/images/1/240/897/798042111-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/1/240/897/798042111-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/1/240/897/798042111-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/1/240/897/798042111-4.jpg"
-	}, {
-		"id": 798042119,
-		"fullUrl": "https://cdn-p.cian.site/images/1/240/897/798042119-1.jpg",
-		"miniUrl": "https://cdn-p.cian.site/images/1/240/897/798042119-3.jpg",
-		"isDefault": false,
-		"thumbnailUrl": "https://cdn-p.cian.site/images/1/240/897/798042119-2.jpg",
-		"thumbnail2Url": "https://cdn-p.cian.site/images/1/240/897/798042119-4.jpg"
-	}],
-	"source": "upload",
-	"status": "Draft",
-	"userId": 24419037,
-	"videos": [],
-	"version": 2,
-	"building": {
-		"liftTypes": [],
-		"totalArea": 41.0,
-		"floorsCount": 4,
-		"cranageTypes": [],
-		"materialType": "brick",
-		"extinguishingSystemTypes": []
-	},
-	"category": "flatSale",
-	"editDate": "2020-04-01T04:40:55",
-	"flatType": "rooms",
-	"platform": {
-		"type": "upload"
-	},
-	"specialty": {
-		"types": [],
-		"additionalTypes": []
-	},
-	"totalArea": 41.0,
-	"cianUserId": 24419037,
-	"objectGuid": "37195ab7-b1db-4fdf-9917-e51e08852a16",
-	"roomsCount": 2,
-	"rowVersion": 30997885209,
-	"description": "Продаю отличную 2-х комнатную квартиру в кирпичном доме по адресу Грибоедова 4. О квартире: Отличное состояние, недавно сделан косметический ремонт. Раздельная планировка комнат ( 18.2; 9.4 ) Натяжные потолки ( материал Германия, запаха нет! ). Сантехника заменена на медь, новые радиаторы отопления. На полу хороший ламинат. Межкомнатные двери все заменены. Душевая кабина. Четырехкамерные стеклопакеты VEKA. Квартира очень теплая, уютная и светлая!!!! Тихие соседи!!! О районе и инфраструктуре: В шаговой доступности находятся различные магазины и супермаркеты, д/сад  71 ( рядом с домом), школа  80 и  63,Колледж педагогического образования, детская поликлиника 5, отделения почты и банков, остановки общественного транспорта ( трамвайная остановка ), СК Изумруд и огромный гипермаркет Абсолют , в общем все что нужно для комфортного проживания. ЗВОНИТЕ!",
-	"floorNumber": 1,
-	"kitchenArea": 6.0,
-	"allRoomsArea": "18.2-9.4",
-	"bargainTerms": {
-		"price": 2980000.0,
-		"currency": "rur",
-		"priceType": "all",
-		"includedOptions": []
-	},
-	"creationDate": "2019-12-10T09:32:25.640000",
-	"publishTerms": {
-		"terms": [{
-			"days": 1,
-			"type": "dailyTermless",
-			"services": ["paid"]
-		}],
-		"autoprolong": false,
-		"infinitePublishPeriod": true
-	},
-	"isRentByParts": false,
-	"isInHiddenBase": false,
-	"publishedUserId": 47012216,
-	"separateWcsCount": 1
+  "model": {
+    "id": 227888824,
+    "geo": {
+      "jk": {
+        "id": 48107,
+        "name": "Авиатор",
+        "house": {
+          "id": 107297,
+          "flat": {
+            "flatType": "1-41.94"
+          },
+          "name": "Дом №1"
+        },
+        "developer": {
+          "name": "Спецстрой (Калининград)"
+        }
+      },
+      "address": [
+        {
+          "id": 4574,
+          "name": "Калининградская",
+          "type": "location",
+          "fullName": "Калининградская область",
+          "shortName": "Калининградская область",
+          "locationTypeId": 2,
+          "isFormingAddress": true
+        },
+        {
+          "id": 4778,
+          "name": "Калининград",
+          "type": "location",
+          "fullName": "Калининград",
+          "shortName": "Калининград",
+          "locationTypeId": 1,
+          "isFormingAddress": true
+        },
+        {
+          "id": 175715,
+          "name": "Воздушный",
+          "type": "street",
+          "fullName": "Воздушный переулок",
+          "shortName": "Воздушный пер.",
+          "isFormingAddress": true
+        }
+      ],
+      "district": [
+        {
+          "id": 277,
+          "name": "Центральный",
+          "type": "raion",
+          "locationId": 4778
+        }
+      ],
+      "highways": [],
+      "railways": [],
+      "countryId": 138,
+      "userInput": "Калининград, Воздушный переулок",
+      "coordinates": {
+        "lat": 54.714722,
+        "lng": 20.440434
+      },
+      "locationPath": {
+        "countryId": 138,
+        "childToParent": [
+          4778,
+          4574
+        ]
+      },
+      "undergrounds": [],
+      "calculatedUndergrounds": []
+    },
+    "flags": {
+      "isArchived": false,
+      "draftReason": "readyForUploadDelete"
+    },
+    "cianId": 227888824,
+    "phones": [
+      {
+        "number": "4012658894",
+        "countryCode": "+7",
+        "sourcePhone": {
+          "number": "4012751166",
+          "countryCode": "+7"
+        }
+      }
+    ],
+    "photos": [
+      {
+        "id": 845190928,
+        "fullUrl": "https://cdn-p.cian.site/images/9/091/548/845190928-1.jpg",
+        "miniUrl": "https://cdn-p.cian.site/images/9/091/548/845190928-3.jpg",
+        "isDefault": false,
+        "isCianLayout": false,
+        "thumbnailUrl": "https://cdn-p.cian.site/images/9/091/548/845190928-2.jpg",
+        "thumbnail2Url": "https://cdn-p.cian.site/images/9/091/548/845190928-4.jpg"
+      },
+      {
+        "id": 845190989,
+        "fullUrl": "https://cdn-p.cian.site/images/9/091/548/845190989-1.jpg",
+        "miniUrl": "https://cdn-p.cian.site/images/9/091/548/845190989-3.jpg",
+        "isDefault": false,
+        "isCianLayout": false,
+        "thumbnailUrl": "https://cdn-p.cian.site/images/9/091/548/845190989-2.jpg",
+        "thumbnail2Url": "https://cdn-p.cian.site/images/9/091/548/845190989-4.jpg"
+      },
+      {
+        "id": 845191069,
+        "fullUrl": "https://cdn-p.cian.site/images/0/191/548/845191069-1.jpg",
+        "miniUrl": "https://cdn-p.cian.site/images/0/191/548/845191069-3.jpg",
+        "isDefault": false,
+        "isCianLayout": false,
+        "thumbnailUrl": "https://cdn-p.cian.site/images/0/191/548/845191069-2.jpg",
+        "thumbnail2Url": "https://cdn-p.cian.site/images/0/191/548/845191069-4.jpg"
+      },
+      {
+        "id": 845191139,
+        "fullUrl": "https://cdn-p.cian.site/images/1/191/548/845191139-1.jpg",
+        "miniUrl": "https://cdn-p.cian.site/images/1/191/548/845191139-3.jpg",
+        "isDefault": false,
+        "isCianLayout": false,
+        "thumbnailUrl": "https://cdn-p.cian.site/images/1/191/548/845191139-2.jpg",
+        "thumbnail2Url": "https://cdn-p.cian.site/images/1/191/548/845191139-4.jpg"
+      },
+      {
+        "id": 845191227,
+        "fullUrl": "https://cdn-p.cian.site/images/2/191/548/845191227-1.jpg",
+        "miniUrl": "https://cdn-p.cian.site/images/2/191/548/845191227-3.jpg",
+        "isDefault": false,
+        "isCianLayout": false,
+        "thumbnailUrl": "https://cdn-p.cian.site/images/2/191/548/845191227-2.jpg",
+        "thumbnail2Url": "https://cdn-p.cian.site/images/2/191/548/845191227-4.jpg"
+      }
+    ],
+    "source": "upload",
+    "status": "Draft",
+    "userId": 13519421,
+    "videos": [],
+    "hasRamp": false,
+    "version": 2,
+    "building": {
+      "parking": {
+        "type": "open"
+      },
+      "deadline": {
+        "year": 2020,
+        "quarter": "third",
+        "isComplete": false
+      },
+      "liftTypes": [],
+      "totalArea": 41.9,
+      "floorsCount": 7,
+      "cranageTypes": [],
+      "materialType": "brick",
+      "cargoLiftsCount": 0,
+      "passengerLiftsCount": 1,
+      "extinguishingSystemTypes": []
+    },
+    "category": "newBuildingFlatSale",
+    "editDate": "2020-10-01T13:17:20.153000",
+    "flatType": "rooms",
+    "platform": {
+      "type": "upload"
+    },
+    "specialty": {
+      "types": [],
+      "additionalTypes": []
+    },
+    "totalArea": 41.94,
+    "cianUserId": 13519421,
+    "livingArea": 16.6,
+    "objectGuid": "00c7d824-7b41-4e8c-9916-b9fa796274e8",
+    "roomsCount": 1,
+    "rowVersion": 33324598804,
+    "description": "Продается 1-комнатная квартира, в строящемся доме, срок сдачи: III-кв. 2020, общей площадью 41.94 кв.м., на 2 этаже.",
+    "floorNumber": 2,
+    "isPenthouse": false,
+    "kitchenArea": 12.5,
+    "allRoomsArea": "16.63",
+    "bargainTerms": {
+      "price": 3103560.0,
+      "currency": "rur",
+      "saleType": "fz214",
+      "priceType": "all",
+      "includedOptions": [],
+      "mortgageAllowed": true
+    },
+    "creationDate": "2020-03-17T12:53:17.247000",
+    "isApartments": false,
+    "loggiasCount": 1,
+    "publishTerms": {
+      "terms": [
+        {
+          "days": 1,
+          "type": "dailyTermless",
+          "services": [
+            "premium"
+          ]
+        }
+      ],
+      "autoprolong": true,
+      "skipBilling": true,
+      "infinitePublishPeriod": true
+    },
+    "isRentByParts": false,
+    "isInHiddenBase": false,
+    "publishedUserId": 13519421,
+    "combinedWcsCount": 1,
+    "separateWcsCount": 0,
+    "feedboxMultiOfferKey": "4871393",
+    "isEnabledCallTracking": true,
+    "projectDeclarationUrl": "http://files.cian.ru/files/099/Проектная декларация СК Престиж-99011-ywZOAvPr.pdf"
+  },
+  "operationId": "1934fc2a-7a72-494c-b050-dc38adc24ac6",
+  "date": "2020-04-15T16:35:36.2632391+03:00"
 }
