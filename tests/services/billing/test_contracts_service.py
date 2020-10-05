@@ -4,7 +4,6 @@ import pytest
 import pytz
 from cian_test_utils import future, v
 from freezegun import freeze_time
-from simple_settings.utils import settings_stub
 
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
 from my_offers.enums import TargetObjectType
@@ -229,7 +228,7 @@ async def test__mark_to_delete_announcement_contract__ignore_types(mocker, targe
     set_offer_contract_is_deleted_status_mock.assert_not_called()
 
 
-async def test_post_save_contract_old(mocker):
+async def test_post_save_contract(mocker):
     # arrange
     master_user_id = 1
     publisher_user_id = 2
@@ -260,52 +259,7 @@ async def test_post_save_contract_old(mocker):
     )
 
     # act
-    with settings_stub(ENABLE_NEW_GET_MASTER_USER_ID=False):
-        await post_save_contract(offer_contract)
-
-    # assert
-    assert not get_master_user_id.called
-
-    update_offer_master_user_id_and_payed_by_mock.assert_called_once_with(
-        offer_id=offer_id,
-        master_user_id=publisher_user_id,
-        payed_by=publisher_user_id
-    )
-
-
-async def test_post_save_contract_new(mocker):
-    # arrange
-    master_user_id = 1
-    publisher_user_id = 2
-    offer_id = 999999
-    offer_contract = OfferBillingContract(
-        id=1,
-        user_id=555,
-        actor_user_id=777,
-        publisher_user_id=publisher_user_id,
-        start_date=datetime(2020, 1, 2),
-        payed_till=datetime(2020, 2, 2),
-        offer_id=offer_id,
-        row_version=0,
-        is_deleted=False,
-        created_at=datetime(2020, 2, 2),
-        updated_at=datetime(2020, 2, 2),
-        service_types=[]
-    )
-
-    update_offer_master_user_id_and_payed_by_mock = mocker.patch(
-        'my_offers.services.billing.contracts_service.postgresql.update_offer_master_user_id_and_payed_by',
-        return_value=future()
-    )
-
-    get_master_user_id = mocker.patch(
-        'my_offers.services.billing.contracts_service.postgresql.get_master_user_id',
-        return_value=future(master_user_id)
-    )
-
-    # act
-    with settings_stub(ENABLE_NEW_GET_MASTER_USER_ID=True):
-        await post_save_contract(offer_contract)
+    await post_save_contract(offer_contract)
 
     # assert
     assert get_master_user_id.called

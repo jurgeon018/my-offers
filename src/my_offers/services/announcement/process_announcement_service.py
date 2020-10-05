@@ -34,14 +34,11 @@ async def process_announcement(object_model: ObjectModel, event_date: datetime) 
 class AnnouncementProcessor:
 
     async def process(self, object_model: ObjectModel):
-        master_user_id = await self._get_master_user_id(
-            offer_id=object_model.id,
-            user_id=object_model.user_id
-        )
+        master_user_id = await get_master_user_id(object_model.user_id)
         payed_by = await get_offer_publisher_user_id(object_model.id)
         offer = self._prepare_offer(
             object_model=object_model,
-            master_user_id=master_user_id,
+            master_user_id=master_user_id if master_user_id else object_model.user_id,
             payed_by=payed_by
         )
 
@@ -97,18 +94,6 @@ class AnnouncementProcessor:
 
         return offer
 
-    async def _get_master_user_id(self, *, offer_id: int, user_id: int) -> int:
-        """
-        Возвращаем идентификатор, который сохраним в таблицу объявлений
-        как идентификатор мастера. Значение в дальнейшем используется
-        при запросах объявлений от мастера для возвращения ему объявлений сабов.
-        """
-        if settings.ENABLE_NEW_GET_MASTER_USER_ID:
-            master_user_id = await get_master_user_id(user_id)
-        else:
-            master_user_id = await get_offer_publisher_user_id(offer_id)
-
-        return master_user_id if master_user_id else user_id
 
     async def _post_process_offer(self, *, offer: entities.Offer, object_model: ObjectModel) -> None:
         await asyncio.gather(

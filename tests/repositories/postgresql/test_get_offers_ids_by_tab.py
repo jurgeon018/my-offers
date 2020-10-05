@@ -33,9 +33,8 @@ async def test_get_offer_ids_by_tab():
         assert result == expected
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.offer_id \nFROM offers \nWHERE offers.master_user_id = $1 '
-        'AND offers.user_id = $3 AND offers.status_tab = $2 '
-        'AND (offers.master_user_id = offers.payed_by OR offers.payed_by IS NULL)',
+       'SELECT offers.offer_id \nFROM offers \nWHERE offers.master_user_id = $1 AND '
+       'offers.user_id = $3 AND offers.status_tab = $2',
         111,
         'deleted',
         12,

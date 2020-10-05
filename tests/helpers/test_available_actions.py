@@ -1,5 +1,4 @@
 import pytest
-from simple_settings.utils import settings_stub
 
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.enums import OfferPayedByType
@@ -160,23 +159,22 @@ def test_get_available_actions_for_agent_offer_payed_by_agent(is_master_agent, i
                                                               payed_by, status, can_update_edit_date,
                                                               expected):
     # arrange & act
-    with settings_stub(MASTER_CAN_SEE_AGENT_PAYED_OFFERS=True):
-        result = get_available_actions(
-            is_archived=is_archived,
-            is_manual=is_manual,
-            status=status,
-            can_update_edit_date=can_update_edit_date,
-            agency_settings=AgencySettings(
-                can_sub_agents_edit_offers_from_xml=True,
-                can_sub_agents_publish_offers=True,
-                can_sub_agents_view_agency_balance=True,
-                display_all_agency_offers=True,
-            ),
-            is_in_hidden_base=False,
-            is_master_agent=is_master_agent,
-            force_raise=False,
-            payed_by=payed_by
-        )
+    result = get_available_actions(
+        is_archived=is_archived,
+        is_manual=is_manual,
+        status=status,
+        can_update_edit_date=can_update_edit_date,
+        agency_settings=AgencySettings(
+            can_sub_agents_edit_offers_from_xml=True,
+            can_sub_agents_publish_offers=True,
+            can_sub_agents_view_agency_balance=True,
+            display_all_agency_offers=True,
+        ),
+        is_in_hidden_base=False,
+        is_master_agent=is_master_agent,
+        force_raise=False,
+        payed_by=payed_by
+    )
 
     # assert
     assert result == expected
@@ -221,7 +219,7 @@ def test_get_available_actions__no_settings__actions():
         (False, False, True, True),
     )
 )
-def test__can_restore(mocker, is_archived, is_removed_by_moderator, is_discontinued, expected):
+def test__can_restore(is_archived, is_removed_by_moderator, is_discontinued, expected):
     # arrange & act
     result = _can_restore(
         is_archived=is_archived,
@@ -244,7 +242,7 @@ def test__can_restore(mocker, is_archived, is_removed_by_moderator, is_discontin
         (True, False, False, False, True),
     )
 )
-def test__can_raise(mocker, force_raise, is_archived, is_published, is_in_hidden_base, expected):
+def test__can_raise(force_raise, is_archived, is_published, is_in_hidden_base, expected):
     # arrange & act
     result = _can_raise(
         force_raise=force_raise,

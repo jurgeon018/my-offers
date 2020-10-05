@@ -15,7 +15,7 @@ from my_offers.repositories.postgresql.agents import get_agent_names, get_master
 pytestmark = pytest.mark.gen_test
 
 
-async def test_save_agent(mocker):
+async def test_save_agent():
     # arrange
     now = datetime.now(pytz.utc)
     agent = v(Agent(
@@ -50,7 +50,7 @@ async def test_save_agent(mocker):
 
 
 @pytest.mark.gen_test
-async def test_get_master_user_id(mocker):
+async def test_get_master_user_id():
     # arrange
     pg.get().fetchrow.return_value = future({'master_agent_user_id': 12})
 
@@ -66,7 +66,7 @@ async def test_get_master_user_id(mocker):
 
 
 @pytest.mark.gen_test
-async def test_get_agent_names(mocker):
+async def test_get_agent_names():
     # arrange
     pg.get().fetch.return_value = future([{'id': 12, 'first_name': 'Zz', 'last_name': 'Yy', 'middle_name': 'Mm'}])
     expected = [AgentName(id=12, first_name='Zz', last_name='Yy', middle_name='Mm')]
