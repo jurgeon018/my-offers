@@ -94,7 +94,6 @@ class AnnouncementProcessor:
 
         return offer
 
-
     async def _post_process_offer(self, *, offer: entities.Offer, object_model: ObjectModel) -> None:
         await asyncio.gather(
             self._update_offer_import_error(object_model),
