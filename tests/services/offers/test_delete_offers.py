@@ -1,3 +1,5 @@
+import asyncio
+
 import freezegun
 import pytest
 import pytz
@@ -113,6 +115,35 @@ class TestDeleteOffersService:
             'my_offers.services.offers.delete_offers.get_offers_id_older_than',
             side_effect=[
                 future(None),
+                Exception(),
+            ]
+        )
+        delete_rows_by_offer_id_mock = mocker.patch(
+            'my_offers.services.offers.delete_offers.delete_rows_by_offer_id',
+            return_value=future(None)
+        )
+
+        sleep_mock = mocker.patch(
+            'my_offers.services.offers.delete_offers.asyncio.sleep',
+            return_value=future(None)
+        )
+
+        # act
+        with pytest.raises(Exception), settings_stub(TIMEOUT_BETWEEN_DELETE_OFFERS=77):
+            await delete_offers_data()
+
+        # assert
+        get_offers_id_older_than_mock.assert_called()
+        delete_rows_by_offer_id_mock.assert_not_called()
+        sleep_mock.assert_called_with(77)
+
+    @pytest.mark.gen_test
+    async def test_timeout__sleep(self, mocker):
+        # arrange
+        get_offers_id_older_than_mock = mocker.patch(
+            'my_offers.services.offers.delete_offers.get_offers_id_older_than',
+            side_effect=[
+                asyncio.exceptions.TimeoutError(),
                 Exception(),
             ]
         )
