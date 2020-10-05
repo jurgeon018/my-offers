@@ -293,9 +293,6 @@ async def _load_offers_similars_counters(*, offer_ids: List[int], is_test: bool)
 
 @async_statsd_timer('enrich.load_offers_payed_by')
 async def _load_offers_payed_by(offer_ids: List[int]) -> EnrichItem:
-    if not settings.MASTER_CAN_SEE_AGENT_PAYED_OFFERS:
-        return EnrichItem(key='offers_payed_by', degraded=False, value={})
-
     result = await get_offers_payed_by_degradation_handler(offer_ids)
 
     return EnrichItem(key='offers_payed_by', degraded=result.degraded, value=result.value)

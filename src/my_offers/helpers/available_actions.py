@@ -1,7 +1,5 @@
 from typing import Optional
 
-from simple_settings import settings
-
 from my_offers import entities
 from my_offers.enums import OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
@@ -52,18 +50,17 @@ def get_available_actions(
     """
     if not status:
         status = Status.deleted
-    if settings.MASTER_CAN_SEE_AGENT_PAYED_OFFERS:
-        if is_master_agent and payed_by == OfferPayedByType.by_agent:
-            return entities.AvailableActions(
-                can_edit=False,
-                can_raise=False,
-                can_delete=False,
-                can_restore=False,
-                can_update_edit_date=False,
-                can_move_to_archive=False,
-                can_change_publisher=False,
-                can_view_similar_offers=False
-            )
+    if is_master_agent and payed_by == OfferPayedByType.by_agent:
+        return entities.AvailableActions(
+            can_edit=False,
+            can_raise=False,
+            can_delete=False,
+            can_restore=False,
+            can_update_edit_date=False,
+            can_move_to_archive=False,
+            can_change_publisher=False,
+            can_view_similar_offers=False
+        )
 
     if not is_manual:
         can_edit = agency_settings.can_sub_agents_edit_offers_from_xml if agency_settings else False

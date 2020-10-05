@@ -273,7 +273,6 @@ async def test_process_announcement_consumer__archive_updated_to_active(
      1, 2, 2, 1, 2),
 ])
 async def test_process_announcement_consumer__payed_by(
-        runtime_settings,
         queue_service,
         pg,
         offer,
@@ -339,10 +338,6 @@ async def test_process_announcement_consumer__payed_by(
     offer['model']['publishedUserId'] = published_user_id
     offer['model']['userId'] = published_user_id
     offer['model']['id'] = offer_id
-
-    await runtime_settings.set(
-        ENABLE_NEW_GET_MASTER_USER_ID=True
-    )
 
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
@@ -438,7 +433,6 @@ async def test_process_announcement_consumer__payed_by_missing_billing(
 async def test_process_announcement_consumer__payed_by_missing_billing_after_offer(
         queue_service,
         pg,
-        runtime_settings,
         offer,
 ):
     """
@@ -485,7 +479,6 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
         ]
     )
 
-    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
 
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
@@ -509,7 +502,6 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
 async def test_process_announcement_consumer__payed_by_exists_billing_after_offer(
         queue_service,
         pg,
-        runtime_settings,
         offer,
 ):
     """
@@ -555,8 +547,6 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
             2, 1, 6, None, contract1_date, contract1_date, 'Agency'
         ]
     )
-
-    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
 
     # act
 

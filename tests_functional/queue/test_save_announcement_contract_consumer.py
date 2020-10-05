@@ -62,7 +62,6 @@ async def test_process_save_announcement_correct_service_type(
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_empty_payed_till_returned_for_calltracking(
-    runtime_settings,
     pg,
     queue_service,
     http
@@ -96,8 +95,6 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
     }
 
     # act
-    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
-
     await queue_service.wait_consumer('my-offers.save_announcement_contract')
     await queue_service.publish('service-contract-reporting.v1.created', message, exchange='billing')
 
@@ -119,7 +116,6 @@ async def test_process_save_announcement_empty_payed_till_returned_for_calltrack
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_correct_payed_till_returned_without_calltracking(
-    runtime_settings,
     pg,
     queue_service,
     http
@@ -164,8 +160,6 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
     })
 
     # act
-    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
-
     await queue_service.wait_consumer('my-offers.save_announcement_contract')
 
     await queue_service.publish('service-contract-reporting.v1.created', message1, exchange='billing')
@@ -188,7 +182,6 @@ async def test_process_save_announcement_correct_payed_till_returned_without_cal
 
 @pytest.mark.asyncio
 async def test_process_save_announcement_correct_payed_till_returned_with_calltracking(
-    runtime_settings,
     pg,
     queue_service,
     http
@@ -231,8 +224,6 @@ async def test_process_save_announcement_correct_payed_till_returned_with_calltr
         'service_contract_reporting_model': contract2,
         'operation_id': '2'
     })
-
-    await runtime_settings.set({'ENABLE_NEW_GET_MASTER_USER_ID': True})
 
     # act
     await queue_service.wait_consumer('my-offers.save_announcement_contract')
