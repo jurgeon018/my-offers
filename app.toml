@@ -140,3 +140,8 @@ command = "sync-offer-duplicates-cron"
 [job.reindex_offers_master_and_payed_by]
 type = "manage"
 command = "reindex-offers-master-and-payed-by"
+
+[job.clear_deleted_offer_cron]
+type = "consumer"
+command = "clear-deleted-offer-cron"
+memory = 128

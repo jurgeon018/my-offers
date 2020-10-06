@@ -7,6 +7,7 @@ from my_offers.repositories.postgresql.object_model import (
     get_offers_by_ids_keep_order,
 )
 from my_offers.repositories.postgresql.offer import (
+    delete_offers,
     get_offers_creation_date,
     get_offers_ids_by_tab,
     get_offers_row_version,
@@ -18,6 +19,7 @@ from my_offers.repositories.postgresql.offer import (
     update_offers_master_user_id_and_payed_by,
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error
+from my_offers.repositories.postgresql.offers_delete_queue import add_offer_to_delete_queue, get_offer_ids_for_delete
 from my_offers.repositories.postgresql.offers_duplicate_notification import (
     create_new_offers_subscription,
     delete_new_offers_subscription,

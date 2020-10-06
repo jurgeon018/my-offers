@@ -185,24 +185,6 @@ async def get_offers_for_reindex(offer_ids: List[int]) -> List[ReindexOffer]:
     return [reindex_offer_mapper.map_from(row) for row in rows]
 
 
-async def get_offers_id_older_than(
-        *,
-        date: datetime,
-        status_tab: enums.OfferStatusTab,
-        limit: int
-) -> List[int]:
-    query = """SELECT offer_id FROM offers where status_tab = $1 and updated_at <= $2 limit $3"""
-
-    rows = await pg.get().fetch(
-        query,
-        status_tab.name,
-        date,
-        limit
-    )
-    offer_ids = [row['offer_id'] for row in rows]
-    return offer_ids
-
-
 async def get_offers_update_at(offer_ids: List[int]) -> Dict[int, datetime]:
     query = 'SELECT offer_id, updated_at FROM offers WHERE offer_id = ANY($1::BIGINT[])'
 
@@ -357,3 +339,18 @@ async def update_offers_master_user_id_and_payed_by(offer_ids: List[str]):
     """
 
     await pg.get().execute(query, offer_ids)
+
+
+async def delete_offers(offer_ids: List[int], timeout: int) -> List[int]:
+    query = """
+    delete from
+        offers
+    where
+        offer_id = any($1::bigint[]) and status_tab = 'deleted'
+    returning
+        offer_id
+    """
+
+    rows = await pg.get().fetch(query, offer_ids, timeout=timeout)
+
+    return [row['offer_id'] for row in rows]

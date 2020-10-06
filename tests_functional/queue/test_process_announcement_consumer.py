@@ -9,7 +9,6 @@ from cian_json import json
 from tests_functional.utils import load_json_data
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     ('offer', 'expected'),
     (
@@ -46,7 +45,6 @@ async def test_process_announcement_consumer(queue_service, pg, offer, expected)
     assert row['search_text'] == expected
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize('offer_archive', [
     load_json_data(__file__, 'announcement_archive.json')
 ])
@@ -66,7 +64,6 @@ async def test_process_announcement_consumer__archive_offer(queue_service, pg, o
     assert row['row_version'] == 1
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize('offer_archive, offer_active', [
     (
         load_json_data(__file__, 'announcement_archive.json'),
@@ -102,7 +99,6 @@ async def test_process_announcement_consumer__archive_offer_after_active_offer(
     assert row['row_version'] == 123
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize('offer_archive, offer_active', [
     (
         load_json_data(__file__, 'announcement_archive.json'),
@@ -137,7 +133,6 @@ async def test_process_announcement_consumer__active_offer_after_archive_offer(
     assert row['row_version'] == 123
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize('offer', [
     load_json_data(__file__, 'announcement_codegen.json')
 ])
@@ -155,7 +150,6 @@ async def test_process_announcement_consumer__codegen_fix_validate(queue_service
     assert raw_data['bargainTerms'].get('price') is None
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize('offer_active', [
     load_json_data(__file__, 'announcement.json')
 ])
@@ -190,7 +184,6 @@ async def test_process_announcement_consumer__row_version_increment(
     assert row['row_version'] == 2
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize('offer_active', [
     load_json_data(__file__, 'announcement.json')
 ])
@@ -225,7 +218,6 @@ async def test_process_announcement_consumer__offer_not_updated_with_old_row_ver
     assert row['row_version'] == 2
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize('offer_archive, offer_active', [
     (
         load_json_data(__file__, 'announcement_archive.json'),
@@ -264,7 +256,6 @@ async def test_process_announcement_consumer__archive_updated_to_active(
     assert row['row_version'] == active_row_version
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(('offer', 'master_user_id', 'published_user_id',
                           'publisher_user_id', 'offer_id', 'expected'), [
     (load_json_data(__file__, 'announcement.json'),
@@ -351,7 +342,6 @@ async def test_process_announcement_consumer__payed_by(
     assert row['master_user_id'] == master_user_id
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(('offer', 'published_user_id', 'expected'), [
     (load_json_data(__file__, 'announcement.json'), 1, None),
 ])
@@ -401,7 +391,6 @@ async def test_process_announcement_consumer__payed_by_without_master(
     assert row['payed_by'] == expected
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(('offer', 'expected'), [
     (load_json_data(__file__, 'announcement.json'), None),
 ])
@@ -426,7 +415,6 @@ async def test_process_announcement_consumer__payed_by_missing_billing(
     assert row['payed_by'] == expected
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(('offer'), [
     (load_json_data(__file__, 'announcement.json')),
 ])
@@ -495,7 +483,6 @@ async def test_process_announcement_consumer__payed_by_missing_billing_after_off
     assert row['payed_by'] == offer['model']['publishedUserId']
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(('offer'), [
     (load_json_data(__file__, 'announcement.json')),
 ])
@@ -588,3 +575,25 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
     row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
 
     assert row['payed_by'] == offer['model']['publishedUserId']
+
+
+@pytest.mark.parametrize(
+    ('offer'),
+    (
+        (load_json_data(__file__, 'announcement_deleted.json')),
+    ),
+)
+async def test_process_announcement_consumer__deleted__delete(queue_service, pg, offer):
+    """
+    Сохранение удаленнго объявления объявления - помечаем удаленным.
+    """
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+    assert row['status_tab'] == 'deleted'
+    row = await pg.fetchrow('SELECT * FROM offers_delete_queue ORDER BY offer_id DESC LIMIT 1')
+    assert row['offer_id'] == 227888824
