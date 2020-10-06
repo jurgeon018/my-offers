@@ -72,7 +72,7 @@ class TestDeleteOffersService:
         # assert
         get_offer_ids_for_delete_mock.assert_called()
         delete_offers_mock.assert_called_once_with(
-            offer_ids=offers_delete_queue,
+            offer_ids=offers_to_delete,
             timeout=30,
         )
         delete_rows_by_offer_id_mock.assert_has_calls([

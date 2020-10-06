@@ -41,7 +41,7 @@ async def delete_offers_data() -> None:
                         timeout=settings.DB_TIMEOUT_DELETE_OFFERS,
                     )
                     offers_to_delete = await postgresql.delete_offers(
-                        offer_ids=offers_delete_queue,
+                        offer_ids=offer_ids,
                         timeout=settings.DB_TIMEOUT_DELETE_OFFERS,
                     )
 
