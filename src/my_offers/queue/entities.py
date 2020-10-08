@@ -98,3 +98,11 @@ class OfferDuplicateEvent:
     """идентификатор операции"""
     transport: UserNotificationType
     """Тип пуша"""
+
+
+@dataclass
+class DeleteUserDataMessage:
+    operation_id: str
+    """идентификатор операции"""
+    user_id: int
+    """Id пользователя"""

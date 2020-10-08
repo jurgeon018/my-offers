@@ -13,7 +13,11 @@ from my_offers.queue import entities as mq_entities
 from my_offers.queue import queues, schemas
 from my_offers.services import realty_resender
 from my_offers.services.duplicates import sync_offer_duplicates
-from my_offers.services.offers import reindex_offers_command, reindex_offers_master_and_payed_by_command
+from my_offers.services.offers import (
+    clear_test_offers,
+    reindex_offers_command,
+    reindex_offers_master_and_payed_by_command,
+)
 from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.web.urls import urlpatterns
 
@@ -137,6 +141,16 @@ register_consumer(
     queue=queues.new_offer_duplicate_notification_queue,
     callback=consumers.new_offer_duplicate_notification_callback,
     schema_cls=get_entity_schema(mq_entities.OfferNewDuplicateMessage),
+    dead_queue_enabled=True,
+    default_prefetch_count=1,
+)
+
+# [duplicates] удаление данных пользователя
+register_consumer(
+    command=cli.command('delete_user_data_queue_consumer'),
+    queue=queues.delete_user_data_queue,
+    callback=consumers.delete_user_data_callback,
+    schema_cls=get_entity_schema(mq_entities.DeleteUserDataMessage),
     dead_queue_enabled=True,
     default_prefetch_count=1,
 )
