@@ -158,6 +158,12 @@ def clear_deleted_offer_cron() -> None:
 
 
 @cli.command()
+def clear_test_offers_cron() -> None:
+    """Поставить тестовые объявления в очередь на удаление"""
+    IOLoop.current().run_sync(clear_test_offers)
+
+
+@cli.command()
 @click.option('--bulk-size', type=int, default=50)
 def resend_offers(bulk_size: int):
     """ Дослать объявления из Realty """

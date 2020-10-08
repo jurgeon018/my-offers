@@ -7,6 +7,7 @@ from my_offers.repositories.postgresql.object_model import (
     get_offers_by_ids_keep_order,
 )
 from my_offers.repositories.postgresql.offer import (
+    clear_test_offers,
     delete_offers,
     get_offers_creation_date,
     get_offers_ids_by_tab,
