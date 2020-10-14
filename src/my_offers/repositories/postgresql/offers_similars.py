@@ -44,34 +44,35 @@ TABLES_MAP = {
 }
 
 
-async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
+async def get_offer_similar_for_update(*, suffix: str, offer_id: int) -> Optional[entities.OfferSimilar]:
     table = TABLES_MAP[suffix]
+    query, params = asyncpgsa.compile_query(
+        table.select(for_update=True)
+        .where(table.c.offer_id == offer_id)
+    )
+    row = await pg.get().fetchrow(query, *params)
+    return offer_similar_mapper.map_from(row) if row else None
 
-    conn = pg.get()
-    async with conn.transaction():
-        query, params = asyncpgsa.compile_query(
-            table.select(for_update=True).
-            where(table.c.offer_id == similar.offer_id)
-        )
-        row = await pg.get().fetchrow(query, *params)
-        offer = offer_similar_mapper.map_from(row) if row else None
 
-        if not offer:
-            values_for_insert = offer_similar_mapper.map_to(similar)
-            query, params = asyncpgsa.compile_query(
-                insert(table).
-                values([values_for_insert])
-            )
-            await pg.get().execute(query, *params)
-        else:
-            similar.old_price = offer.price if offer.price != similar.price else None
-            values_for_update = offer_similar_mapper.map_to(similar)
-            query, params = asyncpgsa.compile_query(
-                update(table).
-                where(table.c.offer_id == similar.offer_id).
-                values(values_for_update)
-            )
-            await pg.get().execute(query, *params)
+async def insert_similar(*, suffix: str, similar: entities.OfferSimilar) -> None:
+    table = TABLES_MAP[suffix]
+    values = offer_similar_mapper.map_to(similar)
+    query, params = asyncpgsa.compile_query(
+        insert(table)
+        .values([values])
+    )
+    await pg.get().execute(query, *params)
+
+
+async def update_similar(*, suffix: str, similar: entities.OfferSimilar) -> None:
+    table = TABLES_MAP[suffix]
+    values = offer_similar_mapper.map_to(similar)
+    query, params = asyncpgsa.compile_query(
+        update(table)
+        .where(table.c.offer_id == similar.offer_id)
+        .values(values)
+    )
+    await pg.get().execute(query, *params)
 
 
 async def delete(*, suffix: str, offer_id: int) -> None:
