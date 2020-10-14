@@ -20,6 +20,7 @@ offers_similars_flat = sa.Table(
     sa.Column('price', sa.FLOAT, nullable=True),
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
+    sa.Column('old_price', sa.FLOAT, nullable=True),
 )
 
 offers_similars_test = sa.Table(
@@ -33,6 +34,7 @@ offers_similars_test = sa.Table(
     sa.Column('price', sa.FLOAT, nullable=True),
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
+    sa.Column('old_price', sa.FLOAT, nullable=True),
 )
 
 TABLES_MAP = {
@@ -43,27 +45,34 @@ TABLES_MAP = {
 
 async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
     table = TABLES_MAP[suffix]
-    insert_query = insert(table)
-    values = offer_similar_mapper.map_to(similar)
 
-    query, params = asyncpgsa.compile_query(
-        insert_query
-        .values([values])
-        .on_conflict_do_update(
-            index_elements=[table.c.offer_id],
-            set_={
-                'deal_type': insert_query.excluded.deal_type,
-                'group_id': insert_query.excluded.group_id,
-                'house_id': insert_query.excluded.house_id,
-                'district_id': insert_query.excluded.district_id,
-                'price': insert_query.excluded.price,
-                'rooms_count': insert_query.excluded.rooms_count,
-                'sort_date': insert_query.excluded.sort_date,
-            }
-        )
-    )
+    conn = pg.get()
+    async with conn.transaction():
+        offer = await get_offer_similar(similar.offer_id)
 
-    await pg.get().execute(query, *params)
+        if not offer:
+            values_for_insert = offer_similar_mapper.map_to(similar)
+            query, params = asyncpgsa.compile_query(
+                insert(table).values([values_for_insert])
+            )
+            await pg.get().execute(query, *params)
+        else:
+            similar.old_price = offer.price if offer.price != similar.price else None
+            values_for_update = offer_similar_mapper.map_to(similar)
+            query, params = asyncpgsa.compile_query(
+                insert(table).values([values_for_update])
+            )
+            await pg.get().execute(query, *params)
+
+
+# async def get_offer_by_offer_id(offer_id: int) -> Optional[int]:
+#     query = """
+#         SELECT
+#
+#         FROM agents
+#         WHERE realty_user_id = $1
+#     """
+#     values = offer_similar_mapper.map_to(similar)
 
 
 async def delete(*, suffix: str, offer_id: int) -> None:

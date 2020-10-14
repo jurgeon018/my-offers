@@ -23,3 +23,5 @@ class OfferSimilar:
     """Цена"""
     rooms_count: Optional[int]
     """Кол-во комнат"""
+    old_price: Optional[float]
+    """Старая цена"""
