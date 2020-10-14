@@ -50,7 +50,7 @@ async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
     conn = pg.get()
     async with conn.transaction():
         query, params = asyncpgsa.compile_query(
-            table.select().
+            table.select(for_update=True).
             where(table.c.offer_id == similar.offer_id)
         )
         row = await pg.get().fetchrow(query, *params)
