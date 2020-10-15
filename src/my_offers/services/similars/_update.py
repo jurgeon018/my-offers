@@ -56,7 +56,7 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
                 similar=similar
             )
         else:
-            if offer.price != similar.price:
+            if abs(offer.price - similar.price) > 1:
                 similar.old_price = offer.price
 
             await offers_similars.update_similar(
