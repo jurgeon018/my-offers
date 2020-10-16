@@ -1,4 +1,9 @@
-from my_offers.repositories.postgresql.agents import get_master_user_id, is_master_agent, save_agent
+from my_offers.repositories.postgresql.agents import (
+    delete_agents_hierarchy,
+    get_master_user_id,
+    is_master_agent,
+    save_agent,
+)
 from my_offers.repositories.postgresql.billing import save_offer_contract, set_offer_contract_is_deleted_status
 from my_offers.repositories.postgresql.moderation import get_offers_offence, save_offer_offence
 from my_offers.repositories.postgresql.object_model import (
@@ -20,7 +25,12 @@ from my_offers.repositories.postgresql.offer import (
     update_offers_master_user_id_and_payed_by,
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error
-from my_offers.repositories.postgresql.offers_delete_queue import add_offer_to_delete_queue, get_offer_ids_for_delete
+from my_offers.repositories.postgresql.offers_delete_queue import (
+    add_offer_to_delete_queue,
+    add_offer_to_delete_queue_by_master_user_id,
+    add_offer_to_delete_queue_by_user_id,
+    get_offer_ids_for_delete,
+)
 from my_offers.repositories.postgresql.offers_duplicate_notification import (
     create_new_offers_subscription,
     delete_new_offers_subscription,

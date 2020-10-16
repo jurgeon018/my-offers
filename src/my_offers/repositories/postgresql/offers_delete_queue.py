@@ -28,3 +28,36 @@ async def add_offer_to_delete_queue(offer_id: int, delete_at: datetime) -> None:
     query = 'insert into offers_delete_queue(offer_id, delete_at) values($1, $2) on conflict do nothing'
 
     await pg.get().execute(query, offer_id, delete_at)
+
+
+async def add_offer_to_delete_queue_by_master_user_id(user_id: int) -> None:
+    query = """
+    insert into offers_delete_queue(offer_id, delete_at)
+    select
+        offer_id,
+        current_timestamp
+    from
+        offers
+    where
+        master_user_id = $1
+    on conflict do nothing
+    """
+
+    await pg.get().execute(query, user_id)
+
+
+async def add_offer_to_delete_queue_by_user_id(*, master_user_id: int, user_id: int) -> None:
+    query = """
+    insert into offers_delete_queue(offer_id, delete_at)
+    select
+        offer_id,
+        current_timestamp
+    from
+        offers
+    where
+        master_user_id = $1
+        and user_id = $2
+    on conflict do nothing
+    """
+
+    await pg.get().execute(query, master_user_id, user_id)
