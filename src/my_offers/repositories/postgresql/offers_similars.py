@@ -45,12 +45,11 @@ TABLES_MAP = {
 
 
 async def get_offer_similar_for_update(*, suffix: str, offer_id: int) -> Optional[entities.OfferSimilar]:
-    table = TABLES_MAP[suffix]
-    query, params = asyncpgsa.compile_query(
-        table.select(for_update=True)
-        .where(table.c.offer_id == offer_id)
-    )
-    row = await pg.get().fetchrow(query, *params)
+    table_name = f'offers_similars_{suffix}'
+
+    query = f'select * from {table_name} where offer_id = $1 for update'
+    row = await pg.get().fetchrow(query, offer_id)
+
     return offer_similar_mapper.map_from(row) if row else None
 
 
