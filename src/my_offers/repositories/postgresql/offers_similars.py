@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 
 import asyncpgsa
 import sqlalchemy as sa
+from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, enums, pg
@@ -20,6 +21,7 @@ offers_similars_flat = sa.Table(
     sa.Column('price', sa.FLOAT, nullable=True),
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
+    sa.Column('old_price', sa.FLOAT, nullable=True),
 )
 
 offers_similars_test = sa.Table(
@@ -33,6 +35,7 @@ offers_similars_test = sa.Table(
     sa.Column('price', sa.FLOAT, nullable=True),
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
+    sa.Column('old_price', sa.FLOAT, nullable=True),
 )
 
 TABLES_MAP = {
@@ -41,28 +44,33 @@ TABLES_MAP = {
 }
 
 
-async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
+async def get_offer_similar_for_update(*, suffix: str, offer_id: int) -> Optional[entities.OfferSimilar]:
+    table_name = f'offers_similars_{suffix}'
+
+    query = f'select * from {table_name} where offer_id = $1 for update'
+    row = await pg.get().fetchrow(query, offer_id)
+
+    return offer_similar_mapper.map_from(row) if row else None
+
+
+async def insert_similar(*, suffix: str, similar: entities.OfferSimilar) -> None:
     table = TABLES_MAP[suffix]
-    insert_query = insert(table)
     values = offer_similar_mapper.map_to(similar)
-
     query, params = asyncpgsa.compile_query(
-        insert_query
+        insert(table)
         .values([values])
-        .on_conflict_do_update(
-            index_elements=[table.c.offer_id],
-            set_={
-                'deal_type': insert_query.excluded.deal_type,
-                'group_id': insert_query.excluded.group_id,
-                'house_id': insert_query.excluded.house_id,
-                'district_id': insert_query.excluded.district_id,
-                'price': insert_query.excluded.price,
-                'rooms_count': insert_query.excluded.rooms_count,
-                'sort_date': insert_query.excluded.sort_date,
-            }
-        )
     )
+    await pg.get().execute(query, *params)
 
+
+async def update_similar(*, suffix: str, similar: entities.OfferSimilar) -> None:
+    table = TABLES_MAP[suffix]
+    values = offer_similar_mapper.map_to(similar)
+    query, params = asyncpgsa.compile_query(
+        update(table)
+        .where(table.c.offer_id == similar.offer_id)
+        .values(values)
+    )
     await pg.get().execute(query, *params)
 
 

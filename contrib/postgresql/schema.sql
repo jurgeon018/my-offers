@@ -219,7 +219,8 @@ create table offers_similars_flat
     district_id integer,
     price       double precision,
     rooms_count integer,
-    sort_date   timestamp with time zone not null
+    sort_date   timestamp with time zone not null,
+    old_price   double precision
 );
 
 create index offers_similars_flat_group_id_idx
@@ -240,7 +241,8 @@ create table offers_similars_test
     district_id integer,
     price       double precision,
     rooms_count integer,
-    sort_date   timestamp with time zone not null
+    sort_date   timestamp with time zone not null,
+    old_price   double precision
 );
 
 
