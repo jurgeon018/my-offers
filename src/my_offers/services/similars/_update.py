@@ -1,7 +1,10 @@
+from simple_settings import settings
+
 from my_offers import entities, enums, pg
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_sort_date
 from my_offers.helpers.similar import is_offer_for_similar
+from my_offers.queue.producers import offer_duplicate_price_changed_producer
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import offers_similars
 from my_offers.repositories.postgresql.offers_duplicates import get_duplicate_group_id
@@ -43,6 +46,7 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
         sort_date=get_sort_date(object_model=object_model, status_tab=enums.OfferStatusTab.active),
     )
 
+    is_price_changed = False
     conn = pg.get()
     async with conn.transaction():
         offer = await offers_similars.get_offer_similar_for_update(
@@ -58,8 +62,16 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
         else:
             if abs(offer.price - similar.price) > 1:
                 similar.old_price = offer.price
+                is_price_changed = True
 
             await offers_similars.update_similar(
                 suffix=suffix,
                 similar=similar
             )
+
+    await _send_price_changed_push(similar, is_price_changed)
+
+
+async def _send_price_changed_push(similar: entities.OfferSimilar, is_price_changed: bool) -> None:
+    if settings.SEND_PUSH_ON_DUPLICATE_PRICE_CHANGED and is_price_changed and similar.group_id:
+        await offer_duplicate_price_changed_producer(similar.offer_id)

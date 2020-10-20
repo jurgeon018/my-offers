@@ -141,6 +141,16 @@ register_consumer(
     default_prefetch_count=1,
 )
 
+# [duplicates] пуши по изменению цены в дублях
+register_consumer(
+    command=cli.command('offer_duplicate_price_changed_notification_consumer'),
+    queue=queues.offer_duplicate_price_changed_notification_queue,
+    callback=consumers.offer_duplicate_price_changed_notification_callback,
+    schema_cls=get_entity_schema(mq_entities.OfferDuplicatePriceChangedMessage),
+    dead_queue_enabled=True,
+    default_prefetch_count=1,
+)
+
 
 @cli.command()
 def reindex_offers() -> None:
