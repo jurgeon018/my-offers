@@ -14,6 +14,7 @@ from my_offers.queue.entities import (
     AnnouncementMessage,
     AnnouncementPremoderationReportingMessage,
     NeedUpdateDuplicateMessage,
+    OfferDuplicatePriceChangedMessage,
     OfferNewDuplicateMessage,
     SaveUnloadErrorMessage,
     ServiceContractMessage,
@@ -145,3 +146,11 @@ async def new_offer_duplicate_notification_callback(messages: List[Message]) -> 
 
         with new_operation_id(offer_duplicate.operation_id):
             await send_new_offer_duplicate_notifications(offer_duplicate.duplicate_offer_id)
+
+
+async def offer_duplicate_price_changed_notification_callback(messages: List[Message]) -> None:
+    for message in messages:
+        offer_duplicate: OfferDuplicatePriceChangedMessage = message.data
+
+        with new_operation_id(offer_duplicate.operation_id):
+            pass  # https://jira.cian.tech/browse/CD-92181

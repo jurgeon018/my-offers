@@ -31,7 +31,8 @@ LOG_SEARCH_QUERIES: bool = True
 
 CASSANDRA_DEFAULT_TIMEOUT: float = 1.0
 
-SEND_PUSH_ON_NEW_DUPLICATE: bool = False  # пока не раскатили приложения пуши рассылать не надо
+SEND_PUSH_ON_NEW_DUPLICATE: bool = False
+SEND_PUSH_ON_DUPLICATE_PRICE_CHANGED: bool = False
 
 # mass operations
 MASS_OFFERS_RESTORE_DELAY: float = .5

@@ -81,6 +81,16 @@ class OfferNewDuplicateMessage:
 
 
 @dataclass
+class OfferDuplicatePriceChangedMessage:
+    duplicate_offer_id: int
+    """Id объявления дубликата"""
+    operation_id: str
+    """Operation id"""
+    date: datetime
+    """Время изменения"""
+
+
+@dataclass
 class OfferDuplicateEvent:
     user_id: int
     """realtyUserId пользователя"""
