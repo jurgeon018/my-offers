@@ -301,8 +301,9 @@ def _prepare_tab_condition(
     return tab_condition
 
 
-async def get_offer_similar(offer_id: int) -> Optional[entities.OfferSimilar]:
-    query = 'select * from offers_similars_flat where offer_id = $1'
+async def get_offer_similar(offer_id: int, suffix: str = 'flat') -> Optional[entities.OfferSimilar]:
+    table_name = f'offers_similars_{suffix}'
+    query = f'select * from {table_name} where offer_id = $1'
     row = await pg.get().fetchrow(query, offer_id)
 
     return offer_similar_mapper.map_from(row) if row else None

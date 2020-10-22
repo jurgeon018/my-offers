@@ -9,7 +9,7 @@ from cian_json import json
 from simple_settings import settings
 
 from my_offers.entities.offer_duplicate_notification import OfferDuplicateNotification
-from my_offers.enums.notifications import UserNotificationType
+from my_offers.enums.notifications import DuplicateNotificationType, UserNotificationType
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
 from my_offers.helpers.title import SQUARE_METER_SYMBOL, get_offer_title
@@ -18,18 +18,16 @@ from my_offers.repositories import postgresql
 from my_offers.repositories.emails import emails_v2_send_email
 from my_offers.repositories.emails.entities import SendEmailByEmailRequest, SendEmailByEmailResponse
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.repositories.notification_center import v1_mobile_push_get_settings, v2_register_notifications
+from my_offers.repositories.notification_center import v2_register_notifications
 from my_offers.repositories.notification_center.entities import (
-    GetMobilePushSettingsRequest,
-    GetMobilePushSettingsResponse,
     RegisterNotificationsV2Request,
     RegisterNotificationV2Request,
 )
-from my_offers.repositories.notification_center.entities.get_mobile_push_settings_request import OsType
 from my_offers.repositories.notification_center.entities.register_notification_v2_request import (
     NotificationType,
     TransportsToSend,
 )
+from my_offers.services.notifications.helpers._push_enabled import is_mobile_push_enabled
 from my_offers.services.offer_view import fields
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 
@@ -38,13 +36,14 @@ logger = logging.getLogger(__name__)
 
 SQUARE_METER_SYMBOL_FOR_EMAIL = 'м&sup2;'
 
-async def send_duplicates_notification(
+
+async def send_new_duplicates_notification(
         *,
         user_id: int,
         offer: ObjectModel,
         duplicate_offer: ObjectModel,
 ) -> None:
-    """ Отправить уведомление по дубликату пользователю """
+    """ Отправить уведомление по новому дубликату пользователю """
     available_notifications = await get_notification_types(user_id=user_id)
 
     for notification_type in available_notifications:
@@ -64,13 +63,13 @@ async def send_duplicates_notification(
         try:
             if notification_type.is_email_push:
                 email = await postgresql.get_user_email(user_id=user_id)
-                await send_email_duplicate_notification(
+                await send_email_new_duplicate_notification(
                     email=email,
                     offer=offer,
                     duplicate_offer=duplicate_offer
                 )
             elif notification_type.is_mobile_push:
-                await send_mobile_duplicate_notification(
+                await send_mobile_new_duplicate_notification(
                     user_id=offer.published_user_id,
                     offer=offer,
                     duplicate_offer=duplicate_offer
@@ -90,13 +89,13 @@ async def send_duplicates_notification(
         )
 
 
-async def send_email_duplicate_notification(
+async def send_email_new_duplicate_notification(
         *,
         email: Optional[str],
         offer: ObjectModel,
         duplicate_offer: ObjectModel,
 ) -> None:
-    """ Послать почтовое уведомление на почту пользователя по дублю объявления """
+    """ Послать почтовое уведомление на почту пользователя по новому дублю объявления """
     if not email:
         return
 
@@ -132,13 +131,13 @@ async def send_email_duplicate_notification(
         logger.error('User not found in `emails` service')
 
 
-async def send_mobile_duplicate_notification(
+async def send_mobile_new_duplicate_notification(
         *,
         user_id: int,
         offer: ObjectModel,
         duplicate_offer: ObjectModel,
 ) -> None:
-    """ Послать мобильное уведомление по дублю объявления """
+    """ Послать мобильный пуш по новому дублю объявления """
 
     offer_type, deal_type = get_types(offer.category)
 
@@ -171,7 +170,7 @@ async def get_notification_types(user_id: int) -> List[UserNotificationType]:
     """ Получить доступные типы уведомлений для пользователя """
 
     mobile_push, email_push = await asyncio.gather(
-        _is_mobile_push_enabled(user_id=user_id),
+        is_mobile_push_enabled(user_id=user_id, push_type=DuplicateNotificationType.new_duplicate),
         _is_email_push_enabled(user_id=user_id),
     )
     notifications = []
@@ -182,22 +181,6 @@ async def get_notification_types(user_id: int) -> List[UserNotificationType]:
         notifications.append(UserNotificationType.email_push)
 
     return notifications
-
-
-async def _is_mobile_push_enabled(user_id: int) -> bool:
-    response: GetMobilePushSettingsResponse = await v1_mobile_push_get_settings(
-        GetMobilePushSettingsRequest(
-            user_id=str(user_id),
-            is_authenticated=True,
-            os_type=OsType.android,
-        ))
-
-    for item in response.items:
-        for child_item in item.children:
-            if child_item.id == 'OfferNewDuplicateFoundNotifications':
-                return child_item.is_active
-
-    return False
 
 
 async def _is_email_push_enabled(user_id: int) -> bool:
