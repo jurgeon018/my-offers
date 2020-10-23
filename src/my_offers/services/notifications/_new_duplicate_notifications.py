@@ -27,7 +27,7 @@ from my_offers.repositories.notification_center.entities.register_notification_v
     NotificationType,
     TransportsToSend,
 )
-from my_offers.services.notifications.helpers._push_enabled import is_mobile_push_enabled
+from my_offers.services.notifications.push_enabled import is_mobile_push_enabled
 from my_offers.services.offer_view import fields
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 

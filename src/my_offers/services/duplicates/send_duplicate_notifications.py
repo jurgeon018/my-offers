@@ -2,7 +2,7 @@ from my_offers.repositories.postgresql.object_model import get_object_model
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
 from my_offers.repositories.postgresql.offers_similars import get_offer_similar
 from my_offers.services.notifications import send_new_duplicates_notification
-from my_offers.services.notifications._price_changed_duplicate_notification import (
+from my_offers.services.notifications.price_changed_duplicate_notification import (
     send_duplicate_price_changed_mobile_push,
 )
 from my_offers.services.similars.helpers.table import get_similar_table_suffix

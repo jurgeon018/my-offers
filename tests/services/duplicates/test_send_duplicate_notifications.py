@@ -1,16 +1,17 @@
 from datetime import datetime
 
 from cian_test_utils import future
+
 from my_offers import enums
 from my_offers.entities import OfferSimilar
-
 from my_offers.enums import DuplicateType
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.services.duplicates import send_new_duplicate_notifications
-from my_offers.services.duplicates._send_duplicate_notifications import send_duplicate_price_changed_notifications
+from my_offers.services.duplicates.send_duplicate_notifications import send_duplicate_price_changed_notifications
 
-PATH = 'my_offers.services.duplicates._send_duplicate_notifications.'
+
+PATH = 'my_offers.services.duplicates.send_duplicate_notifications.'
 
 
 async def test_send_new_offer_duplicate_notifications__owner__skip(mocker):

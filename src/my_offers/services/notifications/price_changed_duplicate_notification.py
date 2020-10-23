@@ -14,7 +14,7 @@ from my_offers.repositories.notification_center.entities.register_notification_v
     NotificationType,
     TransportsToSend,
 )
-from my_offers.services.notifications.helpers._push_enabled import is_mobile_push_enabled
+from my_offers.services.notifications.push_enabled import is_mobile_push_enabled
 from my_offers.services.offer_view import fields
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 
@@ -73,6 +73,6 @@ def get_title(duplicate_similar: OfferSimilar) -> str:
     # добавить AB эксперимент CD-92161
     if (duplicate_similar.price - duplicate_similar.old_price) > 1:
         return 'Цена на дубль увеличена'
-    if (duplicate_similar.price - duplicate_similar.old_price) < 0:
+    if (duplicate_similar.price - duplicate_similar.old_price) < -1:
         return 'Цена на дубль снижена'
     raise DuplicatePriceChangeError()
