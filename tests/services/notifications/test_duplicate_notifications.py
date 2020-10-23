@@ -12,7 +12,7 @@ from my_offers.repositories.emails.entities import SendEmailByEmailRequest, Send
 from my_offers.repositories.emails.entities.send_email_by_email_response import Status as EmailStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
-from my_offers.services.notifications import send_duplicates_notification, send_email_duplicate_notification
+from my_offers.services.notifications import send_email_new_duplicate_notification, send_new_duplicates_notification
 from my_offers.services.offer_view.fields import get_offer_url
 
 
@@ -52,12 +52,12 @@ async def test_send_email_duplicate_notification__check_sensitive_email_params(m
     }
 
     emails_v2_send_email_mock = mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.emails_v2_send_email',
+        'my_offers.services.notifications._new_duplicate_notifications.emails_v2_send_email',
         return_value=future(SendEmailByEmailResponse())
     )
 
     # act
-    await send_email_duplicate_notification(
+    await send_email_new_duplicate_notification(
         email=email,
         offer=offer,
         duplicate_offer=duplicate_offer
@@ -79,11 +79,11 @@ async def test_send_email_duplicate_notification__email_is_none(mocker):
     duplicate_offer = ...
 
     emails_v2_send_email_mock = mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.emails_v2_send_email',
+        'my_offers.services.notifications._new_duplicate_notifications.emails_v2_send_email',
     )
 
     # act
-    await send_email_duplicate_notification(
+    await send_email_new_duplicate_notification(
         email=email,
         offer=offer,
         duplicate_offer=duplicate_offer
@@ -113,15 +113,15 @@ async def test_send_email_duplicate_notification__user_not_found_in_emails_servi
 
     )
     mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.emails_v2_send_email',
+        'my_offers.services.notifications._new_duplicate_notifications.emails_v2_send_email',
         return_value=future(SendEmailByEmailResponse(status=EmailStatus.user_not_found))
     )
     logger_mock = mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.logger',
+        'my_offers.services.notifications._new_duplicate_notifications.logger',
     )
 
     # act
-    await send_email_duplicate_notification(
+    await send_email_new_duplicate_notification(
         email=email,
         offer=offer,
         duplicate_offer=duplicate_offer
@@ -148,22 +148,22 @@ async def test_send_duplicates_notification__already_send_notification(mocker):
 
     )
     mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.get_notification_types',
+        'my_offers.services.notifications._new_duplicate_notifications.get_notification_types',
         return_value=future([UserNotificationType.mobile_push])
     )
     mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.postgresql.save_offers_duplicate_notification',
+        'my_offers.services.notifications._new_duplicate_notifications.postgresql.save_offers_duplicate_notification',
         side_effect=UniqueViolationError
     )
     send_email_duplicate_notification_mock = mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.send_email_duplicate_notification',
+        'my_offers.services.notifications._new_duplicate_notifications.send_email_new_duplicate_notification',
     )
     send_mobile_duplicate_notification_mock = mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.send_mobile_duplicate_notification',
+        'my_offers.services.notifications._new_duplicate_notifications.send_mobile_new_duplicate_notification',
     )
 
     # act
-    await send_duplicates_notification(
+    await send_new_duplicates_notification(
         user_id=123,
         offer=offer,
         duplicate_offer=duplicate_offer
@@ -191,25 +191,25 @@ async def test_send_duplicates_notification__error_while_send_notification(mocke
 
     )
     mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.get_notification_types',
+        'my_offers.services.notifications._new_duplicate_notifications.get_notification_types',
         return_value=future([UserNotificationType.mobile_push])
     )
     mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.postgresql.save_offers_duplicate_notification',
+        'my_offers.services.notifications._new_duplicate_notifications.postgresql.save_offers_duplicate_notification',
         return_value=future()
     )
     mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.send_mobile_duplicate_notification',
+        'my_offers.services.notifications._new_duplicate_notifications.send_mobile_new_duplicate_notification',
         side_effect=Exception
     )
     delete_offers_duplicate_notification_mock = mocker.patch(
-        'my_offers.services.notifications._duplicate_notifications.postgresql.delete_offers_duplicate_notification',
+        'my_offers.services.notifications._new_duplicate_notifications.postgresql.delete_offers_duplicate_notification',
         return_value=future()
     )
 
     # act
     with pytest.raises(Exception):
-        await send_duplicates_notification(
+        await send_new_duplicates_notification(
             user_id=123,
             offer=offer,
             duplicate_offer=duplicate_offer
