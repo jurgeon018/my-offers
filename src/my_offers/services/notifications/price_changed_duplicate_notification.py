@@ -1,5 +1,3 @@
-import logging
-
 from my_offers.entities import OfferSimilar
 from my_offers.enums.notifications import DuplicateNotificationType
 from my_offers.helpers.category import get_types
@@ -19,13 +17,6 @@ from my_offers.services.offer_view import fields
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 
 
-logger = logging.getLogger(__name__)
-
-
-class DuplicatePriceChangeError(Exception):
-    pass
-
-
 async def send_duplicate_price_changed_mobile_push(
         *,
         user_id: int,
@@ -36,12 +27,6 @@ async def send_duplicate_price_changed_mobile_push(
     """ Послать мобильный пуш об изменении цены в дубле"""
 
     offer_type, deal_type = get_types(offer.category)
-    try:
-        title = get_title(duplicate_similar)
-    except DuplicatePriceChangeError:
-        logger.warning('DuplicatePriceChangeError: Price changed less 1rub, old_price: %s, new_price: %s',
-                       duplicate_similar.old_price, duplicate_similar.price)
-        return
 
     if await is_mobile_push_enabled(user_id=user_id, push_type=DuplicateNotificationType.price_changed):
         await v2_register_notifications(
@@ -57,7 +42,7 @@ async def send_duplicate_price_changed_mobile_push(
                         'priceChangeButtonText': 'Изменить цену'
                     },
                     text=get_address_for_push(offer.geo),
-                    title=title,
+                    title=get_title(duplicate_similar),
                     web_url=fields.get_offer_url(
                         cian_offer_id=duplicate_offer.cian_id,
                         offer_type=offer_type,
@@ -71,8 +56,6 @@ async def send_duplicate_price_changed_mobile_push(
 
 def get_title(duplicate_similar: OfferSimilar) -> str:
     # добавить AB эксперимент CD-92161
-    if (duplicate_similar.price - duplicate_similar.old_price) > 1:
+    if duplicate_similar.price > duplicate_similar.old_price:
         return 'Цена на дубль увеличена'
-    if (duplicate_similar.price - duplicate_similar.old_price) < -1:
-        return 'Цена на дубль снижена'
-    raise DuplicatePriceChangeError()
+    return 'Цена на дубль снижена'

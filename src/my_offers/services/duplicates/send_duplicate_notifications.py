@@ -1,3 +1,5 @@
+import logging
+
 from my_offers.repositories.postgresql.object_model import get_object_model
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
 from my_offers.repositories.postgresql.offers_similars import get_offer_similar
@@ -6,6 +8,9 @@ from my_offers.services.notifications.price_changed_duplicate_notification impor
     send_duplicate_price_changed_mobile_push,
 )
 from my_offers.services.similars.helpers.table import get_similar_table_suffix
+
+
+logger = logging.getLogger(__name__)
 
 
 async def send_new_duplicate_notifications(duplicate_offer_id: int) -> None:
@@ -53,6 +58,11 @@ async def send_duplicate_price_changed_notifications(duplicate_offer_id: int) ->
         suffix=get_similar_table_suffix(duplicate_offer)
     )
     if not duplicate_from_similar or not duplicate_from_similar.old_price:
+        return
+
+    if abs(duplicate_from_similar.price - duplicate_from_similar.old_price) < 1:
+        logger.warning('DuplicatePriceChangeError: Price changed less 1rub, old_price: %s, new_price: %s',
+                       duplicate_from_similar.old_price, duplicate_from_similar.price)
         return
 
     while True:
