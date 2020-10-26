@@ -37,6 +37,8 @@ class NotificationType(StrEnum):
     """Пуш по пакетам заявок спроса"""
     demand_new = 'demandNew'
     """Новая версия пушей по спросу"""
+    duplicate_price_changed = 'duplicatePriceChanged'
+    """Пуш об изменении цены дубля"""
     favorite_price_changed = 'favoritePriceChanged'
     """Цена изменилась в избранном объявлении"""
     last_search = 'lastSearch'
