@@ -138,6 +138,7 @@ def test_get_price_info(
 ):
     # arrange & act
     result = get_price_info(
+        locations=[1],
         bargain_terms=bargain_terms,
         category=category,
         can_parts=can_parts,
@@ -161,6 +162,7 @@ def test_get_price_info__coworking_office__price_for_all():
 
     # act
     result = get_price_info(
+        locations=[1],
         bargain_terms=bargain_terms,
         category=Category.office_rent,
         can_parts=False,
@@ -189,6 +191,7 @@ def test_get_price_info__coworking_office__price_for_workplace():
 
     # act
     result = get_price_info(
+        locations=[1],
         bargain_terms=bargain_terms,
         category=Category.office_rent,
         can_parts=False,
