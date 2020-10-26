@@ -79,3 +79,17 @@ EMAIL_VALIDATION_ERROR_MSG: str = 'Некорректный email.'
 # reindex offers master_user_id and payed_by
 REINDEX_CHUNK = 1000
 REINDEX_TIMEOUT = 0.5  # секунды
+
+# КУ в Аренде
+USE_INCLUDE_UTILITIES_TERMS_REGIONS: bool = False  # использовать  INCLUDE_UTILITIES_TERMS_REGIONS
+
+INCLUDE_UTILITIES_TERMS_REGIONS: List[int] = [
+    1,  # Москва
+    4593,  # МО
+]
+
+EXCLUDE_UTILITIES_TERMS_REGIONS: List[int] = [
+    2,      # СПб
+    4588,   # ЛО
+    4606,   # Ростовская область
+]

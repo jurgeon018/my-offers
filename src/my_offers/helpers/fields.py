@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import List, Optional, Tuple
 
+from simple_settings import settings
+
 from my_offers import entities, enums
 from my_offers.helpers.numbers import get_pretty_number
 from my_offers.helpers.time import get_aware_date
@@ -158,7 +160,7 @@ def _calc_rent_price(
         min_area: Optional[float],
         max_area: Optional[float],
         total_area: Optional[float],
-) -> Tuple[Optional[str], Optional[str]]:
+) -> Tuple[Optional[str], Optional[List[str]]]:
     price_exact = None
     price_range = None
     utilities_delta = _calc_utilities_delta(
@@ -170,10 +172,15 @@ def _calc_rent_price(
         price_per_month = price + utilities_delta
     else:
         price_per_month = price / 12 + utilities_delta
+
     if can_calc_parts:
-        min_price = get_pretty_number(price_per_month * min_area)
-        max_price = get_pretty_number(price_per_month * max_area)
-        price_range = [f'от\xa0{min_price}', f'до\xa0{max_price}\xa0{currency}/мес']
+        price_range = []
+        if min_area:
+            min_price = get_pretty_number(price_per_month * min_area)
+            price_range.append(f'от\xa0{min_price}')
+        if max_area:
+            max_price = get_pretty_number(price_per_month * max_area)
+            price_range.append(f'до\xa0{max_price}\xa0{currency}/мес')
     else:
         if is_square_meter and total_area:
             price_per_month *= total_area
@@ -194,7 +201,14 @@ def _calc_utilities_delta(*, locations: List[int], utilities_terms: Optional[Uti
     if utilities_terms.included_in_price:
         return 0
 
-    return 0
+    result = 0
+    if settings.USE_INCLUDE_UTILITIES_TERMS_REGIONS:
+        if not set(settings.INCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
+            result = utilities_terms.price
+    elif set(settings.EXCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
+        result = utilities_terms.price
+
+    return result
 
 
 def _get_price_for_workplace(*, bargain_terms: BargainTerms, workplace_count: int) -> entities.PriceInfo:
