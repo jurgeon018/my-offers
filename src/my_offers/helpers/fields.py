@@ -203,9 +203,9 @@ def _calc_utilities_delta(*, locations: List[int], utilities_terms: Optional[Uti
 
     result = 0
     if settings.USE_INCLUDE_UTILITIES_TERMS_REGIONS:
-        if not set(settings.INCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
+        if set(settings.INCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
             result = utilities_terms.price
-    elif set(settings.EXCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
+    elif not set(settings.EXCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
         result = utilities_terms.price
 
     return result

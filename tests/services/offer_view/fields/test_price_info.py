@@ -213,8 +213,11 @@ def test_get_price_info__coworking_office__price_for_workplace():
     ('locations', 'price', 'included_in_price', 'use_include_utilities_terms_regions', 'expected'),
     (
         ([1, 4593], False, None, True, 0),
-        ([5], 3000, False, True, 3000),
-        ([2], 3000, False, False, 3000),
+        ([5], 3000, False, True, 0),
+        ([2], 3000, False, False, 0),
+        ([1], 3000, False, True, 3000),
+        ([5], 3000, False, False, 3000),
+        ([5], 3000, True, False, 0),
     )
 )
 def test__calc_utilities_delta(locations, price, included_in_price, use_include_utilities_terms_regions, expected):
