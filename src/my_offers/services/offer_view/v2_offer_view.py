@@ -1,7 +1,14 @@
 from my_offers.entities import get_offers
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import get_main_photo_url, get_price_info, get_sort_date, is_archived, is_manual
+from my_offers.helpers.fields import (
+    get_locations,
+    get_main_photo_url,
+    get_price_info,
+    get_sort_date,
+    is_archived,
+    is_manual,
+)
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_offer_title
@@ -25,6 +32,7 @@ def v2_build_offer_view(
     manual = is_manual(object_model.source)
     archived = is_archived(object_model.flags)
     price_info = get_price_info(
+        locations=get_locations(object_model.geo),
         bargain_terms=object_model.bargain_terms,
         category=object_model.category,
         can_parts=bool(object_model.can_parts),

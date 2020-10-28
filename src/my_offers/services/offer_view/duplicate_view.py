@@ -2,7 +2,7 @@ from typing import Dict
 
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import get_main_photo_url, get_price_info, get_sort_date
+from my_offers.helpers.fields import get_locations, get_main_photo_url, get_price_info, get_sort_date
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_offer_title, get_properties
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
@@ -28,6 +28,7 @@ def build_duplicate_view(
         geo=fields.prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),
         price_info=get_price_info(
+            locations=get_locations(object_model.geo),
             bargain_terms=object_model.bargain_terms,
             category=object_model.category,
             can_parts=bool(object_model.can_parts),
@@ -67,6 +68,7 @@ def build_duplicate_view_desktop(
         geo=fields.prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),
         price_info=get_price_info(
+            locations=get_locations(object_model.geo),
             bargain_terms=object_model.bargain_terms,
             category=object_model.category,
             can_parts=bool(object_model.can_parts),
