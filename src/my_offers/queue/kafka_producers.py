@@ -5,6 +5,7 @@ from cian_core.kafka import get_kafka_entity_producer
 from cian_kafka import EntityKafkaProducer
 
 from my_offers.enums.notifications import UserNotificationType
+from my_offers.helpers.fields import get_locations
 from my_offers.queue import enums
 from my_offers.queue.entities import OfferDuplicateEvent
 from my_offers.repositories.monolith_cian_announcementapi.entities import Geo, ObjectModel
@@ -46,8 +47,8 @@ class OfferDuplicateEventProducer:
 
     @classmethod
     def _get_region_id(cls, geo: Optional[Geo]) -> Optional[int]:
-        if geo and geo.location_path and geo.location_path.child_to_parent:
-            result = geo.location_path.child_to_parent[-1]
+        if locations := get_locations(geo):
+            result = locations[-1]
         else:
             result = None
 

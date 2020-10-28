@@ -176,7 +176,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__offers_found__20
                     ]
                 },
                 'auctionBet': None,
-                'priceInfo': {'range': None, 'exact': '25\xa0000\xa0₽/мес.'}
+                'priceInfo': {'range': None, 'exact': '25\xa0001\xa0₽/мес.'}
             }
         ],
         'subscription': {'email': None, 'subscribedOnDuplicate': False},
