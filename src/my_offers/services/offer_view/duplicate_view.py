@@ -3,11 +3,11 @@ from typing import Dict
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import (
+    get_locations,
     get_main_photo_url,
     get_price_info,
     get_price_info_with_trend,
     get_sort_date,
-    get_locations,
 )
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_offer_title, get_properties

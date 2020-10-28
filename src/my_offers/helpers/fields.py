@@ -149,6 +149,45 @@ def get_price_info(
     return entities.PriceInfo(exact=price_exact, range=price_range)
 
 
+def get_price_info_with_trend(
+        *,
+        locations: List[int],
+        bargain_terms: BargainTerms,
+        category: Category,
+        can_parts: bool,
+        min_area: Optional[float],
+        max_area: Optional[float],
+        total_area: Optional[float],
+        offer_type: enums.OfferType,
+        deal_type: enums.DealType,
+        coworking_offer_type: Optional[CoworkingOfferType],
+        workplace_count: Optional[int],
+        old_price: Optional[float],
+) -> entities.PriceInfoWithTrend:
+    price_info = get_price_info(
+        locations=locations,
+        bargain_terms=bargain_terms,
+        category=category,
+        can_parts=can_parts,
+        min_area=min_area,
+        max_area=max_area,
+        total_area=total_area,
+        offer_type=offer_type,
+        deal_type=deal_type,
+        coworking_offer_type=coworking_offer_type,
+        workplace_count=workplace_count,
+    )
+    result = entities.PriceInfoWithTrend(
+        exact=price_info.exact,
+        range=price_info.range,
+        trend=None,
+    )
+    price = bargain_terms.price
+    if price and old_price and (abs(price - old_price) > 1):
+        result.trend = enums.PriceTrend.inc if price > old_price else enums.PriceTrend.dec
+    return result
+
+
 def _calc_rent_price(
         *,
         locations: List[int],
@@ -208,43 +247,6 @@ def _calc_utilities_delta(*, locations: List[int], utilities_terms: Optional[Uti
     elif not set(settings.EXCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
         result = utilities_terms.price
 
-    return result
-
-
-def get_price_info_with_trend(
-        *,
-        bargain_terms: BargainTerms,
-        category: Category,
-        can_parts: bool,
-        min_area: Optional[float],
-        max_area: Optional[float],
-        total_area: Optional[float],
-        offer_type: enums.OfferType,
-        deal_type: enums.DealType,
-        coworking_offer_type: Optional[CoworkingOfferType],
-        workplace_count: Optional[int],
-        old_price: Optional[float],
-) -> entities.PriceInfoWithTrend:
-    price_info = get_price_info(
-        bargain_terms=bargain_terms,
-        category=category,
-        can_parts=can_parts,
-        min_area=min_area,
-        max_area=max_area,
-        total_area=total_area,
-        offer_type=offer_type,
-        deal_type=deal_type,
-        coworking_offer_type=coworking_offer_type,
-        workplace_count=workplace_count,
-    )
-    result = entities.PriceInfoWithTrend(
-        exact=price_info.exact,
-        range=price_info.range,
-        trend=None,
-    )
-    price = bargain_terms.price
-    if price and old_price and (abs(price - old_price) > 1):
-        result.trend = enums.PriceTrend.inc if price > old_price else enums.PriceTrend.dec
     return result
 
 

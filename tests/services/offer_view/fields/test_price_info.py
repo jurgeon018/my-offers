@@ -4,7 +4,7 @@ from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.entities import PriceInfo
-from my_offers.helpers.fields import get_price_info, _calc_utilities_delta
+from my_offers.helpers.fields import _calc_utilities_delta, get_price_info
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, UtilitiesTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import (
     Currency,
