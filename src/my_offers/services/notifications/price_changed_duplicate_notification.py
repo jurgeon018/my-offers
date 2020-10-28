@@ -2,6 +2,7 @@ from my_offers.entities import OfferSimilar
 from my_offers.enums.notifications import DuplicateNotificationType
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
+from my_offers.helpers.numbers import get_pretty_number
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.notification_center import v2_register_notifications
 from my_offers.repositories.notification_center.entities import (
@@ -12,6 +13,7 @@ from my_offers.repositories.notification_center.entities.register_notification_v
     NotificationType,
     TransportsToSend,
 )
+from my_offers.services.experiments.get_ab_group import get_duplicate_price_changed_ab_group
 from my_offers.services.notifications.push_enabled import is_mobile_push_enabled
 from my_offers.services.offer_view import fields
 from my_offers.services.offer_view.fields.geo import get_address_for_push
@@ -42,7 +44,10 @@ async def send_duplicate_price_changed_mobile_push(
                         'priceChangeButtonText': 'Изменить цену'
                     },
                     text=get_address_for_push(offer.geo),
-                    title=get_title(duplicate_similar),
+                    title=await get_title(
+                        duplicate_similar=duplicate_similar,
+                        user_id=user_id
+                    ),
                     web_url=fields.get_offer_url(
                         cian_offer_id=duplicate_offer.cian_id,
                         offer_type=offer_type,
@@ -51,11 +56,20 @@ async def send_duplicate_price_changed_mobile_push(
                     media_url=get_main_photo_url(offer.photos),
                     transports_to_send=[TransportsToSend.mobile_push],
                 )]
-            ))
+            )
+        )
 
 
-def get_title(duplicate_similar: OfferSimilar) -> str:
-    # добавить AB эксперимент CD-92161
+async def get_title(*, duplicate_similar: OfferSimilar, user_id: int) -> str:
+    title = ''
     if duplicate_similar.price > duplicate_similar.old_price:
-        return 'Цена на дубль увеличена'
-    return 'Цена на дубль снижена'
+        title += 'Цена на дубль увеличена'
+    else:
+        title += 'Цена на дубль снижена'
+
+    ab_group = await get_duplicate_price_changed_ab_group(user_id=user_id)
+    if ab_group.is_experiment:
+        price_str = f' до\xa0{get_pretty_number(duplicate_similar.price)}\xa0₽'
+        title += price_str
+
+    return title

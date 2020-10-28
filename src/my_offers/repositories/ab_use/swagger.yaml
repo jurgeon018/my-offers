@@ -1,0 +1,44 @@
+definitions:
+  ab_use.entities.GetExperimentResponseSchema:
+    properties:
+      groupName: {description: Группа пользователя в эксперименте, title: group_name,
+        type: string}
+    type: object
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items: {title: errors, type: object}
+        title: errors
+        type: array
+      message: {title: message, type: string}
+    type: object
+info: {description: Everyone wants to be ABused, title: ab-use, version: 1.0.0}
+paths:
+  /v1/get-experiment/:
+    get:
+      parameters:
+      - description: Платформа, с которой пришёл пользоватеь
+        enum: [android, backend, desktop, ios, mobile]
+        in: query
+        name: platform
+        required: true
+        type: string
+        x-android: android
+        x-backend: backend
+        x-desktop: desktop site
+        x-ios: ios
+        x-mobile: mobile site
+      - {description: Название эксперимента, in: query, name: experimentName, required: true,
+        type: string}
+      - {description: Идентификатор пользователя, in: query, name: userId, required: true,
+        type: string}
+      produces: [application/json]
+      responses:
+        '200':
+          schema: {$ref: '#/definitions/ab_use.entities.GetExperimentResponseSchema'}
+        '400':
+          schema: {$ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'}
+swagger: '2.0'
+x-cian-mq:
+  exchanges: {}
+  spec-version: '1.0'

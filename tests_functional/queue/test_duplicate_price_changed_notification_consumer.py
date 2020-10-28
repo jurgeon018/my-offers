@@ -9,6 +9,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
         pg,
         kafka_service,
         notification_center_mock,
+        ab_use_mock,
 ):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
@@ -49,6 +50,11 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
         path='/v2/register-notifications/',
         response=MockResponse(),
     )
+    ab_use_mock_stub = await ab_use_mock.add_stub(
+        method='GET',
+        path='/v1/get-experiment/',
+        response=MockResponse(body={'groupName': 'experiment'}),
+    )
 
     message = {
         'duplicateOfferId': 231655140,
@@ -63,8 +69,15 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
     await asyncio.sleep(1)
 
     # assert
-    request = await notification_center_stub.get_request()
-    assert request.data == {
+    request_ab = await ab_use_mock_stub.get_request()
+    assert request_ab.params == {
+        'platform': 'backend',
+        'experimentName': 'duplicate_price_сhanged_mobile_push',
+        'userId': '6808488'
+    }
+
+    request_notification = await notification_center_stub.get_request()
+    assert request_notification.data == {
         'notifications': [
             {
                 'emailPayload': None,
@@ -79,7 +92,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
                 'notificationType': 'duplicatePriceChanged',
                 'plannedSendDatetime': None,
                 'text': 'Тульская область, Тула, проспект Ленина, 130',
-                'title': 'Цена на дубль увеличена',
+                'title': 'Цена на дубль увеличена до\xa01\xa0350\xa0000\xa0₽',
                 'transportsToSend': ['mobilePush'],
                 'userId': '6808488',
                 'webPushPayload': None,
@@ -94,6 +107,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
         pg,
         kafka_service,
         notification_center_mock,
+        ab_use_mock,
 ):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
@@ -108,6 +122,12 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
         VALUES
             (231655140, 231655140, NULL , 341, 1350000.0, 2, 'sale', \'2020-05-09\', 2000000.0)
         """)
+
+    await ab_use_mock.add_stub(
+        method='GET',
+        path='/v1/get-experiment/',
+        response=MockResponse(body={'groupName': 'control'}),
+    )
 
     await notification_center_mock.add_stub(
         method='POST',
