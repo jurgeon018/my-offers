@@ -2,7 +2,7 @@ from typing import Dict
 
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import get_main_photo_url, get_price_info, get_sort_date
+from my_offers.helpers.fields import get_main_photo_url, get_price_info, get_price_info_with_trend, get_sort_date
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_offer_title, get_properties
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
@@ -13,7 +13,7 @@ def build_duplicate_view(
         *,
         object_model: ObjectModel,
         auction_bets: Dict[int, float],
-        duplicate_type: enums.DuplicateType = enums.DuplicateType.duplicate,
+        similar: entities.OfferSimilarWithType,
 ) -> entities.OfferDuplicate:
     offer_type, deal_type = get_types(object_model.category)
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
@@ -27,7 +27,7 @@ def build_duplicate_view(
         properties=get_properties(object_model),
         geo=fields.prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),
-        price_info=get_price_info(
+        price_info=get_price_info_with_trend(
             bargain_terms=object_model.bargain_terms,
             category=object_model.category,
             can_parts=bool(object_model.can_parts),
@@ -38,10 +38,11 @@ def build_duplicate_view(
             deal_type=deal_type,
             coworking_offer_type=object_model.coworking_offer_type,
             workplace_count=object_model.workplace_count,
+            old_price=similar.old_price
         ),
         vas=fields.get_vas(object_model.publish_terms.terms if object_model.publish_terms else None),
         auction_bet=fields.get_auction_bet(auction_bets.get(realty_offer_id)),
-        type=duplicate_type,
+        type=similar.similar_type,
     )
 
 

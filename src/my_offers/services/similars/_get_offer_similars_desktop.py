@@ -60,7 +60,7 @@ async def v1_get_offer_similars_desktop_public(
         offer_view.build_duplicate_view_desktop(
             object_model=object_model,
             auction_bets=auction_bets,
-            duplicate_type=similars[object_model.id],
+            duplicate_type=similars[object_model.id].similar_type,
         )
         for object_model in object_models
     ]
