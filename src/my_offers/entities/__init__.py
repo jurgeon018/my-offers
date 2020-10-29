@@ -17,8 +17,9 @@ from my_offers.entities.duplicates import (
     OfferDuplicateDesktop,
     OfferDuplicatesCount,
     OfferSimilarCounter,
-    Tab,
 )
+from my_offers.entities.duplicates import PriceInfo as PriceInfoWithTrend
+from my_offers.entities.duplicates import Tab
 from my_offers.entities.get_offers import GetOffersPrivateRequest, GetOffersRequest, GetOffersV2Response, Statistics
 from my_offers.entities.get_offers_ids_by_tab import GetOffersIdsByTabRequest, GetOffersIdsByTabResponse
 from my_offers.entities.moderation import ModerationOfferOffence
@@ -49,7 +50,7 @@ from my_offers.entities.offers_for_calltracking import (
     OffersForCalltrackingRequest,
     OffersForCalltrackingResponse,
 )
-from my_offers.entities.similar import OfferSimilar
+from my_offers.entities.similar import OfferSimilar, OfferSimilarWithType
 from my_offers.entities.subscribe import (
     NewEmailSubscription,
     SubscribeOnDuplicatesRequest,

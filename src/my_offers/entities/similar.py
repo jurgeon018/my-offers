@@ -25,3 +25,8 @@ class OfferSimilar:
     """Кол-во комнат"""
     old_price: Optional[float] = None
     """Старая цена"""
+
+
+@dataclass
+class OfferSimilarWithType(OfferSimilar):
+    similar_type: Optional[enums.DuplicateType] = None

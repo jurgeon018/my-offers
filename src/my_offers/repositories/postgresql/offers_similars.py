@@ -6,7 +6,7 @@ from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, enums, pg
-from my_offers.mappers.offer_mapper import offer_similar_mapper
+from my_offers.mappers.offer_mapper import offer_similar_mapper, offer_similar_with_type_mapper
 from my_offers.repositories.postgresql.tables import deal_type, metadata
 
 
@@ -114,7 +114,7 @@ async def get_similars_by_offer_id(
         offset: int,
         tab_type: enums.DuplicateTabType,
         suffix: str,
-) -> Dict[int, enums.DuplicateType]:
+) -> Dict[int, entities.OfferSimilarWithType]:
     table = TABLES_MAP[suffix]
     tab_condition = _prepare_tab_condition(
         price_kf=price_kf,
@@ -139,11 +139,15 @@ async def get_similars_by_offer_id(
     )
     select
        os.offer_id,
+       os.deal_type,
+       os.sort_date,
+       os.price,
+       os.old_price,
        case
          when os.group_id = offer.group_id then 'duplicate'
          when os.house_id = offer.house_id then 'sameBuilding'
          else 'similar'
-       end as type
+       end as similar_type
     from
       offer,
       {table} os
@@ -163,8 +167,7 @@ async def get_similars_by_offer_id(
     """
 
     rows = await pg.get().fetch(query, offer_id, limit, offset)
-
-    return {row['offer_id']: enums.DuplicateTabType(row['type']) for row in rows}
+    return {row['offer_id']: offer_similar_with_type_mapper.map_from(row) for row in rows}
 
 
 async def get_similars_counters_by_offer_ids(
