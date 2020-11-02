@@ -41,7 +41,7 @@ async def send_duplicate_price_changed_mobile_push(
                     mobile_push_payload={
                         'dealType': deal_type.value,
                         'offerType': offer_type.value,
-                        'priceChangeButtonText': 'Изменить цену'
+                        'priceChangeButtonText': 'Изменить мою цену'
                     },
                     text=get_address_for_push(offer.geo),
                     title=await get_title(

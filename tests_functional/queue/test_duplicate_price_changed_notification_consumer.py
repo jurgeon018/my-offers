@@ -87,7 +87,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
                 'mobilePushPayload': {
                     'dealType': 'rent',
                     'offerType': 'flat',
-                    'priceChangeButtonText': 'Изменить цену'
+                    'priceChangeButtonText': 'Изменить мою цену'
                 },
                 'notificationType': 'duplicatePriceChanged',
                 'plannedSendDatetime': None,
@@ -179,7 +179,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
                 'mobilePushPayload': {
                     'dealType': 'rent',
                     'offerType': 'flat',
-                    'priceChangeButtonText': 'Изменить цену'
+                    'priceChangeButtonText': 'Изменить мою цену'
                 },
                 'notificationType': 'duplicatePriceChanged',
                 'plannedSendDatetime': None,
