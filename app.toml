@@ -98,6 +98,11 @@ type = "consumer"
 command = "new_offer_duplicate_notification_consumer"
 memory = 128
 
+[job.offer_duplicate_price_changed_notification_consumer]
+type = "consumer"
+command = "offer_duplicate_price_changed_notification_consumer"
+memory = 128
+
 [job.process_announcement_from_temp_consumer]
 type = "consumer"
 command = "process_announcement_from_temp_consumer"

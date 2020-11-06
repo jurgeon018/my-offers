@@ -1,10 +1,11 @@
 import pytest
 from cian_test_utils import v
+from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.entities import PriceInfo
-from my_offers.helpers.fields import get_price_info
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms
+from my_offers.helpers.fields import _calc_utilities_delta, get_price_info
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, UtilitiesTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import (
     Currency,
     LeaseTermType,
@@ -138,6 +139,7 @@ def test_get_price_info(
 ):
     # arrange & act
     result = get_price_info(
+        locations=[1],
         bargain_terms=bargain_terms,
         category=category,
         can_parts=can_parts,
@@ -161,6 +163,7 @@ def test_get_price_info__coworking_office__price_for_all():
 
     # act
     result = get_price_info(
+        locations=[1],
         bargain_terms=bargain_terms,
         category=Category.office_rent,
         can_parts=False,
@@ -189,6 +192,7 @@ def test_get_price_info__coworking_office__price_for_workplace():
 
     # act
     result = get_price_info(
+        locations=[1],
         bargain_terms=bargain_terms,
         category=Category.office_rent,
         can_parts=False,
@@ -203,3 +207,32 @@ def test_get_price_info__coworking_office__price_for_workplace():
 
     # assert
     assert result == v(PriceInfo(exact='2\xa0000\xa0₽/мес. за рабочее место', range=None))
+
+
+@pytest.mark.parametrize(
+    ('locations', 'price', 'included_in_price', 'use_include_utilities_terms_regions', 'expected'),
+    (
+        ([1, 4593], False, None, True, 0),
+        ([5], 3000, False, True, 0),
+        ([2], 3000, False, False, 0),
+        ([1], 3000, False, True, 3000),
+        ([5], 3000, False, False, 3000),
+        ([5], 3000, True, False, 0),
+    )
+)
+def test__calc_utilities_delta(locations, price, included_in_price, use_include_utilities_terms_regions, expected):
+    # arrange
+    utilities_terms = UtilitiesTerms(
+        included_in_price=included_in_price,
+        price=price,
+    )
+
+    # act
+    with settings_stub(USE_INCLUDE_UTILITIES_TERMS_REGIONS=use_include_utilities_terms_regions,):
+        result = _calc_utilities_delta(
+            locations=locations,
+            utilities_terms=utilities_terms,
+        )
+
+    # assert
+    assert result == expected

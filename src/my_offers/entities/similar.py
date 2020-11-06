@@ -23,3 +23,10 @@ class OfferSimilar:
     """Цена"""
     rooms_count: Optional[int]
     """Кол-во комнат"""
+    old_price: Optional[float] = None
+    """Старая цена"""
+
+
+@dataclass
+class OfferSimilarWithType(OfferSimilar):
+    similar_type: Optional[enums.DuplicateType] = None

@@ -140,7 +140,17 @@ register_consumer(
     command=cli.command('new_offer_duplicate_notification_consumer'),
     queue=queues.new_offer_duplicate_notification_queue,
     callback=consumers.new_offer_duplicate_notification_callback,
-    schema_cls=get_entity_schema(mq_entities.OfferNewDuplicateMessage),
+    schema_cls=mq_entities.OfferNewDuplicateMessage,
+    dead_queue_enabled=True,
+    default_prefetch_count=1,
+)
+
+# [duplicates] пуши по изменению цены в дублях
+register_consumer(
+    command=cli.command('offer_duplicate_price_changed_notification_consumer'),
+    queue=queues.offer_duplicate_price_changed_notification_queue,
+    callback=consumers.offer_duplicate_price_changed_notification_callback,
+    schema_cls=mq_entities.OfferDuplicatePriceChangedMessage,
     dead_queue_enabled=True,
     default_prefetch_count=1,
 )

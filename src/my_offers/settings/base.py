@@ -32,7 +32,8 @@ LOG_SEARCH_QUERIES: bool = True
 
 CASSANDRA_DEFAULT_TIMEOUT: float = 1.0
 
-SEND_PUSH_ON_NEW_DUPLICATE: bool = False  # пока не раскатили приложения пуши рассылать не надо
+SEND_PUSH_ON_NEW_DUPLICATE: bool = False
+SEND_PUSH_ON_DUPLICATE_PRICE_CHANGED: bool = False
 
 # mass operations
 MASS_OFFERS_RESTORE_DELAY: float = .5
@@ -79,3 +80,17 @@ EMAIL_VALIDATION_ERROR_MSG: str = 'Некорректный email.'
 # reindex offers master_user_id and payed_by
 REINDEX_CHUNK = 1000
 REINDEX_TIMEOUT = 0.5  # секунды
+
+# КУ в Аренде
+USE_INCLUDE_UTILITIES_TERMS_REGIONS: bool = False  # использовать  INCLUDE_UTILITIES_TERMS_REGIONS
+
+INCLUDE_UTILITIES_TERMS_REGIONS: List[int] = [
+    1,  # Москва
+    4593,  # МО
+]
+
+EXCLUDE_UTILITIES_TERMS_REGIONS: List[int] = [
+    2,      # СПб
+    4588,   # ЛО
+    4606,   # Ростовская область
+]

@@ -1,7 +1,10 @@
-from my_offers import entities, enums
+from simple_settings import settings
+
+from my_offers import entities, enums, pg
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_sort_date
 from my_offers.helpers.similar import is_offer_for_similar
+from my_offers.queue.producers import offer_duplicate_price_changed_producer
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import offers_similars
 from my_offers.repositories.postgresql.offers_duplicates import get_duplicate_group_id
@@ -25,23 +28,50 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
     _, deal_type = get_types(object_model.category)
     geo = object_model.geo
 
-    await offers_similars.save(
-        suffix=suffix,
-        similar=entities.OfferSimilar(
-            offer_id=object_model.id,
-            deal_type=deal_type,
-            group_id=await get_duplicate_group_id(object_model.id),
-            district_id=get_district_id(geo.district) if geo else None,
-            house_id=get_house_id(geo.address) if geo else None,
-            price=await get_price_rur(
-                price=object_model.bargain_terms.price,
-                currency=object_model.bargain_terms.currency
-            ),
-            rooms_count=get_rooms_count(
-                rooms_count=object_model.rooms_count,
-                rooms_for_sale_count=object_model.rooms_for_sale_count,
-                flat_type=object_model.flat_type,
-            ),
-            sort_date=get_sort_date(object_model=object_model, status_tab=enums.OfferStatusTab.active),
-        )
+    similar = entities.OfferSimilar(
+        offer_id=object_model.id,
+        deal_type=deal_type,
+        group_id=await get_duplicate_group_id(object_model.id),
+        district_id=get_district_id(geo.district) if geo else None,
+        house_id=get_house_id(geo.address) if geo else None,
+        price=await get_price_rur(
+            price=object_model.bargain_terms.price,
+            currency=object_model.bargain_terms.currency
+        ),
+        rooms_count=get_rooms_count(
+            rooms_count=object_model.rooms_count,
+            rooms_for_sale_count=object_model.rooms_for_sale_count,
+            flat_type=object_model.flat_type,
+        ),
+        sort_date=get_sort_date(object_model=object_model, status_tab=enums.OfferStatusTab.active),
     )
+
+    is_price_changed = False
+    conn = pg.get()
+    async with conn.transaction():
+        offer = await offers_similars.get_offer_similar_for_update(
+            suffix=suffix,
+            offer_id=similar.offer_id
+        )
+
+        if not offer:
+            await offers_similars.insert_similar(
+                suffix=suffix,
+                similar=similar
+            )
+        else:
+            if abs(offer.price - similar.price) > 1:
+                similar.old_price = offer.price
+                is_price_changed = True
+
+            await offers_similars.update_similar(
+                suffix=suffix,
+                similar=similar
+            )
+
+    await _send_price_changed_push(similar, is_price_changed)
+
+
+async def _send_price_changed_push(similar: entities.OfferSimilar, is_price_changed: bool) -> None:
+    if settings.SEND_PUSH_ON_DUPLICATE_PRICE_CHANGED and is_price_changed and similar.group_id:
+        await offer_duplicate_price_changed_producer(similar.offer_id)

@@ -161,3 +161,13 @@ delete_user_data_queue = Queue(
         )
     ]
 )
+
+offer_duplicate_price_changed_notification_queue = Queue(
+    name=get_modified_queue_name('offer_duplicate_price_changed_notification'),
+    bindings=[
+        QueueBinding(
+            exchange=my_offers_exchange,
+            routing_key=OfferDuplicateV1RoutingKey.price_changed.value,
+        ),
+    ],
+)

@@ -1,10 +1,19 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Tuple
+
+from simple_settings import settings
 
 from my_offers import entities, enums
 from my_offers.helpers.numbers import get_pretty_number
 from my_offers.helpers.time import get_aware_date
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, Flags, ObjectModel, Photo
+from my_offers.repositories.monolith_cian_announcementapi.entities import (
+    BargainTerms,
+    Flags,
+    Geo,
+    ObjectModel,
+    Photo,
+    UtilitiesTerms,
+)
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import (
     Category,
@@ -71,8 +80,16 @@ def get_main_photo_url(
     return photo.mini_url
 
 
+def get_locations(geo: Optional[Geo]) -> List[int]:
+    if geo and geo.location_path and geo.location_path.child_to_parent:
+        return geo.location_path.child_to_parent
+
+    return []
+
+
 def get_price_info(
         *,
+        locations: List[int],
         bargain_terms: BargainTerms,
         category: Category,
         can_parts: bool,
@@ -111,21 +128,17 @@ def get_price_info(
     if is_daily_rent:
         price_exact = f'{pretty_price}\xa0{currency}/сут.'
     elif is_rent:
-        if bargain_terms.payment_period and bargain_terms.payment_period.is_monthly:
-            price_per_month = price
-        else:
-            price_per_month = price / 12
-
-        if can_calc_parts:
-            min_price = get_pretty_number(price_per_month * min_area)
-            max_price = get_pretty_number(price_per_month * max_area)
-            price_range = [f'от\xa0{min_price}', f'до\xa0{max_price}\xa0{currency}/мес']
-        else:
-            if is_square_meter and total_area:
-                price_per_month *= total_area
-
-            pretty_price = get_pretty_number(price_per_month)
-            price_exact = f'{pretty_price}\xa0{currency}/мес.'
+        price_exact, price_range = _calc_rent_price(
+            locations=locations,
+            price=price,
+            currency=currency,
+            bargain_terms=bargain_terms,
+            can_calc_parts=can_calc_parts,
+            is_square_meter=is_square_meter,
+            total_area=total_area,
+            min_area=min_area,
+            max_area=max_area,
+        )
     elif can_parts and min_area and max_area:
         min_price = get_pretty_number(price * min_area / max_area)
         max_price = get_pretty_number(price)
@@ -134,6 +147,107 @@ def get_price_info(
         price_exact = f'{pretty_price}\xa0{currency}'
 
     return entities.PriceInfo(exact=price_exact, range=price_range)
+
+
+def get_price_info_with_trend(
+        *,
+        locations: List[int],
+        bargain_terms: BargainTerms,
+        category: Category,
+        can_parts: bool,
+        min_area: Optional[float],
+        max_area: Optional[float],
+        total_area: Optional[float],
+        offer_type: enums.OfferType,
+        deal_type: enums.DealType,
+        coworking_offer_type: Optional[CoworkingOfferType],
+        workplace_count: Optional[int],
+        old_price: Optional[float],
+) -> entities.PriceInfoWithTrend:
+    price_info = get_price_info(
+        locations=locations,
+        bargain_terms=bargain_terms,
+        category=category,
+        can_parts=can_parts,
+        min_area=min_area,
+        max_area=max_area,
+        total_area=total_area,
+        offer_type=offer_type,
+        deal_type=deal_type,
+        coworking_offer_type=coworking_offer_type,
+        workplace_count=workplace_count,
+    )
+    result = entities.PriceInfoWithTrend(
+        exact=price_info.exact,
+        range=price_info.range,
+        trend=None,
+    )
+    price = bargain_terms.price
+    if price and old_price and (abs(price - old_price) > 1):
+        result.trend = enums.PriceTrend.inc if price > old_price else enums.PriceTrend.dec
+    return result
+
+
+def _calc_rent_price(
+        *,
+        locations: List[int],
+        price: float,
+        currency: str,
+        bargain_terms: BargainTerms,
+        is_square_meter: bool,
+        can_calc_parts: bool,
+        min_area: Optional[float],
+        max_area: Optional[float],
+        total_area: Optional[float],
+) -> Tuple[Optional[str], Optional[List[str]]]:
+    price_exact = None
+    price_range = None
+    utilities_delta = _calc_utilities_delta(
+        locations=locations,
+        utilities_terms=bargain_terms.utilities_terms,
+    )
+
+    if bargain_terms.payment_period and bargain_terms.payment_period.is_monthly:
+        price_per_month = price + utilities_delta
+    else:
+        price_per_month = price / 12 + utilities_delta
+
+    if can_calc_parts:
+        price_range = []
+        if min_area:
+            min_price = get_pretty_number(price_per_month * min_area)
+            price_range.append(f'от\xa0{min_price}')
+        if max_area:
+            max_price = get_pretty_number(price_per_month * max_area)
+            price_range.append(f'до\xa0{max_price}\xa0{currency}/мес')
+    else:
+        if is_square_meter and total_area:
+            price_per_month *= total_area
+
+        pretty_price = get_pretty_number(price_per_month)
+        price_exact = f'{pretty_price}\xa0{currency}/мес.'
+
+    return price_exact, price_range
+
+
+def _calc_utilities_delta(*, locations: List[int], utilities_terms: Optional[UtilitiesTerms]) -> float:
+    if not utilities_terms:
+        return 0
+
+    if not utilities_terms.price:
+        return 0
+
+    if utilities_terms.included_in_price:
+        return 0
+
+    result = 0
+    if settings.USE_INCLUDE_UTILITIES_TERMS_REGIONS:
+        if set(settings.INCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
+            result = utilities_terms.price
+    elif not set(settings.EXCLUDE_UTILITIES_TERMS_REGIONS).intersection(set(locations)):
+        result = utilities_terms.price
+
+    return result
 
 
 def _get_price_for_workplace(*, bargain_terms: BargainTerms, workplace_count: int) -> entities.PriceInfo:

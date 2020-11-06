@@ -1,7 +1,8 @@
 import uuid
 
-from my_offers.settings.base import *
 from cian_automation.settings.base import *  # pylint: disable=wildcard-import,unused-wildcard-import
+
+from my_offers.settings.base import *  # pylint: disable=wildcard-import,unused-wildcard-import
 
 
 X_PASS_KEY = '87C8573A-BD08-4A54-BF33-DBBD2AF78551'

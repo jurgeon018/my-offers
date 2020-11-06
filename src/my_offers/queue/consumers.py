@@ -15,6 +15,7 @@ from my_offers.queue.entities import (
     AnnouncementPremoderationReportingMessage,
     DeleteUserDataMessage,
     NeedUpdateDuplicateMessage,
+    OfferDuplicatePriceChangedMessage,
     OfferNewDuplicateMessage,
     SaveUnloadErrorMessage,
     ServiceContractMessage,
@@ -26,7 +27,8 @@ from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
     save_announcement_contract,
 )
-from my_offers.services.duplicates import send_new_offer_duplicate_notifications, update_offer_duplicates
+from my_offers.services.duplicates import send_new_duplicate_notifications, update_offer_duplicates
+from my_offers.services.duplicates.send_duplicate_notifications import send_duplicate_price_changed_notifications
 from my_offers.services.moderation.moderation_service import save_offer_offence
 from my_offers.services.offers_import import save_offers_import_error
 from my_offers.services.users import delete_user_data
@@ -146,7 +148,15 @@ async def new_offer_duplicate_notification_callback(messages: List[Message]) -> 
         offer_duplicate: OfferNewDuplicateMessage = message.data
 
         with new_operation_id(offer_duplicate.operation_id):
-            await send_new_offer_duplicate_notifications(offer_duplicate.duplicate_offer_id)
+            await send_new_duplicate_notifications(offer_duplicate.duplicate_offer_id)
+
+
+async def offer_duplicate_price_changed_notification_callback(messages: List[Message]) -> None:
+    for message in messages:
+        offer_duplicate: OfferDuplicatePriceChangedMessage = message.data
+
+        with new_operation_id(offer_duplicate.operation_id):
+            await send_duplicate_price_changed_notifications(offer_duplicate.duplicate_offer_id)
 
 
 async def delete_user_data_callback(messages: List[Message]) -> None:

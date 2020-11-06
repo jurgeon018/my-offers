@@ -45,3 +45,11 @@ offer_similar_mapper = EntityMapper(
         'sort_date': ValueMapper(),
     }
 )
+
+offer_similar_with_type_mapper = EntityMapper(
+    entities.OfferSimilarWithType,
+    without_camelcase=True,
+    mappers={
+        'sort_date': ValueMapper(),
+    }
+)

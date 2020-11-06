@@ -2,10 +2,11 @@ from typing import Dict, List, Optional
 
 import asyncpgsa
 import sqlalchemy as sa
+from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import entities, enums, pg
-from my_offers.mappers.offer_mapper import offer_similar_mapper
+from my_offers.mappers.offer_mapper import offer_similar_mapper, offer_similar_with_type_mapper
 from my_offers.repositories.postgresql.tables import deal_type, metadata
 
 
@@ -20,6 +21,7 @@ offers_similars_flat = sa.Table(
     sa.Column('price', sa.FLOAT, nullable=True),
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
+    sa.Column('old_price', sa.FLOAT, nullable=True),
 )
 
 offers_similars_test = sa.Table(
@@ -33,6 +35,7 @@ offers_similars_test = sa.Table(
     sa.Column('price', sa.FLOAT, nullable=True),
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
+    sa.Column('old_price', sa.FLOAT, nullable=True),
 )
 
 TABLES_MAP = {
@@ -41,28 +44,33 @@ TABLES_MAP = {
 }
 
 
-async def save(*, suffix: str, similar: entities.OfferSimilar) -> None:
+async def get_offer_similar_for_update(*, suffix: str, offer_id: int) -> Optional[entities.OfferSimilar]:
+    table_name = f'offers_similars_{suffix}'
+
+    query = f'select * from {table_name} where offer_id = $1 for update'
+    row = await pg.get().fetchrow(query, offer_id)
+
+    return offer_similar_mapper.map_from(row) if row else None
+
+
+async def insert_similar(*, suffix: str, similar: entities.OfferSimilar) -> None:
     table = TABLES_MAP[suffix]
-    insert_query = insert(table)
     values = offer_similar_mapper.map_to(similar)
-
     query, params = asyncpgsa.compile_query(
-        insert_query
+        insert(table)
         .values([values])
-        .on_conflict_do_update(
-            index_elements=[table.c.offer_id],
-            set_={
-                'deal_type': insert_query.excluded.deal_type,
-                'group_id': insert_query.excluded.group_id,
-                'house_id': insert_query.excluded.house_id,
-                'district_id': insert_query.excluded.district_id,
-                'price': insert_query.excluded.price,
-                'rooms_count': insert_query.excluded.rooms_count,
-                'sort_date': insert_query.excluded.sort_date,
-            }
-        )
     )
+    await pg.get().execute(query, *params)
 
+
+async def update_similar(*, suffix: str, similar: entities.OfferSimilar) -> None:
+    table = TABLES_MAP[suffix]
+    values = offer_similar_mapper.map_to(similar)
+    query, params = asyncpgsa.compile_query(
+        update(table)
+        .where(table.c.offer_id == similar.offer_id)
+        .values(values)
+    )
     await pg.get().execute(query, *params)
 
 
@@ -106,7 +114,7 @@ async def get_similars_by_offer_id(
         offset: int,
         tab_type: enums.DuplicateTabType,
         suffix: str,
-) -> Dict[int, enums.DuplicateType]:
+) -> Dict[int, entities.OfferSimilarWithType]:
     table = TABLES_MAP[suffix]
     tab_condition = _prepare_tab_condition(
         price_kf=price_kf,
@@ -131,11 +139,15 @@ async def get_similars_by_offer_id(
     )
     select
        os.offer_id,
+       os.deal_type,
+       os.sort_date,
+       os.price,
+       os.old_price,
        case
          when os.group_id = offer.group_id then 'duplicate'
          when os.house_id = offer.house_id then 'sameBuilding'
          else 'similar'
-       end as type
+       end as similar_type
     from
       offer,
       {table} os
@@ -155,8 +167,7 @@ async def get_similars_by_offer_id(
     """
 
     rows = await pg.get().fetch(query, offer_id, limit, offset)
-
-    return {row['offer_id']: enums.DuplicateTabType(row['type']) for row in rows}
+    return {row['offer_id']: offer_similar_with_type_mapper.map_from(row) for row in rows}
 
 
 async def get_similars_counters_by_offer_ids(
@@ -293,8 +304,9 @@ def _prepare_tab_condition(
     return tab_condition
 
 
-async def get_offer_similar(offer_id: int) -> Optional[entities.OfferSimilar]:
-    query = 'select * from offers_similars_flat where offer_id = $1'
+async def get_offer_similar(offer_id: int, suffix: str = 'flat') -> Optional[entities.OfferSimilar]:
+    table_name = f'offers_similars_{suffix}'
+    query = f'select * from {table_name} where offer_id = $1'
     row = await pg.get().fetchrow(query, offer_id)
 
     return offer_similar_mapper.map_from(row) if row else None

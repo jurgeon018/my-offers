@@ -57,12 +57,12 @@ async def test_v2_get_offers_public__tab_duplicate__duplicates_found__200(http, 
         'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(231659418, \'sale\', \'2020-08-10\', 231655140)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, price, old_price) '
+        'VALUES(231659418, \'sale\', \'2020-08-10\', 231655140, 1550000, Null)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(173975523, \'sale\', \'2020-08-11\', 231655140)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, price, old_price) '
+        'VALUES(173975523, \'sale\', \'2020-08-11\', 231655140, 1200, 1500)'
     )
 
     auction_stub = await auction_mock.add_stub(
@@ -90,7 +90,7 @@ async def test_v2_get_offers_public__tab_duplicate__duplicates_found__200(http, 
     assert response.data == {
         'offers': [
             {
-                'priceInfo': {'exact': '1\xa0200\xa0₽/сут.', 'range': None},
+                'priceInfo': {'exact': '1\xa0200\xa0₽/сут.', 'range': None, 'trend': 'dec'},
                 'geo': {
                     'address': ['Тульская область', 'Тула', 'проспект Ленина', '130'],
                     'underground': None,
@@ -108,7 +108,7 @@ async def test_v2_get_offers_public__tab_duplicate__duplicates_found__200(http, 
             },
             {
                 'vas': ['payed'],
-                'priceInfo': {'range': None, 'exact': '1\xa0550\xa0000\xa0₽'},
+                'priceInfo': {'range': None, 'exact': '1\xa0550\xa0000\xa0₽', 'trend': None},
                 'properties': ['2-комн.\xa0кв.', '59\xa0м²', '3/3\xa0этаж'],
                 'geo': {
                     'underground': None,
@@ -162,11 +162,11 @@ async def test_v2_get_offers_public__simimar_tab__result(http, pg, auction_mock)
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute(
         'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, district_id, price, rooms_count) '
-        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140, 100, 2)'
+        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140, 1350000, 2)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, district_id, price, rooms_count) '
-        'VALUES(173975523, \'sale\', \'2020-08-10\', 231655140, 100, 2)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, district_id, price, rooms_count, old_price) '
+        'VALUES(231659418, \'sale\', \'2020-08-10\', 231655140, 1550000, 2,  1000000)'
     )
 
     # act
@@ -178,7 +178,30 @@ async def test_v2_get_offers_public__simimar_tab__result(http, pg, auction_mock)
     )
 
     # assert
-    assert len(response.data['offers']) == 1
+    assert response.data == {
+        'offers': [
+            {
+                'vas': ['payed'],
+                'priceInfo': {'range': None, 'exact': '1\xa0550\xa0000\xa0₽', 'trend': 'inc'},
+                'properties': ['2-комн.\xa0кв.', '59\xa0м²', '3/3\xa0этаж'],
+                'geo': {
+                    'underground': None,
+                    'address': ['Свердловская область', 'Нижний Тагил', 'улица Циолковского', '37/50']
+                },
+                'offerId': 231659418,
+                'dealType': 'sale',
+                'offerType': 'flat',
+                'type': 'similar',
+                'displayDate': '2020-05-09T10:06:29.159746+00:00',
+                'mainPhotoUrl': 'https://cdn-p.cian.site/images/6/179/378/'
+                                'kvartira-nizhniy-tagil-ulica-ciolkovskogo-873971625-2.jpg',
+                'auctionBet': None
+            }
+        ],
+        'page': {'pageCount': 1, 'count': 1, 'canLoadMore': False},
+        'tabs': [{'title': 'Все', 'type': 'all', 'count': 1},
+                 {'title': 'Похожие рядом', 'type': 'similar', 'count': 1}]
+    }
 
 
 async def test_v2_get_offers_public__same_building_offers_not_found__200(http, pg):
