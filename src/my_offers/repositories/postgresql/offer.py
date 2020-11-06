@@ -346,7 +346,7 @@ async def delete_offers(offer_ids: List[int], timeout: int) -> List[int]:
     delete from
         offers
     where
-        offer_id = any($1::bigint[]) and status_tab = 'deleted'
+        offer_id = any($1::bigint[]) and (status_tab = 'deleted' or is_test)
     returning
         offer_id
     """

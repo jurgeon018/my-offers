@@ -13,6 +13,7 @@ from my_offers.helpers.time import get_aware_date
 from my_offers.queue.entities import (
     AnnouncementMessage,
     AnnouncementPremoderationReportingMessage,
+    DeleteUserDataMessage,
     NeedUpdateDuplicateMessage,
     OfferDuplicatePriceChangedMessage,
     OfferNewDuplicateMessage,
@@ -30,6 +31,7 @@ from my_offers.services.duplicates import send_new_duplicate_notifications, upda
 from my_offers.services.duplicates.send_duplicate_notifications import send_duplicate_price_changed_notifications
 from my_offers.services.moderation.moderation_service import save_offer_offence
 from my_offers.services.offers_import import save_offers_import_error
+from my_offers.services.users import delete_user_data
 
 
 logger = logging.getLogger(__name__)
@@ -155,3 +157,11 @@ async def offer_duplicate_price_changed_notification_callback(messages: List[Mes
 
         with new_operation_id(offer_duplicate.operation_id):
             await send_duplicate_price_changed_notifications(offer_duplicate.duplicate_offer_id)
+
+
+async def delete_user_data_callback(messages: List[Message[DeleteUserDataMessage]]) -> None:
+    for message in messages:
+        user: DeleteUserDataMessage = message.data
+
+        with new_operation_id(user.operation_id):
+            await delete_user_data(user.user_id)

@@ -151,6 +151,16 @@ register_consumer(
     default_prefetch_count=1,
 )
 
+# [users] удаление данных пользователя
+register_consumer(
+    command=cli.command('delete_user_data_queue_consumer'),
+    queue=queues.delete_user_data_queue,
+    callback=consumers.delete_user_data_callback,
+    schema_cls=get_entity_schema(mq_entities.DeleteUserDataMessage),
+    dead_queue_enabled=True,
+    default_prefetch_count=1,
+)
+
 
 @cli.command()
 def reindex_offers() -> None:

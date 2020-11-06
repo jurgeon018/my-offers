@@ -72,3 +72,9 @@ async def get_agent_names(user_ids: List[int]) -> List[AgentName]:
     rows = await pg.get().fetch(query, user_ids, timeout=settings.DB_TIMEOUT)
 
     return [agent_name_mapper.map_from(row) for row in rows]
+
+
+async def delete_agents_hierarchy(user_id: int) -> None:
+    query = 'delete from agents_hierarchy where realty_user_id = $1 or master_agent_user_id = $1'
+
+    await pg.get().execute(query, user_id)

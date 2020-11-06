@@ -152,6 +152,16 @@ new_offer_duplicate_notification_queue = Queue(
     ],
 )
 
+delete_user_data_queue = Queue(
+    name=get_modified_queue_name('delete_user_data'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('users'),
+            routing_key='user-reporting.v1.deleted',
+        )
+    ]
+)
+
 offer_duplicate_price_changed_notification_queue = Queue(
     name=get_modified_queue_name('offer_duplicate_price_changed_notification'),
     bindings=[
