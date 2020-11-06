@@ -1,4 +1,3 @@
-from my_offers.services.offers._clear_test_offers import clear_test_offers
 from my_offers.services.offers._get_offers import get_filters, get_page_info, get_pagination, get_user_filter
 from my_offers.services.offers._get_offers_for_calltracking import (
     get_offers_for_calltracking,

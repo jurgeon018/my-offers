@@ -159,7 +159,7 @@ async def offer_duplicate_price_changed_notification_callback(messages: List[Mes
             await send_duplicate_price_changed_notifications(offer_duplicate.duplicate_offer_id)
 
 
-async def delete_user_data_callback(messages: List[Message]) -> None:
+async def delete_user_data_callback(messages: List[Message[DeleteUserDataMessage]]) -> None:
     for message in messages:
         user: DeleteUserDataMessage = message.data
 

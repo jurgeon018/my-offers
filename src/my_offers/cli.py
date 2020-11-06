@@ -13,11 +13,7 @@ from my_offers.queue import entities as mq_entities
 from my_offers.queue import queues, schemas
 from my_offers.services import realty_resender
 from my_offers.services.duplicates import sync_offer_duplicates
-from my_offers.services.offers import (
-    clear_test_offers,
-    reindex_offers_command,
-    reindex_offers_master_and_payed_by_command,
-)
+from my_offers.services.offers import reindex_offers_command, reindex_offers_master_and_payed_by_command
 from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.web.urls import urlpatterns
 
@@ -179,12 +175,6 @@ def clear_deleted_offer_cron() -> None:
     """Крон удаления офферов"""
     io_loop = IOLoop.current()
     io_loop.run_sync(delete_offers_data)
-
-
-@cli.command()
-def clear_test_offers_cron() -> None:
-    """Поставить тестовые объявления в очередь на удаление"""
-    IOLoop.current().run_sync(clear_test_offers)
 
 
 @cli.command()

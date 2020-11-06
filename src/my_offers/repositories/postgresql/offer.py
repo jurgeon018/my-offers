@@ -354,20 +354,3 @@ async def delete_offers(offer_ids: List[int], timeout: int) -> List[int]:
     rows = await pg.get().fetch(query, offer_ids, timeout=timeout)
 
     return [row['offer_id'] for row in rows]
-
-
-async def clear_test_offers(skip_master_user_ids: List[int]) -> None:
-    query = """
-    insert into  offers_delete_queue (offer_id, delete_at)
-    select
-        offer_id,
-        current_timestamp + random() * interval '7 days'
-    from
-        offers
-    where
-        is_test and updated_at < current_timestamp - interval '7 days'
-        and not (master_user_id = any($1::bigint[]))
-    on conflict do nothing
-    """
-
-    await pg.get().execute(query, skip_master_user_ids)

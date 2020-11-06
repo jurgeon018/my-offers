@@ -150,8 +150,3 @@ command = "reindex-offers-master-and-payed-by"
 type = "consumer"
 command = "clear-deleted-offer-cron"
 memory = 128
-
-[job.clear_test_offers]
-type = "cron"
-command = "clear-test-offers-cron"
-cron = "20 4 * * 6"
