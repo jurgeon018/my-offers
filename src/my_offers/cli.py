@@ -151,7 +151,7 @@ register_consumer(
     default_prefetch_count=1,
 )
 
-# [duplicates] удаление данных пользователя
+# [users] удаление данных пользователя
 register_consumer(
     command=cli.command('delete_user_data_queue_consumer'),
     queue=queues.delete_user_data_queue,
