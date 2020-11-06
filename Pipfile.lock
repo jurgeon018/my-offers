@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d1423630b859d71e83058e5a75cafdd1377633ab9ff4d6d7a72313489b44c254"
+            "sha256": "abb841c1772b33d224ff58e2e76c2438631a0d602074f39d4d6bab72147eb2ab"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -691,10 +691,10 @@
         },
         "sentry-sdk": {
             "hashes": [
-                "sha256:17b725df2258354ccb39618ae4ead29651aa92c01a92acf72f98efe06ee2e45a",
-                "sha256:9040539485226708b5cad0401d76628fba4eed9154bf301c50579767afe344fd"
+                "sha256:0eea248408d36e8e7037c7b73827bea20b13a4375bf1719c406cae6fcbc094e3",
+                "sha256:5cf36eb6b1dc62d55f3c64289792cbaebc8ffa5a9da14474f49b46d20caa7fc8"
             ],
-            "version": "==0.19.2"
+            "version": "==0.19.1"
         },
         "serpyco": {
             "hashes": [
@@ -2041,10 +2041,10 @@
         },
         "sentry-sdk": {
             "hashes": [
-                "sha256:17b725df2258354ccb39618ae4ead29651aa92c01a92acf72f98efe06ee2e45a",
-                "sha256:9040539485226708b5cad0401d76628fba4eed9154bf301c50579767afe344fd"
+                "sha256:0eea248408d36e8e7037c7b73827bea20b13a4375bf1719c406cae6fcbc094e3",
+                "sha256:5cf36eb6b1dc62d55f3c64289792cbaebc8ffa5a9da14474f49b46d20caa7fc8"
             ],
-            "version": "==0.19.2"
+            "version": "==0.19.1"
         },
         "serpyco": {
             "hashes": [
