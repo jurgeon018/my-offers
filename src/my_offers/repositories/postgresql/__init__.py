@@ -1,5 +1,6 @@
 from my_offers.repositories.postgresql.agents import (
     delete_agents_hierarchy,
+    get_agent,
     get_master_user_id,
     is_master_agent,
     save_agent,
