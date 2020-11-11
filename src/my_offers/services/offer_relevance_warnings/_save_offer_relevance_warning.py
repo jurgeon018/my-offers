@@ -27,6 +27,6 @@ def map_finished(offer_relevance_warning_message: OfferRelevanceWarningMessage) 
 
 
 def map_due_date(offer_relevance_warning_message: OfferRelevanceWarningMessage) -> Optional[datetime]:
-    if not offer_relevance_warning_message.relevance_type_message == OfferRelevanceTypeMessage.warning_only.value:
+    if offer_relevance_warning_message.relevance_type_message != OfferRelevanceTypeMessage.warning_only.value:
         return offer_relevance_warning_message.decline_date
     return None
