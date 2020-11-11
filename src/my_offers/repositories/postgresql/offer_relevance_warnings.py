@@ -39,6 +39,7 @@ async def save_offer_relevance_warning(offer_relevance_warning: OfferRelevanceWa
             [insert_values]
         ).on_conflict_do_update(
             index_elements=[offer_relevance_warnings.c.offer_id],
+            where=offer_relevance_warnings.c.updated_at < insert_query.excluded.updated_at,
             set_={
                 'check_id': insert_query.excluded.check_id,
                 'updated_at': insert_query.excluded.updated_at,

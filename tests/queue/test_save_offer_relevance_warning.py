@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytest
+import pytz
 from cian_core.rabbitmq.consumer import Message
 from cian_test_utils import future, v
 
@@ -16,7 +17,8 @@ async def test_save_offer_relevance_warning_callback(mocker):
         check_status_id='foo',
         guid='bar',
         relevance_type_message='baz',
-        decline_date=datetime(2020, 3, 5),
+        decline_date=datetime(2020, 3, 5, tzinfo=pytz.UTC),
+        date=datetime(2020, 2, 25, tzinfo=pytz.UTC),
     )
 
     message = mocker.Mock(spec=Message)

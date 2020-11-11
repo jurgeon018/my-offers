@@ -10,12 +10,11 @@ from my_offers.repositories import postgresql
 
 
 async def save_offer_relevance_warning(offer_relevance_warning: OfferRelevanceWarningMessage) -> None:
-    now = datetime.now(pytz.utc)
     await postgresql.save_offer_relevance_warning(OfferRelevanceWarning(
         offer_id=offer_relevance_warning.realty_object_id,
         check_id=offer_relevance_warning.guid,
-        created_at=now,
-        updated_at=now,
+        created_at=offer_relevance_warning.date,
+        updated_at=offer_relevance_warning.date,
         due_date=map_due_date(offer_relevance_warning),
         finished=map_finished(offer_relevance_warning),
     ))

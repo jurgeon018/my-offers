@@ -28,7 +28,8 @@ async def test_save_offer_relevance_warning():
         'INSERT INTO offer_relevance_warnings (offer_id, check_id, finished, due_date, created_at, updated_at) '
         'VALUES ($5, $1, $4, $3, $2, $6) ON CONFLICT (offer_id) DO UPDATE SET '
         'check_id = excluded.check_id, finished = excluded.finished, '
-        'due_date = excluded.due_date, updated_at = excluded.updated_at',
+        'due_date = excluded.due_date, updated_at = excluded.updated_at ' 
+        'WHERE offer_relevance_warnings.updated_at < excluded.updated_at',
         'C919B985-489B-4033-B74B-8F8A934B8192',
         datetime(2020, 3, 30, 0, 0, tzinfo=pytz.UTC),
         datetime(2020, 4, 20, 0, 0, tzinfo=pytz.UTC),

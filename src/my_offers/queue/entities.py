@@ -130,3 +130,5 @@ class OfferRelevanceWarningMessage:
     """Тип сообщения для пользователя"""
     decline_date: Optional[datetime]
     """Планируемая дата отклонения объявления"""
+    date: datetime
+    """Время изменения"""
