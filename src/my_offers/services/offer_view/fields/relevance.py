@@ -1,6 +1,7 @@
-import locale
 from datetime import datetime
 from typing import Optional
+
+from pytils.dt import ru_strftime
 
 from my_offers.entities.get_offers import Relevance
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
@@ -25,5 +26,8 @@ def _get_warning_message(offer_relevance_warning: OfferRelevanceWarning) -> Opti
 
 
 def _get_formatted_date(due_date: datetime) -> str:
-    locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
-    return due_date.strftime(constants.RELEVANCE_DUE_DATE_FORMAT)
+    return ru_strftime(
+        format=constants.RELEVANCE_DUE_DATE_FORMAT,
+        date=due_date,
+        inflected=True,
+    )
