@@ -10,8 +10,8 @@ from my_offers.mappers.agents import agent_mapper, agent_name_mapper
 from my_offers.repositories.postgresql.tables import agents_hierarchy
 
 
-async def get_agent(agent_id: int) -> Optional[Agent]:
-    select_query = agents_hierarchy.select().where(agents_hierarchy.c.id == agent_id)
+async def get_agent_by_user_id(user_id: int) -> Optional[Agent]:
+    select_query = agents_hierarchy.select().where(agents_hierarchy.c.realty_user_id == user_id)
     query, params = asyncpgsa.compile_query(select_query)
     if row := await pg.get().fetchrow(query, *params):
         return agent_mapper.map_from(row)

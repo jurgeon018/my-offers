@@ -18,7 +18,7 @@ pytestmark = pytest.mark.gen_test
 async def test_get_agent__asyncpgsa__query_and_params_compiled_ok():
     # arrange
     pg.get().fetchrow.return_value = future()
-    agent_id = 1
+    user_id = 1
     query = (
         'SELECT'
         ' agents_hierarchy.id,'
@@ -32,12 +32,12 @@ async def test_get_agent__asyncpgsa__query_and_params_compiled_ok():
         ' agents_hierarchy.middle_name,'
         ' agents_hierarchy.last_name \n'
         'FROM agents_hierarchy \n'
-        'WHERE agents_hierarchy.id = $1'
+        'WHERE agents_hierarchy.realty_user_id = $1'
     )
-    params = [agent_id]
+    params = [user_id]
 
     # act
-    await postgresql.get_agent(agent_id)
+    await postgresql.get_agent_by_user_id(user_id)
 
     # assert
     pg.get().fetchrow.assert_called_once_with(query, *params)
@@ -46,10 +46,10 @@ async def test_get_agent__asyncpgsa__query_and_params_compiled_ok():
 async def test_get_agent__record_not_found__return_none():
     # arrange
     pg.get().fetchrow.return_value = future()
-    agent_id = 1
+    user_id = 1
 
     # act
-    agent = await postgresql.get_agent(agent_id)
+    agent = await postgresql.get_agent_by_user_id(user_id)
 
     # assert
     assert agent is None
@@ -84,7 +84,7 @@ async def test_get_agent__record_found__map_from_row():
     })
 
     # act
-    result = await postgresql.get_agent(agent.id)
+    result = await postgresql.get_agent_by_user_id(agent.realty_user_id)
 
     # assert
     assert result == agent
