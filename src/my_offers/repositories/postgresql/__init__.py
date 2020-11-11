@@ -25,6 +25,10 @@ from my_offers.repositories.postgresql.offer import (
     update_offers_master_user_id_and_payed_by,
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error
+from my_offers.repositories.postgresql.offer_relevance_warnings import (
+    get_offer_relevance_warnings,
+    save_offer_relevance_warning,
+)
 from my_offers.repositories.postgresql.offers_delete_queue import (
     add_offer_to_delete_queue,
     add_offer_to_delete_queue_by_master_user_id,

@@ -8,6 +8,7 @@ from simple_settings import settings
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
+from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
@@ -125,6 +126,7 @@ class EnrichData:
     premoderation_info: Optional[Set[int]] = None
     archive_date: Optional[Dict[int, datetime]] = None
     payed_till: Optional[Dict[int, datetime]] = None
+    offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
     offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
     offers_payed_by: Dict[str, Optional[OfferPayedByType]] = field(default_factory=dict)
     # statistics
@@ -179,3 +181,9 @@ class EnrichData:
 
     def get_same_building_counts(self, offer_id: int) -> Optional[int]:
         return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
+
+    def get_offer_relevance_warning(self, offer_id: int) -> Optional[OfferRelevanceWarning]:
+        if not self.offer_relevance_warnings:
+            return None
+
+        return self.offer_relevance_warnings.get(offer_id)

@@ -8,6 +8,7 @@ from my_offers.queue.routing_keys import (
     AgentsReportingV1RoutingKey,
     AnnouncementPremoderationReportingV1RoutingKey,
     AnnouncementReportingV1RoutingKey,
+    AnnouncementsRelevanceReportingV1RoutingKey,
     ModerationOfferOffenceReportingV1RoutingKey,
     OfferDuplicateV1RoutingKey,
     OffersResendV1RoutingKey,
@@ -18,6 +19,7 @@ from my_offers.queue.routing_keys import (
 
 my_offers_exchange = Exchange('my-offers')
 billing_exchange = Exchange('billing')
+moderation_announcement_relevance_exchange = Exchange('moderation-announcements-relevance')
 
 
 def _get_bindings(exchange: str, prefix: str, enum: Type[StrEnum]) -> List[QueueBinding]:
@@ -170,4 +172,14 @@ offer_duplicate_price_changed_notification_queue = Queue(
             routing_key=OfferDuplicateV1RoutingKey.price_changed.value,
         ),
     ],
+)
+
+save_offer_relevance_warning_queue = Queue(
+    name=get_modified_queue_name('save_offer_relevance_warning'),
+    bindings=[
+        QueueBinding(
+            exchange=moderation_announcement_relevance_exchange,
+            routing_key=AnnouncementsRelevanceReportingV1RoutingKey.changed.value,
+        )
+    ]
 )

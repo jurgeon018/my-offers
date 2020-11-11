@@ -120,3 +120,14 @@ offers_reindex_queue = sa.Table(
     sa.Column('in_process', sa.BOOLEAN, nullable=False),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
 )
+
+offer_relevance_warnings = sa.Table(
+    'offer_relevance_warnings',
+    metadata,
+    sa.Column('offer_id', sa.BIGINT, primary_key=True),
+    sa.Column('check_id', sa.VARCHAR, nullable=False),
+    sa.Column('finished', sa.BOOLEAN, nullable=True),
+    sa.Column('due_date', sa.TIMESTAMP, nullable=True),
+    sa.Column('created_at', sa.TIMESTAMP, nullable=False),
+    sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
+)

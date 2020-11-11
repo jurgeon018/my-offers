@@ -36,6 +36,7 @@ from my_offers.entities.offer_action import (
     OffersMassRestoreResponse,
 )
 from my_offers.entities.offer_import_error import OfferImportError
+from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
 from my_offers.entities.offer_view_model import PriceInfo
 from my_offers.entities.offers_creation_date import (
     OfferCreationDate,

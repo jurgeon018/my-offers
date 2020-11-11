@@ -20,7 +20,8 @@ def get_page_specific_info(
             publish_terms=object_model.publish_terms,
             payed_till=enrich_data.get_payed_till(offer_id),
             duplicates_count=enrich_data.get_duplicates_counts(offer_id),
-            same_building_count=enrich_data.get_same_building_counts(offer_id)
+            same_building_count=enrich_data.get_same_building_counts(offer_id),
+            offer_relevance_warning=enrich_data.get_offer_relevance_warning(offer_id),
         )
     elif status_tab.is_not_active:
         result.not_active_info = get_not_active_info(

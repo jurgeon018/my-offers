@@ -15,6 +15,7 @@ from my_offers.repositories.postgresql.agents import get_master_user_id
 from my_offers.services.agencies_settings import get_settings_degradation_handler
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
+from my_offers.services.offer_relevance_warnings import get_offer_relevance_warnings_degradation_handler
 from my_offers.services.offers._get_offers import (
     get_agent_names_degradation_handler,
     get_favorites_counts_degradation_handler,
@@ -71,6 +72,7 @@ async def load_enrich_data(
                 offer_ids=params.get_similar_offers(),
                 is_test=params.is_test_offers
             ),
+            _load_offer_relevance_warnings(offer_ids),
         ])
     elif status_tab.is_not_active:
         enriched.extend([
@@ -296,3 +298,10 @@ async def _load_offers_payed_by(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_payed_by_degradation_handler(offer_ids)
 
     return EnrichItem(key='offers_payed_by', degraded=result.degraded, value=result.value)
+
+
+@async_statsd_timer('enrich.load_offer_relevance_warnings')
+async def _load_offer_relevance_warnings(offer_ids: List[int]) -> EnrichItem:
+    result = await get_offer_relevance_warnings_degradation_handler(offer_ids)
+
+    return EnrichItem(key='offer_relevance_warnings', degraded=result.degraded, value=result.value)

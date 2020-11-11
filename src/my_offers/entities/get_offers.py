@@ -102,6 +102,14 @@ class Moderation:
 
 
 @dataclass
+class Relevance:
+    warning_message: str
+    """Текст предупреждения о неактуальности объявления"""
+    check_id: str
+    """ID проверки актуальности объявления"""
+
+
+@dataclass
 class ActiveInfo:
     vas: List[enums.OfferVas]
     """Список VAS'ов"""
@@ -119,6 +127,8 @@ class ActiveInfo:
     """Количество дублей по объявлению"""
     same_building_count: Optional[int] = None
     """Количество 'в этом доме' по объявлению"""
+    relevance: Optional[Relevance] = None
+    """Данные об актуальности объявления"""
 
 
 @dataclass

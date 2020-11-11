@@ -3,10 +3,12 @@ from unittest import mock
 
 import pytest
 import pytz
+from cian_test_utils import v
 from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.repositories.monolith_cian_announcementapi.entities import AddressInfo, address_info
 from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichParams
@@ -216,6 +218,41 @@ async def test_get_payed_till(mocker, offer_id, expected):
 
     # act
     result = enrich_data.get_payed_till(offer_id)
+
+    # assert
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    ('offer_id', 'expected'),
+    (
+        (
+            1,
+            v(OfferRelevanceWarning(
+                offer_id=1,
+                check_id='foo',
+                created_at=datetime(2020, 4, 20),
+                updated_at=datetime(2020, 4, 20),
+            ))
+        ),
+        (4, None),
+    )
+)
+def test_offer_relevance_warning(mocker, offer_id, expected):
+    # arrange
+    enrich_data = EnrichData(
+        offer_relevance_warnings={
+            1: v(OfferRelevanceWarning(
+                offer_id=1,
+                check_id='foo',
+                created_at=datetime(2020, 4, 20),
+                updated_at=datetime(2020, 4, 20),
+            ))
+        }
+    )
+
+    # act
+    result = enrich_data.get_offer_relevance_warning(offer_id)
 
     # assert
     assert result == expected

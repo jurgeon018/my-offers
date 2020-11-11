@@ -48,7 +48,8 @@ def test_get_active_info(mocker):
         publish_terms=publish_terms,
         payed_till=None,
         duplicates_count=None,
-        same_building_count=None
+        same_building_count=None,
+        offer_relevance_warning=None,
     )
 
     # assert
@@ -83,7 +84,8 @@ def test_get_active_info__is_publication_time_ends(mocker, autoprolong, publish_
             publish_terms=publish_terms,
             payed_till=payed_till,
             duplicates_count=None,
-            same_building_count=None
+            same_building_count=None,
+            offer_relevance_warning=None,
         )
 
     # assert
