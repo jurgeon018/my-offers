@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+from freezegun import freeze_time
+
 import pytest
 
 
@@ -435,4 +437,66 @@ async def test_get_active_offers_payed_by_labels(pg, http):
         1: 'byMaster',
         2: 'byAgent',
         3: None,
+    }
+
+
+@freeze_time('2020-4-20')
+async def test_get_active_offers_with_relevance_warnings(pg, http):
+    # arrange
+    now = datetime.now()
+
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
+    await pg.execute(
+        """
+        INSERT INTO public.offer_relevance_warnings (
+            offer_id,
+            check_id,
+            finished,
+            due_date,
+            created_at,
+            updated_at
+        )
+        VALUES
+            ($1,  $2,  $3,  $4,  $5,  $6),
+            ($7,  $8,  $9,  $10, $11, $12),
+            ($13, $14, $15, $16, $17, $18)
+        """,
+        [
+            162730477, '0A838C51-583B-4346-BDC6-E24AC8CAE3A4', False, None, now, now,
+            162729892, '11D8C8C2-41B1-4EE5-A2F0-41F4CB22EA1C', False, now, now, now,
+            162730289, '7DF35154-E8B3-47C0-977A-8D4137C9C1DA', True, now, now, now,
+        ]
+    )
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v2/get-offers/',
+        json={
+            'filters': {
+                'statusTab': 'active',
+                'hasRelevanceWarning': True,
+            }
+        },
+        headers={
+            'X-Real-UserId': 8088578,
+        },
+    )
+
+    # assert
+    assert {offer['id']: offer['pageSpecificInfo']['activeInfo']['relevance'] for offer in response.data['offers']} == {
+        162730477: {
+            'checkId': '0A838C51-583B-4346-BDC6-E24AC8CAE3A4',
+            'warningMessage': (
+                'Если объявление актуально, подтвердите это. Если неактуально, вы можете перенести его в архив.'
+            ),
+        },
+        162729892: {
+            'checkId': '11D8C8C2-41B1-4EE5-A2F0-41F4CB22EA1C',
+            'warningMessage': (
+                'Допустимый срок публикации истекает 20 апреля 2020 года, затем объявление будет автоматически '
+                'снято с публикации. Если объявление актуально, подтвердите это. Если неактуально, вы можете '
+                'перенести его в архив.'
+            ),
+        },
     }

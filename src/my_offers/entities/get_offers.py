@@ -30,7 +30,8 @@ class Filter:
     """Полнотекстовый поиск по объявлению"""
     payed_by: Optional[enums.OfferPayedByFilterType] = None
     """За чей счет оплачена подача объявления"""
-
+    has_relevance_warning: Optional[bool] = None
+    """Только неактуальные"""
 
 
 @dataclass
