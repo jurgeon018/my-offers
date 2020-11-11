@@ -6,7 +6,7 @@ url = "https://nexus.cian.tech/repository/cian/simple/"
 
 [packages]
 my-offers = {editable = true, path = "."}
-cian-core = {version = "~=1.10", index = "cian", extras = ["rabbitmq_consumer_cli", "graphite", "postgres", "cache", "cassandra", "kafka"]}
+cian-core = {version = "~=1.10", extras = ["rabbitmq_consumer_cli", "graphite", "postgres", "cache", "cassandra", "kafka"]}
 cian-kafka = "~=1.1"
 cian-entities = "~=1.7"
 cian-enum = "~=1.1"
@@ -16,7 +16,7 @@ cian-web = "~=2.1"
 click = "~=7.1"
 simple-settings = "~=0.19"
 tornado = "~=6.0"
-cian-rabbitmq = {version = "~=3.1", index = "cian"}
+cian-rabbitmq = {version = "~=3.1"}
 cian-pg = "~=0.0"
 asyncpgsa = "~=0.26"
 sqlalchemy = "~=1.3"
