@@ -1,7 +1,8 @@
 import pytest
 from cian_test_utils import v
+from simple_settings.utils import settings_stub
 
-from my_offers.helpers.title import _get_floors, get_offer_title
+from my_offers.helpers.title import _get_floors, get_offer_title, rename_coworking_office
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     BargainTerms,
     Building,
@@ -120,3 +121,16 @@ def test_get_title(object_model, expected):
 
     # assert
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    'rename, expected',
+    (
+            (True, 'String-2'),
+            (False, 'String-1'),
+    )
+)
+def test_rename(rename: bool, expected: str):
+    # act & assert
+    with settings_stub(RENAME_COWORKING_OFFICE=rename):
+        assert rename_coworking_office('String-1', 'String-2') == expected
