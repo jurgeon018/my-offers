@@ -38,22 +38,23 @@ create type offer_service as enum (
 CREATE TABLE offers
 (
 -- базовые поля
-    offer_id          bigint                   not null primary key,
-    master_user_id    bigint                   not null,
+    offer_id                        bigint                   not null primary key,
+    master_user_id                  bigint                   not null,
 
--- поля для фильтров
-    user_id           bigint                   not null,
-    deal_type         deal_type                not null,
-    offer_type        offer_type               not null,
-    status_tab        offer_status_tab         not null,
-    services          offer_service[]          not null,
+-- поля для фильтров                
+    user_id                         bigint                   not null,
+    deal_type                       deal_type                not null,
+    offer_type                      offer_type               not null,
+    status_tab                      offer_status_tab         not null,
+    services                        offer_service[]          not null,
 
-    is_manual         bool                     not null,
-    is_in_hidden_base bool                     not null,
-    has_photo         bool                     not null,
+    is_manual                       bool                     not null,
+    is_in_hidden_base               bool                     not null,
+    has_photo                       bool                     not null,
+    has_active_relevance_warning    bool                     not null,
 
-    district_id       int,
-    house_id          int,
+    district_id                     int,
+    house_id                        int,
 
 -- поля для поиска
     search_text       text                     not null,
@@ -267,7 +268,7 @@ CREATE TABLE offer_relevance_warnings
 (
     offer_id        bigint not null primary key,
     check_id        text   not null,
-    finished        bool,
+    active          bool   not null,
     due_date        timestamp with time zone,
     created_at      timestamp with time zone not null,
     updated_at      timestamp with time zone not null

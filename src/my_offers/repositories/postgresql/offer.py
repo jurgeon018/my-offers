@@ -354,3 +354,16 @@ async def delete_offers(offer_ids: List[int], timeout: int) -> List[int]:
     rows = await pg.get().fetch(query, offer_ids, timeout=timeout)
 
     return [row['offer_id'] for row in rows]
+
+
+async def update_offer_has_active_relevance_warning(*, offer_id: int, has_active_relevance_warning: bool) -> None:
+    query = """
+    update
+        offers
+    set
+        has_active_relevance_warning = $1
+    where
+        offer_id = $2
+    """
+
+    await pg.get().execute(query, has_active_relevance_warning, offer_id)

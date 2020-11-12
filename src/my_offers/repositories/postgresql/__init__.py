@@ -21,6 +21,7 @@ from my_offers.repositories.postgresql.offer import (
     save_offer_archive,
     set_offers_is_deleted,
     update_offer,
+    update_offer_has_active_relevance_warning,
     update_offer_master_user_id_and_payed_by,
     update_offers_master_user_id_and_payed_by,
 )

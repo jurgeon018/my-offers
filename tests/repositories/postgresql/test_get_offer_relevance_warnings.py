@@ -18,7 +18,7 @@ async def test_get_offer_relevance_warnings(mocker):
             'created_at': datetime(2020, 3, 30),
             'updated_at': datetime(2020, 3, 30),
             'due_date': datetime(2020, 4, 20),
-            'finished': False,
+            'active': True,
         },
         {
             'offer_id': 2,
@@ -26,7 +26,7 @@ async def test_get_offer_relevance_warnings(mocker):
             'created_at': datetime(2020, 3, 30),
             'updated_at': datetime(2020, 3, 30),
             'due_date': None,
-            'finished': False,
+            'active': True,
         },
     ])
 
@@ -41,7 +41,7 @@ async def test_get_offer_relevance_warnings(mocker):
             created_at=datetime(2020, 3, 30),
             updated_at=datetime(2020, 3, 30),
             due_date=datetime(2020, 4, 20),
-            finished=False,
+            active=True,
         ),
         OfferRelevanceWarning(
             offer_id=2,
@@ -49,6 +49,6 @@ async def test_get_offer_relevance_warnings(mocker):
             created_at=datetime(2020, 3, 30),
             updated_at=datetime(2020, 3, 30),
             due_date=None,
-            finished=False,
+            active=True,
         ),
     ])

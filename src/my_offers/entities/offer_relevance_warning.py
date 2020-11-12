@@ -15,5 +15,5 @@ class OfferRelevanceWarning:
     """Дата последнего обновления"""
     due_date: Optional[datetime] = None
     """Дата автоматического снятия объявления с публикации"""
-    finished: Optional[bool] = None
-    """Проверка была завершена"""
+    active: Optional[bool] = None
+    """Проверка не завершена"""

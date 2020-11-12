@@ -17,12 +17,12 @@ async def get_offer_relevance_warnings(offer_ids: List[int]) -> List[OfferReleva
         created_at,
         updated_at,
         due_date,
-        finished
+        active
     FROM
         offer_relevance_warnings
     WHERE
         offer_id = ANY($1::BIGINT[]) AND
-        finished IS NOT TRUE
+        active = TRUE
     """
 
     rows = await pg.get().fetch(query, offer_ids)
@@ -44,7 +44,7 @@ async def save_offer_relevance_warning(offer_relevance_warning: OfferRelevanceWa
                 'check_id': insert_query.excluded.check_id,
                 'updated_at': insert_query.excluded.updated_at,
                 'due_date': insert_query.excluded.due_date,
-                'finished': insert_query.excluded.finished,
+                'active': insert_query.excluded.active,
             }
         )
     )

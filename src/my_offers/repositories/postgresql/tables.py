@@ -43,6 +43,7 @@ offers = sa.Table(
     sa.Column('is_test', sa.BOOLEAN),
     sa.Column('payed_by', sa.BIGINT, nullable=True),
     sa.Column('old_master_user_id', sa.BIGINT, nullable=True),
+    sa.Column('has_active_relevance_warning', sa.BOOLEAN, nullable=False),
 )
 
 offers_billing_contracts = sa.Table(
@@ -126,7 +127,7 @@ offer_relevance_warnings = sa.Table(
     metadata,
     sa.Column('offer_id', sa.BIGINT, primary_key=True),
     sa.Column('check_id', sa.VARCHAR, nullable=False),
-    sa.Column('finished', sa.BOOLEAN, nullable=True),
+    sa.Column('active', sa.BOOLEAN, nullable=False),
     sa.Column('due_date', sa.TIMESTAMP, nullable=True),
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=False),

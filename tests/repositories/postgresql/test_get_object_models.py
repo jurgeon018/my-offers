@@ -157,11 +157,8 @@ async def test_get_object_models___has_relevance_warning_filter__result():
 
     pg.get().fetch.assert_called_once_with(
         'SELECT offers.raw_data, count(*) OVER () AS total_count \n'
-        'FROM offers \n'
-        'WHERE offers.offer_id IN (SELECT offer_relevance_warnings.offer_id \n'
-        'FROM offer_relevance_warnings \n'
-        'WHERE offer_relevance_warnings.finished IS NOT true) ORDER BY offers.sort_date '
-        'DESC NULLS LAST, offers.offer_id \n'
+        'FROM offers \nWHERE offers.has_active_relevance_warning = true '
+        'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n'
         ' LIMIT $1 OFFSET $2',
         40,
         0,

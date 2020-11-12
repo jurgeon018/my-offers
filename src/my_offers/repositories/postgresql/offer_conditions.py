@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import sqlalchemy as sa
-from sqlalchemy import and_, any_, cast, func, select
+from sqlalchemy import and_, any_, cast, func
 from sqlalchemy.sql.elements import BinaryExpression
 
 from my_offers import enums
@@ -21,6 +21,7 @@ FILTERS_MAP = {
     'user_id': OFFER_TABLE.user_id,
     'sub_agent_ids': OFFER_TABLE.user_id,
     'offer_id': OFFER_TABLE.offer_id,
+    'has_relevance_warning': OFFER_TABLE.has_active_relevance_warning,
 }
 
 
@@ -36,8 +37,6 @@ def prepare_conditions(filters: Dict[str, Any]) -> List:
         tsquery = func.plainto_tsquery('russian', search_text)
         tsvector = func.to_tsvector('russian', OFFER_TABLE.search_text)
         conditions.append(tsvector.op('@@')(tsquery))
-    if filters.get('has_relevance_warning'):
-        conditions.append(_prepare_has_relevance_warning_condition())
 
     return conditions
 
@@ -69,11 +68,3 @@ def _prepare_payed_by_condition(payed_by_filter: str) -> Optional[BinaryExpressi
         condition = OFFER_TABLE.master_user_id == OFFER_TABLE.payed_by
 
     return condition
-
-
-def _prepare_has_relevance_warning_condition() -> BinaryExpression:
-    offer_relevance_warnings_table = tables.offer_relevance_warnings.c
-    subquery = select([
-        offer_relevance_warnings_table.offer_id,
-    ]).where(offer_relevance_warnings_table.finished.isnot(True))
-    return OFFER_TABLE.offer_id.in_(subquery)

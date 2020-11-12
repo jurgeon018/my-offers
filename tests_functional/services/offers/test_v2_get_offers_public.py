@@ -451,7 +451,7 @@ async def test_get_active_offers_with_relevance_warnings(pg, http):
         INSERT INTO public.offer_relevance_warnings (
             offer_id,
             check_id,
-            finished,
+            active,
             due_date,
             created_at,
             updated_at
@@ -462,9 +462,9 @@ async def test_get_active_offers_with_relevance_warnings(pg, http):
             ($13, $14, $15, $16, $17, $18)
         """,
         [
-            162730477, '0A838C51-583B-4346-BDC6-E24AC8CAE3A4', False, None, now, now,
-            162729892, '11D8C8C2-41B1-4EE5-A2F0-41F4CB22EA1C', False, now, now, now,
-            162730289, '7DF35154-E8B3-47C0-977A-8D4137C9C1DA', True, now, now, now,
+            162730477, '0A838C51-583B-4346-BDC6-E24AC8CAE3A4', True, None, now, now,
+            162729892, '11D8C8C2-41B1-4EE5-A2F0-41F4CB22EA1C', True, now, now, now,
+            162730289, '7DF35154-E8B3-47C0-977A-8D4137C9C1DA', False, now, now, now,
         ]
     )
 

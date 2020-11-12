@@ -19,7 +19,7 @@ import pytz
             },
             {
                 'offer_id': 111,
-                'finished': False,
+                'active': True,
                 'check_id': '4228B2D9-C3E0-4D72-9EE6-96A9E678B96B',
                 'due_date': None,
                 'created_at': datetime(2020, 4, 20, tzinfo=pytz.UTC),
@@ -37,7 +37,7 @@ import pytz
             },
             {
                 'offer_id': 222,
-                'finished': False,
+                'active': True,
                 'check_id': '73FBA463-B4EA-48DC-AF73-D5B9EE804E90',
                 'due_date': datetime(2020, 5, 20, tzinfo=pytz.UTC),
                 'created_at': datetime(2020, 4, 20, tzinfo=pytz.UTC),
@@ -55,7 +55,7 @@ import pytz
             },
             {
                 'offer_id': 333,
-                'finished': True,
+                'active': False,
                 'check_id': '2188174A-43DC-4F04-BEEB-7E3E8DFB5112',
                 'due_date': datetime(2020, 5, 20, tzinfo=pytz.UTC),
                 'created_at': datetime(2020, 4, 20, tzinfo=pytz.UTC),
@@ -97,7 +97,7 @@ async def test_save_offer_relevance_warning_consumer__insert_on_conflict__expect
         INSERT INTO public.offer_relevance_warnings (
             offer_id,
             check_id,
-            finished,
+            active,
             due_date,
             created_at,
             updated_at
@@ -105,7 +105,7 @@ async def test_save_offer_relevance_warning_consumer__insert_on_conflict__expect
         VALUES
             ($1,  $2,  $3,  $4,  $5,  $6)
         """,
-        [offer_id, '9D8183AD-9919-4535-94F1-6F0E801A1F3F', False, None, then, then],
+        [offer_id, '9D8183AD-9919-4535-94F1-6F0E801A1F3F', True, None, then, then],
     )
 
     message = {
@@ -118,7 +118,7 @@ async def test_save_offer_relevance_warning_consumer__insert_on_conflict__expect
     }
     expected_data = {
         'offer_id': offer_id,
-        'finished': True,
+        'active': False,
         'check_id': '52922E9B-53CE-4C16-88BE-108EE8518EE9',
         'due_date': datetime(2020, 5, 20, tzinfo=pytz.UTC),
         'created_at': then,
@@ -152,7 +152,7 @@ async def test_save_offer_relevance_warning_consumer__insert_on_conflict__skip_o
         INSERT INTO public.offer_relevance_warnings (
             offer_id,
             check_id,
-            finished,
+            active,
             due_date,
             created_at,
             updated_at
@@ -160,7 +160,7 @@ async def test_save_offer_relevance_warning_consumer__insert_on_conflict__skip_o
         VALUES
             ($1,  $2,  $3,  $4,  $5,  $6)
         """,
-        [offer_id, '9D8183AD-9919-4535-94F1-6F0E801A1F3F', False, None, then, now],
+        [offer_id, '9D8183AD-9919-4535-94F1-6F0E801A1F3F', True, None, then, now],
     )
 
     message = {
@@ -173,7 +173,7 @@ async def test_save_offer_relevance_warning_consumer__insert_on_conflict__skip_o
     }
     expected_data = {
         'offer_id': offer_id,
-        'finished': False,
+        'active': True,
         'check_id': '9D8183AD-9919-4535-94F1-6F0E801A1F3F',
         'due_date': None,
         'created_at': then,
