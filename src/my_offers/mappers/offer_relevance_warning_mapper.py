@@ -13,3 +13,9 @@ offer_relevance_warning_mapper = EntityMapper(
         'updated_at': ValueMapper(),
     }
 )
+
+
+offer_relevance_warning_info_mapper = EntityMapper(
+    entities.OfferRelevanceWarningInfo,
+    without_camelcase=True,
+)

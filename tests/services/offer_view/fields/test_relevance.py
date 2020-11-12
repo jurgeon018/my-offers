@@ -5,7 +5,7 @@ import pytz
 from cian_test_utils import v
 
 from my_offers.entities.get_offers import Relevance
-from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
+from my_offers.entities.offer_relevance_warning import OfferRelevanceWarningInfo
 from my_offers.services.offer_view.fields.relevance import get_relevance
 from my_offers.services.offer_view import constants
 
@@ -13,11 +13,9 @@ from my_offers.services.offer_view import constants
 @pytest.mark.parametrize('offer_relevance_warning, expected_result', (
     (None, None),
     (
-        OfferRelevanceWarning(
+        OfferRelevanceWarningInfo(
             offer_id=1,
             check_id='foo',
-            created_at=datetime(2020, 1, 20, tzinfo=pytz.UTC),
-            updated_at=datetime(2020, 1, 20, tzinfo=pytz.UTC),
         ),
         Relevance(
             warning_message=constants.RELEVANCE_REGULAR_MESSAGE_TEXT,
@@ -25,11 +23,9 @@ from my_offers.services.offer_view import constants
         ),
     ),
     (
-        OfferRelevanceWarning(
+        OfferRelevanceWarningInfo(
             offer_id=1,
             check_id='bar',
-            created_at=datetime(2020, 1, 20, tzinfo=pytz.UTC),
-            updated_at=datetime(2020, 1, 20, tzinfo=pytz.UTC),
             due_date=datetime(2020, 3, 20, tzinfo=pytz.UTC),
         ),
         Relevance(

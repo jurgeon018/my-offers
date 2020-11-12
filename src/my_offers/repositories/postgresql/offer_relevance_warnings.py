@@ -4,20 +4,20 @@ import asyncpgsa
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
-from my_offers.entities import OfferRelevanceWarning
-from my_offers.mappers.offer_relevance_warning_mapper import offer_relevance_warning_mapper
+from my_offers.entities import OfferRelevanceWarning, OfferRelevanceWarningInfo
+from my_offers.mappers.offer_relevance_warning_mapper import (
+    offer_relevance_warning_info_mapper,
+    offer_relevance_warning_mapper,
+)
 from my_offers.repositories.postgresql.tables import offer_relevance_warnings
 
 
-async def get_offer_relevance_warnings(offer_ids: List[int]) -> List[OfferRelevanceWarning]:
+async def get_offer_relevance_warnings(offer_ids: List[int]) -> List[OfferRelevanceWarningInfo]:
     query = """
     SELECT
         offer_id,
         check_id,
-        created_at,
-        updated_at,
-        due_date,
-        active
+        due_date
     FROM
         offer_relevance_warnings
     WHERE
@@ -27,7 +27,7 @@ async def get_offer_relevance_warnings(offer_ids: List[int]) -> List[OfferReleva
 
     rows = await pg.get().fetch(query, offer_ids)
 
-    return [offer_relevance_warning_mapper.map_from(row) for row in rows]
+    return [offer_relevance_warning_info_mapper.map_from(row) for row in rows]
 
 
 async def save_offer_relevance_warning(offer_relevance_warning: OfferRelevanceWarning) -> None:

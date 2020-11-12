@@ -4,11 +4,11 @@ from typing import Optional
 from pytils.dt import ru_strftime
 
 from my_offers.entities.get_offers import Relevance
-from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
+from my_offers.entities.offer_relevance_warning import OfferRelevanceWarningInfo
 from my_offers.services.offer_view import constants
 
 
-def get_relevance(offer_relevance_warning: Optional[OfferRelevanceWarning]) -> Optional[Relevance]:
+def get_relevance(offer_relevance_warning: Optional[OfferRelevanceWarningInfo]) -> Optional[Relevance]:
     if not offer_relevance_warning:
         return None
 
@@ -18,7 +18,7 @@ def get_relevance(offer_relevance_warning: Optional[OfferRelevanceWarning]) -> O
     )
 
 
-def _get_warning_message(offer_relevance_warning: OfferRelevanceWarning) -> Optional[str]:
+def _get_warning_message(offer_relevance_warning: OfferRelevanceWarningInfo) -> Optional[str]:
     if due_date := offer_relevance_warning.due_date:
         return constants.RELEVANCE_DUE_DATE_MESSAGE_TEXT.format(formatted_date=_get_formatted_date(due_date))
 
