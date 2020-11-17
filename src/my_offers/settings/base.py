@@ -93,3 +93,5 @@ EXCLUDE_UTILITIES_TERMS_REGIONS: List[int] = [
     4588,   # ЛО
     4606,   # Ростовская область
 ]
+
+RENAME_COWORKING_OFFICE: bool = False
