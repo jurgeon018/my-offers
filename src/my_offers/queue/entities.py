@@ -126,9 +126,9 @@ class OfferRelevanceWarningMessage:
     """Статус"""
     guid: str
     """Идентификатор проверки"""
-    relevance_type_message: str
-    """Тип сообщения для пользователя"""
-    decline_date: Optional[datetime]
-    """Планируемая дата отклонения объявления"""
     date: datetime
     """Время изменения"""
+    decline_date: Optional[datetime] = None
+    """Планируемая дата отклонения объявления"""
+    relevance_type_message: Optional[str] = None
+    """Тип сообщения для пользователя"""
