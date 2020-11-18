@@ -21,6 +21,7 @@ FILTERS_MAP = {
     'user_id': OFFER_TABLE.user_id,
     'sub_agent_ids': OFFER_TABLE.user_id,
     'offer_id': OFFER_TABLE.offer_id,
+    'has_relevance_warning': OFFER_TABLE.has_active_relevance_warning,
 }
 
 

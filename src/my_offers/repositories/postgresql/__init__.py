@@ -21,10 +21,15 @@ from my_offers.repositories.postgresql.offer import (
     save_offer_archive,
     set_offers_is_deleted,
     update_offer,
+    update_offer_has_active_relevance_warning,
     update_offer_master_user_id_and_payed_by,
     update_offers_master_user_id_and_payed_by,
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error
+from my_offers.repositories.postgresql.offer_relevance_warnings import (
+    get_offer_relevance_warnings,
+    save_offer_relevance_warning,
+)
 from my_offers.repositories.postgresql.offers_delete_queue import (
     add_offer_to_delete_queue,
     add_offer_to_delete_queue_by_master_user_id,

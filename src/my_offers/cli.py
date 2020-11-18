@@ -161,6 +161,15 @@ register_consumer(
     default_prefetch_count=1,
 )
 
+# [offer_relevance_warnings] получение актуальности/неактуальности объявления
+register_consumer(
+    command=cli.command('save_offer_relevance_warning_consumer'),
+    queue=queues.save_offer_relevance_warning_queue,
+    callback=consumers.save_offer_relevance_warning_callback,
+    schema_cls=get_entity_schema(mq_entities.OfferRelevanceWarningMessage),
+    dead_queue_enabled=True,
+)
+
 
 @cli.command()
 def reindex_offers() -> None:

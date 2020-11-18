@@ -116,3 +116,19 @@ class DeleteUserDataMessage:
     """идентификатор операции"""
     user_id: int
     """Id пользователя"""
+
+
+@dataclass
+class OfferRelevanceWarningMessage:
+    realty_object_id: int
+    """Id объявления"""
+    check_status_id: str
+    """Статус"""
+    guid: str
+    """Идентификатор проверки"""
+    relevance_type_message: str
+    """Тип сообщения для пользователя"""
+    decline_date: Optional[datetime]
+    """Планируемая дата отклонения объявления"""
+    date: datetime
+    """Время изменения"""

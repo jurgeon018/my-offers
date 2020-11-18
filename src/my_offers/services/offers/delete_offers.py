@@ -1,12 +1,10 @@
 import asyncio
 import logging
-from datetime import datetime, timedelta
 
-import pytz
 from cian_core.statsd import statsd
 from simple_settings import settings
 
-from my_offers import enums, pg
+from my_offers import pg
 from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.delete import delete_rows_by_offer_id
@@ -24,6 +22,7 @@ TABLES_TO_DELETE = (
     tables.offers_offences,
     tables.offers_premoderations,
     tables.offers_reindex_queue,
+    tables.offer_relevance_warnings,
 )
 
 

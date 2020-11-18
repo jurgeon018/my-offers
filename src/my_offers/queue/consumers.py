@@ -17,6 +17,7 @@ from my_offers.queue.entities import (
     NeedUpdateDuplicateMessage,
     OfferDuplicatePriceChangedMessage,
     OfferNewDuplicateMessage,
+    OfferRelevanceWarningMessage,
     SaveUnloadErrorMessage,
     ServiceContractMessage,
 )
@@ -30,6 +31,7 @@ from my_offers.services.billing.contracts_service import (
 from my_offers.services.duplicates import send_new_duplicate_notifications, update_offer_duplicates
 from my_offers.services.duplicates.send_duplicate_notifications import send_duplicate_price_changed_notifications
 from my_offers.services.moderation.moderation_service import save_offer_offence
+from my_offers.services.offer_relevance_warnings import save_offer_relevance_warning
 from my_offers.services.offers_import import save_offers_import_error
 from my_offers.services.users import delete_user_data
 
@@ -165,3 +167,11 @@ async def delete_user_data_callback(messages: List[Message[DeleteUserDataMessage
 
         with new_operation_id(user.operation_id):
             await delete_user_data(user.user_id)
+
+
+async def save_offer_relevance_warning_callback(messages: List[Message[OfferRelevanceWarningMessage]]) -> None:
+    for message in messages:
+        offer_relevance_warning: OfferRelevanceWarningMessage = message.data
+
+        with new_operation_id():
+            await save_offer_relevance_warning(offer_relevance_warning)

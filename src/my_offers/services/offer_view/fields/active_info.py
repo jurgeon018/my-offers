@@ -4,9 +4,11 @@ from typing import Optional
 import pytz
 
 from my_offers.entities import get_offers
+from my_offers.entities.offer_relevance_warning import OfferRelevanceWarningInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerms
 from my_offers.services.offer_view.fields.from_package import is_from_package
 from my_offers.services.offer_view.fields.publish_features import get_publish_features
+from my_offers.services.offer_view.fields.relevance import get_relevance
 from my_offers.services.offer_view.fields.vas import get_vas
 from my_offers.services.offer_view.helpers.terms import is_daily_charge
 
@@ -17,6 +19,7 @@ def get_active_info(
         payed_till: Optional[datetime],
         duplicates_count: Optional[int],
         same_building_count: Optional[int],
+        offer_relevance_warning: Optional[OfferRelevanceWarningInfo],
 ) -> get_offers.ActiveInfo:
     terms = publish_terms.terms if publish_terms else None
     payed_remain = _get_payed_remain(payed_till)
@@ -42,6 +45,7 @@ def get_active_info(
         payed_till=payed_till,
         duplicates_count=duplicates_count,
         same_building_count=same_building_count,
+        relevance=get_relevance(offer_relevance_warning),
     )
 
 

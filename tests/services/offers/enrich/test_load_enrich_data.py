@@ -104,6 +104,10 @@ async def test_load_enrich_data__active_tab(mocker):
         f'{PATH}_load_offers_payed_by',
         return_value=future(EnrichItem(key='offers_payed_by', degraded=False, value={})),
     )
+    load_offers_payed_by = mocker.patch(
+        f'{PATH}_load_offer_relevance_warnings',
+        return_value=future(EnrichItem(key='offer_relevance_warnings', degraded=False, value={})),
+    )
 
     expected_data = EnrichData(
         auctions={},
@@ -118,6 +122,7 @@ async def test_load_enrich_data__active_tab(mocker):
         premoderation_info=None,
         archive_date=None,
         payed_till=None,
+        offer_relevance_warnings={},
     )
     expected_degradation = {
         'agency_settings': False,
@@ -130,7 +135,8 @@ async def test_load_enrich_data__active_tab(mocker):
         'favorites_counts': False,
         'views_counts': False,
         'searches_counts': False,
-        'offers_payed_by': False
+        'offers_payed_by': False,
+        'offer_relevance_warnings': False,
     }
 
     # act

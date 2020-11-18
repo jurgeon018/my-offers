@@ -135,3 +135,32 @@ async def test_get_object_models___wrong_filter__result():
         0,
         timeout=3,
     )
+
+
+@pytest.mark.gen_test
+async def test_get_object_models___has_relevance_warning_filter__result():
+    # arrange
+    filters = {
+        'has_relevance_warning': True,
+    }
+
+    pg.get().fetch.return_value = future([])
+
+    expected = ([], 0)
+
+    # act
+    with settings_stub(DB_TIMEOUT=3):
+        result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
+
+    # assert
+    assert result == expected
+
+    pg.get().fetch.assert_called_once_with(
+        'SELECT offers.raw_data, count(*) OVER () AS total_count \n'
+        'FROM offers \nWHERE offers.has_active_relevance_warning = true '
+        'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n'
+        ' LIMIT $1 OFFSET $2',
+        40,
+        0,
+        timeout=3,
+    )
