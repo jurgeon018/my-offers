@@ -13,6 +13,7 @@ from my_offers.enums.notifications import DuplicateNotificationType, UserNotific
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
 from my_offers.helpers.title import SQUARE_METER_SYMBOL, get_offer_title
+from my_offers.queue.enums import PushType
 from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories import postgresql
 from my_offers.repositories.emails import emails_v2_send_email
@@ -82,10 +83,11 @@ async def send_new_duplicates_notification(
             await postgresql.delete_offers_duplicate_notification(notification)
             raise
 
-        await OfferDuplicateEventProducer.produce_new_duplicate_event(
+        await OfferDuplicateEventProducer.produce_duplicate_event(
             offer=offer,
             duplicate_offer=duplicate_offer,
-            transport_type=notification_type
+            transport_type=notification_type,
+            event_type=PushType.push_offer_duplicate,
         )
 
 

@@ -6,8 +6,8 @@ from cian_test_utils import v
 
 from my_offers.entities.get_offers import Relevance
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarningInfo
-from my_offers.services.offer_view.fields.relevance import get_relevance
 from my_offers.services.offer_view import constants
+from my_offers.services.offer_view.fields.relevance import get_relevance
 
 
 @pytest.mark.parametrize('offer_relevance_warning, expected_result', (
