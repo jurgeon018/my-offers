@@ -2,9 +2,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from freezegun import freeze_time
-
 import pytest
+from freezegun import freeze_time
 
 
 async def test_v2_get_offers_public__not_found__200(http):
@@ -440,7 +439,7 @@ async def test_get_active_offers_payed_by_labels(pg, http):
     }
 
 
-@freeze_time('2020-4-20')
+@freeze_time('2020-04-20T12:00:00+00:00')
 async def test_get_active_offers_with_relevance_warnings(pg, http):
     # arrange
     now = datetime.now()

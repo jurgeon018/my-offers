@@ -1,6 +1,6 @@
 from datetime import datetime
-import pytest
 
+import pytest
 import pytz
 from cian_test_utils import future, v
 

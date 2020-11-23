@@ -1,4 +1,5 @@
 import asyncio
+import json
 from pathlib import Path
 
 from cian_functional_test_utils.pytest_plugin import MockResponse
@@ -166,6 +167,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
     # act
     await queue_service.publish('my-offers.offer-duplicate.v1.price_changed', message, exchange='my-offers')
     await asyncio.sleep(1)
+    messages = await kafka_service.get_messages(topic='myoffer-specialist-push-notification')
 
     # assert
     request = await notification_center_stub.get_request()
@@ -191,6 +193,18 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
                 'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140'
             }
         ]
+    }
+    payload = json.loads(messages[0].payload)
+    payload.pop('timestamp', None)
+    assert payload == {
+        'similarObjectPrice': 1350000,
+        'similarObjectId': 231655140,
+        'userId': 6808488,
+        'eventType': 'pushPriceChangeOfferDuplicate',
+        'objectId': 173975523,
+        'operationId': 'c31e2bb8-a02b-11ea-a141-19840ed2f005',
+        'regionId': 4592,
+        'transport': 'mobilePush',
     }
 
 
