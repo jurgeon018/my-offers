@@ -2,9 +2,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from freezegun import freeze_time
-
 import pytest
+import pytz
 
 
 async def test_v2_get_offers_public__not_found__200(http):
@@ -440,15 +439,14 @@ async def test_get_active_offers_payed_by_labels(pg, http):
     }
 
 
-@freeze_time('2020-4-20')
 async def test_get_active_offers_with_relevance_warnings(pg, http):
     # arrange
-    now = datetime.now()
+    now = datetime(2020, 4, 20, tzinfo=pytz.UTC)
 
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
     await pg.execute(
         """
-        INSERT INTO public.offer_relevance_warnings (
+        INSERT INTO offer_relevance_warnings (
             offer_id,
             check_id,
             active,
@@ -494,7 +492,7 @@ async def test_get_active_offers_with_relevance_warnings(pg, http):
         162729892: {
             'checkId': '11D8C8C2-41B1-4EE5-A2F0-41F4CB22EA1C',
             'warningMessage': (
-                'Допустимый срок публикации истекает 19 апреля 2020 года, затем объявление будет автоматически '
+                'Допустимый срок публикации истекает 20 апреля 2020 года, затем объявление будет автоматически '
                 'снято с публикации. Если объявление актуально, подтвердите это. Если неактуально, вы можете '
                 'перенести его в архив.'
             ),
