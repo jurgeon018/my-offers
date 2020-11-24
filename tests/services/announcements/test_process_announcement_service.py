@@ -68,7 +68,7 @@ async def test_announcement_processor(mocker):
     save_offer_mock = mocker.patch.object(
         AnnouncementProcessor,
         '_save_offer',
-        return_value=future()
+        return_value=future(True)
     )
     post_process_offer_mock = mocker.patch.object(
         AnnouncementProcessor,

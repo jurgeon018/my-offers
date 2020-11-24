@@ -3,6 +3,7 @@ from datetime import datetime
 import freezegun
 import pytest
 import pytz
+from cian_test_utils import future
 from freezegun.api import FakeDatetime
 
 from my_offers import enums, pg
@@ -39,12 +40,13 @@ async def test_save_offer(mocker):
         street_name='AAAAA',
         sort_date=datetime(2020, 2, 7),
     )
+    pg.get().fetchval.return_value = future(True)
 
     # act
     await postgresql.save_offer(offer=offer, event_date=event_date)
 
     # assert
-    pg.get().execute.assert_called_once_with(
+    pg.get().fetchval.assert_called_once_with(
         'INSERT INTO offers (offer_id, master_user_id, user_id, deal_type, offer_type, status_tab, services, '
         'search_text, is_manual, is_in_hidden_base, has_photo, row_version, raw_data, created_at, updated_at, '
         'event_date, total_area, price, price_per_meter, walking_time, street_name, sort_date, is_test) '
@@ -57,7 +59,7 @@ async def test_save_offer(mocker):
         'updated_at = excluded.updated_at, event_date = excluded.event_date, total_area = excluded.total_area, '
         'price = excluded.price, price_per_meter = excluded.price_per_meter, walking_time = excluded.walking_time, '
         'street_name = excluded.street_name, sort_date = excluded.sort_date, is_test = excluded.is_test '
-        'WHERE offers.row_version < $14',
+        'WHERE offers.row_version < $14 RETURNING offers.offer_id',
         FakeDatetime(2020, 2, 10, 9, 57, 30, 303690, tzinfo=pytz.UTC),
         'rent',
         FakeDatetime(2020, 6, 1, 0, 0),
@@ -113,12 +115,13 @@ async def test_save_offer_archive(mocker):
         street_name='AAAAA',
         sort_date=datetime(2020, 2, 7),
     )
+    pg.get().fetchval.return_value = future(True)
 
     # act
     await postgresql.save_offer_archive(offer=offer, event_date=event_date)
 
     # assert
-    pg.get().execute.assert_called_once_with(
+    pg.get().fetchval.assert_called_once_with(
         'INSERT INTO offers (offer_id, master_user_id, user_id, deal_type, offer_type, status_tab, services, '
         'search_text, is_manual, is_in_hidden_base, has_photo, row_version, raw_data, created_at, updated_at, '
         'event_date, total_area, price, price_per_meter, walking_time, street_name, sort_date, is_test) '
@@ -132,7 +135,7 @@ async def test_save_offer_archive(mocker):
         'updated_at = excluded.updated_at, event_date = $12, total_area = excluded.total_area, price = excluded.price, '
         'price_per_meter = excluded.price_per_meter, walking_time = excluded.walking_time, '
         'street_name = excluded.street_name, sort_date = excluded.sort_date, is_test = excluded.is_test '
-        'WHERE offers.event_date < $3',
+        'WHERE offers.event_date < $3 RETURNING offers.offer_id',
         FakeDatetime(2020, 2, 10, 9, 57, 30, 303690, tzinfo=pytz.UTC),
         'rent',
         FakeDatetime(2020, 6, 1, 0, 0),
