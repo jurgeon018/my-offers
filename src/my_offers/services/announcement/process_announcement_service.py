@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import pytz
+from cian_core.statsd import statsd
 from simple_settings import settings
 
 from my_offers import entities
@@ -42,10 +43,10 @@ class AnnouncementProcessor:
             payed_by=payed_by
         )
 
-        await self._save_offer(offer)
-        await self._post_process_offer(offer=offer, object_model=object_model)
+        if await self._save_offer(offer):
+            await self._post_process_offer(offer=offer, object_model=object_model)
 
-    async def _save_offer(self, offer: entities.Offer) -> None:
+    async def _save_offer(self, offer: entities.Offer) -> bool:
         raise NotImplementedError()
 
     def _prepare_offer(
@@ -99,6 +100,7 @@ class AnnouncementProcessor:
             self._update_offer_import_error(object_model),
             similars.update(object_model),
             self._add_to_delete_queue(offer),
+            self._save_stats(offer),
         )
 
     async def _update_offer_import_error(self, object_model: ObjectModel) -> None:
@@ -112,20 +114,31 @@ class AnnouncementProcessor:
                 delete_at=datetime.now(tz=pytz.UTC) + timedelta(days=settings.COUNT_DAYS_HOLD_DELETED_OFFERS)
             )
 
+    async def _save_stats(self, offer: entities.Offer) -> None:
+        statsd.incr('offer.change.{}.{}.{}'.format(
+            offer.status_tab.value,
+            'manual' if offer.is_manual else 'import',
+            'test' if offer.is_test else 'prod',
+        ))
+
 
 class MainAnnouncementProcessor(AnnouncementProcessor):
 
     def __init__(self, event_date: datetime) -> None:
         self._event_date = event_date
 
-    async def _save_offer(self, offer: entities.Offer) -> None:
+    async def _save_offer(self, offer: entities.Offer) -> bool:
         if offer.status_tab.is_archived:
-            await postgresql.save_offer_archive(offer=offer, event_date=self._event_date)
+            result = await postgresql.save_offer_archive(offer=offer, event_date=self._event_date)
         else:
-            await postgresql.save_offer(offer=offer, event_date=self._event_date)
+            result = await postgresql.save_offer(offer=offer, event_date=self._event_date)
+
+        return result
 
 
 class ForceAnnouncementProcessor(AnnouncementProcessor):
 
-    async def _save_offer(self, offer: entities.Offer) -> None:
+    async def _save_offer(self, offer: entities.Offer) -> bool:
         await postgresql.update_offer(offer)
+
+        return True

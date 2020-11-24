@@ -25,7 +25,7 @@ from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
 
 
-async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
+async def save_offer(offer: entities.Offer, event_date: datetime) -> bool:
     """ Сохранить любое объявление, кроме архива. """
     insert_query = insert(tables.offers)
 
@@ -67,12 +67,15 @@ async def save_offer(offer: entities.Offer, event_date: datetime) -> None:
                 'event_date': insert_query.excluded.event_date,
             }
         )
+        .returning(tables.offers.c.offer_id)
     )
 
-    await pg.get().execute(query, *params)
+    new_offer_id = await pg.get().fetchval(query, *params)
+
+    return new_offer_id is not None
 
 
-async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> None:
+async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> bool:
     """ Сохранить архивное объявление.
         Если объявление уже есть в БД, то row_version не обновляем.
 
@@ -117,9 +120,12 @@ async def save_offer_archive(offer: entities.Offer, event_date: datetime) -> Non
                 'event_date': event_date,
             }
         )
+        .returning(tables.offers.c.offer_id)
     )
 
-    await pg.get().execute(query, *params)
+    new_offer_id = await pg.get().fetchval(query, *params)
+
+    return new_offer_id is not None
 
 
 async def update_offer(offer: entities.Offer):
