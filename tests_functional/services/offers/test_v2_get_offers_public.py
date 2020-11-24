@@ -441,7 +441,7 @@ async def test_get_active_offers_payed_by_labels(pg, http):
 
 async def test_get_active_offers_with_relevance_warnings(pg, http):
     # arrange
-    now = datetime(2020, 4, 20, tzinfo=pytz.UTC)
+    now = datetime(2020, 4, 20, 12, tzinfo=pytz.UTC)
 
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar.sql')
     await pg.execute(
@@ -492,7 +492,7 @@ async def test_get_active_offers_with_relevance_warnings(pg, http):
         162729892: {
             'checkId': '11D8C8C2-41B1-4EE5-A2F0-41F4CB22EA1C',
             'warningMessage': (
-                'Допустимый срок публикации истекает 19 апреля 2020 года, затем объявление будет автоматически '
+                'Допустимый срок публикации истекает 20 апреля 2020 года, затем объявление будет автоматически '
                 'снято с публикации. Если объявление актуально, подтвердите это. Если неактуально, вы можете '
                 'перенести его в архив.'
             ),
