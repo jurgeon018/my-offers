@@ -25,17 +25,18 @@ class OfferDuplicateEventProducer:
         return cls.__instance
 
     @classmethod
-    async def produce_new_duplicate_event(
+    async def produce_duplicate_event(
             cls, *,
             offer: ObjectModel,
             duplicate_offer: ObjectModel,
-            transport_type: UserNotificationType
+            transport_type: UserNotificationType,
+            event_type: enums.PushType,
     ) -> None:
         instance = cls._instance()
 
         message = OfferDuplicateEvent(
             user_id=offer.published_user_id,
-            event_type=enums.PushType.push_offer_duplicate,
+            event_type=event_type,
             object_id=offer.id,
             similar_object_id=duplicate_offer.id,
             similar_object_price=duplicate_offer.bargain_terms.price if duplicate_offer.bargain_terms else None,
