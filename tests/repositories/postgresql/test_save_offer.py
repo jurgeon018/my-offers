@@ -40,7 +40,7 @@ async def test_save_offer(mocker):
         street_name='AAAAA',
         sort_date=datetime(2020, 2, 7),
     )
-    pg.get().fetchval.return_value = future(True)
+    pg.get().fetchval.return_value = future(1111)
 
     # act
     await postgresql.save_offer(offer=offer, event_date=event_date)
@@ -115,7 +115,7 @@ async def test_save_offer_archive(mocker):
         street_name='AAAAA',
         sort_date=datetime(2020, 2, 7),
     )
-    pg.get().fetchval.return_value = future(True)
+    pg.get().fetchval.return_value = future(1111)
 
     # act
     await postgresql.save_offer_archive(offer=offer, event_date=event_date)
