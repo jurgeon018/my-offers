@@ -1,5 +1,8 @@
 import logging
 
+from my_offers.enums.notifications import UserNotificationType
+from my_offers.queue.enums import PushType
+from my_offers.queue.kafka_producers import OfferDuplicateEventProducer
 from my_offers.repositories.postgresql.object_model import get_object_model
 from my_offers.repositories.postgresql.offers_duplicates import get_offer_duplicates
 from my_offers.repositories.postgresql.offers_similars import get_offer_similar
@@ -85,4 +88,11 @@ async def send_duplicate_price_changed_notifications(duplicate_offer_id: int) ->
                 duplicate_offer=duplicate_offer,
                 duplicate_similar=duplicate_from_similar,
                 user_id=user_id
+            )
+
+            await OfferDuplicateEventProducer.produce_duplicate_event(
+                offer=offer,
+                duplicate_offer=duplicate_offer,
+                transport_type=UserNotificationType.mobile_push,
+                event_type=PushType.push_price_change_offer_duplicate,
             )
