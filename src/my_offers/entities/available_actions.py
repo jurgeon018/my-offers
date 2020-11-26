@@ -15,6 +15,8 @@ class AvailableActions:
     """Можно ли удалить объялвение"""
     can_raise: bool
     """Можно ли поднять в размещении"""
+    can_raise_without_addform: bool
+    """Можно ли поднять в размещении (через модалку)"""
     can_change_publisher: bool
     """Можно ли сменить владельца объявления"""
     can_view_similar_offers: bool

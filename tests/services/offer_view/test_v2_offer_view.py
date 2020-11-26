@@ -68,6 +68,7 @@ def test_build_offer_view(enrich_data_mock):
             can_move_to_archive=True,
             can_delete=True,
             can_raise=True,
+            can_raise_without_addform=False,
             can_change_publisher=True,
             can_view_similar_offers=True
         ),
@@ -90,6 +91,7 @@ def test_build_offer_view(enrich_data_mock):
     # act
     result = v2_build_offer_view(
         is_master_agent=True,
+        is_sub_agent=False,
         object_model=raw_offer,
         enrich_data=enrich_data_mock
     )
@@ -107,6 +109,7 @@ def test_build_offer_view(enrich_data_mock):
              can_edit=False,
              can_restore=False,
              can_raise=False,
+             can_raise_without_addform=False,
              can_change_publisher=False,
              can_view_similar_offers=False
             ),
@@ -118,6 +121,7 @@ def test_build_offer_view(enrich_data_mock):
              can_move_to_archive=True,
              can_delete=True,
              can_raise=True,
+             can_raise_without_addform=False,
              can_change_publisher=True,
              can_view_similar_offers=True
             ),
@@ -129,6 +133,7 @@ def test_build_offer_view(enrich_data_mock):
              can_move_to_archive=True,
              can_delete=True,
              can_raise=True,
+             can_raise_without_addform=False,
              can_change_publisher=True,
              can_view_similar_offers=True
              )
@@ -182,6 +187,7 @@ def test_build_offer_view_depends_on_payed_by(
     # act
     result = v2_build_offer_view(
         is_master_agent=True,
+        is_sub_agent=False,
         object_model=raw_offer,
         enrich_data=enrich_data_with_offers_payed_by_mock
     )

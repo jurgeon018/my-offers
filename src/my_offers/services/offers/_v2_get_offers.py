@@ -17,6 +17,7 @@ from my_offers.services.offers._get_offers import (
     get_page_info,
     get_pagination,
     is_master_agent_degradation_handler,
+    is_sub_agent_degradation_handler,
 )
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
@@ -92,12 +93,19 @@ async def v2_get_offer_views(
         status_tab=status_tab
     )
 
-    is_master_agent = (await is_master_agent_degradation_handler(user_id)).value
+    (
+        is_master_agent_result,
+        is_sub_agent_result,
+    ) = await asyncio.gather(
+        is_master_agent_degradation_handler(user_id),
+        is_sub_agent_degradation_handler(user_id),
+    )
 
     # подготовка моделей для ответа
     offers = [
         offer_view.v2_build_offer_view(
-            is_master_agent=is_master_agent,
+            is_master_agent=is_master_agent_result.value,
+            is_sub_agent=is_sub_agent_result.value,
             object_model=object_model,
             enrich_data=enrich_data
         )

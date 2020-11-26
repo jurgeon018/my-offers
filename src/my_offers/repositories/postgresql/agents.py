@@ -63,6 +63,16 @@ async def is_master_agent(user_id: int) -> bool:
     return bool(row['result']) if row else False
 
 
+async def is_sub_agent(user_id: int) -> bool:
+    """ Является ли пользователь саб-агентом. """
+    query = 'SELECT 1 as result FROM agents_hierarchy WHERE master_agent_user_id != $1 AND realty_user_id = $1 LIMIT 1'
+    params = [user_id]
+
+    row = await pg.get().fetchrow(query, *params)
+
+    return bool(row['result']) if row else False
+
+
 async def get_agent_names(user_ids: List[int]) -> List[AgentName]:
     query = """
         SELECT
