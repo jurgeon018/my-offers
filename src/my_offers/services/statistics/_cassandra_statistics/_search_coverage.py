@@ -48,7 +48,7 @@ class SearchCoverageCassandraRepository:
             params=[date_from, date_to],
             keys=offers_ids,
             keyspace=self.KEYSPACE,
-            table='counters',
+            table='search_coverage.counters',
         )
         return [
             _search_coverage_counters_row_mapper.map_from(row._asdict())

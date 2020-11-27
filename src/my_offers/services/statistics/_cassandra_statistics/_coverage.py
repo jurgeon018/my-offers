@@ -52,7 +52,7 @@ class CoverageCassandraRepository:
             date_from=date_from,
             date_to=date_to,
             statement=stmts.select_coverage_current,
-            table='coverage_current'
+            table='statistics.coverage_current'
         ))
 
     async def get_offers_coverage_total(
@@ -66,7 +66,7 @@ class CoverageCassandraRepository:
             date_from=date_from,
             date_to=date_to,
             statement=stmts.select_coverage_total,
-            table='coverage_total'
+            table='statistics.coverage_total'
         ))
 
     async def get_offers_coverage_daily(
@@ -80,7 +80,7 @@ class CoverageCassandraRepository:
             date_from=date_from,
             date_to=date_to,
             statement=stmts.select_coverage_daily,
-            table='coverage_daily_v2'
+            table='statistics.coverage_daily_v2'
         ))
 
     async def _get_offers_coverage(

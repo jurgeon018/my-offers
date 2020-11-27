@@ -63,7 +63,7 @@ class TestCassandraSearchCoverageRepository:
             alias='search_coverage',
             params=[date(2018, 1, 1), date(2019, 1, 1)],
             stmt=mocker.sentinel.select_counters,
-            table='counters',
+            table='search_coverage.counters',
             keyspace='search_coverage',
             keys=offers_ids
         )
