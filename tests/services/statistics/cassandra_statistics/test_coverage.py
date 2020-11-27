@@ -24,19 +24,19 @@ def stmts(mocker):
 
 
 @pytest.fixture
-def cassandra_execute(mocker):
+def cassandra_execute_grouped(mocker):
     return mocker.patch(
-        'my_offers.services.statistics._cassandra_statistics._coverage.cassandra_execute',
+        'my_offers.services.statistics._cassandra_statistics._coverage.cassandra_execute_grouped',
         autospec=True
     )
 
 
 class TestCoverageCassandraRepository:
 
-    async def test__get_offers_coverage(self, mocker, cassandra_execute):
+    async def test__get_offers_coverage(self, mocker, cassandra_execute_grouped):
         # arrange
         Row = namedtuple('Row', ['offer_id', 'favorite_added', 'searches_count'])
-        cassandra_execute.return_value = future([
+        cassandra_execute_grouped.return_value = future([
             Row(
                 offer_id=1,
                 favorite_added=10,
@@ -44,13 +44,15 @@ class TestCoverageCassandraRepository:
             )
         ])
         statement = mocker.Mock(spec=PreparedStatement)
-
+        table_name = 'table'
+        offer_ids = [1]
         # act
         result = await CoverageCassandraRepository()._get_offers_coverage(
-            offers_ids=[1],
+            offers_ids=offer_ids,
             date_from=date(2018, 1, 1),
             date_to=date(2019, 1, 2),
             statement=statement,
+            table=table_name
         )
 
         # assert
@@ -61,10 +63,13 @@ class TestCoverageCassandraRepository:
                 searches_count=4,
             ),
         ]
-        cassandra_execute.assert_called_once_with(
+        cassandra_execute_grouped.assert_called_once_with(
             alias='statistics',
+            keyspace='statistics',
+            table=table_name,
+            keys=offer_ids,
             stmt=statement,
-            params=[[1], date(2018, 1, 1), date(2019, 1, 2)],
+            params=[date(2018, 1, 1), date(2019, 1, 2)],
         )
 
     async def test_get_offers_coverage_current(self, mocker, stmts):
@@ -86,6 +91,7 @@ class TestCoverageCassandraRepository:
             date_from=date(2018, 1, 1),
             date_to=date(2019, 1, 2),
             statement=stmts.select_coverage_current,
+            table='coverage_current'
         )
 
     async def test_get_offers_coverage_daily(self, mocker, stmts):
@@ -107,6 +113,7 @@ class TestCoverageCassandraRepository:
             date_from=date(2018, 1, 1),
             date_to=date(2019, 1, 2),
             statement=stmts.select_coverage_daily,
+            table='coverage_daily_v2'
         )
 
     async def test_get_offers_coverage_total(self, mocker, stmts):
@@ -128,4 +135,5 @@ class TestCoverageCassandraRepository:
             date_from=date(2018, 1, 1),
             date_to=date(2019, 1, 2),
             statement=stmts.select_coverage_total,
+            table='coverage_total'
         )
