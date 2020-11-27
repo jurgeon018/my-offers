@@ -91,7 +91,7 @@ class TestCoverageCassandraRepository:
             date_from=date(2018, 1, 1),
             date_to=date(2019, 1, 2),
             statement=stmts.select_coverage_current,
-            table='statistics.coverage_current'
+            table='coverage_current'
         )
 
     async def test_get_offers_coverage_daily(self, mocker, stmts):
@@ -113,7 +113,7 @@ class TestCoverageCassandraRepository:
             date_from=date(2018, 1, 1),
             date_to=date(2019, 1, 2),
             statement=stmts.select_coverage_daily,
-            table='statistics.coverage_daily_v2'
+            table='coverage_daily_v2'
         )
 
     async def test_get_offers_coverage_total(self, mocker, stmts):
@@ -135,5 +135,5 @@ class TestCoverageCassandraRepository:
             date_from=date(2018, 1, 1),
             date_to=date(2019, 1, 2),
             statement=stmts.select_coverage_total,
-            table='statistics.coverage_total'
+            table='coverage_total'
         )
