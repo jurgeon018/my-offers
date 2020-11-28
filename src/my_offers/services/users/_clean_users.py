@@ -6,8 +6,8 @@ from ._delete_user_data import delete_user_data
 
 async def clean_users() -> None:
     while user_ids := await postgresql.get_user_reindex_ids():
-        users = await v1_get_users(UserIdsRequest(user_ids=user_ids))
-        exist_user_ids = {user.id for user in users}
+        response = await v1_get_users(UserIdsRequest(user_ids=user_ids))
+        exist_user_ids = {user.id for user in response.users}
 
         to_delete_user_ids = set(user_ids) - exist_user_ids
         for user_id in to_delete_user_ids:

@@ -31,7 +31,7 @@ async def get_user_reindex_ids(limit: int = 100) -> List[int]:
 
     rows = await pg.get().fetch(query, limit)
 
-    return [row['id'] for row in rows]
+    return [row['user_id'] for row in rows]
 
 
 async def delete_user_reindex_items(user_ids: List[int]) -> None:

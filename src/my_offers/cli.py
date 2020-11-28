@@ -234,4 +234,5 @@ def clean_users_command() -> None:
     Удаляет пользователей и объявления если не найдет их в МКС users"
     Предварительно надо сохранить id пользователей в таблицу users_reindex_queue
     """
-    IOLoop.current().run_sync(clean_users)
+    with new_operation_id():
+        IOLoop.current().run_sync(clean_users)
