@@ -15,6 +15,7 @@ from my_offers.services import realty_resender
 from my_offers.services.duplicates import sync_offer_duplicates
 from my_offers.services.offers import reindex_offers_command, reindex_offers_master_and_payed_by_command
 from my_offers.services.offers.delete_offers import delete_offers_data
+from my_offers.services.users import clean_users
 from my_offers.web.urls import urlpatterns
 
 
@@ -227,6 +228,10 @@ def reindex_offers_master_and_payed_by() -> None:
         io_loop.run_sync(reindex_offers_master_and_payed_by_command)
 
 
-@cli.command
+@cli.command()
 def clean_users_command() -> None:
-    """Удаляет пользователей и объявления если не найдет их в МКС users"""
+    """
+    Удаляет пользователей и объявления если не найдет их в МКС users"
+    Предварительно надо сохранить id пользователей в таблицу users_reindex_queue
+    """
+    IOLoop.current().run_sync(clean_users)

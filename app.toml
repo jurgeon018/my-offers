@@ -155,3 +155,7 @@ command = "reindex-offers-master-and-payed-by"
 type = "consumer"
 command = "clear-deleted-offer-cron"
 memory = 128
+
+[job.clean_users]
+type = "manage"
+command = "clean-users-command"

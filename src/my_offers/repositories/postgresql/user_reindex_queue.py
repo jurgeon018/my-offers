@@ -3,7 +3,7 @@ from typing import List
 from my_offers import pg
 
 
-async def get_reindex_items(limit: int = 100) -> List[int]:
+async def get_user_reindex_ids(limit: int = 100) -> List[int]:
     query = """
     with user_ids as (
         select
@@ -34,6 +34,6 @@ async def get_reindex_items(limit: int = 100) -> List[int]:
     return [row['id'] for row in rows]
 
 
-async def delete_reindex_items(user_ids: List[int]) -> None:
+async def delete_user_reindex_items(user_ids: List[int]) -> None:
     query = 'DELETE FROM users_reindex_queue WHERE user_id = ANY($1::BIGINT[])'
     await pg.get().execute(query, user_ids)
