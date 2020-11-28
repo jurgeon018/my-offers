@@ -225,3 +225,8 @@ def reindex_offers_master_and_payed_by() -> None:
     with new_operation_id():
         io_loop = IOLoop.current()
         io_loop.run_sync(reindex_offers_master_and_payed_by_command)
+
+
+@cli.command
+def clean_users_command() -> None:
+    """Удаляет пользователей и объявления если не найдет их в МКС users"""
