@@ -45,7 +45,7 @@ command = "process_announcement_consumer"
 [job.process_announcement_consumer.prod]
 type = "consumer"
 command = "process_announcement_consumer"
-instances = 5
+instances = 10
 cpu = 2048
 memory = 128
 
