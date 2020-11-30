@@ -156,6 +156,11 @@ type = "consumer"
 command = "clear-deleted-offer-cron"
 memory = 128
 
+[job.delete_user_data_queue_consumer]
+type = "consumer"
+command = "delete_user_data_queue_consumer"
+memory = 128
+
 [job.clean_users]
 type = "manage"
 command = "clean-users-command"
