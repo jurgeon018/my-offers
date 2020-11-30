@@ -1,5 +1,6 @@
 import pytest
 
+from my_offers.entities import AgentHierarchyData
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.get_offers import ActiveInfo, GetOfferV2, PageSpecificInfo, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
@@ -87,11 +88,14 @@ def test_build_offer_view(enrich_data_mock):
         status_type=None,
         payed_by=None
     )
+    agent_hierarchy_data = AgentHierarchyData(
+        is_master_agent=True,
+        is_sub_agent=False,
+    )
 
     # act
     result = v2_build_offer_view(
-        is_master_agent=True,
-        is_sub_agent=False,
+        agent_hierarchy_data=agent_hierarchy_data,
         object_model=raw_offer,
         enrich_data=enrich_data_mock
     )
@@ -183,11 +187,14 @@ def test_build_offer_view_depends_on_payed_by(
         status_type=None,
         payed_by=enrich_data_with_offers_payed_by_mock.offers_payed_by.get(offer_id_from_mock)
     )
+    agent_hierarchy_data = AgentHierarchyData(
+        is_master_agent=True,
+        is_sub_agent=False,
+    )
 
     # act
     result = v2_build_offer_view(
-        is_master_agent=True,
-        is_sub_agent=False,
+        agent_hierarchy_data=agent_hierarchy_data,
         object_model=raw_offer,
         enrich_data=enrich_data_with_offers_payed_by_mock
     )

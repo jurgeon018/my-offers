@@ -1,5 +1,6 @@
 import pytest
 
+from my_offers.entities import AgentHierarchyData
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.enums import OfferPayedByType
 from my_offers.helpers import get_available_actions
@@ -139,10 +140,10 @@ def test_get_available_actions(is_master_agent, is_archived, is_manual,
             display_all_agency_offers=True,
         ),
         is_in_hidden_base=False,
-        is_master_agent=is_master_agent,
-        is_sub_agent=False,
-        user_id=0,
-        published_user_id=0,
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=is_master_agent,
+            is_sub_agent=False,
+        ),
         force_raise=False,
         payed_by=payed_by
     )
@@ -183,10 +184,10 @@ def test_get_available_actions_for_agent_offer_payed_by_agent(is_master_agent, i
             display_all_agency_offers=True,
         ),
         is_in_hidden_base=False,
-        is_master_agent=is_master_agent,
-        is_sub_agent=False,
-        user_id=0,
-        published_user_id=0,
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=is_master_agent,
+            is_sub_agent=False,
+        ),
         force_raise=False,
         payed_by=payed_by
     )
@@ -208,6 +209,10 @@ def test_get_available_actions__no_settings__actions():
         can_change_publisher=False,
         can_view_similar_offers=False
     )
+    agent_hierarchy_data = AgentHierarchyData(
+        is_master_agent=False,
+        is_sub_agent=False,
+    )
 
     # act
     result = get_available_actions(
@@ -217,10 +222,7 @@ def test_get_available_actions__no_settings__actions():
         can_update_edit_date=False,
         agency_settings=None,
         is_in_hidden_base=False,
-        is_master_agent=False,
-        is_sub_agent=False,
-        user_id=0,
-        published_user_id=0,
+        agent_hierarchy_data=agent_hierarchy_data,
         force_raise=False
     )
 

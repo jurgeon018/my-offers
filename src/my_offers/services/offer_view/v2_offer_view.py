@@ -1,4 +1,4 @@
-from my_offers.entities import get_offers
+from my_offers.entities import AgentHierarchyData, get_offers
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import (
@@ -22,8 +22,7 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 def v2_build_offer_view(
         *,
-        is_master_agent: bool,
-        is_sub_agent: bool,
+        agent_hierarchy_data: AgentHierarchyData,
         object_model: ObjectModel,
         enrich_data: EnrichData,
 ) -> get_offers.GetOfferV2:
@@ -89,10 +88,7 @@ def v2_build_offer_view(
             can_update_edit_date=enrich_data.can_update_edit_dates.get(realty_offer_id, False),
             agency_settings=enrich_data.agency_settings,
             is_in_hidden_base=object_model.is_in_hidden_base,
-            is_master_agent=is_master_agent,
-            is_sub_agent=is_sub_agent,
-            user_id=object_model.user_id,
-            published_user_id=object_model.published_user_id,
+            agent_hierarchy_data=agent_hierarchy_data,
             force_raise=force_raise,
             can_view_similar_offers=is_offer_for_similar(
                 status=object_model.status,

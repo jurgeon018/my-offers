@@ -2,7 +2,6 @@ from my_offers.repositories.postgresql.agents import (
     delete_agents_hierarchy,
     get_agent_by_user_id,
     get_master_user_id,
-    is_master_agent,
     save_agent,
 )
 from my_offers.repositories.postgresql.billing import save_offer_contract, set_offer_contract_is_deleted_status

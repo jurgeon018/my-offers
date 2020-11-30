@@ -3,6 +3,7 @@ from typing import Optional
 from simple_settings import settings
 
 from my_offers import entities
+from my_offers.entities import AgentHierarchyData
 from my_offers.enums import OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
@@ -30,10 +31,7 @@ def get_available_actions(
         can_update_edit_date: bool,
         agency_settings: Optional[AgencySettings],
         is_in_hidden_base: Optional[bool],
-        is_master_agent: bool,
-        is_sub_agent: bool,
-        user_id: Optional[int],
-        published_user_id: Optional[int],
+        agent_hierarchy_data: AgentHierarchyData,
         force_raise: bool = False,
         can_view_similar_offers: bool = False,
         payed_by: Optional[OfferPayedByType] = None
@@ -56,7 +54,7 @@ def get_available_actions(
     if not status:
         status = Status.deleted
 
-    if is_master_agent and payed_by == OfferPayedByType.by_agent:
+    if agent_hierarchy_data.is_master_agent and payed_by == OfferPayedByType.by_agent:
         return entities.AvailableActions(
             can_edit=False,
             can_raise=False,
@@ -75,11 +73,7 @@ def get_available_actions(
             can_edit=not is_archived and can_edit,
             can_raise=not is_archived and status.is_published and can_edit,
             can_raise_without_addform=_can_raise_without_addform(
-                is_master_agent=is_master_agent,
-                is_sub_agent=is_sub_agent,
-                user_id=user_id,
-                published_user_id=published_user_id,
-                is_manual=is_manual,
+                agent_hierarchy_data=agent_hierarchy_data,
                 force_raise=force_raise,
                 is_archived=is_archived,
                 is_published=status.is_published,
@@ -103,11 +97,7 @@ def get_available_actions(
             is_in_hidden_base=is_in_hidden_base
         ),
         can_raise_without_addform=_can_raise_without_addform(
-            is_master_agent=is_master_agent,
-            is_sub_agent=is_sub_agent,
-            user_id=user_id,
-            published_user_id=published_user_id,
-            is_manual=is_manual,
+            agent_hierarchy_data=agent_hierarchy_data,
             force_raise=force_raise,
             is_archived=is_archived,
             is_published=status.is_published,
@@ -121,7 +111,7 @@ def get_available_actions(
         ),
         can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
-        can_change_publisher=is_master_agent and status in CAN_CHANGE_PUBLISHER,
+        can_change_publisher=agent_hierarchy_data.is_master_agent and status in CAN_CHANGE_PUBLISHER,
         can_view_similar_offers=can_view_similar_offers
     )
 
@@ -154,11 +144,7 @@ def _can_raise(*, is_archived: bool, is_published: bool, is_in_hidden_base: Opti
 
 def _can_raise_without_addform(
         *,
-        is_master_agent: bool,
-        is_sub_agent: bool,
-        user_id: Optional[int],
-        published_user_id: Optional[int],
-        is_manual: bool,
+        agent_hierarchy_data: AgentHierarchyData,
         is_archived: bool,
         is_published: bool,
         is_in_hidden_base: Optional[bool],
@@ -166,42 +152,28 @@ def _can_raise_without_addform(
 ) -> bool:
     can_raise_settings = settings.CAN_RAISE_WITHOUT_ADDFORM or []
 
-    is_my_offer = user_id == published_user_id
-    is_offer_from_agency = not is_my_offer
-    is_xml = not is_manual
+    if agent_hierarchy_data.is_master_agent and 'master_agent' in can_raise_settings:
+        return _can_raise(
+            is_archived=is_archived,
+            is_published=is_published,
+            is_in_hidden_base=is_in_hidden_base,
+            force_raise=force_raise,
+        )
 
-    if is_master_agent and 'master_agent' in can_raise_settings:
-        if any([
-            is_manual and is_my_offer,
-            is_xml and is_my_offer,
-            is_xml and is_offer_from_agency,
-        ]):
-            return _can_raise(
-                is_archived=is_archived,
-                is_published=is_published,
-                is_in_hidden_base=is_in_hidden_base,
-                force_raise=force_raise,
-            )
+    if agent_hierarchy_data.is_sub_agent and 'sub_agent' in can_raise_settings:
+        return _can_raise(
+            is_archived=is_archived,
+            is_published=is_published,
+            is_in_hidden_base=is_in_hidden_base,
+            force_raise=force_raise,
+        )
 
-    if is_sub_agent and 'sub_agent' in can_raise_settings:
-        if any([
-            is_manual and is_my_offer,
-            is_xml and is_offer_from_agency,
-        ]):
-            return _can_raise(
-                is_archived=is_archived,
-                is_published=is_published,
-                is_in_hidden_base=is_in_hidden_base,
-                force_raise=force_raise,
-            )
-
-    if 'regular_user' in can_raise_settings:
-        if is_my_offer:
-            return _can_raise(
-                is_archived=is_archived,
-                is_published=is_published,
-                is_in_hidden_base=is_in_hidden_base,
-                force_raise=force_raise,
-            )
+    if agent_hierarchy_data.is_agent and 'agent' in can_raise_settings:
+        return _can_raise(
+            is_archived=is_archived,
+            is_published=is_published,
+            is_in_hidden_base=is_in_hidden_base,
+            force_raise=force_raise,
+        )
 
     return False
