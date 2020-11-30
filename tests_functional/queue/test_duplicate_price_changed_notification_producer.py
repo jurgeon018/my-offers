@@ -100,7 +100,7 @@ async def test_duplicate_price_changed_producer__is_not_duplicate__no_message(
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2', timeout=15)
     await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
-    await asyncio.sleep(3)
+    await asyncio.sleep(1)
 
     # assert
     messages = await duplicate_queue.get_messages()
@@ -151,7 +151,7 @@ async def test_duplicate_price_changed_producer__price_didnot_change__no_message
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2', timeout=15)
     await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
-    await asyncio.sleep(3)
+    await asyncio.sleep(1)
 
     # assert
     messages = await duplicate_queue.get_messages()
@@ -200,7 +200,7 @@ async def test_duplicate_price_changed_producer__rs_off__no_message(queue_servic
     # act
     await queue_service.wait_consumer('my-offers.process_announcement_v2', timeout=15)
     await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
-    await asyncio.sleep(3)
+    await asyncio.sleep(1)
 
     # assert
     messages = await duplicate_queue.get_messages()

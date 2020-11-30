@@ -45,7 +45,7 @@ command = "process_announcement_consumer"
 [job.process_announcement_consumer.prod]
 type = "consumer"
 command = "process_announcement_consumer"
-instances = 5
+instances = 10
 cpu = 2048
 memory = 128
 
@@ -155,3 +155,12 @@ command = "reindex-offers-master-and-payed-by"
 type = "consumer"
 command = "clear-deleted-offer-cron"
 memory = 128
+
+[job.delete_user_data_queue_consumer]
+type = "consumer"
+command = "delete_user_data_queue_consumer"
+memory = 128
+
+[job.clean_users]
+type = "manage"
+command = "clean-users-command"

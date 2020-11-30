@@ -1,0 +1,73 @@
+definitions:
+  WebApi.Models.GetUsersResponse:
+    description: Список  моделей пользователей
+    properties:
+      users:
+        description: Модели пользователей
+        items: {$ref: '#/definitions/WebApi.Models.UserModel'}
+        type: array
+    required: [users]
+    type: object
+  WebApi.Models.UserIdsRequest:
+    description: Модель запроса по Realty ID пользователей
+    properties:
+      userIds:
+        description: Список Realty ID пользователей
+        items: {format: int64, type: integer}
+        type: array
+    type: object
+  WebApi.Models.UserModel:
+    description: Пользователь
+    properties:
+      birthday: {description: Дата рождения, format: date-time, type: string}
+      cianUserId: {description: CianId, format: int64, type: integer}
+      city: {description: Город из социальной сети, type: string}
+      creationDate: {description: Дата создания пользователя, format: date-time, type: string}
+      email: {description: Email, type: string}
+      firstName: {description: Имя, type: string}
+      id: {description: Id, format: int64, type: integer}
+      ip: {description: Ip пользователя, format: int64, type: integer}
+      lastName: {description: Фамилия, type: string}
+      mainAnnouncementsRegionId: {description: Основной регион работы, format: int32,
+        type: integer}
+      secretCode: {description: Секретный код, type: string}
+      state:
+        description: Состояние пользователя
+        enum: [active, blocked, deleted]
+        type: string
+        x-active: Аткивный
+        x-blocked: Заблокирован
+        x-deleted: Удалён
+      stateChangeReason:
+        description: Статус смены состояния
+        enum: [ApplySanction, SubAgent, RemoveSanction, UnBlockedByMasterAgent, blockedBeforeRemove]
+        type: string
+        x-ApplySanction: Блокировка из-за санкции
+        x-RemoveSanction: Снятие санкции
+        x-SubAgent: Блокировка мастер-агентом
+        x-UnBlockedByMasterAgent: Снятие блокировки мастер-агентом
+        x-blockedBeforeRemove: Блокировка перед удалением
+      userName: {description: Имя пользователя, type: string}
+    type: object
+host: master.users.dev3.cian.ru
+info: {title: users, version: v1}
+paths:
+  /v1/get-users/:
+    post:
+      consumes: [application/json-patch+json, application/json, text/json, application/*+json]
+      parameters:
+      - in: body
+        name: body
+        schema: {$ref: '#/definitions/WebApi.Models.UserIdsRequest'}
+      produces: [application/msgpack, text/plain, application/json, text/json]
+      responses:
+        '200':
+          description: Success
+          schema: {$ref: '#/definitions/WebApi.Models.GetUsersResponse'}
+      summary: Возвращает пользователей
+      tags: [Users]
+schemes: [http]
+swagger: '2.0'
+x-cian-mq:
+  exchanges: {}
+  spec-version: '1.0'
