@@ -82,3 +82,8 @@ async def monolith_cian_realty_mock(http_mock_service):
 @pytest.fixture(scope='session')
 async def emails_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('emails')
+
+
+@pytest.fixture(scope='session')
+async def users_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('users')
