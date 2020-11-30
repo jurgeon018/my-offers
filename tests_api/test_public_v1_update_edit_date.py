@@ -23,7 +23,7 @@ class TestPublicV1GetOffers(MyOffersHelper):
         offer = self.create_offer(sl, user_id=user.userId)
 
         # ждем появления оффера в my-offers
-        time.sleep(10)
+        time.sleep(4)
 
         # act
         with context.x_real_user(user_id=user.userId):
@@ -41,7 +41,7 @@ class TestPublicV1GetOffers(MyOffersHelper):
         offer = self.create_offer(sl, user_id=user.userId)
 
         # ждем появления оффера в my-offers
-        time.sleep(10)
+        time.sleep(4)
 
         # act
         with pytest.raises(HTTPError) as error, context.x_real_user(user_id=1):

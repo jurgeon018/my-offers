@@ -6,7 +6,7 @@ from cassandra.query import PreparedStatement  # pylint: disable=no-name-in-modu
 from cian_cassandra.statement import CassandraStatement
 from cian_entities import EntityMapper
 
-from .._helpers import cassandra_execute
+from .._helpers import cassandra_execute_grouped
 
 
 _query_template = """
@@ -52,6 +52,7 @@ class CoverageCassandraRepository:
             date_from=date_from,
             date_to=date_to,
             statement=stmts.select_coverage_current,
+            table='coverage_current'
         ))
 
     async def get_offers_coverage_total(
@@ -65,6 +66,7 @@ class CoverageCassandraRepository:
             date_from=date_from,
             date_to=date_to,
             statement=stmts.select_coverage_total,
+            table='coverage_total'
         ))
 
     async def get_offers_coverage_daily(
@@ -78,6 +80,7 @@ class CoverageCassandraRepository:
             date_from=date_from,
             date_to=date_to,
             statement=stmts.select_coverage_daily,
+            table='coverage_daily_v2'
         ))
 
     async def _get_offers_coverage(
@@ -86,12 +89,17 @@ class CoverageCassandraRepository:
             date_from: date,
             date_to: date,
             statement: PreparedStatement,
+            table: str,
     ) -> List[StatisticsCoverageRow]:
-        rows = await cassandra_execute(
+        rows = await cassandra_execute_grouped(
             alias=self.KEYSPACE,
+            keyspace=self.KEYSPACE,
             stmt=statement,
-            params=[offers_ids, date_from, date_to],
+            table=table,
+            keys=offers_ids,
+            params=[date_from, date_to]
         )
+
         return [
             _search_coverage_mapper.map_from(row._asdict())
             for row in rows
