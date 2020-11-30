@@ -5,7 +5,7 @@ from typing import List
 from cian_cassandra.statement import CassandraStatement
 from cian_entities import EntityMapper
 
-from .._helpers import cassandra_execute
+from .._helpers import cassandra_execute_grouped
 
 
 stmts = CassandraStatement('search_coverage')
@@ -42,10 +42,13 @@ class SearchCoverageCassandraRepository:
             date_from: date,
             date_to: date,
     ) -> List[SearchCoverageCountersRow]:
-        rows = await cassandra_execute(
+        rows = await cassandra_execute_grouped(
             alias=self.KEYSPACE,
             stmt=stmts.select_counters,
-            params=[offers_ids, date_from, date_to],
+            params=[date_from, date_to],
+            keys=offers_ids,
+            keyspace=self.KEYSPACE,
+            table='counters',
         )
         return [
             _search_coverage_counters_row_mapper.map_from(row._asdict())
