@@ -55,3 +55,4 @@ from my_offers.repositories.postgresql.offers_similars import (
     get_similars_by_offer_id,
     get_similars_counters_by_offer_ids,
 )
+from my_offers.repositories.postgresql.user_reindex_queue import delete_user_reindex_items, get_user_reindex_ids
