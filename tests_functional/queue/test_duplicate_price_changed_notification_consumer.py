@@ -51,11 +51,6 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
         path='/v2/register-notifications/',
         response=MockResponse(),
     )
-    ab_use_mock_stub = await ab_use_mock.add_stub(
-        method='GET',
-        path='/v1/get-experiment/',
-        response=MockResponse(body={'groupName': 'experiment'}),
-    )
 
     message = {
         'duplicateOfferId': 231655140,
@@ -70,13 +65,6 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
     await asyncio.sleep(1)
 
     # assert
-    request_ab = await ab_use_mock_stub.get_request()
-    assert request_ab.params == {
-        'platform': 'backend',
-        'experimentName': 'duplicate_price_сhanged_mobile_push',
-        'userId': '6808488'
-    }
-
     request_notification = await notification_center_stub.get_request()
     assert request_notification.data == {
         'notifications': [
@@ -123,12 +111,6 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
         VALUES
             (231655140, 231655140, NULL , 341, 1350000.0, 2, 'sale', \'2020-05-09\', 2000000.0)
         """)
-
-    await ab_use_mock.add_stub(
-        method='GET',
-        path='/v1/get-experiment/',
-        response=MockResponse(body={'groupName': 'control'}),
-    )
 
     await notification_center_mock.add_stub(
         method='POST',
@@ -186,7 +168,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
                 'notificationType': 'duplicatePriceChanged',
                 'plannedSendDatetime': None,
                 'text': 'Тульская область, Тула, проспект Ленина, 130',
-                'title': 'Цена на дубль снижена',
+                'title': 'Цена на дубль снижена до\xa01\xa0350\xa0000\xa0₽',
                 'transportsToSend': ['mobilePush'],
                 'userId': '6808488',
                 'webPushPayload': None,
