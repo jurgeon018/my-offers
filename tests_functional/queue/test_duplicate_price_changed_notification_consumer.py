@@ -10,7 +10,6 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
         pg,
         kafka_service,
         notification_center_mock,
-        ab_use_mock,
 ):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
@@ -96,7 +95,6 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
         pg,
         kafka_service,
         notification_center_mock,
-        ab_use_mock,
 ):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
