@@ -13,7 +13,6 @@ from my_offers.repositories.notification_center.entities.register_notification_v
     NotificationType,
     TransportsToSend,
 )
-from my_offers.services.experiments.get_ab_group import get_duplicate_price_changed_ab_group
 from my_offers.services.notifications.push_enabled import is_mobile_push_enabled
 from my_offers.services.offer_view import fields
 from my_offers.services.offer_view.fields.geo import get_address_for_push
@@ -44,10 +43,7 @@ async def send_duplicate_price_changed_mobile_push(
                         'priceChangeButtonText': 'Изменить мою цену'
                     },
                     text=get_address_for_push(offer.geo),
-                    title=await get_title(
-                        duplicate_similar=duplicate_similar,
-                        user_id=user_id
-                    ),
+                    title=get_title(duplicate_similar=duplicate_similar),
                     web_url=fields.get_offer_url(
                         cian_offer_id=duplicate_offer.cian_id,
                         offer_type=offer_type,
@@ -60,16 +56,12 @@ async def send_duplicate_price_changed_mobile_push(
         )
 
 
-async def get_title(*, duplicate_similar: OfferSimilar, user_id: int) -> str:
+def get_title(*, duplicate_similar: OfferSimilar) -> str:
     title = ''
     if duplicate_similar.price > duplicate_similar.old_price:
         title += 'Цена на дубль увеличена'
     else:
         title += 'Цена на дубль снижена'
-
-    ab_group = await get_duplicate_price_changed_ab_group(user_id=user_id)
-    if ab_group.is_experiment:
-        price_str = f' до\xa0{get_pretty_number(duplicate_similar.price)}\xa0₽'
-        title += price_str
+    title += f' до\xa0{get_pretty_number(duplicate_similar.price)}\xa0₽'
 
     return title
