@@ -50,15 +50,33 @@ from my_offers.services.offer_relevance_warnings import save_offer_relevance_war
     (
         OfferRelevanceWarningMessage(
             realty_object_id=222,
-            guid='CF576B6A-4A04-423D-A232-C21C73A9FE87',
+            guid='13be94c4-e09b-4353-bcd9-f815fdae2d6f',
+            decline_date=datetime(2020, 4, 27, tzinfo=pytz.UTC),
+            check_status_id=OfferRelevanceCheckStatusId.relevance_confirmation_required.value,
+            relevance_type_message=OfferRelevanceTypeMessage.without_message.value,
+            date=datetime(2020, 4, 20, tzinfo=pytz.UTC),
+        ),
+        OfferRelevanceWarning(
+            offer_id=222,
+            check_id='13be94c4-e09b-4353-bcd9-f815fdae2d6f',
+            due_date=datetime(2020, 4, 27, tzinfo=pytz.UTC),
+            active=False,
+            created_at=datetime(2020, 4, 20, tzinfo=pytz.UTC),
+            updated_at=datetime(2020, 4, 20, tzinfo=pytz.UTC),
+        ),
+    ),
+    (
+        OfferRelevanceWarningMessage(
+            realty_object_id=444,
+            guid='6dc9e71b-de29-4158-a1d7-3a4e2e3693b9',
             decline_date=None,
             check_status_id='other',
             relevance_type_message='other',
             date=datetime(2020, 4, 20, tzinfo=pytz.UTC),
         ),
         OfferRelevanceWarning(
-            offer_id=222,
-            check_id='CF576B6A-4A04-423D-A232-C21C73A9FE87',
+            offer_id=444,
+            check_id='6dc9e71b-de29-4158-a1d7-3a4e2e3693b9',
             due_date=None,
             active=False,
             created_at=datetime(2020, 4, 20, tzinfo=pytz.UTC),

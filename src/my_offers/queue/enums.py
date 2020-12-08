@@ -16,3 +16,5 @@ class OfferRelevanceCheckStatusId(StrEnum):
 class OfferRelevanceTypeMessage(StrEnum):
     warning_only = 'warning_only'
     """Плашка без даты отклонения"""
+    without_message = 'without_message'
+    """Без плашки"""
