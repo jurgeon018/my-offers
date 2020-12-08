@@ -2,7 +2,7 @@ import pytest
 from cian_test_utils import v
 from simple_settings.utils import settings_stub
 
-from my_offers.helpers.title import _get_floors, get_offer_title, rename_coworking_office
+from my_offers.helpers.title import _get_floors, get_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     BargainTerms,
     Building,
@@ -98,7 +98,7 @@ def test__get_floors(floor_number, floors_count, expected):
                 building=v(Building(floors_count=19)),
                 coworking_offer_type=CoworkingOfferType.office,
             )),
-            'Гибкий офис 100\xa0м² на 10 чел., 1/19 этаж'
+            'Отдельный офис 100\xa0м² на 10 чел., 1/19 этаж'
         ),
         (
             v(ObjectModel(
@@ -111,7 +111,7 @@ def test__get_floors(floor_number, floors_count, expected):
                 workplace_count=None,
                 coworking_offer_type=CoworkingOfferType.office,
             )),
-            'Гибкий офис 100\xa0м²'
+            'Отдельный офис 100\xa0м²'
         ),
     )
 )
@@ -121,16 +121,3 @@ def test_get_title(object_model, expected):
 
     # assert
     assert result == expected
-
-
-@pytest.mark.parametrize(
-    'rename, expected',
-    (
-            (True, 'String-2'),
-            (False, 'String-1'),
-    )
-)
-def test_rename(rename: bool, expected: str):
-    # act & assert
-    with settings_stub(RENAME_COWORKING_OFFICE=rename):
-        assert rename_coworking_office('String-1', 'String-2') == expected
