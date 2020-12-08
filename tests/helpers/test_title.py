@@ -1,6 +1,5 @@
 import pytest
 from cian_test_utils import v
-from simple_settings.utils import settings_stub
 
 from my_offers.helpers.title import _get_floors, get_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
