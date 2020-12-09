@@ -1,7 +1,5 @@
 from typing import List, Optional
 
-from simple_settings import settings
-
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.agent_bonus import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
@@ -81,10 +79,6 @@ OFFER_TITLES = {
 }
 
 
-def rename_coworking_office(default_value: str, renamed_value: str) -> str:
-    return renamed_value if settings.RENAME_COWORKING_OFFICE else default_value
-
-
 def get_properties(object_model: ObjectModel) -> List[str]:
     min_area = object_model.min_area and int(object_model.min_area)
     total_area = object_model.total_area and int(object_model.total_area)
@@ -102,8 +96,7 @@ def get_properties(object_model: ObjectModel) -> List[str]:
     is_coworking_office = object_model.coworking_offer_type and object_model.coworking_offer_type.is_office
     if is_coworking_office:
         workplaces = f'на {object_model.workplace_count} чел.' if object_model.workplace_count else None
-        office = rename_coworking_office('Гибкий офис', 'Отдельный офис')
-        title = ' '.join(filter(None, (office, area, workplaces)))
+        title = ' '.join(filter(None, ('Отдельный офис', area, workplaces)))
         area = None  # чтобы еще раз не добавлять площадь
     elif title := OFFER_TITLES.get(category):
         if object_model.can_parts and total_area and min_area:
