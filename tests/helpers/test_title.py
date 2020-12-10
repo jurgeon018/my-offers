@@ -1,7 +1,12 @@
 import pytest
 from cian_test_utils import v
 
-from my_offers.helpers.title import _get_floors, get_offer_title
+from my_offers.helpers.title import (
+    _get_floors,
+    get_offer_title,
+    get_workplace_title,
+    get_properties,
+)
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     BargainTerms,
     Building,
@@ -120,3 +125,72 @@ def test_get_title(object_model, expected):
 
     # assert
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    'coworking_offer_type, floor_number, floor_from, floor_to, expected',
+    (
+            (CoworkingOfferType.fixed_workplace, 12, None, None, ('10 закреплённых рабочих мест', 12)),
+            (CoworkingOfferType.flexible_workplace, 12, None, None, ('10 незакреплённых рабочих мест', 12)),
+            (CoworkingOfferType.fixed_workplace, None, None, None, ('10 закреплённых рабочих мест', None)),
+            (CoworkingOfferType.flexible_workplace, None, None, None, ('10 незакреплённых рабочих мест', None)),
+            (CoworkingOfferType.fixed_workplace, None, 1, 5, ('10 закреплённых рабочих мест', '1-5')),
+            (CoworkingOfferType.flexible_workplace, None, 1, 5, ('10 незакреплённых рабочих мест', '1-5')),
+    )
+)
+def test_workplace_title(coworking_offer_type, floor_number, floor_to, floor_from, expected):
+    """Проверка возвращаемого title и floor_number, для fixed/flex workplace объялений."""
+    # arrange
+    object_model = v(ObjectModel(
+        id=111,
+        bargain_terms=BargainTerms(price=123.0),
+        category=Category.office_rent,
+        phones=[Phone(country_code='1', number='12312')],
+        user_id=222,
+        total_area=100.0,
+        workplace_count=10,
+        floor_number=1,
+        building=v(Building(floors_count=19)),
+        coworking_offer_type=coworking_offer_type,
+        floor_to=floor_to,
+        floor_from=floor_from,
+    ))
+    # act & assert
+    assert get_workplace_title(object_model=object_model, floor_number=floor_number) == expected
+
+
+@pytest.mark.parametrize(
+    'coworking_offer_type, floor_from, floor_to, expected',
+    (
+            (
+                    CoworkingOfferType.fixed_workplace,
+                    1,
+                    6,
+                    ['10 закреплённых рабочих мест', '100\xa0м²', '1-6/19\xa0этаж']
+            ),
+            (
+                    CoworkingOfferType.flexible_workplace,
+                    1,
+                    6,
+                    ['10 незакреплённых рабочих мест', '100\xa0м²', '1-6/19\xa0этаж']
+            ),
+    )
+)
+def test_get_properties_with_workplace_title(coworking_offer_type, floor_to, floor_from, expected):
+    # arrange
+    object_model = v(ObjectModel(
+        id=111,
+        bargain_terms=BargainTerms(price=123.0),
+        category=Category.office_rent,
+        phones=[Phone(country_code='1', number='12312')],
+        user_id=222,
+        total_area=100.0,
+        workplace_count=10,
+        floor_number=None,
+        building=v(Building(floors_count=19)),
+        coworking_offer_type=coworking_offer_type,
+        floor_to=floor_to,
+        floor_from=floor_from,
+    ))
+    # act & assert
+    assert get_properties(object_model=object_model) == expected
