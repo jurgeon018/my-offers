@@ -555,6 +555,10 @@ class ObjectModel:
     """Материал пола"""
     floor_number: Optional[int] = None
     """Этаж"""
+    floor_from: Optional[int] = None
+    """Располагается на этаже начиная"""
+    floor_to: Optional[int] = None
+    """Располагается на этаже заканчивая"""
     furniture_presence: Optional[FurniturePresence] = None
     """Мебель"""
     garage: Optional[Garage] = None
