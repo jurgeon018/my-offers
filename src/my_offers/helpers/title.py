@@ -1,11 +1,15 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 
-from simple_settings import settings
+from pytils.numeral import choose_plural
 
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.agent_bonus import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.land import AreaUnitType
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, FlatType
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import (
+    Category,
+    CoworkingOfferType,
+    FlatType,
+)
 
 
 SQUARE_METER_SYMBOL = 'м²'
@@ -80,9 +84,18 @@ OFFER_TITLES = {
     Category.flat_share_sale: 'Доля в квартире',
 }
 
-
-def rename_coworking_office(default_value: str, renamed_value: str) -> str:
-    return renamed_value if settings.RENAME_COWORKING_OFFICE else default_value
+WORKPLACES_TITLE_PLURAL = {
+    CoworkingOfferType.fixed_workplace: (
+        'закреплённое рабочее место',
+        'закреплённых рабочих места',
+        'закреплённых рабочих мест',
+    ),
+    CoworkingOfferType.flexible_workplace: (
+        'незакреплённое рабочее место',
+        'незакреплённых рабочих места',
+        'незакреплённых рабочих мест',
+    ),
+}
 
 
 def get_properties(object_model: ObjectModel) -> List[str]:
@@ -100,11 +113,19 @@ def get_properties(object_model: ObjectModel) -> List[str]:
 
     title: Optional[str]
     is_coworking_office = object_model.coworking_offer_type and object_model.coworking_offer_type.is_office
+    is_workplace: bool = (
+        object_model.coworking_offer_type and
+        (
+            object_model.coworking_offer_type.is_flexible_workplace or
+            object_model.coworking_offer_type.is_fixed_workplace
+        )
+    )
     if is_coworking_office:
         workplaces = f'на {object_model.workplace_count} чел.' if object_model.workplace_count else None
-        office = rename_coworking_office('Гибкий офис', 'Отдельный офис')
-        title = ' '.join(filter(None, (office, area, workplaces)))
+        title = ' '.join(filter(None, ('Отдельный офис', area, workplaces)))
         area = None  # чтобы еще раз не добавлять площадь
+    elif is_workplace:
+        title, floor_number = get_workplace_title(object_model=object_model, floor_number=floor_number)
     elif title := OFFER_TITLES.get(category):
         if object_model.can_parts and total_area and min_area:
             area = f'от\xa0{min_area}\xa0до\xa0{total_area}\xa0{SQUARE_METER_SYMBOL}'
@@ -143,3 +164,21 @@ def _get_floors(floor_number: Optional[int], floors_count: Optional[int]) -> Opt
         floors_name = f'{floor_number}\xa0этаж'
 
     return floors_name
+
+
+def get_workplace_title(
+        *,
+        object_model: ObjectModel,
+        floor_number: int = None,
+) -> Tuple[str, Union[str, Optional[int]]]:
+    plural_workplace_title = choose_plural(
+        object_model.workplace_count,
+        WORKPLACES_TITLE_PLURAL.get(object_model.coworking_offer_type),
+    )
+    workplace_title = (
+       f'{object_model.workplace_count} {plural_workplace_title}'
+    )
+    if not floor_number and object_model.floor_from and object_model.floor_to:
+        floor_range: str = f'{object_model.floor_from}-{object_model.floor_to}'
+        return workplace_title, floor_range
+    return workplace_title, floor_number

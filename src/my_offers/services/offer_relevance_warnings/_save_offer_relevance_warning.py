@@ -27,6 +27,8 @@ async def save_offer_relevance_warning(offer_relevance_warning: OfferRelevanceWa
 
 
 def map_active(offer_relevance_warning_message: OfferRelevanceWarningMessage) -> bool:
+    if offer_relevance_warning_message.relevance_type_message == OfferRelevanceTypeMessage.without_message.value:
+        return False
     relevance_confirmation_required_value = OfferRelevanceCheckStatusId.relevance_confirmation_required.value
     return offer_relevance_warning_message.check_status_id == relevance_confirmation_required_value
 
