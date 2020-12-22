@@ -17,3 +17,8 @@ agent_name_mapper = EntityMapper(
     entities.AgentName,
     without_camelcase=True,
 )
+
+agent_hierarchy_data_mapper = EntityMapper(
+    entities.AgentHierarchyData,
+    without_camelcase=True,
+)

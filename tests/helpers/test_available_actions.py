@@ -1,5 +1,6 @@
 import pytest
 
+from my_offers.entities import AgentHierarchyData
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.enums import OfferPayedByType
 from my_offers.helpers import get_available_actions
@@ -19,6 +20,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_edit=True,
                                     can_restore=False,
                                     can_raise=False,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=False,
                                     can_view_similar_offers=False
                                     )
@@ -32,6 +34,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_edit=False,
                                     can_restore=True,
                                     can_raise=False,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=True,
                                     can_view_similar_offers=False
                                 )
@@ -45,6 +48,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_move_to_archive=False,
                                     can_delete=False,
                                     can_raise=False,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=False,
                                     can_view_similar_offers=False
                                 )
@@ -58,6 +62,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_edit=True,
                                     can_restore=False,
                                     can_raise=True,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=True,
                                     can_view_similar_offers=False
                                 )
@@ -71,6 +76,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_edit=True,
                                     can_restore=False,
                                     can_raise=True,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=False,
                                     can_view_similar_offers=False
                                 )
@@ -84,6 +90,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_edit=True,
                                     can_restore=False,
                                     can_raise=True,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=True,
                                     can_view_similar_offers=False
                                 )
@@ -97,6 +104,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_edit=True,
                                     can_restore=False,
                                     can_raise=True,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=False,
                                     can_view_similar_offers=False
                                 )
@@ -110,6 +118,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_edit=True,
                                     can_restore=False,
                                     can_raise=True,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=False,
                                     can_view_similar_offers=False
                                 )
@@ -131,7 +140,10 @@ def test_get_available_actions(is_master_agent, is_archived, is_manual,
             display_all_agency_offers=True,
         ),
         is_in_hidden_base=False,
-        is_master_agent=is_master_agent,
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=is_master_agent,
+            is_sub_agent=False,
+        ),
         force_raise=False,
         payed_by=payed_by
     )
@@ -150,6 +162,7 @@ def test_get_available_actions(is_master_agent, is_archived, is_manual,
                                     can_edit=False,
                                     can_restore=False,
                                     can_raise=False,
+                                    can_raise_without_addform=False,
                                     can_change_publisher=False,
                                     can_view_similar_offers=False
                                 )
@@ -171,7 +184,10 @@ def test_get_available_actions_for_agent_offer_payed_by_agent(is_master_agent, i
             display_all_agency_offers=True,
         ),
         is_in_hidden_base=False,
-        is_master_agent=is_master_agent,
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=is_master_agent,
+            is_sub_agent=False,
+        ),
         force_raise=False,
         payed_by=payed_by
     )
@@ -189,8 +205,13 @@ def test_get_available_actions__no_settings__actions():
         can_edit=False,
         can_restore=False,
         can_raise=False,
+        can_raise_without_addform=False,
         can_change_publisher=False,
         can_view_similar_offers=False
+    )
+    agent_hierarchy_data = AgentHierarchyData(
+        is_master_agent=False,
+        is_sub_agent=False,
     )
 
     # act
@@ -201,7 +222,7 @@ def test_get_available_actions__no_settings__actions():
         can_update_edit_date=False,
         agency_settings=None,
         is_in_hidden_base=False,
-        is_master_agent=False,
+        agent_hierarchy_data=agent_hierarchy_data,
         force_raise=False
     )
 

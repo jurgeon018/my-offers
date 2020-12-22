@@ -1,6 +1,9 @@
 from typing import Optional
 
+from simple_settings import settings
+
 from my_offers import entities
+from my_offers.entities import AgentHierarchyData
 from my_offers.enums import OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
@@ -28,7 +31,7 @@ def get_available_actions(
         can_update_edit_date: bool,
         agency_settings: Optional[AgencySettings],
         is_in_hidden_base: Optional[bool],
-        is_master_agent: bool,
+        agent_hierarchy_data: AgentHierarchyData,
         force_raise: bool = False,
         can_view_similar_offers: bool = False,
         payed_by: Optional[OfferPayedByType] = None
@@ -50,10 +53,12 @@ def get_available_actions(
     """
     if not status:
         status = Status.deleted
-    if is_master_agent and payed_by == OfferPayedByType.by_agent:
+
+    if agent_hierarchy_data.is_master_agent and payed_by == OfferPayedByType.by_agent:
         return entities.AvailableActions(
             can_edit=False,
             can_raise=False,
+            can_raise_without_addform=False,
             can_delete=False,
             can_restore=False,
             can_update_edit_date=False,
@@ -67,6 +72,13 @@ def get_available_actions(
         return entities.AvailableActions(
             can_edit=not is_archived and can_edit,
             can_raise=not is_archived and status.is_published and can_edit,
+            can_raise_without_addform=_can_raise_without_addform(
+                agent_hierarchy_data=agent_hierarchy_data,
+                force_raise=force_raise,
+                is_archived=is_archived,
+                is_published=status.is_published,
+                is_in_hidden_base=is_in_hidden_base
+            ),
             can_delete=False,
             can_restore=False,
             can_update_edit_date=False,
@@ -84,6 +96,13 @@ def get_available_actions(
             is_published=status.is_published,
             is_in_hidden_base=is_in_hidden_base
         ),
+        can_raise_without_addform=_can_raise_without_addform(
+            agent_hierarchy_data=agent_hierarchy_data,
+            force_raise=force_raise,
+            is_archived=is_archived,
+            is_published=status.is_published,
+            is_in_hidden_base=is_in_hidden_base
+        ),
         can_delete=status in CAN_DELETE_STATUSES,
         can_restore=_can_restore(
             is_archived=is_archived,
@@ -92,7 +111,7 @@ def get_available_actions(
         ),
         can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
-        can_change_publisher=is_master_agent and status in CAN_CHANGE_PUBLISHER,
+        can_change_publisher=agent_hierarchy_data.is_master_agent and status in CAN_CHANGE_PUBLISHER,
         can_view_similar_offers=can_view_similar_offers
     )
 
@@ -121,3 +140,40 @@ def _can_raise(*, is_archived: bool, is_published: bool, is_in_hidden_base: Opti
         return False
 
     return True
+
+
+def _can_raise_without_addform(
+        *,
+        agent_hierarchy_data: AgentHierarchyData,
+        is_archived: bool,
+        is_published: bool,
+        is_in_hidden_base: Optional[bool],
+        force_raise: bool,
+) -> bool:
+    can_raise_settings = settings.CAN_RAISE_WITHOUT_ADDFORM or []
+
+    if agent_hierarchy_data.is_master_agent and 'master_agent' in can_raise_settings:
+        return _can_raise(
+            is_archived=is_archived,
+            is_published=is_published,
+            is_in_hidden_base=is_in_hidden_base,
+            force_raise=force_raise,
+        )
+
+    if agent_hierarchy_data.is_sub_agent and 'sub_agent' in can_raise_settings:
+        return _can_raise(
+            is_archived=is_archived,
+            is_published=is_published,
+            is_in_hidden_base=is_in_hidden_base,
+            force_raise=force_raise,
+        )
+
+    if agent_hierarchy_data.is_agent and 'agent' in can_raise_settings:
+        return _can_raise(
+            is_archived=is_archived,
+            is_published=is_published,
+            is_in_hidden_base=is_in_hidden_base,
+            force_raise=force_raise,
+        )
+
+    return False

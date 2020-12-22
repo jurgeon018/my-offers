@@ -10,13 +10,13 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Object
 from my_offers.repositories.postgresql.offers_search_log import save_offers_search_log
 from my_offers.services import offer_view
 from my_offers.services.offers._get_offers import (
+    get_agent_hierarchy_data_degradation_handler,
     get_counter_filters,
     get_filters,
     get_object_models_degradation_handler,
     get_offer_counters_degradation_handler,
     get_page_info,
     get_pagination,
-    is_master_agent_degradation_handler,
 )
 from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
@@ -92,12 +92,12 @@ async def v2_get_offer_views(
         status_tab=status_tab
     )
 
-    is_master_agent = (await is_master_agent_degradation_handler(user_id)).value
+    agent_hierarchy_data_result = await get_agent_hierarchy_data_degradation_handler(user_id)
 
     # подготовка моделей для ответа
     offers = [
         offer_view.v2_build_offer_view(
-            is_master_agent=is_master_agent,
+            agent_hierarchy_data=agent_hierarchy_data_result.value,
             object_model=object_model,
             enrich_data=enrich_data
         )

@@ -116,3 +116,16 @@ class AgentName:
             return None
 
         return ' '.join(result)
+
+
+@dataclass
+class AgentHierarchyData:
+    is_master_agent: bool
+    """Является ли пользователь мастер-агентом"""
+    is_sub_agent: bool
+    """Является ли пользователь саб-агентом"""
+
+    @property
+    def is_agent(self) -> bool:
+        """Является ли пользователь агентом без иерархии"""
+        return not any([self.is_master_agent, self.is_sub_agent])

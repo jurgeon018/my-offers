@@ -137,6 +137,133 @@ async def test_v2_get_offers_public__can_change_publisher(http, pg, x_real_user,
     assert response.data['offers'][0]['availableActions']['canChangePublisher'] is can_change_publisher
 
 
+@pytest.mark.parametrize('x_real_user, can_raise_without_addform, expected_offer_id, settings', [
+    # запрещено всем
+    (444, False, 22222222, []),
+    (333, False, 11111111, []),
+    (222, False, 11111111, []),
+    # разрешено мастерам
+    (444, False, 22222222, ['master_agent']),
+    (333, True, 11111111, ['master_agent']),
+    (222, False, 11111111, ['master_agent']),
+    # разрешено сабам
+    (444, False, 22222222, ['sub_agent']),
+    (333, False, 11111111, ['sub_agent']),
+    (222, True, 11111111, ['sub_agent']),
+    # разрешено агентам без иерархии
+    (444, True, 22222222, ['agent']),
+    (333, False, 11111111, ['agent']),
+    (222, False, 11111111, ['agent']),
+])
+async def test_v2_get_offers_public__can_raise_without_addform(
+        http,
+        pg,
+        runtime_settings,
+        x_real_user,
+        can_raise_without_addform,
+        settings,
+        expected_offer_id,
+):
+    # arrange
+    offer_id_1 = 11111111
+    offer_id_2 = 22222222
+    user_id = 222
+    user_id_2 = 444
+    master_user = 333
+
+    await runtime_settings.set({'CAN_RAISE_WITHOUT_ADDFORM': settings})
+
+    now = datetime.now()
+    await pg.execute(
+        """
+        INSERT INTO public.agents_hierarchy (
+            id,
+            row_version,
+            realty_user_id,
+            master_agent_user_id,
+            created_at,
+            updated_at,
+            account_type
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7),
+            ($8, $9, $10, $11, $12, $13, $14),
+            ($15, $16, $17, $18, $19, $20, $21)
+        """,
+        [
+            1, 123, user_id, master_user, now, now, 'Specialist',
+            2, 123, master_user, None, now, now, 'Agency',
+            3, 123, user_id_2, None, now, now, 'Agency',
+        ]
+    )
+
+    offer_json_1 = json.dumps({
+        'id': offer_id_1,
+        'status': 'Published',
+        'category': 'flatRent',
+        'bargainTerms': {
+            'currency': 'rur'
+        }
+    })
+    offer_json_2 = json.dumps({
+        'id': offer_id_2,
+        'status': 'Published',
+        'category': 'flatRent',
+        'bargainTerms': {
+            'currency': 'rur'
+        }
+    })
+
+    await pg.execute(
+        """
+        INSERT INTO public.offers (
+            offer_id,
+            master_user_id,
+            user_id,
+            deal_type,
+            offer_type,
+            status_tab,
+            services,
+            is_manual,
+            is_in_hidden_base,
+            has_photo,
+            search_text,
+            raw_data,
+            row_version,
+            created_at,
+            updated_at
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15),
+            ($16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30)
+        """,
+        [
+            offer_id_1, master_user, user_id, 'sale', 'flat', 'active', [], True, False, False, 'text',
+            offer_json_1, 1, now, now,
+            offer_id_2, user_id_2, user_id_2, 'sale', 'flat', 'active', [], True, False, False, 'text',
+            offer_json_2, 1, now, now,
+        ]
+    )
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v2/get-offers/',
+        json={
+            'filters': {
+                'statusTab': 'active',
+            }
+        },
+        headers={
+            'X-Real-UserId': x_real_user
+        },
+    )
+
+    # assert
+    assert response.data['offers'][0]['id'] == expected_offer_id
+    assert response.data['offers'][0]['availableActions']['canRaiseWithoutAddform'] is can_raise_without_addform
+
+
 async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
     # arrange
     offer_id_1 = 11111111

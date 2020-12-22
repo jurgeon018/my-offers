@@ -5,8 +5,8 @@ from simple_settings import settings
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
-from my_offers.entities.agents import Agent, AgentName
-from my_offers.mappers.agents import agent_mapper, agent_name_mapper
+from my_offers.entities.agents import Agent, AgentHierarchyData, AgentName
+from my_offers.mappers.agents import agent_hierarchy_data_mapper, agent_mapper, agent_name_mapper
 from my_offers.repositories.postgresql.tables import agents_hierarchy
 
 
@@ -51,16 +51,16 @@ async def get_master_user_id(user_id: int) -> Optional[int]:
     return row['master_agent_user_id'] if row else None
 
 
-async def is_master_agent(user_id: int) -> bool:
-    """ Является ли пользователь мастер-агентом. """
-    query = 'SELECT 1 as result FROM agents_hierarchy WHERE master_agent_user_id = $1 LIMIT 1'
-    params = [
-        user_id,
-    ]
-
+async def get_agent_hierarchy_data(user_id: int) -> AgentHierarchyData:
+    query = """
+    SELECT * FROM (
+        SELECT exists(SELECT id FROM agents_hierarchy WHERE master_agent_user_id = $1) AS is_master_agent,
+        (SELECT master_agent_user_id IS NOT NULL FROM agents_hierarchy WHERE realty_user_id = $1) AS is_sub_agent
+    ) t
+    """
+    params = [user_id]
     row = await pg.get().fetchrow(query, *params)
-
-    return bool(row['result']) if row else False
+    return agent_hierarchy_data_mapper.map_from(row)
 
 
 async def get_agent_names(user_ids: List[int]) -> List[AgentName]:
