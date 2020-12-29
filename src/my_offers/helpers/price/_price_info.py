@@ -6,7 +6,7 @@ from my_offers import entities, enums
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_locations
 from my_offers.helpers.numbers import get_pretty_number
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, UtilitiesTerms
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, RentByParts, UtilitiesTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel
 
@@ -38,6 +38,7 @@ def get_price_info(object_model: ObjectModel) -> entities.PriceInfo:
         total_area=object_model.total_area,
         offer_type=offer_type,
         deal_type=deal_type,
+        area_parts=object_model.area_parts,
     )
 
 
@@ -52,6 +53,7 @@ def _get_price_info(
         total_area: Optional[float],
         offer_type: enums.OfferType,
         deal_type: enums.DealType,
+        area_parts: Optional[List[RentByParts]] = None,
 ) -> entities.PriceInfo:
     currency = CURRENCY.get(bargain_terms.currency)
     if not currency:
@@ -69,7 +71,7 @@ def _get_price_info(
         Category.daily_house_rent,
     ]
     is_square_meter = bargain_terms.price_type and bargain_terms.price_type.is_square_meter
-    can_calc_parts = all([is_square_meter, offer_type.is_commercial, can_parts, max_area, min_area])
+    can_calc_parts = all([is_square_meter, offer_type.is_commercial, can_parts, max_area, min_area or area_parts])
 
     price_exact = None
     price_range = None
@@ -87,6 +89,7 @@ def _get_price_info(
             total_area=total_area,
             min_area=min_area,
             max_area=max_area,
+            area_parts=area_parts,
         )
     elif can_parts and min_area and max_area:
         min_price = get_pretty_number(price * min_area / max_area)
@@ -109,6 +112,7 @@ def _calc_rent_price(
         min_area: Optional[float],
         max_area: Optional[float],
         total_area: Optional[float],
+        area_parts: Optional[List[RentByParts]] = None,
 ) -> Tuple[Optional[str], Optional[List[str]]]:
     price_exact = None
     price_range = None
@@ -124,9 +128,16 @@ def _calc_rent_price(
 
     if can_calc_parts:
         price_range = []
+        min_price: Optional[float] = None
         if min_area:
-            min_price = get_pretty_number(price_per_month * min_area)
-            price_range.append(f'от\xa0{min_price}')
+            min_price = price_per_month * min_area
+        elif area_parts:
+            min_price = min((x.price * x.area for x in area_parts if x.price and x.area), default=None)
+
+        if min_price:
+            pretty_price = get_pretty_number(min_price)
+            price_range.append(f'от\xa0{pretty_price}')
+
         if max_area:
             max_price = get_pretty_number(price_per_month * max_area)
             price_range.append(f'до\xa0{max_price}\xa0{currency}/мес')

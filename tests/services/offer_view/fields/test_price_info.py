@@ -6,8 +6,13 @@ from my_offers import enums
 from my_offers.entities import PriceInfo
 from my_offers.helpers.price import get_price_info
 from my_offers.helpers.price._price_info import _calc_utilities_delta, _get_price_info
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, UtilitiesTerms, Geo, \
-    LocationPath
+from my_offers.repositories.monolith_cian_announcementapi.entities import (
+    BargainTerms,
+    Geo,
+    LocationPath,
+    RentByParts,
+    UtilitiesTerms,
+)
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import (
     Currency,
     LeaseTermType,
@@ -16,8 +21,11 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms
     PriceType,
     VatType,
 )
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, CoworkingOfferType, \
-    ObjectModel
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import (
+    Category,
+    CoworkingOfferType,
+    ObjectModel,
+)
 
 
 @pytest.mark.parametrize(
@@ -206,6 +214,34 @@ def test_get_price_info__coworking_office__price_for_workplace():
 
     # assert
     assert result == v(PriceInfo(exact='2\xa0000\xa0₽/мес. за рабочее место', range=None))
+
+
+def test_get_price_info__area_part__price_range():
+    """Есть диапазон цены"""
+    # arrange
+    bargain_terms = v(BargainTerms(
+        price=3600.0,
+        currency=Currency.rur,
+        price_type=PriceType.square_meter,
+        payment_period=PaymentPeriod.monthly,
+    ))
+
+    # act
+    result = get_price_info(ObjectModel(
+        geo=Geo(location_path=LocationPath(child_to_parent=[1])),
+        bargain_terms=bargain_terms,
+        category=Category.office_rent,
+        can_parts=True,
+        total_area=33,
+        phones=[],
+        area_parts=[
+            RentByParts(area=23, price=3300),
+            RentByParts(area=10, price=2000),
+        ]
+    ))
+
+    # assert
+    assert result == PriceInfo(exact=None, range=['от\xa020\xa0000', 'до\xa0118\xa0800\xa0₽/мес'])
 
 
 @pytest.mark.parametrize(
