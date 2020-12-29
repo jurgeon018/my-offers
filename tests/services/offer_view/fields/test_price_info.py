@@ -4,8 +4,10 @@ from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.entities import PriceInfo
-from my_offers.helpers.fields import _calc_utilities_delta, get_price_info
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, UtilitiesTerms
+from my_offers.helpers.price import get_price_info
+from my_offers.helpers.price._price_info import _calc_utilities_delta, _get_price_info
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, UtilitiesTerms, Geo, \
+    LocationPath
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import (
     Currency,
     LeaseTermType,
@@ -14,7 +16,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms
     PriceType,
     VatType,
 )
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, CoworkingOfferType
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, CoworkingOfferType, \
+    ObjectModel
 
 
 @pytest.mark.parametrize(
@@ -138,7 +141,7 @@ def test_get_price_info(
         expected,
 ):
     # arrange & act
-    result = get_price_info(
+    result = _get_price_info(
         locations=[1],
         bargain_terms=bargain_terms,
         category=category,
@@ -148,8 +151,6 @@ def test_get_price_info(
         total_area=total_area,
         offer_type=offer_type,
         deal_type=deal_type,
-        coworking_offer_type=None,
-        workplace_count=None,
     )
 
     # assert
@@ -162,19 +163,18 @@ def test_get_price_info__coworking_office__price_for_all():
     bargain_terms = v(BargainTerms(price=10000.0, currency=Currency.rur, price_type=PriceType.all))
 
     # act
-    result = get_price_info(
-        locations=[1],
+    result = get_price_info(ObjectModel(
+        geo=Geo(location_path=LocationPath(child_to_parent=[1])),
         bargain_terms=bargain_terms,
         category=Category.office_rent,
         can_parts=False,
         min_area=None,
         max_area=20,
         total_area=20,
-        offer_type=enums.OfferType.commercial,
-        deal_type=enums.DealType.rent,
         coworking_offer_type=CoworkingOfferType.office,
         workplace_count=10,
-    )
+        phones=[],
+    ))
 
     # assert
     assert result == v(PriceInfo(exact='1\xa0000\xa0₽/мес. за рабочее место', range=None))
@@ -191,19 +191,18 @@ def test_get_price_info__coworking_office__price_for_workplace():
     ))
 
     # act
-    result = get_price_info(
-        locations=[1],
+    result = get_price_info(ObjectModel(
+        geo=Geo(location_path=LocationPath(child_to_parent=[1])),
         bargain_terms=bargain_terms,
         category=Category.office_rent,
         can_parts=False,
         min_area=None,
         max_area=20,
         total_area=20,
-        offer_type=enums.OfferType.commercial,
-        deal_type=enums.DealType.rent,
         coworking_offer_type=CoworkingOfferType.office,
         workplace_count=10,
-    )
+        phones=[],
+    ))
 
     # assert
     assert result == v(PriceInfo(exact='2\xa0000\xa0₽/мес. за рабочее место', range=None))

@@ -2,13 +2,8 @@ from typing import Dict
 
 from my_offers import entities, enums
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import (
-    get_locations,
-    get_main_photo_url,
-    get_price_info,
-    get_price_info_with_trend,
-    get_sort_date,
-)
+from my_offers.helpers.fields import get_main_photo_url, get_sort_date
+from my_offers.helpers.price import get_price_info, get_price_info_with_trend
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_offer_title, get_properties
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
@@ -34,17 +29,7 @@ def build_duplicate_view(
         geo=fields.prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),
         price_info=get_price_info_with_trend(
-            locations=get_locations(object_model.geo),
-            bargain_terms=object_model.bargain_terms,
-            category=object_model.category,
-            can_parts=bool(object_model.can_parts),
-            min_area=object_model.min_area,
-            max_area=object_model.max_area,
-            total_area=object_model.total_area,
-            offer_type=offer_type,
-            deal_type=deal_type,
-            coworking_offer_type=object_model.coworking_offer_type,
-            workplace_count=object_model.workplace_count,
+            object_model=object_model,
             old_price=similar.old_price
         ),
         vas=fields.get_vas(object_model.publish_terms.terms if object_model.publish_terms else None),
@@ -74,19 +59,7 @@ def build_duplicate_view_desktop(
         main_photo_url=get_main_photo_url(object_model.photos),
         geo=fields.prepare_geo_for_mobile(object_model.geo),
         display_date=get_sort_date(object_model=object_model, status_tab=status_tab),
-        price_info=get_price_info(
-            locations=get_locations(object_model.geo),
-            bargain_terms=object_model.bargain_terms,
-            category=object_model.category,
-            can_parts=bool(object_model.can_parts),
-            min_area=object_model.min_area,
-            max_area=object_model.max_area,
-            total_area=object_model.total_area,
-            offer_type=offer_type,
-            deal_type=deal_type,
-            coworking_offer_type=object_model.coworking_offer_type,
-            workplace_count=object_model.workplace_count,
-        ),
+        price_info=get_price_info(object_model),
         vas=fields.get_vas(object_model.publish_terms.terms if object_model.publish_terms else None),
         auction_bet=fields.get_auction_bet(auction_bets.get(realty_offer_id)),
         type=duplicate_type,

@@ -12,6 +12,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
         notification_center_mock,
 ):
     # arrange
+    await queue_service.wait_consumer('my-offers.offer_duplicate_price_changed_notification', timeout=300)
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
@@ -97,6 +98,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
         notification_center_mock,
 ):
     # arrange
+    await queue_service.wait_consumer('my-offers.offer_duplicate_price_changed_notification', timeout=300)
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
@@ -195,6 +197,7 @@ async def test_duplicate_price_changed_consumer__same_price_and_old_price__push_
         notification_center_mock,
 ):
     # arrange
+    await queue_service.wait_consumer('my-offers.offer_duplicate_price_changed_notification', timeout=300)
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates values(231655140, 231655140, \'2020-05-09\')')
     await pg.execute('INSERT INTO offers_duplicates values(173975523, 231655140, \'2020-05-09\')')
