@@ -55,7 +55,7 @@ RESEND_JOB_BROADCAST_TYPE: str = 'temp'
 RESEND_JOB_ALLOW_ELASTIC: bool = False
 RESEND_TASK_BULK_SIZE: int = 5000
 
-CURRENCIES_TTL: int = 60 * 60  # 1 day
+CURRENCIES_TTL: int = 60 * 60
 
 # similar offers
 DUPLICATE_CHECK_ENABLED: bool = False

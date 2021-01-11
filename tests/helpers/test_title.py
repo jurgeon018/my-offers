@@ -1,12 +1,7 @@
 import pytest
 from cian_test_utils import v
 
-from my_offers.helpers.title import (
-    _get_floors,
-    get_offer_title,
-    get_workplace_title,
-    get_properties,
-)
+from my_offers.helpers.title import _get_floors, get_offer_title, get_properties, get_workplace_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import (
     BargainTerms,
     Building,

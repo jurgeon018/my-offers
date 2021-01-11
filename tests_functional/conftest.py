@@ -24,8 +24,6 @@ async def start(runner, pg, queue_service, cassandra_service, global_runtime_set
     await runner.start_background_python_command('save_announcement_contract_consumer')
     await runner.start_background_python_command('save_offer_relevance_warning_consumer')
 
-    await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification', timeout=300)
-    await queue_service.wait_consumer('my-offers.offer_duplicate_price_changed_notification', timeout=300)
     await queue_service.wait_consumer('my-offers.process_announcement_from_elasticapi', timeout=300)
 
 

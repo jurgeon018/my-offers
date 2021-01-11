@@ -1,14 +1,8 @@
 from my_offers.entities import AgentHierarchyData, get_offers
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.category import get_types
-from my_offers.helpers.fields import (
-    get_locations,
-    get_main_photo_url,
-    get_price_info,
-    get_sort_date,
-    is_archived,
-    is_manual,
-)
+from my_offers.helpers.fields import get_main_photo_url, get_sort_date, is_archived, is_manual
+from my_offers.helpers.price import get_price_info
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.helpers.title import get_offer_title
@@ -31,19 +25,7 @@ def v2_build_offer_view(
     main_photo_url = get_main_photo_url(object_model.photos)
     manual = is_manual(object_model.source)
     archived = is_archived(object_model.flags)
-    price_info = get_price_info(
-        locations=get_locations(object_model.geo),
-        bargain_terms=object_model.bargain_terms,
-        category=object_model.category,
-        can_parts=bool(object_model.can_parts),
-        min_area=object_model.min_area,
-        max_area=object_model.max_area,
-        total_area=object_model.total_area,
-        offer_type=offer_type,
-        deal_type=deal_type,
-        coworking_offer_type=object_model.coworking_offer_type,
-        workplace_count=object_model.workplace_count,
-    )
+    price_info = get_price_info(object_model)
     features = get_features(
         bargain_terms=object_model.bargain_terms,
         category=object_model.category,

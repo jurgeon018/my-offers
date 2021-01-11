@@ -4,7 +4,7 @@ import pytest
 from cassandra.query import PreparedStatement
 from cian_test_utils import future
 
-from my_offers.services.statistics._helpers import cassandra_execute, get_months_intervals, cassandra_execute_grouped
+from my_offers.services.statistics._helpers import cassandra_execute, cassandra_execute_grouped, get_months_intervals
 
 
 @pytest.mark.parametrize(('date_from', 'date_to', 'expected'), [
