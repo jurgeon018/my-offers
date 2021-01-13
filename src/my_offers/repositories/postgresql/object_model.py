@@ -29,7 +29,7 @@ SORT_TYPE_MAP = {
 
 
 async def get_object_model(filters: Dict[str, Any]) -> Optional[ObjectModel]:
-    object_models, _ = await get_object_models(
+    object_models = await get_object_models(
         filters=filters,
         limit=1,
         offset=0,
@@ -42,6 +42,15 @@ async def get_object_model(filters: Dict[str, Any]) -> Optional[ObjectModel]:
     return object_models[0]
 
 
+@async_statsd_timer('psql.get_object_models_total_count')
+async def get_object_models_total_count(filters: Dict[str, Any]):
+    conditions = prepare_conditions(filters)
+
+    query, params = asyncpgsa.compile_query(select([func.count()]).where(and_(*conditions)))
+
+    return await pg.get().fetchval(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
+
+
 @async_statsd_timer('psql.get_object_models')
 async def get_object_models(
         *,
@@ -49,12 +58,12 @@ async def get_object_models(
         limit: int,
         offset: int,
         sort_type: enums.GetOffersSortType,
-) -> Tuple[List[ObjectModel], int]:
+) -> List[ObjectModel]:
     conditions = prepare_conditions(filters)
     sort = _prepare_sort_order(sort_type)
 
     sql = (
-        select([OFFER_TABLE.raw_data, over(func.count()).label('total_count')])
+        select([OFFER_TABLE.raw_data])
         .where(and_(*conditions))
         .order_by(*sort)
         .limit(limit)
@@ -65,12 +74,11 @@ async def get_object_models(
     result = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
 
     if not result:
-        return [], 0
+        return []
 
     models = [object_model_mapper.map_from(json.loads(r['raw_data'])) for r in result]
-    total = result[0]['total_count']
 
-    return models, total
+    return models
 
 
 def _prepare_sort_order(sort_type: enums.GetOffersSortType):
