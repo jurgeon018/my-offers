@@ -172,7 +172,7 @@ async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
         .group_by(status_tab)
     )
 
-    rows = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
+    rows = await pg.get().fetch(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
     counters = {row['status_tab']: row['cnt'] for row in rows}
 
     return OfferCounters(
