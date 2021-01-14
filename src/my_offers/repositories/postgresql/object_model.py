@@ -71,7 +71,7 @@ async def get_object_models(
     )
 
     query, params = asyncpgsa.compile_query(sql)
-    result = await pg.get().fetch(query, *params, timeout=settings.DB_TIMEOUT)
+    result = await pg.get().fetch(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
 
     if not result:
         return []

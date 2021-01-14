@@ -21,7 +21,7 @@ async def test_get_object_models__empty_filter__result(mocker):
     )
 
     # act
-    with settings_stub(DB_TIMEOUT=3):
+    with settings_stub(DB_SLOW_TIMEOUT=15):
         result = await get_object_models(filters=filters, limit=20, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
@@ -32,7 +32,7 @@ async def test_get_object_models__empty_filter__result(mocker):
         'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         20,
         0,
-        timeout=3,
+        timeout=15,
     )
 
 
@@ -55,7 +55,7 @@ async def test_get_object_models__full_filter__result():
     pg.get().fetch.return_value = future([])
 
     # act
-    with settings_stub(DB_TIMEOUT=3):
+    with settings_stub(DB_SLOW_TIMEOUT=15):
         result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
@@ -80,7 +80,7 @@ async def test_get_object_models__full_filter__result():
         ['paid'],
         'active',
         'russian',
-        timeout=3
+        timeout=15,
     )
 
 
@@ -94,18 +94,18 @@ async def test_get_object_models__filter_none__result():
     pg.get().fetch.return_value = future([])
 
     # act
-    with settings_stub(DB_TIMEOUT=3):
+    with settings_stub(DB_SLOW_TIMEOUT=15):
         result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
     assert result == []
 
     pg.get().fetch.assert_called_once_with(
-       'SELECT offers.raw_data \nFROM offers ORDER BY'
-       ' offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
+        'SELECT offers.raw_data \nFROM offers ORDER BY'
+        ' offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         40,
         0,
-        timeout=3,
+        timeout=15,
     )
 
 
@@ -120,7 +120,7 @@ async def test_get_object_models___wrong_filter__result():
     pg.get().fetch.return_value = future([])
 
     # act
-    with settings_stub(DB_TIMEOUT=3):
+    with settings_stub(DB_SLOW_TIMEOUT=15):
         result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
@@ -131,7 +131,7 @@ async def test_get_object_models___wrong_filter__result():
         'offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         40,
         0,
-        timeout=3,
+        timeout=15,
     )
 
 
@@ -158,5 +158,5 @@ async def test_get_object_models___has_relevance_warning_filter__result():
         ' LIMIT $1 OFFSET $2',
         40,
         0,
-        timeout=3,
+        timeout=15,
     )
