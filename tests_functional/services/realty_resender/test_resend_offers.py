@@ -165,9 +165,9 @@ async def test_resend_offers__use_elastic_api(
     await monolith_cian_elasticapi_mock.add_stub(
         method='GET',
         path='/api/elastic/announcement/get/',
-        query={
-            'ids': [offer_id_1, offer_id_2],
-        },
+        # query={
+        #     'ids': [offer_id_2, offer_id_1],
+        # },
         response=MockResponse(body={
             'errors': [],
             'success': [
@@ -363,9 +363,9 @@ async def test_resend_offers__use_elastic_api__errors_warning(
     await monolith_cian_elasticapi_mock.add_stub(
         method='GET',
         path='/api/elastic/announcement/get/',
-        query={
-            'ids': [offer_id_1, offer_id_2],
-        },
+        # query={
+        #     'ids': [offer_id_1, offer_id_2],
+        # },
         response=MockResponse(body={
             'errors': [
                 {
@@ -498,9 +498,9 @@ async def test_resend_offers__use_realty_task__call_elastic_api(
     monolith_cian_elasticapi = await monolith_cian_elasticapi_mock.add_stub(
         method='GET',
         path='/api/elastic/announcement/get/',
-        query={
-            'ids': [offer_id_1, offer_id_2],
-        },
+        # query={
+        #     'ids': [offer_id_1, offer_id_2],
+        # },
         response=MockResponse(body={
             'errors': [],
             'success': []

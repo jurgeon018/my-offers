@@ -22,9 +22,9 @@ async def cassandra_execute(
 
     params = params or []
     timeout = timeout or float(settings.CASSANDRA_DEFAULT_TIMEOUT)
-    stmt = stmt.bind(params)  # type: ignore
-    stmt.consistency_level = consistency_level
-    return await CassandraClient.execute(stmt, timeout=timeout, alias=alias)
+    statement = stmt.bind(params)
+    statement.consistency_level = consistency_level
+    return await CassandraClient.execute(statement, timeout=timeout, alias=alias)
 
 
 async def cassandra_execute_grouped(
