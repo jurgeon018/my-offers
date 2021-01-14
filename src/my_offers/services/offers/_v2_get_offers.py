@@ -14,6 +14,7 @@ from my_offers.services.offers._get_offers import (
     get_counter_filters,
     get_filters,
     get_object_models_degradation_handler,
+    get_object_models_total_count_degradation_handler,
     get_offer_counters_degradation_handler,
     get_page_info,
     get_pagination,
@@ -38,13 +39,14 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     limit, offset = get_pagination(request.pagination)
 
     # шаг 2 - получение object models и счетчиков
-    object_models_result, offer_counters_result = await asyncio.gather(
+    object_models_result, total_count_result, offer_counters_result = await asyncio.gather(
         get_object_models_degradation_handler(
             filters=filters,
             limit=limit,
             offset=offset,
             sort_type=request.sort or enums.GetOffersSortType.by_default,
         ),
+        get_object_models_total_count_degradation_handler(filters),
         get_offer_counters_degradation_handler(counter_filters),
     )
     if object_models_result.degraded:
@@ -56,7 +58,8 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
             )
         ])
 
-    object_models, total = object_models_result.value
+    object_models = object_models_result.value
+    total = total_count_result.value
     if settings.LOG_SEARCH_QUERIES and filters.get('search_text'):
         await save_offers_search_log(filters=filters, found_cnt=total, is_error=object_models_result.degraded)
 

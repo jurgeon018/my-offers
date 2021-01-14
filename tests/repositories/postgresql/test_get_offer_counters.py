@@ -36,5 +36,5 @@ async def test_get_offer_counters():
         'SELECT offers.status_tab, count(*) AS cnt \nFROM offers \n'
         'WHERE offers.master_user_id = $1 GROUP BY offers.status_tab',
         111,
-        timeout=3,
+        timeout=15,
     )

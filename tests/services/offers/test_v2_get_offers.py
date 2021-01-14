@@ -96,7 +96,12 @@ async def test_v2_get_offers_public(mocker):
 
     get_object_models_mock = mocker.patch(
         f'{PATH}get_object_models_degradation_handler',
-        return_value=future(DegradationResult(value=([object_model], 1), degraded=False)),
+        return_value=future(DegradationResult(value=[object_model], degraded=False)),
+    )
+
+    mocker.patch(
+        f'{PATH}get_object_models_total_count_degradation_handler',
+        return_value=future(DegradationResult(value=1, degraded=False)),
     )
 
     get_offer_views_mock = mocker.patch(

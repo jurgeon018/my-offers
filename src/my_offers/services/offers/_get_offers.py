@@ -11,6 +11,7 @@ from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql import get_object_models, get_offers_offence
 from my_offers.repositories.postgresql.agents import get_agent_hierarchy_data, get_agent_names, get_master_user_id
 from my_offers.repositories.postgresql.billing import get_offers_payed_till_excluding_calltracking
+from my_offers.repositories.postgresql.object_model import get_object_models_total_count
 from my_offers.repositories.postgresql.offer import get_offer_counters, get_offers_payed_by, get_offers_update_at
 from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
@@ -21,7 +22,13 @@ from my_offers.services.offers.helpers.search_text import prepare_search_text
 get_object_models_degradation_handler = get_degradation_handler(
     func=get_object_models,
     key='psql.get_object_models',
-    default=([], 0),
+    default=[],
+)
+
+get_object_models_total_count_degradation_handler = get_degradation_handler(
+    func=get_object_models_total_count,
+    key='psql.get_object_models_total_count',
+    default=settings.OFFER_LIST_LIMIT,
 )
 
 get_offer_counters_degradation_handler = get_degradation_handler(

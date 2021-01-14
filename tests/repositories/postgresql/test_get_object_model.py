@@ -26,7 +26,7 @@ async def test_get_object_model(mocker):
     result = await get_object_model({'zz': 'yy'})
 
     # assert
-    assert result == expected
+    assert result == [expected]
     get_object_models_mock.assert_called_once_with(
         filters={'zz': 'yy'},
         limit=1,
@@ -38,7 +38,7 @@ async def test_get_object_model(mocker):
 @pytest.mark.gen_test
 async def test_get_object_model__none__none(mocker):
     # arrange
-    get_object_models_mock = mocker.patch(f'{PATH}get_object_models', return_value=future(([], 0)))
+    get_object_models_mock = mocker.patch(f'{PATH}get_object_models', return_value=future([]))
 
     # act
     result = await get_object_model({'zz': 'yy'})

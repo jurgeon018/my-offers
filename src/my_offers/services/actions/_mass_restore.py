@@ -14,6 +14,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
 from my_offers.repositories.monolith_cian_announcementapi.entities.announcement_progress_dto import (
     State as OfferMassRestoreState,
 )
+from my_offers.repositories.postgresql.object_model import get_object_models_total_count
 from my_offers.services.actions._action import MassActions
 from my_offers.services.offers import get_filters
 
@@ -51,12 +52,13 @@ async def mass_offers_restore(
     if request.action_type.is_select:
         filters['offer_id'] = request.offers_ids
 
-    objects_models, total = await postgresql.get_object_models(
+    objects_models = await postgresql.get_object_models(
         filters=filters,
         limit=settings.MASS_OFFERS_LIMIT,
         offset=0,
         sort_type=GetOffersSortType.by_default
     )
+    total = await get_object_models_total_count(filters)
     offers_ids, offers_errors, offers_counters = _filter_offers(objects_models=objects_models)
     offers_statuses.extend(offers_errors)
 

@@ -15,21 +15,25 @@ async def test_get_object_models__empty_filter__result(mocker):
     object_model = mocker.sentinel.object_model
 
     pg.get().fetch.return_value = future([{'raw_data': '{"id": 12}', 'total_count': 1}])
-    query = load_data(__file__, 'get_object_models_empty_filter.sql').strip()
     mocker.patch(
         'my_offers.repositories.postgresql.object_model.object_model_mapper.map_from',
         return_value=object_model,
     )
-    expected = ([object_model], 1)
 
     # act
-    with settings_stub(DB_TIMEOUT=3):
+    with settings_stub(DB_SLOW_TIMEOUT=15):
         result = await get_object_models(filters=filters, limit=20, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
-    assert result == expected
+    assert result == [object_model]
 
-    pg.get().fetch.assert_called_once_with(query, 20, 0, timeout=3)
+    pg.get().fetch.assert_called_once_with(
+        'SELECT offers.raw_data \nFROM offers '
+        'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
+        20,
+        0,
+        timeout=15,
+    )
 
 
 @pytest.mark.gen_test
@@ -50,17 +54,15 @@ async def test_get_object_models__full_filter__result():
 
     pg.get().fetch.return_value = future([])
 
-    expected = ([], 0)
-
     # act
-    with settings_stub(DB_TIMEOUT=3):
+    with settings_stub(DB_SLOW_TIMEOUT=15):
         result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
-    assert result == expected
+    assert result == []
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers \nWHERE'
+        'SELECT offers.raw_data \nFROM offers \nWHERE'
         ' offers.status_tab = $10 AND offers.deal_type = $1 AND offers.offer_type = $3'
         ' AND offers.user_id = ANY (CAST($4 AS BIGINT[])) AND offers.has_photo = true '
         'AND offers.is_manual = false AND offers.is_in_hidden_base = false AND offers.'
@@ -78,7 +80,7 @@ async def test_get_object_models__full_filter__result():
         ['paid'],
         'active',
         'russian',
-        timeout=3
+        timeout=15,
     )
 
 
@@ -91,21 +93,19 @@ async def test_get_object_models__filter_none__result():
 
     pg.get().fetch.return_value = future([])
 
-    expected = ([], 0)
-
     # act
-    with settings_stub(DB_TIMEOUT=3):
+    with settings_stub(DB_SLOW_TIMEOUT=15):
         result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
-    assert result == expected
+    assert result == []
 
     pg.get().fetch.assert_called_once_with(
-       'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers ORDER BY'
-       ' offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
+        'SELECT offers.raw_data \nFROM offers ORDER BY'
+        ' offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         40,
         0,
-        timeout=3,
+        timeout=15,
     )
 
 
@@ -119,21 +119,19 @@ async def test_get_object_models___wrong_filter__result():
 
     pg.get().fetch.return_value = future([])
 
-    expected = ([], 0)
-
     # act
-    with settings_stub(DB_TIMEOUT=3):
+    with settings_stub(DB_SLOW_TIMEOUT=15):
         result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
-    assert result == expected
+    assert result == []
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data, count(*) OVER () AS total_count \nFROM offers ORDER BY '
+        'SELECT offers.raw_data \nFROM offers ORDER BY '
         'offers.sort_date DESC NULLS LAST, offers.offer_id \n LIMIT $1 OFFSET $2',
         40,
         0,
-        timeout=3,
+        timeout=15,
     )
 
 
@@ -146,21 +144,19 @@ async def test_get_object_models___has_relevance_warning_filter__result():
 
     pg.get().fetch.return_value = future([])
 
-    expected = ([], 0)
-
     # act
     with settings_stub(DB_TIMEOUT=3):
         result = await get_object_models(filters=filters, limit=40, offset=0, sort_type=GetOffersSortType.by_default)
 
     # assert
-    assert result == expected
+    assert result == []
 
     pg.get().fetch.assert_called_once_with(
-        'SELECT offers.raw_data, count(*) OVER () AS total_count \n'
+        'SELECT offers.raw_data \n'
         'FROM offers \nWHERE offers.has_active_relevance_warning = true '
         'ORDER BY offers.sort_date DESC NULLS LAST, offers.offer_id \n'
         ' LIMIT $1 OFFSET $2',
         40,
         0,
-        timeout=3,
+        timeout=15,
     )

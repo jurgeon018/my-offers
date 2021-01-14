@@ -12,6 +12,7 @@ CHECK_SERVICES: List[str] = []
 DEFAULT_LOCATION_ID: int = 1
 
 DB_TIMEOUT: float = 3
+DB_SLOW_TIMEOUT: float = 15
 
 CIAN_BASE_URL: str = 'https://cian.ru'
 MY_CIAN_BASE_URL: str = 'https://my.cian.ru'
