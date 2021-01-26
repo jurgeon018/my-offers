@@ -13,7 +13,7 @@ from my_offers.queue import entities as mq_entities
 from my_offers.queue import queues, schemas
 from my_offers.services import realty_resender
 from my_offers.services.duplicates import sync_offer_duplicates
-from my_offers.services.offers import reindex_offers_command, reindex_offers_master_and_payed_by_command
+from my_offers.services.offers import reindex_offers_command, sync_offers
 from my_offers.services.offers.delete_offers import delete_offers_data
 from my_offers.services.users import clean_users
 from my_offers.web.urls import urlpatterns
@@ -221,14 +221,6 @@ def sync_offer_duplicates_cron() -> None:
 
 
 @cli.command()
-def reindex_offers_master_and_payed_by() -> None:
-    """ Переиндексация идентификаторов мастера и плательщика в объявлениях """
-    with new_operation_id():
-        io_loop = IOLoop.current()
-        io_loop.run_sync(reindex_offers_master_and_payed_by_command)
-
-
-@cli.command()
 def clean_users_command() -> None:
     """
     Удаляет пользователей и объявления если не найдет их в МКС users"
@@ -236,3 +228,11 @@ def clean_users_command() -> None:
     """
     with new_operation_id():
         IOLoop.current().run_sync(clean_users)
+
+
+@cli.command()
+def sync_offers_command() -> None:
+    """
+    """
+    with new_operation_id():
+        IOLoop.current().run_sync(sync_offers)

@@ -147,9 +147,6 @@ memory = 2048
 type = "consumer"
 command = "sync-offer-duplicates-cron"
 
-[job.reindex_offers_master_and_payed_by]
-type = "manage"
-command = "reindex-offers-master-and-payed-by"
 
 [job.clear_deleted_offer_cron]
 type = "consumer"
@@ -164,3 +161,7 @@ memory = 128
 [job.clean_users]
 type = "manage"
 command = "clean-users-command"
+
+[job.sync_offers]
+type = "manage"
+command = "sync_offers_command"
