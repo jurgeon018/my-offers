@@ -164,4 +164,4 @@ command = "clean-users-command"
 
 [job.sync_offers]
 type = "manage"
-command = "sync_offers_command"
+command = "sync-offers-command"
