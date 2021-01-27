@@ -49,6 +49,7 @@ from my_offers.repositories.postgresql.offers_duplicates import (
     update_offers_duplicate,
 )
 from my_offers.repositories.postgresql.offers_resender import get_last_row_version, save_cron_session, save_cron_stats
+from my_offers.repositories.postgresql.offers_row_versions import save_offer_row_versions
 from my_offers.repositories.postgresql.offers_similars import (
     get_similar_counter_by_offer_id,
     get_similars_by_offer_id,

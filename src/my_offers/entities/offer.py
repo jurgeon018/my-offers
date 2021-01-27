@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from my_offers import enums
 
@@ -34,7 +34,7 @@ class Offer:
     search_text: str
     """Текст для поиска"""
     # системные поля
-    raw_data: Dict
+    raw_data: Dict[str, Any]
     """Модель объявления"""
     row_version: int
     """Версия записи"""
