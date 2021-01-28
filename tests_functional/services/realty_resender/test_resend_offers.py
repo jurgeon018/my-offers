@@ -7,6 +7,7 @@ from cian_functional_test_utils.pytest_plugin import MockResponse
 async def test_resend_offers__different_row_versions(
         runner,
         monolith_cian_elasticapi_mock,
+        monolith_cian_ms_announcements_mock,
         pg,
         logs,
         queue_service,
@@ -60,22 +61,22 @@ async def test_resend_offers__different_row_versions(
             offer_id_2, 2, 3, 'sale', 'flat', 'active', [], True, False, False, 'text', '{}', 1, now, now,
         ]
     )
-    await monolith_cian_elasticapi_mock.add_stub(
+    await monolith_cian_ms_announcements_mock.add_stub(
         method='GET',
-        path='/api/elastic/announcement/v3/get-changed-ids/',
+        path='/v2/get-changed-announcements-ids/',
         query={
             'rowVersion': row_version,
         },
-        response=MockResponse(body=[
+        response=MockResponse(body={'announcements': [
             {
-                'realty_object_id': offer_id_1,
+                'id': offer_id_1,
                 'row_version': 2,
             },
             {
-                'realty_object_id': offer_id_2,
+                'id': offer_id_2,
                 'row_version': 33333333,
             }
-        ])
+        ]})
     )
     await monolith_cian_elasticapi_mock.add_stub(
         method='GET',
@@ -120,6 +121,7 @@ async def test_resend_offers__different_row_versions(
 async def test_resend_offers__use_elastic_api(
         runner,
         monolith_cian_elasticapi_mock,
+        monolith_cian_ms_announcements_mock,
         pg,
         logs,
         queue_service,
@@ -145,22 +147,22 @@ async def test_resend_offers__use_elastic_api(
             operation_id, row_version, now
         ]
     )
-    await monolith_cian_elasticapi_mock.add_stub(
+    await monolith_cian_ms_announcements_mock.add_stub(
         method='GET',
-        path='/api/elastic/announcement/v3/get-changed-ids/',
+        path='/v2/get-changed-announcements-ids/',
         query={
             'rowVersion': row_version,
         },
-        response=MockResponse(body=[
+        response=MockResponse(body={'announcements': [
             {
-                'realty_object_id': offer_id_1,
+                'id': offer_id_1,
                 'row_version': 2,
             },
             {
-                'realty_object_id': offer_id_2,
+                'id': offer_id_2,
                 'row_version': 3,
             }
-        ])
+        ]})
     )
     await monolith_cian_elasticapi_mock.add_stub(
         method='GET',
@@ -212,6 +214,7 @@ async def test_resend_offers__use_elastic_api(
 async def test_resend_offers__use_realty_task(
         runner,
         monolith_cian_elasticapi_mock,
+        monolith_cian_ms_announcements_mock,
         monolith_cian_realty_mock,
         pg,
         logs,
@@ -239,22 +242,22 @@ async def test_resend_offers__use_realty_task(
             operation_id, row_version, now
         ]
     )
-    await monolith_cian_elasticapi_mock.add_stub(
+    await monolith_cian_ms_announcements_mock.add_stub(
         method='GET',
-        path='/api/elastic/announcement/v3/get-changed-ids/',
+        path='/v2/get-changed-announcements-ids/',
         query={
             'rowVersion': row_version,
         },
-        response=MockResponse(body=[
+        response=MockResponse(body={'announcements': [
             {
-                'realty_object_id': offer_id_1,
+                'id': offer_id_1,
                 'row_version': 2,
             },
             {
-                'realty_object_id': offer_id_2,
+                'id': offer_id_2,
                 'row_version': 3,
             }
-        ])
+        ]})
     )
     await runtime_settings.set({'SYNC_OFFERS_ALLOW_RUN_TASK': True})
     await monolith_cian_realty_mock.add_stub(
@@ -318,6 +321,7 @@ async def test_resend_offers__use_realty_task(
 async def test_resend_offers__use_elastic_api__errors_warning(
         runner,
         monolith_cian_elasticapi_mock,
+        monolith_cian_ms_announcements_mock,
         pg,
         logs,
         queue_service,
@@ -343,22 +347,22 @@ async def test_resend_offers__use_elastic_api__errors_warning(
             operation_id, row_version, now
         ]
     )
-    await monolith_cian_elasticapi_mock.add_stub(
+    await monolith_cian_ms_announcements_mock.add_stub(
         method='GET',
-        path='/api/elastic/announcement/v3/get-changed-ids/',
+        path='/v2/get-changed-announcements-ids/',
         query={
             'rowVersion': row_version,
         },
-        response=MockResponse(body=[
+        response=MockResponse(body={'announcements': [
             {
-                'realty_object_id': offer_id_1,
+                'id': offer_id_1,
                 'row_version': 2,
             },
             {
-                'realty_object_id': offer_id_2,
+                'id': offer_id_2,
                 'row_version': 3,
             }
-        ])
+        ]})
     )
     await monolith_cian_elasticapi_mock.add_stub(
         method='GET',
@@ -413,6 +417,7 @@ async def test_resend_offers__use_elastic_api__errors_warning(
 async def test_resend_offers__use_realty_task__call_elastic_api(
         runner,
         monolith_cian_elasticapi_mock,
+        monolith_cian_ms_announcements_mock,
         monolith_cian_realty_mock,
         pg,
         logs,
@@ -441,22 +446,22 @@ async def test_resend_offers__use_realty_task__call_elastic_api(
         """,
         [operation_id, row_version, now]
     )
-    await monolith_cian_elasticapi_mock.add_stub(
+    await monolith_cian_ms_announcements_mock.add_stub(
         method='GET',
-        path='/api/elastic/announcement/v3/get-changed-ids/',
+        path='/v2/get-changed-announcements-ids/',
         query={
             'rowVersion': row_version,
         },
-        response=MockResponse(body=[
+        response=MockResponse(body={'announcements': [
             {
-                'realty_object_id': offer_id_1,
+                'id': offer_id_1,
                 'row_version': 2,
             },
             {
-                'realty_object_id': offer_id_2,
+                'id': offer_id_2,
                 'row_version': 3,
             }
-        ])
+        ]})
     )
     await runtime_settings.set({'SYNC_OFFERS_ALLOW_RUN_TASK': True})
     await runtime_settings.set({'RESEND_JOB_ALLOW_ELASTIC': True})
@@ -517,6 +522,7 @@ async def test_resend_offers__use_realty_task__call_elastic_api(
 async def test_resend_offers__use_elastic_api__set_is_deleted_offers(
         runner,
         monolith_cian_elasticapi_mock,
+        monolith_cian_ms_announcements_mock,
         pg,
         logs,
         queue_service,
@@ -571,22 +577,22 @@ async def test_resend_offers__use_elastic_api__set_is_deleted_offers(
         """,
         [operation_id, row_version, now]
     )
-    await monolith_cian_elasticapi_mock.add_stub(
+    await monolith_cian_ms_announcements_mock.add_stub(
         method='GET',
-        path='/api/elastic/announcement/v3/get-changed-ids/',
+        path='/v2/get-changed-announcements-ids/',
         query={
             'rowVersion': row_version,
         },
-        response=MockResponse(body=[
+        response=MockResponse(body={'announcements': [
             {
-                'realty_object_id': offer_id_1,
+                'id': offer_id_1,
                 'row_version': 2,
             },
             {
-                'realty_object_id': offer_id_2,
+                'id': offer_id_2,
                 'row_version': 3,
             }
-        ])
+        ]})
     )
     await monolith_cian_elasticapi_mock.add_stub(
         method='GET',
