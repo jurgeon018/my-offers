@@ -36,17 +36,30 @@ definitions:
         x-error: ''
         x-success: ''
     type: object
-  WebApi.Models.Announcements.GetChangedIdsResponse:
-    description: Ответ на запрос на получение изменившихся объявлений
+  WebApi.Models.Announcements.ChangedAnnouncement:
+    description: Изменившиеся объявление
     properties:
-      offersIds:
-        description: Ids объявлений
+      id:
+        description: Id объявления
+        format: int32
+        type: integer
+      rowVersion:
+        description: RowVersion
+        format: int64
+        type: integer
+    required:
+    - id
+    type: object
+  WebApi.Models.Announcements.GetChangedIdsV2Response:
+    description: Ответ на запрос получения изменившихся объявлений
+    properties:
+      announcements:
+        description: Объявления
         items:
-          format: int32
-          type: integer
+          $ref: '#/definitions/WebApi.Models.Announcements.ChangedAnnouncement'
         type: array
     required:
-    - offersIds
+    - announcements
     type: object
 host: master.announcements.dev3.cian.ru
 info:
@@ -80,33 +93,6 @@ paths:
         id объявлений.
       tags:
       - AnnouncementsEdit
-  /v1/get-changed-announcements-ids/:
-    get:
-      parameters:
-      - description: RowVersion объявления
-        format: int64
-        in: query
-        name: rowVersion
-        required: true
-        type: integer
-      - description: Количество
-        format: int32
-        in: query
-        name: top
-        type: integer
-      produces:
-      - application/msgpack
-      - text/plain
-      - application/json
-      - text/json
-      responses:
-        '200':
-          description: Success
-          schema:
-            $ref: '#/definitions/WebApi.Models.Announcements.GetChangedIdsResponse'
-      summary: Получение изменившихся объявлений
-      tags:
-      - AnnouncementsWebApi
   /v1/update-editdate/:
     post:
       consumes:
@@ -135,6 +121,33 @@ paths:
       summary: Обновляет дату публикации для всех переданных id объявлений.
       tags:
       - AnnouncementsEdit
+  /v2/get-changed-announcements-ids/:
+    get:
+      parameters:
+      - description: RowVersion объявления
+        format: int64
+        in: query
+        name: rowVersion
+        required: true
+        type: integer
+      - description: Количество
+        format: int32
+        in: query
+        name: top
+        type: integer
+      produces:
+      - application/msgpack
+      - text/plain
+      - application/json
+      - text/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/WebApi.Models.Announcements.GetChangedIdsV2Response'
+      summary: Получение изменившихся объявлений
+      tags:
+      - AnnouncementsWebApi
 schemes:
 - http
 swagger: '2.0'

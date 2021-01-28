@@ -10,10 +10,12 @@ from more_itertools import grouper
 from simple_settings import settings
 
 from my_offers.entities import OfferRowVersion
-from my_offers.repositories import monolith_cian_elasticapi, postgresql
-from my_offers.repositories.monolith_cian_elasticapi.entities import (
-    ApiElasticAnnouncementV3GetChangedIds,
-    ElasticAnnouncementRowVersion,
+from my_offers.repositories import postgresql
+from my_offers.repositories.monolith_cian_ms_announcements import v2_get_changed_announcements_ids
+from my_offers.repositories.monolith_cian_ms_announcements.entities import (
+    ChangedAnnouncement,
+    GetChangedIdsV2Response,
+    V2GetChangedAnnouncementsIds,
 )
 from my_offers.services.realty_resender._jobs import run_resend_task, save_offers_from_elasticapi
 
@@ -42,9 +44,11 @@ async def resend_offers(bulk_size: int) -> None:
     row_version = await postgresql.get_last_row_version()
 
     with new_operation_id() as operation_id:
-        changed_offers = await monolith_cian_elasticapi.api_elastic_announcement_v3_get_changed_ids(
-            ApiElasticAnnouncementV3GetChangedIds(row_version=row_version, top=settings.SYNC_OFFERS_TOP_CHANGED_CNT)
-        )
+        response: GetChangedIdsV2Response = await v2_get_changed_announcements_ids(V2GetChangedAnnouncementsIds(
+            row_version=row_version,
+            top=settings.SYNC_OFFERS_TOP_CHANGED_CNT
+        ))
+        changed_offers = response.announcements
         changed_offers_len = len(changed_offers)
         max_row_version = max(x.row_version for x in changed_offers) - settings.SYNC_OFFERS_ROW_VERSION_OFFSET
 
@@ -88,9 +92,9 @@ async def resend_offers(bulk_size: int) -> None:
         )
 
 
-async def _get_offers_diff(changed_offers: List[ElasticAnnouncementRowVersion]) -> _OffersDiff:
-    realty_offers_set = set(o.realty_object_id for o in changed_offers)
-    my_offers_ids = await postgresql.get_offers_row_version(offer_ids=realty_offers_set)
+async def _get_offers_diff(changed_offers: List[ChangedAnnouncement]) -> _OffersDiff:
+    realty_offers_set = set(o.id for o in changed_offers)
+    my_offers_ids = await postgresql.get_offers_row_version(offer_ids=list(realty_offers_set))
     my_offers_set = {o.offer_id for o in my_offers_ids}
 
     # объявления, которых нет в my_offers
@@ -106,14 +110,14 @@ async def _get_offers_diff(changed_offers: List[ElasticAnnouncementRowVersion]) 
 
 
 def _get_row_versions_diff(
-        realty_offers: List[ElasticAnnouncementRowVersion],
+        realty_offers: List[ChangedAnnouncement],
         my_offers: List[OfferRowVersion]
 ) -> Set[int]:
     my_offers_map = {o.offer_id: o for o in my_offers}
     found_difference = set()
 
     for realty_offer in realty_offers:
-        offer_id = realty_offer.realty_object_id
+        offer_id = realty_offer.id
         my_offer = my_offers_map.get(offer_id)
 
         if not my_offer:

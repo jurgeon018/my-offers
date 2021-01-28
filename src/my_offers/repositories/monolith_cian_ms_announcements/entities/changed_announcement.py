@@ -9,12 +9,14 @@ cian-codegen version: 1.9.0
 
 """
 from dataclasses import dataclass
-from typing import List
+from typing import Optional
 
 
 @dataclass
-class GetChangedIdsResponse:
-    """Ответ на запрос на получение изменившихся объявлений"""
+class ChangedAnnouncement:
+    """Изменившиеся объявление"""
 
-    offers_ids: List[int]
-    """Ids объявлений"""
+    id: int
+    """Id объявления"""
+    row_version: Optional[int] = None
+    """RowVersion"""

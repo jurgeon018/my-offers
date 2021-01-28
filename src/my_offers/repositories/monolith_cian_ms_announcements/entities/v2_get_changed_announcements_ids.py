@@ -13,7 +13,7 @@ from typing import Optional
 
 
 @dataclass
-class V1GetChangedAnnouncementsIds:
+class V2GetChangedAnnouncementsIds:
     row_version: int
     """RowVersion объявления"""
     top: Optional[int] = None
