@@ -10,8 +10,9 @@ cian-codegen version: 1.9.0
 
 """
 from .can_update_editdate_result import CanUpdateEditdateResult
-from .get_changed_ids_response import GetChangedIdsResponse
+from .changed_announcement import ChangedAnnouncement
+from .get_changed_ids_v2_response import GetChangedIdsV2Response
 from .update_editdate_request import UpdateEditdateRequest
 from .update_editdate_result import UpdateEditdateResult
 from .v1_can_update_editdate import V1CanUpdateEditdate
-from .v1_get_changed_announcements_ids import V1GetChangedAnnouncementsIds
+from .v2_get_changed_announcements_ids import V2GetChangedAnnouncementsIds
