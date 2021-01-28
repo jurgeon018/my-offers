@@ -91,12 +91,13 @@ async def v2_get_offer_views(
     enrich_params = prepare_enrich_params(models=object_models, user_id=user_id)
 
     # получение данных для обогащения
-    enrich_data, degradation = await load_enrich_data(
-        params=enrich_params,
-        status_tab=status_tab
+    (enrich_data, degradation), agent_hierarchy_data_result = await asyncio.gather(
+        load_enrich_data(
+            params=enrich_params,
+            status_tab=status_tab
+        ),
+        get_agent_hierarchy_data_degradation_handler(user_id)
     )
-
-    agent_hierarchy_data_result = await get_agent_hierarchy_data_degradation_handler(user_id)
 
     # подготовка моделей для ответа
     offers = [
