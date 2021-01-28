@@ -68,11 +68,6 @@ async def monolith_cian_elasticapi_mock(http_mock_service):
 
 
 @pytest.fixture(scope='session')
-async def monolith_cian_ms_announcements_mock(http_mock_service):
-    yield await http_mock_service.make_microservice_mock('monolith-cian-ms-announcements')
-
-
-@pytest.fixture(scope='session')
 async def monolith_cian_realty_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('monolith-cian-realty')
 

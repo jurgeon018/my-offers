@@ -32,7 +32,7 @@ async def sync_offers(row_version: int = 0):
     await archive_missed_offers()
 
 
-async def _save_current_offer_row_versions(row_version):
+async def _save_current_offer_row_versions(row_version: int) -> None:
     has_next = True
     page_size = 10000
     count = 0

@@ -53,7 +53,7 @@ async def get_outdated_offer_ids() -> List[int]:
         o.row_version < orv.row_version
         and not o.is_test
     order by
-        o.offer_id    
+        o.offer_id
     """
 
     result = await pg.get().fetch(query)
