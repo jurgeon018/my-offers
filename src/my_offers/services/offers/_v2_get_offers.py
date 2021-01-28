@@ -39,15 +39,14 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
     limit, offset = get_pagination(request.pagination)
 
     # шаг 2 - получение object models и счетчиков
-    object_models_result, total_count_result, offer_counters_result = await asyncio.gather(
-        get_object_models_degradation_handler(
-            filters=filters,
-            limit=limit,
-            offset=offset,
-            sort_type=request.sort or enums.GetOffersSortType.by_default,
-        ),
-        get_object_models_total_count_degradation_handler(filters),
-        get_offer_counters_degradation_handler(counter_filters),
+    total_count_task = asyncio.create_task(get_object_models_total_count_degradation_handler(filters))
+    offer_counters_task = asyncio.create_task(get_offer_counters_degradation_handler(counter_filters))
+
+    object_models_result = await get_object_models_degradation_handler(
+        filters=filters,
+        limit=limit,
+        offset=offset,
+        sort_type=request.sort or enums.GetOffersSortType.by_default,
     )
     if object_models_result.degraded:
         raise BrokenRulesException([
@@ -59,17 +58,19 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
         ])
 
     object_models = object_models_result.value
-    total = total_count_result.value
-    if settings.LOG_SEARCH_QUERIES and filters.get('search_text'):
-        await save_offers_search_log(filters=filters, found_cnt=total, is_error=object_models_result.degraded)
-
     offers, degradation = await v2_get_offer_views(
         object_models=object_models,
         user_id=realty_user_id,
         status_tab=request.filters.status_tab
     )
 
+    offer_counters_result = await offer_counters_task
     degradation['offer_counters'] = offer_counters_result.degraded
+
+    total_count_result = await total_count_task
+    total = total_count_result.value
+    if settings.LOG_SEARCH_QUERIES and filters.get('search_text'):
+        await save_offers_search_log(filters=filters, found_cnt=total, is_error=object_models_result.degraded)
 
     # шаг 3 - формирование ответа
     return entities.GetOffersV2Response(
