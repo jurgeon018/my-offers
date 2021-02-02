@@ -3,14 +3,15 @@ from typing import Optional, Tuple
 
 from simple_settings import settings
 
+import my_offers.entities.page_info
 from my_offers import entities, enums
-from my_offers.entities import get_offers
 from my_offers.entities.duplicates import DuplicateSubscription
+from my_offers.helpers.page_info import get_page_info, get_pagination
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories import postgresql
 from my_offers.services import auctions, offer_view
+from my_offers.services import offers as offers_module
 from my_offers.services.notifications import get_notification_settings
-from my_offers.services.offers import get_page_info, get_pagination, load_object_model
 from my_offers.services.similars.helpers.table import get_similar_table_suffix
 
 
@@ -25,7 +26,7 @@ async def v1_get_offer_similars_desktop_public(
     if offset >= max_count:
         return _get_empty_response(limit, offset, subscription)
 
-    object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
+    object_model = await offers_module.load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
 
     if not is_offer_for_similar(status=object_model.status, category=object_model.category):
         return _get_empty_response(limit, offset, subscription)
@@ -84,7 +85,11 @@ def _get_empty_response(
     )
 
 
-def _get_pagination(*, pagination: Optional[get_offers.Pagination], max_count: int) -> Tuple[int, int]:
+def _get_pagination(
+        *,
+        pagination: Optional[my_offers.entities.page_info.Pagination],
+        max_count: int
+) -> Tuple[int, int]:
     limit, offset = get_pagination(pagination)
 
     if limit + offset >= max_count:

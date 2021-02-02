@@ -40,7 +40,7 @@ async def test_get_offer_view(mocker):
     object_model = mocker.sentinel.object_model
     offer_view = mocker.sentinel.offer_view
     v2_get_offer_views_mock = mocker.patch(
-        'my_offers.services.qa.v2_get_offer_views',
+        'my_offers.services.qa.get_offer_views',
         return_value=future(([offer_view], {}))
     )
 

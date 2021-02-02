@@ -1,0 +1,114 @@
+from cian_core.degradation import get_degradation_handler
+from simple_settings import settings
+
+from my_offers.entities import AgentHierarchyData
+from my_offers.entities.get_offers import OfferCounters
+from my_offers.repositories import postgresql
+from my_offers.repositories.postgresql import get_object_models, get_offers_offence
+from my_offers.repositories.postgresql.agents import get_agent_hierarchy_data, get_agent_names
+from my_offers.repositories.postgresql.billing import get_offers_payed_till_excluding_calltracking
+from my_offers.repositories.postgresql.object_model import get_object_models_total_count
+from my_offers.repositories.postgresql.offer import get_offer_counters, get_offers_payed_by, get_offers_update_at
+from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
+from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
+from my_offers.services import statistics
+
+
+get_object_models_degradation_handler = get_degradation_handler(
+    func=get_object_models,
+    key='psql.get_object_models',
+    default=[],
+)
+
+get_object_models_total_count_degradation_handler = get_degradation_handler(
+    func=get_object_models_total_count,
+    key='psql.get_object_models_total_count',
+    default=settings.OFFER_LIST_LIMIT,
+)
+
+get_offer_counters_degradation_handler = get_degradation_handler(
+    func=get_offer_counters,
+    key='psql.get_offer_counters',
+    default=OfferCounters(
+        active=None,
+        not_active=None,
+        declined=None,
+        archived=None,
+    ),
+)
+
+get_offers_offence_degradation_handler = get_degradation_handler(
+    func=get_offers_offence,
+    key='psql.get_offers_offence',
+    default=[],
+)
+
+get_last_import_errors_degradation_handler = get_degradation_handler(
+    func=get_last_import_errors,
+    key='psql.get_last_import_errors',
+    default=dict(),
+)
+
+get_agent_names_degradation_handler = get_degradation_handler(
+    func=get_agent_names,
+    key='psql.get_agent_names',
+    default=[],
+)
+
+get_agent_hierarchy_data_degradation_handler = get_degradation_handler(
+    func=get_agent_hierarchy_data,
+    key='psql.get_agent_hierarchy_data',
+    default=AgentHierarchyData(
+        is_master_agent=False,
+        is_sub_agent=False,
+    ),
+)
+
+get_offer_premoderations_degradation_handler = get_degradation_handler(
+    func=get_offer_premoderations,
+    key='psql.get_offer_premoderations',
+    default=[],
+)
+
+get_offers_update_at_degradation_handler = get_degradation_handler(
+    func=get_offers_update_at,
+    key='psql.get_offers_update_at',
+    default=dict(),
+)
+
+get_offers_payed_till_excluding_calltracking_degradation_handler = get_degradation_handler(
+    func=get_offers_payed_till_excluding_calltracking,
+    key='psql.get_offers_payed_till_excluding_calltracking',
+    default=dict(),
+)
+
+get_similars_counters_by_offer_ids_degradation_handler = get_degradation_handler(
+    func=postgresql.get_similars_counters_by_offer_ids,
+    key='psql.get_similars_counters_by_offer_ids',
+    default=dict(),
+)
+
+get_offers_payed_by_degradation_handler = get_degradation_handler(
+    func=get_offers_payed_by,
+    key='psql.get_offers_payed_by',
+    default=dict(),
+)
+
+
+get_views_counts_degradation_handler = get_degradation_handler(
+    func=statistics.get_views_counts,
+    key='cassandra.get_views_counts',
+    default=dict(),
+)
+
+get_searches_counts_degradation_handler = get_degradation_handler(
+    func=statistics.get_searches_counts,
+    key='cassandra.get_searches_counts',
+    default=dict(),
+)
+
+get_favorites_counts_degradation_handler = get_degradation_handler(
+    func=statistics.get_favorites_counts,
+    key='cassandra.get_favorites_counts',
+    default=dict(),
+)

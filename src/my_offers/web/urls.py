@@ -32,6 +32,34 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
     url(
+        r'/public/v3/get-offers/$',
+        get_handler(
+            service=offers.v3_get_offers_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersRequest,
+            response_schema=entities.GetOffersV3Response,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
+        r'/v3/get-offers/$',
+        get_handler(
+            service=offers.v3_get_offers_private,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.GetOffersPrivateRequest,
+            response_schema=entities.GetOffersV3Response,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
+    url(
+        r'/public/v1/get-offers-counters/$',
+        get_handler(
+            service=offers.v1_get_offers_counters_public,
+            response_schema=entities.OfferCounters,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
         r'/v1/get-offers-ids-by-tab/$',
         get_handler(
             service=offers.get_offers_ids_by_tab,

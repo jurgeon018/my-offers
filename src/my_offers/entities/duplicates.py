@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from my_offers import enums
-from my_offers.entities.get_offers import PageInfo, Pagination
+from my_offers.entities.page_info import PageInfo, Pagination
 
 
 @dataclass

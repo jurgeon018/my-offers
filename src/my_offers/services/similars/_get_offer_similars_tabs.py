@@ -3,7 +3,7 @@ from simple_settings import settings
 from my_offers import entities
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories import postgresql
-from my_offers.services.offers import load_object_model
+from my_offers.services import offers as offers_module
 from my_offers.services.similars.helpers.table import get_similar_table_suffix
 from my_offers.services.similars.helpers.tabs import get_tabs
 
@@ -12,7 +12,7 @@ async def v1_get_offer_similars_tabs_public(
         request: entities.GetOfferDuplicatesTabsRequest,
         realty_user_id: int
 ) -> entities.GetOfferDuplicatesTabsResponse:
-    object_model = await load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
+    object_model = await offers_module.load_object_model(user_id=realty_user_id, offer_id=request.offer_id)
 
     if not is_offer_for_similar(status=object_model.status, category=object_model.category):
         return entities.GetOfferDuplicatesTabsResponse(tabs=[])

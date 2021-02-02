@@ -20,7 +20,14 @@ from my_offers.entities.duplicates import (
 )
 from my_offers.entities.duplicates import PriceInfo as PriceInfoWithTrend
 from my_offers.entities.duplicates import Tab
-from my_offers.entities.get_offers import GetOffersPrivateRequest, GetOffersRequest, GetOffersV2Response, Statistics
+from my_offers.entities.get_offers import (
+    GetOffersPrivateRequest,
+    GetOffersRequest,
+    GetOffersV2Response,
+    GetOffersV3Response,
+    OfferCounters,
+    Statistics,
+)
 from my_offers.entities.get_offers_ids_by_tab import GetOffersIdsByTabRequest, GetOffersIdsByTabResponse
 from my_offers.entities.moderation import ModerationOfferOffence
 from my_offers.entities.offer import Offer, ReindexOffer, ReindexOfferItem

@@ -16,7 +16,7 @@ from my_offers.services.agencies_settings import get_settings_degradation_handle
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offer_relevance_warnings import get_offer_relevance_warnings_degradation_handler
-from my_offers.services.offers._get_offers import (
+from my_offers.services.offers._degradation_handlers import (
     get_agent_names_degradation_handler,
     get_favorites_counts_degradation_handler,
     get_last_import_errors_degradation_handler,
