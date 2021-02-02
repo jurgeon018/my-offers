@@ -6,13 +6,7 @@ from cian_test_utils import future
 
 from my_offers.entities import GetOffersPrivateRequest
 from my_offers.entities.available_actions import AvailableActions
-from my_offers.entities.get_offers import (
-    ActiveInfo,
-    Filter,
-    GetOfferV2,
-    PageSpecificInfo,
-    Statistics,
-)
+from my_offers.entities.get_offers import ActiveInfo, Filter, GetOfferV2, PageSpecificInfo, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.enums import OfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
@@ -66,7 +60,7 @@ async def test_v2_get_offers_private(mocker):
 async def test_v2_get_offer_views(mocker):
     # arrange
     load_enrich_data_mock = mocker.patch(
-        f'my_offers.services.offers._get_offers.load_enrich_data',
+        'my_offers.services.offers._get_offers.load_enrich_data',
         return_value=future((
             EnrichData(
                 auctions={},

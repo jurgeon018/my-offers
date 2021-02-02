@@ -4,7 +4,6 @@ from typing import Any, Dict, List, Tuple
 from cian_web.exceptions import BrokenRulesException, Error
 from simple_settings import settings
 
-import my_offers.entities.page_info
 from my_offers import entities, enums
 from my_offers.entities import get_offers
 from my_offers.helpers.page_info import get_page_info, get_pagination
@@ -25,7 +24,7 @@ async def prepare_data_for_get_offers(
         request: entities.GetOffersRequest,
         filters: Dict[str, Any],
         realty_user_id: int,
-) -> Tuple[Dict[str, bool], List[get_offers.GetOfferV2], my_offers.entities.page_info.PageInfo]:
+) -> Tuple[Dict[str, bool], List[get_offers.GetOfferV2], entities.PageInfo]:
     total_count_task = asyncio.create_task(get_object_models_total_count_degradation_handler(filters))
     limit, offset = get_pagination(request.pagination)
     object_models_result = await get_object_models_degradation_handler(

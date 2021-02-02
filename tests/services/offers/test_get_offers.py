@@ -3,8 +3,9 @@ from cian_test_utils import future
 
 from my_offers.entities.get_offers import Filter
 from my_offers.enums import OfferStatusTab
-from my_offers.services.offers._filters import get_counter_filters
 from my_offers.services.offers import get_filters
+from my_offers.services.offers._filters import get_counter_filters
+
 
 PATH = 'my_offers.services.offers._get_offers.'
 

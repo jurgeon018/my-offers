@@ -3,7 +3,6 @@ from typing import Optional, Tuple
 
 from simple_settings import settings
 
-import my_offers.entities.page_info
 from my_offers import entities, enums
 from my_offers.entities.duplicates import DuplicateSubscription
 from my_offers.helpers.page_info import get_page_info, get_pagination
@@ -87,7 +86,7 @@ def _get_empty_response(
 
 def _get_pagination(
         *,
-        pagination: Optional[my_offers.entities.page_info.Pagination],
+        pagination: Optional[entities.Pagination],
         max_count: int
 ) -> Tuple[int, int]:
     limit, offset = get_pagination(pagination)

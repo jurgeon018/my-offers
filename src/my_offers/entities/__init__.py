@@ -58,6 +58,7 @@ from my_offers.entities.offers_for_calltracking import (
     OffersForCalltrackingRequest,
     OffersForCalltrackingResponse,
 )
+from my_offers.entities.page_info import PageInfo, Pagination
 from my_offers.entities.similar import OfferSimilar, OfferSimilarWithType
 from my_offers.entities.subscribe import (
     NewEmailSubscription,
