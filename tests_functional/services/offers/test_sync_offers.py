@@ -26,6 +26,12 @@ async def test_sync_offers_command(
                 'row_version': 2,
                 'flags': 10,
                 'status': 'Published',
+            },
+            {
+                'id': 3,
+                'row_version': 3,
+                'flags': 0,
+                'status': 'Deleted',
             }
         ]})
     )
@@ -36,7 +42,7 @@ async def test_sync_offers_command(
     rows = await pg.fetch('select * from offers_row_versions')
 
     # assert
-    assert len(rows) == 2
+    assert len(rows) == 3
 
 
 async def test_sync_offers_command__no_offers__return(
