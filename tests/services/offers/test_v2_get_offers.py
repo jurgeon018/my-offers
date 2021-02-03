@@ -1,29 +1,17 @@
 from datetime import datetime
 
 import pytest
-from cian_core.degradation import DegradationResult
 from cian_helpers.timezone import TIMEZONE
 from cian_test_utils import future
-from cian_web.exceptions import BrokenRulesException
 
 from my_offers.entities import GetOffersPrivateRequest
 from my_offers.entities.available_actions import AvailableActions
-from my_offers.entities.get_offers import (
-    ActiveInfo,
-    Filter,
-    GetOffersRequest,
-    GetOffersV2Response,
-    GetOfferV2,
-    OfferCounters,
-    PageInfo,
-    PageSpecificInfo,
-    Statistics,
-)
+from my_offers.entities.get_offers import ActiveInfo, Filter, GetOfferV2, PageSpecificInfo, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
-from my_offers.enums import GetOffersSortType, OfferStatusTab
+from my_offers.enums import OfferStatusTab
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
-from my_offers.services.offers import v2_get_offer_views, v2_get_offers_private, v2_get_offers_public
+from my_offers.services.offers import get_offer_views, v2_get_offers_private
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 
@@ -72,7 +60,7 @@ async def test_v2_get_offers_private(mocker):
 async def test_v2_get_offer_views(mocker):
     # arrange
     load_enrich_data_mock = mocker.patch(
-        f'{PATH}load_enrich_data',
+        'my_offers.services.offers._get_offers.load_enrich_data',
         return_value=future((
             EnrichData(
                 auctions={},
@@ -139,7 +127,7 @@ async def test_v2_get_offer_views(mocker):
     )
 
     # act
-    result = await v2_get_offer_views(
+    result = await get_offer_views(
         object_models=[object_model],
         user_id=777,
         status_tab=OfferStatusTab.active

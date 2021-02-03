@@ -1,183 +1,86 @@
-import math
-from typing import Any, Dict, Optional, Tuple
+import asyncio
+from typing import Any, Dict, List, Tuple
 
-from cian_core.degradation import get_degradation_handler
+from cian_web.exceptions import BrokenRulesException, Error
 from simple_settings import settings
 
-from my_offers.entities import AgentHierarchyData, get_offers
-from my_offers.entities.get_offers import OfferCounters
-from my_offers.mappers.get_offers_request import get_offers_filters_mapper
-from my_offers.repositories import postgresql
-from my_offers.repositories.postgresql import get_object_models, get_offers_offence
-from my_offers.repositories.postgresql.agents import get_agent_hierarchy_data, get_agent_names, get_master_user_id
-from my_offers.repositories.postgresql.billing import get_offers_payed_till_excluding_calltracking
-from my_offers.repositories.postgresql.object_model import get_object_models_total_count
-from my_offers.repositories.postgresql.offer import get_offer_counters, get_offers_payed_by, get_offers_update_at
-from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
-from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
-from my_offers.services import statistics
-from my_offers.services.offers.helpers.search_text import prepare_search_text
-
-
-get_object_models_degradation_handler = get_degradation_handler(
-    func=get_object_models,
-    key='psql.get_object_models',
-    default=[],
+from my_offers import entities, enums
+from my_offers.entities import get_offers
+from my_offers.helpers.page_info import get_page_info, get_pagination
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
+from my_offers.repositories.postgresql.offers_search_log import save_offers_search_log
+from my_offers.services import offer_view
+from my_offers.services.offers._degradation_handlers import (
+    get_agent_hierarchy_data_degradation_handler,
+    get_object_models_degradation_handler,
+    get_object_models_total_count_degradation_handler,
 )
-
-get_object_models_total_count_degradation_handler = get_degradation_handler(
-    func=get_object_models_total_count,
-    key='psql.get_object_models_total_count',
-    default=settings.OFFER_LIST_LIMIT,
-)
-
-get_offer_counters_degradation_handler = get_degradation_handler(
-    func=get_offer_counters,
-    key='psql.get_offer_counters',
-    default=OfferCounters(
-        active=None,
-        not_active=None,
-        declined=None,
-        archived=None,
-    ),
-)
-
-get_offers_offence_degradation_handler = get_degradation_handler(
-    func=get_offers_offence,
-    key='psql.get_offers_offence',
-    default=[],
-)
-
-get_last_import_errors_degradation_handler = get_degradation_handler(
-    func=get_last_import_errors,
-    key='psql.get_last_import_errors',
-    default=dict(),
-)
-
-get_agent_names_degradation_handler = get_degradation_handler(
-    func=get_agent_names,
-    key='psql.get_agent_names',
-    default=[],
-)
-
-get_agent_hierarchy_data_degradation_handler = get_degradation_handler(
-    func=get_agent_hierarchy_data,
-    key='psql.get_agent_hierarchy_data',
-    default=AgentHierarchyData(
-        is_master_agent=False,
-        is_sub_agent=False,
-    ),
-)
-
-get_offer_premoderations_degradation_handler = get_degradation_handler(
-    func=get_offer_premoderations,
-    key='psql.get_offer_premoderations',
-    default=[],
-)
-
-get_offers_update_at_degradation_handler = get_degradation_handler(
-    func=get_offers_update_at,
-    key='psql.get_offers_update_at',
-    default=dict(),
-)
-
-get_offers_payed_till_excluding_calltracking_degradation_handler = get_degradation_handler(
-    func=get_offers_payed_till_excluding_calltracking,
-    key='psql.get_offers_payed_till_excluding_calltracking',
-    default=dict(),
-)
-
-get_similars_counters_by_offer_ids_degradation_handler = get_degradation_handler(
-    func=postgresql.get_similars_counters_by_offer_ids,
-    key='psql.get_similars_counters_by_offer_ids',
-    default=dict(),
-)
-
-get_offers_payed_by_degradation_handler = get_degradation_handler(
-    func=get_offers_payed_by,
-    key='psql.get_offers_payed_by',
-    default=dict(),
-)
+from my_offers.services.offers.enrich.load_enrich_data import load_enrich_data
+from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
 
 
-get_views_counts_degradation_handler = get_degradation_handler(
-    func=statistics.get_views_counts,
-    key='cassandra.get_views_counts',
-    default=dict(),
-)
-
-get_searches_counts_degradation_handler = get_degradation_handler(
-    func=statistics.get_searches_counts,
-    key='cassandra.get_searches_counts',
-    default=dict(),
-)
-
-get_favorites_counts_degradation_handler = get_degradation_handler(
-    func=statistics.get_favorites_counts,
-    key='cassandra.get_favorites_counts',
-    default=dict(),
-)
-
-
-async def get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, Any]:
-    result: Dict[str, Any] = get_offers_filters_mapper.map_to(filters)
-    if filters.status_tab.is_all:
-        del result['status_tab']
-
-    user_filter = await get_user_filter(user_id)
-    result.update(user_filter)
-
-    if search_text := result.get('search_text'):
-        result['search_text'] = prepare_search_text(search_text)
-
-    return result
-
-
-async def get_user_filter(user_id: int) -> Dict[str, Any]:
-    master_user_id = await get_master_user_id(user_id)
-    user_filter: Dict[str, Any] = {}
-    if master_user_id:
-        # опубликовал мастер или сотрудник и объявление назначено на сотрудника
-        user_filter['master_user_id'] = [master_user_id, user_id]
-        user_filter['user_id'] = user_id
-    else:
-        user_filter['master_user_id'] = user_id
-
-    return user_filter
-
-
-def get_counter_filters(filters):
-    counter_filters = {
-        'master_user_id': filters.get('master_user_id'),
-        'user_id': filters.get('user_id'),
-    }
-    if search_text := filters.get('search_text'):
-        counter_filters['search_text'] = search_text
-
-    return counter_filters
-
-
-def get_pagination(pagination: Optional[get_offers.Pagination]) -> Tuple[int, int]:
-    limit = settings.OFFER_LIST_LIMIT
-    offset = 0
-
-    if not pagination:
-        return limit, offset
-
-    if pagination.limit:
-        limit = pagination.limit
-
-    if pagination.offset:
-        offset = pagination.offset
-    elif pagination.page:
-        offset = limit * (pagination.page - 1)
-
-    return limit, offset
-
-
-def get_page_info(*, limit: int, offset: int, total: int) -> get_offers.PageInfo:
-    return get_offers.PageInfo(
-        count=total,
-        can_load_more=total > offset + limit,
-        page_count=math.ceil(total / limit)
+async def prepare_data_for_get_offers(
+        *,
+        request: entities.GetOffersRequest,
+        filters: Dict[str, Any],
+        realty_user_id: int,
+) -> Tuple[Dict[str, bool], List[get_offers.GetOfferV2], entities.PageInfo]:
+    total_count_task = asyncio.create_task(get_object_models_total_count_degradation_handler(filters))
+    limit, offset = get_pagination(request.pagination)
+    object_models_result = await get_object_models_degradation_handler(
+        filters=filters,
+        limit=limit,
+        offset=offset,
+        sort_type=request.sort or enums.GetOffersSortType.by_default,
     )
+    if object_models_result.degraded:
+        raise BrokenRulesException([
+            Error(
+                message='Произошла ошибка при загрузке объявлений',
+                code='degradation',
+                key='object_models'
+            )
+        ])
+    object_models = object_models_result.value
+    offers, degradation = await get_offer_views(
+        object_models=object_models,
+        user_id=realty_user_id,
+        status_tab=request.filters.status_tab
+    )
+    total_count_result = await total_count_task
+    total = total_count_result.value
+    if settings.LOG_SEARCH_QUERIES and filters.get('search_text'):
+        await save_offers_search_log(filters=filters, found_cnt=total, is_error=object_models_result.degraded)
+
+    return degradation, offers, get_page_info(limit=limit, offset=offset, total=total)
+
+
+async def get_offer_views(
+        *,
+        object_models: List[ObjectModel],
+        user_id: int,
+        status_tab: enums.OfferStatusTab
+) -> Tuple[List[get_offers.GetOfferV2], Dict[str, bool]]:
+    # подготовка параметров для обогащения
+    enrich_params = prepare_enrich_params(models=object_models, user_id=user_id)
+
+    # получение данных для обогащения
+    (enrich_data, degradation), agent_hierarchy_data_result = await asyncio.gather(
+        load_enrich_data(
+            params=enrich_params,
+            status_tab=status_tab
+        ),
+        get_agent_hierarchy_data_degradation_handler(user_id)
+    )
+
+    # подготовка моделей для ответа
+    offers = [
+        offer_view.v2_build_offer_view(
+            agent_hierarchy_data=agent_hierarchy_data_result.value,
+            object_model=object_model,
+            enrich_data=enrich_data
+        )
+        for object_model in object_models
+    ]
+
+    return offers, degradation

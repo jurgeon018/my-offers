@@ -1,10 +1,13 @@
 import pytest
 from cian_test_utils import future
+from cian_web.exceptions import BrokenRulesException
 
+from my_offers import entities, enums
 from my_offers.entities.get_offers import Filter
 from my_offers.enums import OfferStatusTab
-from my_offers.services.offers._get_offers import get_counter_filters, get_filters
-
+from my_offers.services.offers import get_filters
+from my_offers.services.offers._filters import get_counter_filters
+from my_offers.services.offers._get_offers import prepare_data_for_get_offers
 
 PATH = 'my_offers.services.offers._get_offers.'
 
@@ -25,7 +28,7 @@ async def test_get_filters(mocker):
     )
 
     get_master_user_id_mock = mocker.patch(
-        f'{PATH}get_master_user_id',
+        'my_offers.services.offers._filters.get_master_user_id',
         return_value=future()
     )
     expected = {'is_manual': True, 'master_user_id': 77, 'status_tab': 'active'}
@@ -54,7 +57,7 @@ async def test_get_filters__all__for_all(mocker):
     )
 
     get_master_user_id_mock = mocker.patch(
-        f'{PATH}get_master_user_id',
+        'my_offers.services.offers._filters.get_master_user_id',
         return_value=future()
     )
     expected = {'is_manual': True, 'master_user_id': 77}
@@ -103,7 +106,7 @@ async def test_get_filters__sub_agent__filters(mocker):
     )
 
     get_master_user_id_mock = mocker.patch(
-        f'{PATH}get_master_user_id',
+        'my_offers.services.offers._filters.get_master_user_id',
         return_value=future(88)
     )
     expected = {'is_manual': True, 'master_user_id': [88, 77], 'status_tab': 'active', 'user_id': 77}
@@ -132,7 +135,7 @@ async def test_get_filters__search_text__filters(mocker):
     )
 
     get_master_user_id_mock = mocker.patch(
-        f'{PATH}get_master_user_id',
+        'my_offers.services.offers._filters.get_master_user_id',
         return_value=future(88)
     )
     expected = {
@@ -149,3 +152,19 @@ async def test_get_filters__search_text__filters(mocker):
     # assert
     assert result == expected
     get_master_user_id_mock.assert_called_once_with(77)
+
+
+async def test_prepare_data_for_get_offers():
+    # arrange & act & assert
+    with pytest.raises(BrokenRulesException):
+        await prepare_data_for_get_offers(
+            filters={},
+            realty_user_id=1111,
+            request=entities.GetOffersRequest(
+                filters=Filter(
+                    status_tab=enums.OfferStatusTab.active
+                ),
+                pagination=None,
+                sort=None,
+            )
+        )

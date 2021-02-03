@@ -5,6 +5,7 @@ from typing import Dict, List, Optional
 from my_offers import enums
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.offer_view_model import OfferViewModelV2
+from my_offers.entities.page_info import PageInfo, Pagination
 from my_offers.enums.not_active_status import NotActiveStatus
 
 
@@ -32,16 +33,6 @@ class Filter:
     """За чей счет оплачена подача объявления"""
     has_relevance_warning: Optional[bool] = None
     """Только неактуальные"""
-
-
-@dataclass
-class Pagination:
-    page: Optional[int]
-    """Номер страницы начиная с 1"""
-    limit: Optional[int]
-    """Количество объявлений на страницу"""
-    offset: Optional[int]
-    """Отступ от начала"""
 
 
 @dataclass
@@ -167,21 +158,21 @@ class OfferCounters:
 
 
 @dataclass
-class PageInfo:
-    count: int
-    """Количество  объектов"""
-    can_load_more: bool
-    """Это не последняя страница"""
-    page_count: int
-    """Количество страниц"""
-
-
-@dataclass
 class GetOffersV2Response:
     offers: List[GetOfferV2]
     """Список объявлений"""
     counters: OfferCounters
     """Счеткики количества объявлений"""
+    page: PageInfo
+    """Информация о странице"""
+    degradation: Dict[str, bool]
+    """Информация о деградации"""
+
+
+@dataclass
+class GetOffersV3Response:
+    offers: List[GetOfferV2]
+    """Список объявлений"""
     page: PageInfo
     """Информация о странице"""
     degradation: Dict[str, bool]
