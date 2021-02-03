@@ -58,9 +58,9 @@ async def get_outdated_offer_ids() -> List[int]:
     where
         o.row_version < orv.row_version
         and (
-            (o.status_tab <> 'archived' and orv.status_tab <> 'archived')
+            not (o.status_tab = 'archived' and orv.status_tab = 'archived')
             or
-            (o.status_tab <> 'deleted' and orv.status_tab <> 'deleted')
+            not (o.status_tab = 'deleted' and orv.status_tab = 'deleted')
         )
         and not o.is_test
     order by
