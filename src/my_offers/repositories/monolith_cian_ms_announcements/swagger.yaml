@@ -39,6 +39,10 @@ definitions:
   WebApi.Models.Announcements.ChangedAnnouncement:
     description: Изменившиеся объявление
     properties:
+      flags:
+        description: Флаги объявления
+        format: int32
+        type: integer
       id:
         description: Id объявления
         format: int32
@@ -47,6 +51,18 @@ definitions:
         description: RowVersion
         format: int64
         type: integer
+      status:
+        description: Статус объявления
+        enum:
+        - published
+        - inactive
+        - refusedByModerator
+        - removedByModerator
+        type: string
+        x-inactive: Неактивен
+        x-published: Опубликован
+        x-refusedByModerator: Отклонен модератором
+        x-removedByModerator: Удален модератором
     required:
     - id
     type: object

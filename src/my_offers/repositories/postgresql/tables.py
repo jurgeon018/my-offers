@@ -10,7 +10,7 @@ metadata = sa.MetaData()
 
 deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
 offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type', )
-_offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type', )
+offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type', )
 _service = psa.ENUM(*get_names(Services), name='offer_service', )
 _offer_billing_service_type = psa.ENUM(*get_names(Services), name='offer_billing_service_type', )
 
@@ -23,7 +23,7 @@ offers = sa.Table(
     sa.Column('user_id', sa.BIGINT, nullable=False),
     sa.Column('deal_type', deal_type, nullable=False),
     sa.Column('offer_type', offer_type, nullable=False),
-    sa.Column('status_tab', _offer_status_tab, nullable=False),
+    sa.Column('status_tab', offer_status_tab, nullable=False),
     sa.Column('services', psa.ARRAY(_service), nullable=False),
     sa.Column('search_text', sa.TEXT, nullable=False),
     sa.Column('is_manual', sa.BOOLEAN, nullable=False),

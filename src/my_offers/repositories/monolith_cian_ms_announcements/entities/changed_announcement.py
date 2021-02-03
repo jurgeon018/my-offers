@@ -18,5 +18,9 @@ class ChangedAnnouncement:
 
     id: int
     """Id объявления"""
+    flags: Optional[int] = None
+    """Флаги объявления"""
     row_version: Optional[int] = None
     """RowVersion"""
+    status: Optional[int] = None
+    """Статус объявления"""

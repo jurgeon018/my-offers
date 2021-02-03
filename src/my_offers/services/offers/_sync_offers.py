@@ -8,6 +8,7 @@ from my_offers.repositories.monolith_cian_ms_announcements.entities import (
 from my_offers.repositories.postgresql import (
     archive_missed_offers,
     clean_offer_row_versions,
+    get_missed_offer_ids,
     get_outdated_offer_ids,
     save_offer_row_versions,
 )
@@ -28,13 +29,17 @@ async def sync_offers(row_version: int = 0):
     outdated_offer_ids = await get_outdated_offer_ids()
     await run_resend_task(outdated_offer_ids)
 
+    # выбираем все объявки, которых у нас нет и просим С# прислать их снова
+    missed_offer_ids = await get_missed_offer_ids()
+    await run_resend_task(missed_offer_ids)
+
     # выбираем все объявки, которых нет в C# и отправляем их в архив
     await archive_missed_offers()
 
 
 async def _save_current_offer_row_versions(row_version: int) -> None:
     has_next = True
-    page_size = 10000
+    page_size = 3000
     count = 0
     while has_next:
         response: GetChangedIdsV2Response = await v2_get_changed_announcements_ids(V2GetChangedAnnouncementsIds(
