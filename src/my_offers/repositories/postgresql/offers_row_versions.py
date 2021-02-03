@@ -72,9 +72,9 @@ async def get_outdated_offer_ids() -> List[int]:
     return [item['offer_id'] for item in result]
 
 
-async def get_missed_offer_ids():
+async def get_missed_offer_ids() -> List[int]:
     """
-    Выбираем все которые есть с С #, но отсутствуют у нас
+    Выбираем все которые есть в С#, но отсутствуют у нас
     """
     query = """
     select
@@ -92,7 +92,7 @@ async def get_missed_offer_ids():
     return [item['offer_id'] for item in result]
 
 
-async def archive_missed_offers() -> None:
+async def archive_missed_offers() -> List[int]:
     """
     Архивируем все объявления, которых нет в С# и у которых версия ниже максимальной
     """
@@ -114,6 +114,9 @@ async def archive_missed_offers() -> None:
                 and o.status_tab not in ('deleted', 'archived')
                 and not o.is_test
         )
+    returning offer_id
     """
 
-    await pg.get().execute(query)
+    result = await pg.get().fetch(query)
+
+    return [item['offer_id'] for item in result]
