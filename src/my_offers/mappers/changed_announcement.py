@@ -1,20 +1,21 @@
 from my_offers.helpers.status_tab import get_status_tab
 from my_offers.repositories.monolith_cian_announcementapi.entities import Flags
 from my_offers.repositories.monolith_cian_announcementapi.entities.flags import DraftReason
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status as ObjectModelStatus
 from my_offers.repositories.monolith_cian_ms_announcements.entities import ChangedAnnouncement
+from my_offers.repositories.monolith_cian_ms_announcements.entities.changed_announcement import Status
 
 
 STATUS_MAP = {
-    11: Status.draft,
-    12: Status.published,
-    14: Status.deactivated,
-    15: Status.refused,
-    16: Status.deleted,
-    17: Status.sold,
-    18: Status.moderate,
-    19: Status.removed_by_moderator,
-    20: Status.blocked,
+    Status.draft: ObjectModelStatus.draft,
+    Status.published: ObjectModelStatus.published,
+    Status.deactivated: ObjectModelStatus.deactivated,
+    Status.refused: ObjectModelStatus.refused,
+    Status.deleted: ObjectModelStatus.deleted,
+    Status.sold: ObjectModelStatus.sold,
+    Status.moderate: ObjectModelStatus.moderate,
+    Status.removed_by_moderator: ObjectModelStatus.removed_by_moderator,
+    Status.blocked: ObjectModelStatus.blocked,
 }
 
 
