@@ -1,4 +1,7 @@
+import asyncio
 import logging
+
+from cian_http.exceptions import TimeoutException
 
 from my_offers.helpers.graphite import send_to_graphite
 from my_offers.repositories.monolith_cian_ms_announcements import v2_get_changed_announcements_ids
@@ -59,11 +62,17 @@ async def _save_current_offer_row_versions(row_version: int) -> int:
     page_size = 3000
     count = 0
     while has_next:
-        response: GetChangedIdsV2Response = await v2_get_changed_announcements_ids(V2GetChangedAnnouncementsIds(
-            row_version=row_version,
-            top=page_size,
-        ))
-        offer_versions = response.announcements
+        try:
+            response: GetChangedIdsV2Response = await v2_get_changed_announcements_ids(V2GetChangedAnnouncementsIds(
+                row_version=row_version,
+                top=page_size,
+            ))
+            offer_versions = response.announcements
+
+        except TimeoutException:
+            logger.exception('v2_get_changed_announcements_ids timeout')
+            await asyncio.sleep(10)
+            continue
 
         if not offer_versions:
             break
