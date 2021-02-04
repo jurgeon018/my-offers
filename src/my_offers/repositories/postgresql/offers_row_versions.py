@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict, Any
 
 import asyncpgsa
 import sqlalchemy as sa
@@ -24,7 +24,7 @@ async def clean_offer_row_versions() -> None:
 
 
 async def save_offer_row_versions(offer_versions: List[ChangedAnnouncement]) -> None:
-    data = {}
+    data: Dict[int, Any] = {}
     for offer_version in offer_versions:
         if (
             offer_version.id not in data
