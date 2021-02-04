@@ -24,14 +24,18 @@ async def clean_offer_row_versions() -> None:
 
 
 async def save_offer_row_versions(offer_versions: List[ChangedAnnouncement]) -> None:
-    data = []
+    data = {}
     for offer_version in offer_versions:
-        data.append(changed_announcement_map_from(offer_version))
+        if (
+            offer_version.id not in data
+            or data[offer_version.id]['row_version'] < offer_version.row_version
+        ):
+            data[offer_version.id] = changed_announcement_map_from(offer_version)
 
     insert_query = insert(offers_row_versions)
     query, params = asyncpgsa.compile_query(
         insert_query
-        .values(data)
+        .values(list(data.values()))
         .on_conflict_do_update(
             index_elements=[offers_row_versions.c.offer_id],
             set_={
