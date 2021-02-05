@@ -12,7 +12,7 @@ async def test_sync_offers_command(
         path='/v2/get-changed-announcements-ids/',
         query={
             'rowVersion': 0,
-            'top': 3000,
+            'top': 1000,
         },
         response=MockResponse(body={'announcements': [
             {
@@ -56,7 +56,7 @@ async def test_sync_offers_command__no_offers__return(
         path='/v2/get-changed-announcements-ids/',
         query={
             'rowVersion': 0,
-            'top': 3000,
+            'top': 1000,
         },
         response=MockResponse(body={'announcements': []})
     )

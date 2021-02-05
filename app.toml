@@ -47,7 +47,7 @@ type = "consumer"
 command = "process_announcement_consumer"
 instances = 10
 cpu = 2048
-memory = 128
+memory = 256
 
 [job.save_moderation_offer_offence_consumer]
 type = "consumer"
@@ -71,7 +71,7 @@ memory = 128
 [job.save_offer_unload_error_consumer]
 type = "consumer"
 command = "save_offer_unload_error_consumer"
-memory = 128
+memory = 256
 
 [job.save_agent_consumer]
 type = "consumer"
@@ -81,7 +81,7 @@ memory = 128
 [job.save_offer_premoderation_consumer]
 type = "consumer"
 command = "save_offer_premoderation_consumer"
-memory = 128
+memory = 256
 
 [job.remove_offer_premoderation_consumer]
 type = "consumer"
@@ -163,5 +163,6 @@ type = "manage"
 command = "clean-users-command"
 
 [job.sync_offers]
-type = "manage"
+type = "cron"
+cron = "0 0 * * *"
 command = "sync-offers-command"

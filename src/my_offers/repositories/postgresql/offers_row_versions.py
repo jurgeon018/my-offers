@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 import asyncpgsa
 import sqlalchemy as sa
@@ -61,11 +61,8 @@ async def get_outdated_offer_ids() -> List[int]:
         left join offers_row_versions orv on o.offer_id = orv.offer_id
     where
         o.row_version < orv.row_version
-        and (
-            not (o.status_tab = 'archived' and orv.status_tab = 'archived')
-            or
-            not (o.status_tab = 'deleted' and orv.status_tab = 'deleted')
-        )
+        and not (o.status_tab = 'archived' and orv.status_tab = 'archived')
+        and not (o.status_tab = 'deleted' and orv.status_tab = 'deleted')
         and not o.is_test
     order by
         o.offer_id

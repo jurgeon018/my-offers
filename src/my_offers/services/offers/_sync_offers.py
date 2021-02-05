@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from cian_http.exceptions import ApiClientException
+from simple_settings import settings
 
 from my_offers.helpers.graphite import send_to_graphite
 from my_offers.repositories.monolith_cian_ms_announcements import v2_get_changed_announcements_ids
@@ -59,7 +60,7 @@ async def sync_offers(row_version: int = 0):
 
 async def _save_current_offer_row_versions(row_version: int) -> int:
     has_next = True
-    page_size = 3000
+    page_size = settings.OFFERS_SYNC_PAGE_SIZE
     count = 0
     while has_next:
         try:
