@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import List
 
 import pytz
+from cian_http.exceptions import ApiClientException
 from cian_json import json
 from more_itertools import grouper
 from simple_settings import settings
@@ -123,9 +124,13 @@ async def _run_job(offers_ids: List[int]) -> List[int]:
 
     while True:
         await asyncio.sleep(settings.RESEND_JOB_REFRESH)
-        job: GetResendMessagesJobResponse = await monolith_cian_realty.api_v1_resend_reporting_messages_get_job(
-            ApiV1ResendReportingMessagesGetJob(id=job_id)
-        )
+        try:
+            job: GetResendMessagesJobResponse = await monolith_cian_realty.api_v1_resend_reporting_messages_get_job(
+                ApiV1ResendReportingMessagesGetJob(id=job_id)
+            )
+        except ApiClientException:
+            logger.exception('api_v1_resend_reporting_messages_get_job timeout')
+            continue
 
         if job.state in END_STATUSES:
             if job.data:
