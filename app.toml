@@ -47,17 +47,17 @@ type = "consumer"
 command = "process_announcement_consumer"
 instances = 10
 cpu = 2048
-memory = 128
+memory = 256
 
 [job.save_moderation_offer_offence_consumer]
 type = "consumer"
 command = "save_moderation_offer_offence_consumer"
-memory = 128
+memory = 256
 
 [job.save_announcement_contract_consumer]
 type = "consumer"
 command = "save_announcement_contract_consumer"
-memory = 128
+memory = 256
 
 [job.save_announcement_contract_consumer.prod]
 instances = 3
@@ -66,47 +66,47 @@ cpu = 2048
 [job.mark_to_delete_announcement_contract_consumer]
 type = "consumer"
 command = "mark_to_delete_announcement_contract_consumer"
-memory = 128
+memory = 256
 
 [job.save_offer_unload_error_consumer]
 type = "consumer"
 command = "save_offer_unload_error_consumer"
-memory = 128
+memory = 256
 
 [job.save_agent_consumer]
 type = "consumer"
 command = "save_agent_consumer"
-memory = 128
+memory = 256
 
 [job.save_offer_premoderation_consumer]
 type = "consumer"
 command = "save_offer_premoderation_consumer"
-memory = 128
+memory = 256
 
 [job.remove_offer_premoderation_consumer]
 type = "consumer"
 command = "remove_offer_premoderation_consumer"
-memory = 128
+memory = 256
 
 [job.update_offer_duplicates_consumer]
 type = "consumer"
 command = "update_offer_duplicates_consumer"
-memory = 128
+memory = 256
 
 [job.new_offer_duplicate_notification_consumer]
 type = "consumer"
 command = "new_offer_duplicate_notification_consumer"
-memory = 128
+memory = 256
 
 [job.offer_duplicate_price_changed_notification_consumer]
 type = "consumer"
 command = "offer_duplicate_price_changed_notification_consumer"
-memory = 128
+memory = 256
 
 [job.save_offer_relevance_warning_consumer]
 type = "consumer"
 command = "save_offer_relevance_warning_consumer"
-memory = 128
+memory = 256
 
 [job.process_announcement_from_temp_consumer]
 type = "consumer"
@@ -114,6 +114,7 @@ command = "process_announcement_from_temp_consumer"
 
 [job.process_announcement_from_temp_consumer.prod]
 instances = 5
+memory = 256
 
 [job.process_announcement_from_elasticapi_consumer]
 type = "consumer"
@@ -121,6 +122,7 @@ command = "process_announcement_from_elasticapi_consumer"
 
 [job.process_announcement_from_elasticapi_consumer.prod]
 instances = 5
+memory = 256
 
 [job.reindex_offers]
 type = "manage"
@@ -151,12 +153,12 @@ command = "sync-offer-duplicates-cron"
 [job.clear_deleted_offer_cron]
 type = "consumer"
 command = "clear-deleted-offer-cron"
-memory = 128
+memory = 256
 
 [job.delete_user_data_queue_consumer]
 type = "consumer"
 command = "delete_user_data_queue_consumer"
-memory = 128
+memory = 256
 
 [job.clean_users]
 type = "manage"
