@@ -86,5 +86,9 @@ async def _save_current_offer_row_versions(row_version: int) -> int:
         count += len(offer_versions)
 
         logger.info('count %s  row_version %s', count, row_version)
+        send_to_graphite(
+            key='sync_offers.process_offers_count',
+            value=count,
+        )
 
     return count

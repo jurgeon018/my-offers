@@ -108,6 +108,11 @@ async def run_resend_task(offers_ids: List[int]) -> None:
             value=len(offers),
             timestamp=datetime.now(pytz.utc).timestamp()
         )
+        send_to_graphite(
+            key='resend_job_realty_task.offers_progress',
+            value=offers_progress,
+            timestamp=datetime.now(pytz.utc).timestamp()
+        )
 
     if error_offers_ids and settings.RESEND_JOB_ALLOW_ELASTIC:
         await save_offers_from_elasticapi(offers_ids=list(map(int, error_offers_ids)))
