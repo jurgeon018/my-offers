@@ -165,6 +165,5 @@ type = "manage"
 command = "clean-users-command"
 
 [job.sync_offers]
-type = "cron"
-cron = "0 0 * * *"
+type = "manage"
 command = "sync-offers-command"
