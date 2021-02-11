@@ -177,3 +177,33 @@ class GetOffersV3Response:
     """Информация о странице"""
     degradation: Dict[str, bool]
     """Информация о деградации"""
+
+
+@dataclass
+class GetOffersCountersMobileRequest:
+    search: Optional[str]
+    """Полнотекстовый поиск по объявлению"""
+
+
+@dataclass
+class GetOffersCountersMobileCounter:
+    total: Optional[int]
+    """Количество всех объявлений"""
+    flat: Optional[int]
+    """Жилая"""
+    suburban: Optional[int]
+    """Загородная"""
+    commercial: Optional[int]
+    """Коммерческая"""
+
+
+@dataclass
+class GetOffersCountersMobileResponse:
+    rent: Optional[GetOffersCountersMobileCounter]
+    """Вкладка аренда"""
+    sale: Optional[GetOffersCountersMobileCounter]
+    """Вкладка продажа"""
+    archieved: Optional[GetOffersCountersMobileCounter]
+    """Вкладка архивные"""
+    inactive: Optional[GetOffersCountersMobileCounter]
+    """Вкладка Неактивные + Отклоненные"""
