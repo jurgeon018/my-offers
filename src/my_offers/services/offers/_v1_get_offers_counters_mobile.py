@@ -24,16 +24,14 @@ async def v1_get_offers_counters_mobile_public(
             suburban=3424,
             commercial=343,
         ),
-        archieved=entities.GetOffersCountersMobileCounter(
-            total=3995,
-            flat=232,
-            suburban=3422,
-            commercial=341,
+        archieved=entities.GetOffersCountersMobileArchivedInactiveCounter(
+            total=3654,
+            rent=232,
+            sale=3422,
         ),
-        inactive=entities.GetOffersCountersMobileCounter(
-            total=6,
-            flat=1,
-            suburban=2,
-            commercial=3,
+        inactive=entities.GetOffersCountersMobileArchivedInactiveCounter(
+            total=3,
+            rent=1,
+            sale=2,
         ),
     )

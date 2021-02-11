@@ -21,6 +21,7 @@ from my_offers.entities.duplicates import (
 from my_offers.entities.duplicates import PriceInfo as PriceInfoWithTrend
 from my_offers.entities.duplicates import Tab
 from my_offers.entities.get_offers import (
+    GetOffersCountersMobileArchivedInactiveCounter,
     GetOffersCountersMobileCounter,
     GetOffersCountersMobileRequest,
     GetOffersCountersMobileResponse,

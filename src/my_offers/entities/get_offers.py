@@ -198,12 +198,22 @@ class GetOffersCountersMobileCounter:
 
 
 @dataclass
+class GetOffersCountersMobileArchivedInactiveCounter:
+    total: Optional[int]
+    """Количество всех объявлений"""
+    rent: Optional[int]
+    """Аренда"""
+    sale: Optional[int]
+    """Продажа"""
+
+
+@dataclass
 class GetOffersCountersMobileResponse:
     rent: Optional[GetOffersCountersMobileCounter]
     """Вкладка аренда"""
     sale: Optional[GetOffersCountersMobileCounter]
     """Вкладка продажа"""
-    archieved: Optional[GetOffersCountersMobileCounter]
+    archieved: Optional[GetOffersCountersMobileArchivedInactiveCounter]
     """Вкладка архивные"""
-    inactive: Optional[GetOffersCountersMobileCounter]
+    inactive: Optional[GetOffersCountersMobileArchivedInactiveCounter]
     """Вкладка Неактивные + Отклоненные"""

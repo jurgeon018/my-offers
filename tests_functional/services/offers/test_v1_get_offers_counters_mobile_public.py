@@ -19,6 +19,6 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
     assert response.data == {
         'rent': {'commercial': 342, 'flat': 233, 'suburban': 3423, 'total': 3998},
         'sale': {'commercial': 343, 'flat': 234, 'suburban': 3424, 'total': 4001},
-        'archieved': {'commercial': 341, 'flat': 232, 'suburban': 3422, 'total': 3995},
-        'inactive': {'commercial': 3, 'flat': 1, 'suburban': 2, 'total': 6},
+        'archieved': {'rent': 232, 'sale': 3422, 'total': 3654},
+        'inactive': {'rent': 1, 'sale': 2, 'total': 3},
     }
