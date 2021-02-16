@@ -48,7 +48,7 @@ get_offer_counters_mobile_degradation_handler = get_degradation_handler(
     default=GetOffersCountersMobileResponse(
         rent=None,
         sale=None,
-        archieved=None,
+        archived=None,
         inactive=None,
     )
 )

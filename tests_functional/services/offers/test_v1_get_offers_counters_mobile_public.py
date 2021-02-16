@@ -19,7 +19,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
     assert response.data == {
         'sale': {'commercial': 0, 'suburban': 1, 'total': 1, 'flat': 0},
         'rent': {'commercial': 0, 'suburban': 0, 'total': 0, 'flat': 0},
-        'archieved': {'sale': 0, 'rent': 0, 'total': 0},
+        'archived': {'sale': 0, 'rent': 0, 'total': 0},
         'inactive': {'sale': 0, 'rent': 0, 'total': 0},
     }
 
@@ -40,7 +40,7 @@ async def test_v1_get_offers_mobile_public__200__degradation_wrong_user_id(http,
 
     # assert
     assert response.data == {
-        'archieved': {'rent': 0, 'sale': 0, 'total': 0},
+        'archived': {'rent': 0, 'sale': 0, 'total': 0},
         'inactive': {'rent': 0, 'sale': 0, 'total': 0},
         'rent': {'commercial': 0, 'flat': 0, 'suburban': 0, 'total': 0},
         'sale': {'commercial': 0, 'flat': 0, 'suburban': 0, 'total': 0},
@@ -64,7 +64,7 @@ async def test_v1_get_offers_mobile_public__200__degradation_exception(http, pg,
 
     # assert
     assert response.data == {
-        'archieved': None,
+        'archived': None,
         'inactive': None,
         'rent': None,
         'sale': None,

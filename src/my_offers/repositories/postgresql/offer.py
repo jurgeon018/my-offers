@@ -242,7 +242,7 @@ async def get_offer_counters_mobile(filters: Dict[str, Any]) -> entities.GetOffe
             suburban=result['sale_suburban'],
             commercial=result['sale_commercial'],
         ),
-        archieved=entities.GetOffersCountersMobileArchivedInactiveCounter(
+        archived=entities.GetOffersCountersMobileArchivedInactiveCounter(
             total=result['archived_total'],
             rent=result['archived_rent'],
             sale=result['archived_sale'],

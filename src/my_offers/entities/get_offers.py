@@ -213,7 +213,7 @@ class GetOffersCountersMobileResponse:
     """Вкладка аренда"""
     sale: Optional[GetOffersCountersMobileCounter]
     """Вкладка продажа"""
-    archieved: Optional[GetOffersCountersMobileArchivedInactiveCounter]
+    archived: Optional[GetOffersCountersMobileArchivedInactiveCounter]
     """Вкладка архивные"""
     inactive: Optional[GetOffersCountersMobileArchivedInactiveCounter]
     """Вкладка Неактивные + Отклоненные"""
