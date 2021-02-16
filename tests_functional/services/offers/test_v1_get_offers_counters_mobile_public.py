@@ -17,8 +17,31 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
 
     # assert
     assert response.data == {
-        'rent': {'commercial': 342, 'flat': 233, 'suburban': 3423, 'total': 3998},
-        'sale': {'commercial': 343, 'flat': 234, 'suburban': 3424, 'total': 4001},
-        'archieved': {'rent': 232, 'sale': 3422, 'total': 3654},
-        'inactive': {'rent': 1, 'sale': 2, 'total': 3},
+        'sale': {'commercial': 0, 'suburban': 1, 'total': 1, 'flat': 0},
+        'rent': {'commercial': 0, 'suburban': 0, 'total': 0, 'flat': 0},
+        'archieved': {'sale': 0, 'rent': 0, 'total': 0},
+        'inactive': {'sale': 0, 'rent': 0, 'total': 0},
+    }
+
+
+async def test_v1_get_offers_mobile_public__200__degradation_wrong_user_id(http, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-offers-counters-mobile/',
+        headers={
+            'X-Real-UserId': 11111
+        },
+        json={'search': 'test_search'}
+    )
+
+    # assert
+    assert response.data == {
+        'archieved': {'rent': None, 'sale': None, 'total': None},
+        'inactive': {'rent': None, 'sale': None, 'total': None},
+        'rent': {'commercial': None, 'flat': None, 'suburban': None, 'total': None},
+        'sale': {'commercial': None, 'flat': None, 'suburban': None, 'total': None},
     }
