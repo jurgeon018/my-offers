@@ -45,3 +45,27 @@ async def test_v1_get_offers_mobile_public__200__degradation_wrong_user_id(http,
         'rent': {'commercial': 0, 'flat': 0, 'suburban': 0, 'total': 0},
         'sale': {'commercial': 0, 'flat': 0, 'suburban': 0, 'total': 0},
     }
+
+
+async def test_v1_get_offers_mobile_public__200__degradation_exception(http, pg, runtime_settings):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await runtime_settings.set({'DB_SLOW_TIMEOUT': 0})
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-offers-counters-mobile/',
+        headers={
+            'X-Real-UserId': 29437831
+        },
+        json={'search': 'test_search'}
+    )
+
+    # assert
+    assert response.data == {
+        'archieved': None,
+        'inactive': None,
+        'rent': None,
+        'sale': None,
+    }
