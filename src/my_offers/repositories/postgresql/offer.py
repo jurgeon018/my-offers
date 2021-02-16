@@ -189,36 +189,36 @@ async def get_offer_counters_mobile(filters: Dict[str, Any]) -> entities.GetOffe
     conditions = prepare_conditions(filters)
 
     raw_query: TextClause = text("""
-       SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'flat' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'flat' THEN 1 END), 0)
            AS rent_flat,
-       SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'suburban' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'suburban' THEN 1 END), 0)
            AS rent_suburban,
-       SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'commercial' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'commercial' THEN 1 END), 0)
            AS rent_commercial,
-       SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' THEN 1 END), 0)
            AS rent_total,
 
-       SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'flat' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'flat' THEN 1 END), 0)
            AS sale_flat,
-       SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'suburban' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'suburban' THEN 1 END), 0)
            AS sale_suburban,
-       SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'commercial' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'commercial' THEN 1 END), 0)
            AS sale_commercial,
-       SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' THEN 1 END), 0)
            AS sale_total,
 
-       SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'archived' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'archived' THEN 1 END), 0)
            AS archived_sale,
-       SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'archived' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'archived' THEN 1 END), 0)
            AS archived_rent,
-       SUM(CASE WHEN status_tab = 'archived' THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN status_tab = 'archived' THEN 1 END), 0)
            AS archived_total,
 
-       SUM(CASE WHEN deal_type = 'sale' AND status_tab IN ('declined', 'notActive') THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab IN ('declined', 'notActive') THEN 1 END), 0)
            AS inactive_sale,
-       SUM(CASE WHEN deal_type = 'rent' AND status_tab IN ('declined', 'notActive') THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab IN ('declined', 'notActive') THEN 1 END), 0)
            AS inactive_rent,
-       SUM(CASE WHEN status_tab IN ('declined', 'notActive') THEN 1 ELSE 0 END)
+       COALESCE(SUM(CASE WHEN status_tab IN ('declined', 'notActive') THEN 1 END), 0)
            AS inactive_total
     """)
 

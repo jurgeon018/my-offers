@@ -40,8 +40,8 @@ async def test_v1_get_offers_mobile_public__200__degradation_wrong_user_id(http,
 
     # assert
     assert response.data == {
-        'archieved': {'rent': None, 'sale': None, 'total': None},
-        'inactive': {'rent': None, 'sale': None, 'total': None},
-        'rent': {'commercial': None, 'flat': None, 'suburban': None, 'total': None},
-        'sale': {'commercial': None, 'flat': None, 'suburban': None, 'total': None},
+        'archieved': {'rent': 0, 'sale': 0, 'total': 0},
+        'inactive': {'rent': 0, 'sale': 0, 'total': 0},
+        'rent': {'commercial': 0, 'flat': 0, 'suburban': 0, 'total': 0},
+        'sale': {'commercial': 0, 'flat': 0, 'suburban': 0, 'total': 0},
     }
