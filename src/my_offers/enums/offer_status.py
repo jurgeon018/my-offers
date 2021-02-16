@@ -22,3 +22,15 @@ class OfferStatus(StrEnum):
     """Импортное объявление"""
     draft = 'draft'
     """Черновик"""
+
+
+class MobTabType(StrEnum):
+    rent = 'rent'
+    """Аренда"""
+    sale = 'sale'
+    """Продажа"""
+    archived = 'archived'
+    """Архив"""
+    inactive = 'inactive'
+    "Неактивные"
+

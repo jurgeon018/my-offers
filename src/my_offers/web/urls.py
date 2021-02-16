@@ -6,7 +6,7 @@ from tornado.web import url
 from my_offers import entities
 from my_offers.entities.get_offers import GetOfferV2
 from my_offers.entities.qa import QaGetByIdRequest
-from my_offers.services import actions, notifications, offers, qa, similars, valuation
+from my_offers.services import actions, notifications, offers, qa, similars, valuation, mobile_offers
 from my_offers.web.handlers import PublicHandler
 
 
@@ -153,6 +153,19 @@ urlpatterns = base_urls.urlpatterns + [
             method='GET',  # pragma: no mutate
             response_schema=entities.DuplicateSubscription,
             base_handler_cls=PublicHandler,
+        )
+    ),
+
+    # Mobile
+    url(
+        r'/public/v1/get-my-offers/$',
+        get_handler(
+            service=mobile_offers.v1_get_my_offers_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.MobileGetMyOffersRequest,
+            response_schema=entities.MobileGetMyOffersResponse,
+            base_handler_cls=PublicHandler,
+            tags=['mobile']
         )
     ),
 

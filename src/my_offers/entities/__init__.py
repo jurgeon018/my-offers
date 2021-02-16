@@ -66,4 +66,12 @@ from my_offers.entities.subscribe import (
     UnsubscribeOnDuplicatesRequest,
 )
 from my_offers.entities.update_offer import UpdateOfferRequest
-from my_offers.entities.valuation import GetOfferValuationRequest, GetOfferValuationResponse, ValuationOption
+from my_offers.entities.valuation import (
+    GetOfferValuationRequest,
+    GetOfferValuationResponse,
+    ValuationOption,
+)
+from .mobile_offer import (
+    MobileGetMyOffersRequest,
+    MobileGetMyOffersResponse
+)
