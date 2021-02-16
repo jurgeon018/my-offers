@@ -60,6 +60,16 @@ urlpatterns = base_urls.urlpatterns + [
         )
     ),
     url(
+        r'/public/v1/get-offers-counters-mobile/$',
+        get_handler(
+            service=offers.v1_get_offers_counters_mobile_public,
+            method='POST',
+            request_schema=entities.GetOffersCountersMobileRequest,
+            response_schema=entities.GetOffersCountersMobileResponse,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
         r'/v1/get-offers-ids-by-tab/$',
         get_handler(
             service=offers.get_offers_ids_by_tab,
