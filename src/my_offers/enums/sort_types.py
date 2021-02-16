@@ -22,7 +22,7 @@ class GetOffersSortType(StrEnum):
     """По ID объявления"""
 
 
-class MobOffersSortType:
+class MobOffersSortType(StrEnum):
     update_date = 'updateDate'
     """По дате обновления"""
     move_to_archive_date = 'moveToArchiveDate'

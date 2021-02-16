@@ -6,7 +6,7 @@ from tornado.web import url
 from my_offers import entities
 from my_offers.entities.get_offers import GetOfferV2
 from my_offers.entities.qa import QaGetByIdRequest
-from my_offers.services import actions, notifications, offers, qa, similars, valuation, mobile_offers
+from my_offers.services import actions, mobile_offers, notifications, offers, qa, similars, valuation
 from my_offers.web.handlers import PublicHandler
 
 
@@ -56,16 +56,6 @@ urlpatterns = base_urls.urlpatterns + [
         get_handler(
             service=offers.v1_get_offers_counters_public,
             response_schema=entities.OfferCounters,
-            base_handler_cls=PublicHandler,
-        )
-    ),
-    url(
-        r'/public/v1/get-offers-counters-mobile/$',
-        get_handler(
-            service=offers.v1_get_offers_counters_mobile_public,
-            method='POST',
-            request_schema=entities.GetOffersCountersMobileRequest,
-            response_schema=entities.GetOffersCountersMobileResponse,
             base_handler_cls=PublicHandler,
         )
     ),
@@ -168,12 +158,23 @@ urlpatterns = base_urls.urlpatterns + [
 
     # Mobile
     url(
-        r'/public/v1/get-my-offers/$',
+        r'/public/v1/get-my-offers-mobile/$',
         get_handler(
             service=mobile_offers.v1_get_my_offers_public,
             method='POST',  # pragma: no mutate
             request_schema=entities.MobileGetMyOffersRequest,
             response_schema=entities.MobileGetMyOffersResponse,
+            base_handler_cls=PublicHandler,
+            tags=['mobile']
+        )
+    ),
+    url(
+        r'/public/v1/get-offers-counters-mobile/$',
+        get_handler(
+            service=offers.v1_get_offers_counters_mobile_public,
+            method='POST',
+            request_schema=entities.GetOffersCountersMobileRequest,
+            response_schema=entities.GetOffersCountersMobileResponse,
             base_handler_cls=PublicHandler,
             tags=['mobile']
         )
