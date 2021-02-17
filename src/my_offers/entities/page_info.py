@@ -20,3 +20,13 @@ class Pagination:
     """Количество объявлений на страницу"""
     offset: Optional[int]
     """Отступ от начала"""
+
+
+@dataclass
+class MobilePageInfo:
+    limit: int
+    """Лимит"""
+    offset: int
+    """Оффсет"""
+    can_load_more: bool
+    """Это не последняя страница"""

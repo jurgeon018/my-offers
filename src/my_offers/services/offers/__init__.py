@@ -12,5 +12,6 @@ from my_offers.services.offers._reindex_offers import reindex_offers_command
 from my_offers.services.offers._sync_offers import sync_offers
 from my_offers.services.offers._update_offer import update_offer
 from my_offers.services.offers._v1_get_offers_counters import v1_get_offers_counters_public
+from my_offers.services.offers._v1_get_offers_counters_mobile import v1_get_offers_counters_mobile_public
 from my_offers.services.offers._v2_get_offers import v2_get_offers_private, v2_get_offers_public
 from my_offers.services.offers._v3_get_offers import v3_get_offers_private, v3_get_offers_public

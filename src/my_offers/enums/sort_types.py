@@ -20,3 +20,14 @@ class GetOffersSortType(StrEnum):
     """По улице"""
     by_offer_id = 'by_offer_id'
     """По ID объявления"""
+
+
+class MobOffersSortType(StrEnum):
+    update_date = 'updateDate'
+    """По дате обновления"""
+    move_to_archive_date = 'moveToArchiveDate'
+    """По дате добавления в архив"""
+    price_asc = 'priceAsc'
+    """По цене по возрастанию"""
+    price_desc = 'priceDesc'
+    """По цене по убыванию"""
