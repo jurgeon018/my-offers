@@ -152,3 +152,43 @@ class MobileGetMyOffersResponse:
     """Информация о странице"""
     offers: List[MobOffer]
     """Список объявлений"""
+
+
+@dataclass
+class GetOffersCountersMobileRequest:
+    search: Optional[str]
+    """Полнотекстовый поиск по объявлению"""
+
+
+@dataclass
+class GetOffersCountersMobileCounter:
+    total: Optional[int]
+    """Количество всех объявлений"""
+    flat: Optional[int]
+    """Жилая"""
+    suburban: Optional[int]
+    """Загородная"""
+    commercial: Optional[int]
+    """Коммерческая"""
+
+
+@dataclass
+class GetOffersCountersMobileArchivedInactiveCounter:
+    total: Optional[int]
+    """Количество всех объявлений"""
+    rent: Optional[int]
+    """Аренда"""
+    sale: Optional[int]
+    """Продажа"""
+
+
+@dataclass
+class GetOffersCountersMobileResponse:
+    rent: Optional[GetOffersCountersMobileCounter]
+    """Вкладка аренда"""
+    sale: Optional[GetOffersCountersMobileCounter]
+    """Вкладка продажа"""
+    archived: Optional[GetOffersCountersMobileArchivedInactiveCounter]
+    """Вкладка архивные"""
+    inactive: Optional[GetOffersCountersMobileArchivedInactiveCounter]
+    """Вкладка Неактивные + Отклоненные"""

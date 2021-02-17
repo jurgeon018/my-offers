@@ -1,9 +1,9 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import asyncpgsa
 from cian_json import json
 from simple_settings import settings
-from sqlalchemy import and_, func, over, select
+from sqlalchemy import and_, func, select
 
 from my_offers import enums, pg
 from my_offers.helpers.statsd import async_statsd_timer
@@ -25,6 +25,13 @@ SORT_TYPE_MAP = {
     enums.GetOffersSortType.by_walk_time: OFFER_TABLE.walking_time,
     enums.GetOffersSortType.by_street: OFFER_TABLE.street_name,
     enums.GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
+}
+
+SORT_TYPE_MOBILE_MAP = {
+    enums.MobOffersSortType.update_date: OFFER_TABLE.updated_at.desc(),
+    enums.MobOffersSortType.move_to_archive_date: OFFER_TABLE.sort_date.desc(),
+    enums.MobOffersSortType.price_asc: OFFER_TABLE.price,
+    enums.MobOffersSortType.price_desc: OFFER_TABLE.price.desc(),
 }
 
 
@@ -83,6 +90,10 @@ async def get_object_models(
 
 def _prepare_sort_order(sort_type: enums.GetOffersSortType):
     return [SORT_TYPE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
+
+
+def _prepare_sort_mobile_order(sort_type: enums.MobOffersSortType):
+    return [SORT_TYPE_MOBILE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
 
 
 async def get_object_model_by_id(offer_id: int) -> Optional[ObjectModel]:

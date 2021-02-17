@@ -1,4 +1,5 @@
 import datetime
+from typing import Any, Dict
 
 from my_offers import entities, enums
 from my_offers.entities import AvailableActions
@@ -13,12 +14,22 @@ from my_offers.entities.mobile_offer import (
 from my_offers.entities.page_info import MobilePageInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
+from my_offers.services.offers import get_filters_mobile
 
 
 async def v1_get_my_offers_public(
         request: entities.MobileGetMyOffersRequest,
         realty_user_id: int
 ) -> entities.MobileGetMyOffersResponse:
+    # TODO: CD-100662
+    # pylint: disable=unused-variable
+    filters: Dict[str, Any] = await get_filters_mobile(
+        filters=request.filters,
+        user_id=realty_user_id,
+        tab_type=request.tab_type,
+        search_text=request.search,
+    )
+
     return entities.MobileGetMyOffersResponse(
         page=MobilePageInfo(
             limit=request.limit,

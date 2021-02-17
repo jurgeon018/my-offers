@@ -1,7 +1,12 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
-from my_offers.entities import get_offers
-from my_offers.mappers.get_offers_request import get_offers_filters_mapper
+from my_offers import enums
+from my_offers.entities import get_offers, mobile_offer
+from my_offers.mappers.get_offers_request import (
+    MOBILE_TAB_TYPE_TO_STATUS_TYPE,
+    get_offers_filters_mapper,
+    get_offers_filters_mobile_mapper,
+)
 from my_offers.repositories.postgresql import get_master_user_id
 from my_offers.services.offers.helpers.search_text import prepare_search_text
 
@@ -15,6 +20,28 @@ async def get_filters(*, user_id: int, filters: get_offers.Filter) -> Dict[str, 
     result.update(user_filter)
 
     if search_text := result.get('search_text'):
+        result['search_text'] = prepare_search_text(search_text)
+
+    return result
+
+
+async def get_filters_mobile(
+        *,
+        user_id: int,
+        filters: mobile_offer.Filters,
+        tab_type: enums.MobTabType,
+        search_text: Optional[str],
+) -> Dict[str, Any]:
+    result: Dict[str, Any] = get_offers_filters_mobile_mapper.map_to(filters) or {}
+
+    user_filter: Dict[str, Any] = await get_user_filter(user_id)
+
+    result.update(user_filter)
+
+    if tab_type in MOBILE_TAB_TYPE_TO_STATUS_TYPE:
+        result['status_tab'] = MOBILE_TAB_TYPE_TO_STATUS_TYPE[tab_type]
+
+    if search_text:
         result['search_text'] = prepare_search_text(search_text)
 
     return result
