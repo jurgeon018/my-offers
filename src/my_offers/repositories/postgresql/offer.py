@@ -4,11 +4,12 @@ from typing import Any, Dict, List, Optional
 import asyncpgsa
 import pytz
 from simple_settings import settings
-from sqlalchemy import and_, select, update
+from sqlalchemy import and_, select, text, update
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.sql.functions import count
 
-from my_offers import entities, enums, pg
+from my_offers import entities, pg
 from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
@@ -180,6 +181,77 @@ async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
         not_active=counters.get('notActive', 0),
         declined=counters.get('declined', 0),
         archived=counters.get('archived'),
+    )
+
+
+@async_statsd_timer('psql.get_offer_counters_mobile')
+async def get_offer_counters_mobile(filters: Dict[str, Any]) -> entities.GetOffersCountersMobileResponse:
+    conditions = prepare_conditions(filters)
+
+    raw_query: TextClause = text("""
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'flat' THEN 1 END), 0)
+           AS rent_flat,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'suburban' THEN 1 END), 0)
+           AS rent_suburban,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'commercial' THEN 1 END), 0)
+           AS rent_commercial,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' THEN 1 END), 0)
+           AS rent_total,
+
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'flat' THEN 1 END), 0)
+           AS sale_flat,
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'suburban' THEN 1 END), 0)
+           AS sale_suburban,
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'commercial' THEN 1 END), 0)
+           AS sale_commercial,
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' THEN 1 END), 0)
+           AS sale_total,
+
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'archived' THEN 1 END), 0)
+           AS archived_sale,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'archived' THEN 1 END), 0)
+           AS archived_rent,
+       COALESCE(SUM(CASE WHEN status_tab = 'archived' THEN 1 END), 0)
+           AS archived_total,
+
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab IN ('declined', 'notActive') THEN 1 END), 0)
+           AS inactive_sale,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab IN ('declined', 'notActive') THEN 1 END), 0)
+           AS inactive_rent,
+       COALESCE(SUM(CASE WHEN status_tab IN ('declined', 'notActive') THEN 1 END), 0)
+           AS inactive_total
+    """)
+
+    query, params = asyncpgsa.compile_query(
+        select([raw_query])
+        .where(and_(*conditions))
+    )
+
+    result = await pg.get().fetchrow(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
+
+    return entities.GetOffersCountersMobileResponse(
+        rent=entities.GetOffersCountersMobileCounter(
+            total=result['rent_total'],
+            flat=result['rent_flat'],
+            suburban=result['rent_suburban'],
+            commercial=result['rent_commercial'],
+        ),
+        sale=entities.GetOffersCountersMobileCounter(
+            total=result['sale_total'],
+            flat=result['sale_flat'],
+            suburban=result['sale_suburban'],
+            commercial=result['sale_commercial'],
+        ),
+        archived=entities.GetOffersCountersMobileArchivedInactiveCounter(
+            total=result['archived_total'],
+            rent=result['archived_rent'],
+            sale=result['archived_sale'],
+        ),
+        inactive=entities.GetOffersCountersMobileArchivedInactiveCounter(
+            total=result['inactive_total'],
+            rent=result['inactive_rent'],
+            sale=result['inactive_sale'],
+        ),
     )
 
 
