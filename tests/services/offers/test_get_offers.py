@@ -9,6 +9,7 @@ from my_offers.services.offers import get_filters
 from my_offers.services.offers._filters import get_counter_filters
 from my_offers.services.offers._get_offers import prepare_data_for_get_offers
 
+
 PATH = 'my_offers.services.offers._get_offers.'
 
 
