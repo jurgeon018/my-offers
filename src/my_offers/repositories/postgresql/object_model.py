@@ -28,7 +28,7 @@ SORT_TYPE_MAP = {
 }
 
 SORT_TYPE_MOBILE_MAP = {
-    enums.MobOffersSortType.update_date: OFFER_TABLE.updated_at.desc(),
+    enums.MobOffersSortType.update_date: OFFER_TABLE.sort_date.desc(),
     enums.MobOffersSortType.move_to_archive_date: OFFER_TABLE.sort_date.desc(),
     enums.MobOffersSortType.price_asc: OFFER_TABLE.price,
     enums.MobOffersSortType.price_desc: OFFER_TABLE.price.desc(),
