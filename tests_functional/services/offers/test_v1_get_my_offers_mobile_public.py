@@ -1,6 +1,4 @@
-
 async def test_v1_get_offers_mobile_public__200(http, pg):
-
     # act
     response = await http.request(
         'POST',
@@ -11,7 +9,12 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
         json={
             'limit': 20,
             'offset': 0,
-            'tabType': 'rent',
+            'tabType': 'inactive',
+            'search': 'test_search_text',
+            'filters': {
+                'dealType': 'sale',
+                'offerType': 'suburban',
+            }
         }
     )
 

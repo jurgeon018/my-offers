@@ -32,4 +32,4 @@ class MobTabType(StrEnum):
     archived = 'archived'
     """Архив"""
     inactive = 'inactive'
-    """Неактивные"""
+    """Неактивные (declined + not_active)"""
