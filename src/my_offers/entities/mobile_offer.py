@@ -25,10 +25,6 @@ class OfferComplaint:
     """Дата жалобы"""
     comment: str
     """Комментарий"""
-    reason_text: str
-    """Причина"""
-    decline: bool
-    """Отклонена"""
 
 
 @dataclass

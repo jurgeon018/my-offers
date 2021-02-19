@@ -30,7 +30,7 @@ from my_offers.entities.get_offers import (
 )
 from my_offers.entities.get_offers_ids_by_tab import GetOffersIdsByTabRequest, GetOffersIdsByTabResponse
 from my_offers.entities.moderation import ModerationOfferOffence
-from my_offers.entities.offer import Offer, ReindexOffer, ReindexOfferItem
+from my_offers.entities.offer import Offer, OfferWithObjectModel, ReindexOffer, ReindexOfferItem
 from my_offers.entities.offer_action import (
     OfferActionRequest,
     OfferActionResponse,

@@ -27,13 +27,6 @@ SORT_TYPE_MAP = {
     enums.GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
 }
 
-SORT_TYPE_MOBILE_MAP = {
-    enums.MobOffersSortType.update_date: OFFER_TABLE.sort_date.desc(),
-    enums.MobOffersSortType.move_to_archive_date: OFFER_TABLE.sort_date.desc(),
-    enums.MobOffersSortType.price_asc: OFFER_TABLE.price,
-    enums.MobOffersSortType.price_desc: OFFER_TABLE.price.desc(),
-}
-
 
 async def get_object_model(filters: Dict[str, Any]) -> Optional[ObjectModel]:
     object_models = await get_object_models(
@@ -90,10 +83,6 @@ async def get_object_models(
 
 def _prepare_sort_order(sort_type: enums.GetOffersSortType):
     return [SORT_TYPE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
-
-
-def _prepare_sort_mobile_order(sort_type: enums.MobOffersSortType):
-    return [SORT_TYPE_MOBILE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
 
 
 async def get_object_model_by_id(offer_id: int) -> Optional[ObjectModel]:

@@ -1,5 +1,7 @@
+import asyncio
 import datetime
-from typing import Any, Dict
+from asyncio import Task
+from typing import Any, Dict, List
 
 from my_offers import entities, enums
 from my_offers.entities import AvailableActions
@@ -15,14 +17,14 @@ from my_offers.entities.page_info import MobilePageInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.services.offers import get_filters_mobile
+from ._get_offers_models import get_offers_with_object_model
+from ._get_pagination_info import get_can_load_more
 
 
 async def v1_get_my_offers_public(
         request: entities.MobileGetMyOffersRequest,
         realty_user_id: int
 ) -> entities.MobileGetMyOffersResponse:
-    # TODO: CD-100662
-    # pylint: disable=unused-variable
     filters: Dict[str, Any] = await get_filters_mobile(
         filters=request.filters,
         user_id=realty_user_id,
@@ -30,11 +32,26 @@ async def v1_get_my_offers_public(
         search_text=request.search,
     )
 
+    get_offers_task: Task[List[entities.OfferWithObjectModel]] = asyncio.create_task(get_offers_with_object_model(
+        filters=filters,
+        limit=request.limit,
+        offset=request.offset,
+        sort_type=request.sort or enums.MobOffersSortType.update_date,
+    ))
+
+    can_load_more_task: Task[bool] = asyncio.create_task(get_can_load_more(
+        filters=filters,
+        limit=request.limit,
+        offset=request.offset,
+    ))
+
+    foo = await get_offers_task
+
     return entities.MobileGetMyOffersResponse(
         page=MobilePageInfo(
             limit=request.limit,
             offset=request.offset,
-            can_load_more=False
+            can_load_more=await can_load_more_task
         ),
         offers=[
             MobOffer(
@@ -103,8 +120,6 @@ async def v1_get_my_offers_public(
                     id=1,
                     date=datetime.datetime(2020, 12, 11, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),
                     comment='comment',
-                    reason_text='reason_text',
-                    decline=True
                 )]
             )
         ]

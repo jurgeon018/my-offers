@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import asyncpgsa
 import pytz
@@ -9,21 +9,47 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.sql.functions import count
 
-from my_offers import entities, pg
+from my_offers import entities, enums, pg
 from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
 from my_offers.enums import OfferPayedByType, OfferStatusTab
 from my_offers.helpers.fields import get_offer_payed_by
 from my_offers.helpers.statsd import async_statsd_timer
+from my_offers.mappers.object_model import object_model_mapper
 from my_offers.mappers.offer_mapper import (
     offer_mapper,
     offer_row_version_mapper,
-    offers_creation_date_mapper,
+    offer_with_object_model_mapper, offers_creation_date_mapper,
     reindex_offer_mapper,
 )
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
+
+
+OFFER_TABLE = tables.offers.c
+
+SORT_TYPE_MAP = {
+    # desktop
+    enums.GetOffersSortType.by_default: OFFER_TABLE.sort_date.desc(),
+    enums.GetOffersSortType.by_price_min: OFFER_TABLE.price.desc(),
+    enums.GetOffersSortType.by_price_max: OFFER_TABLE.price,
+    enums.GetOffersSortType.by_price_for_meter: OFFER_TABLE.price_per_meter.desc(),
+    enums.GetOffersSortType.by_area_min: OFFER_TABLE.total_area.desc(),
+    enums.GetOffersSortType.by_area_max: OFFER_TABLE.total_area,
+    enums.GetOffersSortType.by_walk_time: OFFER_TABLE.walking_time,
+    enums.GetOffersSortType.by_street: OFFER_TABLE.street_name,
+    enums.GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
+    # mobile
+    enums.MobOffersSortType.update_date: OFFER_TABLE.sort_date.desc(),
+    enums.MobOffersSortType.move_to_archive_date: OFFER_TABLE.sort_date.desc(),
+    enums.MobOffersSortType.price_asc: OFFER_TABLE.price,
+    enums.MobOffersSortType.price_desc: OFFER_TABLE.price.desc(),
+}
+
+
+def _prepare_sort_order(sort_type: Union[enums.GetOffersSortType, enums.MobOffersSortType]):
+    return [SORT_TYPE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
 
 
 async def save_offer(offer: entities.Offer, event_date: datetime) -> bool:
@@ -161,6 +187,34 @@ async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
         return None
 
     return offer_mapper.map_from(row)
+
+
+@async_statsd_timer('psql.get_offers_with_parsed_object_model')
+async def get_offers_with_parsed_object_model(
+        *,
+        filters: Dict[str, Any],
+        limit: int,
+        offset: int,
+        sort_type: enums.MobOffersSortType,
+) -> List[entities.OfferWithObjectModel]:
+    conditions = prepare_conditions(filters)
+    sort = _prepare_sort_order(sort_type)
+
+    sql = (
+        select([tables.offers])
+        .where(and_(*conditions))
+        .order_by(*sort)
+        .limit(limit)
+        .offset(offset)
+    )
+
+    query, params = asyncpgsa.compile_query(sql)
+    result = await pg.get().fetch(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
+
+    if not result:
+        return []
+
+    return [offer_with_object_model_mapper.map_from(r) for r in result]
 
 
 @async_statsd_timer('psql.get_offer_counters')
