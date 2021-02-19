@@ -100,6 +100,7 @@ async def _save_current_offer_row_versions(row_version: int) -> int:
 
 async def _archive_offers(ids: List[int]) -> None:
     for offer_ids in grouper(ids, 100):
+        await archive_missed_offers(list(filter(None, offer_ids)))
         await asyncio.sleep(settings.RESEND_JOB_DELAY)
         send_to_graphite(
             key='sync_offers.archived_offer_ids_progress',
