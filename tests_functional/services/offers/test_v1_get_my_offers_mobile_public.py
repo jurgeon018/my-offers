@@ -190,7 +190,7 @@ async def test_v1_get_offers_mobile_public__200__empty_offers(http, pg):
     }
 
 
-async def test_v1_get_offers_mobile_public__200__can_not_load_more(http, pg):
+async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_pagination.sql')
 

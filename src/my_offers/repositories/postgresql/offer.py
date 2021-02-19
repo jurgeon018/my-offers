@@ -9,7 +9,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.sql.functions import count
 
-from my_offers import entities, enums, pg
+from my_offers import entities, pg
 from my_offers.entities import OfferRowVersion
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
@@ -24,21 +24,6 @@ from my_offers.mappers.offer_mapper import (
 )
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offer_conditions import prepare_conditions
-
-
-OFFER_TABLE = tables.offers.c
-
-SORT_TYPE_MAP = {
-    enums.GetOffersSortType.by_default: OFFER_TABLE.sort_date.desc(),
-    enums.GetOffersSortType.by_price_min: OFFER_TABLE.price.desc(),
-    enums.GetOffersSortType.by_price_max: OFFER_TABLE.price,
-    enums.GetOffersSortType.by_price_for_meter: OFFER_TABLE.price_per_meter.desc(),
-    enums.GetOffersSortType.by_area_min: OFFER_TABLE.total_area.desc(),
-    enums.GetOffersSortType.by_area_max: OFFER_TABLE.total_area,
-    enums.GetOffersSortType.by_walk_time: OFFER_TABLE.walking_time,
-    enums.GetOffersSortType.by_street: OFFER_TABLE.street_name,
-    enums.GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
-}
 
 
 async def save_offer(offer: entities.Offer, event_date: datetime) -> bool:
