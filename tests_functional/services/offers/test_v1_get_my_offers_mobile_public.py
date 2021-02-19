@@ -24,17 +24,18 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
             {'archivedDate': '2020-12-14T22:44:57.890178+00:00',
              'auction': {
                  'concurrencyTypeTitle': 'concurrency_type_title',
-                 'concurrencyTypes': ['concurrencyTypes'],
+                 'concurrencyTypes': [{
+                     'isActive': True,
+                     'name': 'name',
+                     'type': 'type'
+                 }],
                  'currentBet': 5.1,
                  'increaseBetsPositionsCount': 2,
-                 'isActive': True,
                  'isAvailableAuction': True,
                  'isFixedBet': False,
                  'isStrategyEnabled': True,
-                 'name': 'name',
                  'noteBet': 'note_bet',
                  'strategyDescription': 'strategy_description',
-                 'type': 'type'
              },
              'availableActions': {
                  'canChangePublisher': True,
@@ -51,9 +52,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
              'complaints': [{
                  'comment': 'comment',
                  'date': '2020-12-11T22:44:57.890178+00:00',
-                 'decline': True,
                  'id': 1,
-                 'reasonText': 'reason_text'
              }],
              'deactivatedService': {
                  'description': 'description',
@@ -84,7 +83,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
                  'skippedCallsCount': 1,
                  'totalViews': 1111
              },
-             'status': 'Published'
+             'status': 'published'
              }
         ],
         'page': {'canLoadMore': False, 'limit': 20, 'offset': 0}
