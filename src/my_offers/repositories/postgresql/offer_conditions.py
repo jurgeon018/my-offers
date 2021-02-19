@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-import sqlalchemy as sa
-from sqlalchemy import and_, any_, cast, func
+from sqlalchemy import and_, any_, func
 from sqlalchemy.sql.elements import BinaryExpression
 
 from my_offers import enums

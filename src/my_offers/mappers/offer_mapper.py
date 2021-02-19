@@ -1,9 +1,7 @@
-from cian_entities import DynamicEntityMapper, EntityMapper
+from cian_entities import EntityMapper
 from cian_entities.mappers import ValueMapper
 
 from my_offers import entities
-from my_offers.helpers.json_mapper import JsonMapper
-from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 
 
 offer_mapper = EntityMapper(
@@ -13,16 +11,6 @@ offer_mapper = EntityMapper(
         'sort_date': ValueMapper(),
     }
 )
-
-offer_with_object_model_mapper = EntityMapper(
-    entities.OfferWithObjectModel,
-    without_camelcase=True,
-    mappers={
-        'sort_date': ValueMapper(),
-        'raw_data': JsonMapper(DynamicEntityMapper(ObjectModel)),
-    }
-)
-
 
 reindex_offer_item_mapper = EntityMapper(
     entities.ReindexOfferItem,

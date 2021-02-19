@@ -1,6 +1,4 @@
-import asyncio
 import datetime
-from asyncio import Task
 from typing import Any, Dict, List
 
 from my_offers import entities, enums
@@ -16,11 +14,10 @@ from my_offers.entities.mobile_offer import (
 )
 from my_offers.entities.page_info import MobilePageInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.offers import get_filters_mobile
-from ._get_offers_models import get_offers_with_object_model
-from ._get_pagination_info import get_can_load_more
+from ._get_objects_models import get_object_models_with_pagination
 
 
 async def v1_get_my_offers_public(
@@ -34,15 +31,11 @@ async def v1_get_my_offers_public(
         search_text=request.search,
     )
 
-    can_load_more_task: Task[bool] = asyncio.create_task(get_can_load_more(
-        filters=filters,
-        limit=request.limit,
-        offset=request.offset,
-    ))
-
     # TODO: CD-100663, CD-100665
     # pylint: disable=unused-variable
-    offers: List[entities.OfferWithObjectModel] = await get_offers_with_object_model(
+    object_models: List[ObjectModel]
+    can_load_more: bool
+    object_models, can_load_more = await get_object_models_with_pagination(
         filters=filters,
         limit=request.limit,
         offset=request.offset,
@@ -53,7 +46,7 @@ async def v1_get_my_offers_public(
         page=MobilePageInfo(
             limit=request.limit,
             offset=request.offset,
-            can_load_more=await can_load_more_task
+            can_load_more=can_load_more
         ),
         offers=[
             MobOffer(

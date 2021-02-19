@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import asyncpgsa
 import pytz
@@ -19,7 +19,6 @@ from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.offer_mapper import (
     offer_mapper,
     offer_row_version_mapper,
-    offer_with_object_model_mapper,
     offers_creation_date_mapper,
     reindex_offer_mapper,
 )
@@ -30,7 +29,6 @@ from my_offers.repositories.postgresql.offer_conditions import prepare_condition
 OFFER_TABLE = tables.offers.c
 
 SORT_TYPE_MAP = {
-    # desktop
     enums.GetOffersSortType.by_default: OFFER_TABLE.sort_date.desc(),
     enums.GetOffersSortType.by_price_min: OFFER_TABLE.price.desc(),
     enums.GetOffersSortType.by_price_max: OFFER_TABLE.price,
@@ -40,16 +38,7 @@ SORT_TYPE_MAP = {
     enums.GetOffersSortType.by_walk_time: OFFER_TABLE.walking_time,
     enums.GetOffersSortType.by_street: OFFER_TABLE.street_name,
     enums.GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
-    # mobile
-    enums.MobOffersSortType.update_date: OFFER_TABLE.sort_date.desc(),
-    enums.MobOffersSortType.move_to_archive_date: OFFER_TABLE.sort_date.desc(),
-    enums.MobOffersSortType.price_asc: OFFER_TABLE.price,
-    enums.MobOffersSortType.price_desc: OFFER_TABLE.price.desc(),
 }
-
-
-def _prepare_sort_order(sort_type: Union[enums.GetOffersSortType, enums.MobOffersSortType]):
-    return [SORT_TYPE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
 
 
 async def save_offer(offer: entities.Offer, event_date: datetime) -> bool:
@@ -187,34 +176,6 @@ async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
         return None
 
     return offer_mapper.map_from(row)
-
-
-@async_statsd_timer('psql.get_offers_with_parsed_object_model')
-async def get_offers_with_parsed_object_model(
-        *,
-        filters: Dict[str, Any],
-        limit: int,
-        offset: int,
-        sort_type: enums.MobOffersSortType,
-) -> List[entities.OfferWithObjectModel]:
-    conditions = prepare_conditions(filters)
-    sort = _prepare_sort_order(sort_type)
-
-    sql = (
-        select([tables.offers])
-        .where(and_(*conditions))
-        .order_by(*sort)
-        .limit(limit)
-        .offset(offset)
-    )
-
-    query, params = asyncpgsa.compile_query(sql)
-    result = await pg.get().fetch(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
-
-    if not result:
-        return []
-
-    return [offer_with_object_model_mapper.map_from(r) for r in result]
 
 
 @async_statsd_timer('psql.get_offer_counters')
