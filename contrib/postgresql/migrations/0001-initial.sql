@@ -10,7 +10,7 @@ create type offer_type as enum (
     'newobject'
     );
 
-create type offer_status_tab as enum (
+create type offer_status_tab2 as enum (
     'active',
     'notActive',
     'declined',
@@ -37,7 +37,7 @@ CREATE TABLE offers
     user_id           bigint                   not null,
     deal_type         deal_type                not null,
     offer_type        offer_type               not null,
-    status_tab        offer_status_tab         not null,
+    status_tab        offer_status_tab2         not null,
     services          offer_service[]          not null,
 
     is_manual         bool                     not null,

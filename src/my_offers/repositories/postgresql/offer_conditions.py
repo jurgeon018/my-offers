@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-import sqlalchemy as sa
-from sqlalchemy import and_, any_, cast, func
+from sqlalchemy import and_, any_, func
 from sqlalchemy.sql.elements import BinaryExpression
 
 from my_offers import enums
@@ -50,7 +49,7 @@ def _prepare_basic_conditions(filters: Dict[str, Any]) -> List:
             continue
         field = FILTERS_MAP[key]
         if isinstance(value, list):
-            conditions.append(field == any_(cast(value, sa.ARRAY(field.type))))
+            conditions.append(field == any_(value))
         else:
             conditions.append(field == value)
 

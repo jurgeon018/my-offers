@@ -1,8 +1,10 @@
 import datetime
+from typing import Any, Dict, List
 
 from my_offers import entities, enums
 from my_offers.entities import AvailableActions
 from my_offers.entities.mobile_offer import (
+    ConcurrencyType,
     MobOffer,
     MobPrice,
     OfferAuction,
@@ -12,18 +14,39 @@ from my_offers.entities.mobile_offer import (
 )
 from my_offers.entities.page_info import MobilePageInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
+from my_offers.services.offers import get_filters_mobile
+from ._get_objects_models import get_object_models_with_pagination
 
 
 async def v1_get_my_offers_public(
         request: entities.MobileGetMyOffersRequest,
         realty_user_id: int
 ) -> entities.MobileGetMyOffersResponse:
+    filters: Dict[str, Any] = await get_filters_mobile(
+        filters=request.filters,
+        user_id=realty_user_id,
+        tab_type=request.tab_type,
+        search_text=request.search,
+    )
+
+    # TODO: CD-100663, CD-100665
+    # pylint: disable=unused-variable
+    object_models: List[ObjectModel]
+    can_load_more: bool
+    object_models, can_load_more = await get_object_models_with_pagination(
+        filters=filters,
+        limit=request.limit,
+        offset=request.offset,
+        sort_type=request.sort or enums.MobOffersSortType.update_date,
+    )
+
     return entities.MobileGetMyOffersResponse(
         page=MobilePageInfo(
             limit=request.limit,
             offset=request.offset,
-            can_load_more=False
+            can_load_more=can_load_more
         ),
         offers=[
             MobOffer(
@@ -32,7 +55,7 @@ async def v1_get_my_offers_public(
                     value=9_900_000,
                     currency=Currency.rur,
                 ),
-                status=Status.published,
+                status=enums.MobStatus.published,
                 offer_type=enums.OfferType.flat,
                 deal_type=enums.DealType.sale,
                 category=Category.flat_sale,
@@ -57,7 +80,7 @@ async def v1_get_my_offers_public(
                     can_change_publisher=True,
                     can_view_similar_offers=True
                 ),
-                services=[enums.OfferServices.auction, enums.OfferServices.premium],
+                services=[Services.auction, Services.premium],
                 deactivated_service=OfferDeactivatedService(
                     description='description',
                     is_auto_restore_on_payment_enabled=True
@@ -67,10 +90,11 @@ async def v1_get_my_offers_public(
                     current_bet=5.1,
                     note_bet='note_bet',
                     is_available_auction=True,
-                    concurrencyTypes=['concurrencyTypes'],
-                    type='type',
-                    name='name',
-                    is_active=True,
+                    concurrency_types=[ConcurrencyType(
+                        type='type',
+                        name='name',
+                        is_active=True
+                    )],
                     is_strategy_enabled=True,
                     is_fixed_bet=False,
                     strategy_description='strategy_description',
@@ -92,8 +116,6 @@ async def v1_get_my_offers_public(
                     id=1,
                     date=datetime.datetime(2020, 12, 11, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),
                     comment='comment',
-                    reason_text='reason_text',
-                    decline=True
                 )]
             )
         ]

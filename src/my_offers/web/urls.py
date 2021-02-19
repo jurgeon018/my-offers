@@ -171,7 +171,7 @@ urlpatterns = base_urls.urlpatterns + [
     url(
         r'/public/v1/get-offers-counters-mobile/$',
         get_handler(
-            service=offers.v1_get_offers_counters_mobile_public,
+            service=mobile_offers.v1_get_offers_counters_mobile_public,
             method='POST',
             request_schema=entities.GetOffersCountersMobileRequest,
             response_schema=entities.GetOffersCountersMobileResponse,

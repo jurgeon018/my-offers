@@ -10,7 +10,7 @@ metadata = sa.MetaData()
 
 deal_type = psa.ENUM(*get_names(enums.DealType), name='deal_type')
 offer_type = psa.ENUM(*get_names(enums.OfferType), name='offer_type', )
-offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_type', )
+offer_status_tab = psa.ENUM(*get_names(enums.OfferStatusTab), name='offer_status_tab2', )
 _service = psa.ENUM(*get_names(Services), name='offer_service', )
 _offer_billing_service_type = psa.ENUM(*get_names(Services), name='offer_billing_service_type', )
 

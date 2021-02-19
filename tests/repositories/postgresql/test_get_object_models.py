@@ -64,7 +64,7 @@ async def test_get_object_models__full_filter__result():
     pg.get().fetch.assert_called_once_with(
         'SELECT offers.raw_data \nFROM offers \nWHERE'
         ' offers.status_tab = $10 AND offers.deal_type = $1 AND offers.offer_type = $3'
-        ' AND offers.user_id = ANY (CAST($4 AS BIGINT[])) AND offers.has_photo = true '
+        ' AND offers.user_id = ANY ($4) AND offers.has_photo = true '
         'AND offers.is_manual = false AND offers.is_in_hidden_base = false AND offers.'
         'master_user_id = $2 AND offers.services && CAST($9 AS offer_service[]) AND (t'
         'o_tsvector($11, offers.search_text) @@ plainto_tsquery($7, $8)) ORDER BY offer'

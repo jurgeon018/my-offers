@@ -40,5 +40,3 @@ async def v2_get_offers_public(request: entities.GetOffersRequest, realty_user_i
         page=page_info,
         degradation=degradation,
     )
-
-

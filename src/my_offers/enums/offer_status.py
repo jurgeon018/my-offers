@@ -32,4 +32,27 @@ class MobTabType(StrEnum):
     archived = 'archived'
     """Архив"""
     inactive = 'inactive'
-    """Неактивные"""
+    """Неактивные (declined + not_active)"""
+
+
+# аналог src/my_offers/repositories/monolith_cian_announcementapi/entities/object_model.py
+# только с маленькой буквы
+class MobStatus(StrEnum):
+    draft = 'draft'
+    """Черновик"""
+    published = 'published'
+    """Опубликовано"""
+    deactivated = 'deactivated'
+    """Деактивировано (ранее было скрыто Hidden)"""
+    refused = 'refused'
+    """Отклонено модератором"""
+    deleted = 'deleted'
+    """Удалён"""
+    sold = 'sold'
+    """Продано/Сдано"""
+    moderate = 'moderate'
+    'Требует модерации\r\nДанный статус исчез - оставим для совместимости'
+    removed_by_moderator = 'removedByModerator'
+    """Удалено модератором"""
+    blocked = 'blocked'
+    """объявление снято с публикации по причине применения санкции "приостановки публикации\""""

@@ -21,10 +21,6 @@ from my_offers.entities.duplicates import (
 from my_offers.entities.duplicates import PriceInfo as PriceInfoWithTrend
 from my_offers.entities.duplicates import Tab
 from my_offers.entities.get_offers import (
-    GetOffersCountersMobileArchivedInactiveCounter,
-    GetOffersCountersMobileCounter,
-    GetOffersCountersMobileRequest,
-    GetOffersCountersMobileResponse,
     GetOffersPrivateRequest,
     GetOffersRequest,
     GetOffersV2Response,
@@ -71,4 +67,11 @@ from my_offers.entities.subscribe import (
 )
 from my_offers.entities.update_offer import UpdateOfferRequest
 from my_offers.entities.valuation import GetOfferValuationRequest, GetOfferValuationResponse, ValuationOption
-from .mobile_offer import MobileGetMyOffersRequest, MobileGetMyOffersResponse
+from .mobile_offer import (
+    GetOffersCountersMobileArchivedInactiveCounter,
+    GetOffersCountersMobileCounter,
+    GetOffersCountersMobileRequest,
+    GetOffersCountersMobileResponse,
+    MobileGetMyOffersRequest,
+    MobileGetMyOffersResponse,
+)

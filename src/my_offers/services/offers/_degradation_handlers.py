@@ -1,8 +1,8 @@
 from cian_core.degradation import get_degradation_handler
 from simple_settings import settings
 
-from my_offers.entities import AgentHierarchyData
-from my_offers.entities.get_offers import GetOffersCountersMobileResponse, OfferCounters
+from my_offers.entities import AgentHierarchyData, GetOffersCountersMobileResponse
+from my_offers.entities.get_offers import OfferCounters
 from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql import get_object_models, get_offers_offence
 from my_offers.repositories.postgresql.agents import get_agent_hierarchy_data, get_agent_names

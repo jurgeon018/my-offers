@@ -6,14 +6,15 @@ from my_offers import enums
 from my_offers.entities import AvailableActions
 from my_offers.entities.page_info import MobilePageInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 
 
 @dataclass
 class Filters:
-    deal_type: enums.DealType
+    deal_type: Optional[enums.DealType]
     """Тип сделки"""
-    offer_type: enums.OfferType
+    offer_type: Optional[enums.OfferType]
     """Тип объекта недвижимости"""
 
 
@@ -21,14 +22,10 @@ class Filters:
 class OfferComplaint:
     id: int
     """Id жалобы"""
-    date: datetime
+    date: Optional[datetime]
     """Дата жалобы"""
     comment: str
     """Комментарий"""
-    reason_text: str
-    """Причина"""
-    decline: bool
-    """Отклонена"""
 
 
 @dataclass
@@ -38,36 +35,40 @@ class OfferDeactivatedService:
 
 
 @dataclass
-class OfferAuction:
-    increase_bets_positions_count: int
-    current_bet: float
-    note_bet: str
-    is_available_auction: bool
-    concurrencyTypes: List[str]  # тип пока не указан в контракте
+class ConcurrencyType:
     type: str
     name: str
     is_active: bool
+
+
+@dataclass
+class OfferAuction:
+    increase_bets_positions_count: Optional[int]
+    current_bet: Optional[float]
+    note_bet: Optional[str]
+    is_available_auction: Optional[bool]
+    concurrency_types: Optional[List[ConcurrencyType]]
     is_strategy_enabled: bool
     is_fixed_bet: bool
-    strategy_description: str
-    concurrency_type_title: str
+    strategy_description: Optional[str]
+    concurrency_type_title: Optional[str]
 
 
 @dataclass
 class OfferStats:
-    competitors_count: int
+    competitors_count: Optional[int]
     """Oбщее количество дублей"""
-    duplicates_count: int
+    duplicates_count: Optional[int]
     """Новые дубли"""
-    calls_count: int
+    calls_count: Optional[int]
     """Количество звонков"""
-    skipped_calls_count: int
+    skipped_calls_count: Optional[int]
     """Количество пропущенных звонков"""
-    total_views: int
+    total_views: Optional[int]
     """Все просмотры"""
-    daily_views: int
+    daily_views: Optional[int]
     """Просмотр за день"""
-    favorites: int
+    favorites: Optional[int]
     """Количество попаданий в избранное"""
 
 
@@ -85,7 +86,7 @@ class MobOffer:
     """Id оффера"""
     price: MobPrice
     """Цена"""
-    status: Status
+    status: enums.MobStatus
     """Статус объявления"""
     offer_type: enums.OfferType
     """Тип оффера"""
@@ -114,7 +115,7 @@ class MobOffer:
     """Описание"""
     available_actions: AvailableActions
     """Доступные действия оффера"""
-    services: List[enums.OfferServices]
+    services: List[Services]
     """Типы размещений оффера"""
     deactivated_service: Optional[OfferDeactivatedService]
     auction: Optional[OfferAuction]
@@ -152,3 +153,43 @@ class MobileGetMyOffersResponse:
     """Информация о странице"""
     offers: List[MobOffer]
     """Список объявлений"""
+
+
+@dataclass
+class GetOffersCountersMobileRequest:
+    search: Optional[str]
+    """Полнотекстовый поиск по объявлению"""
+
+
+@dataclass
+class GetOffersCountersMobileCounter:
+    total: Optional[int]
+    """Количество всех объявлений"""
+    flat: Optional[int]
+    """Жилая"""
+    suburban: Optional[int]
+    """Загородная"""
+    commercial: Optional[int]
+    """Коммерческая"""
+
+
+@dataclass
+class GetOffersCountersMobileArchivedInactiveCounter:
+    total: Optional[int]
+    """Количество всех объявлений"""
+    rent: Optional[int]
+    """Аренда"""
+    sale: Optional[int]
+    """Продажа"""
+
+
+@dataclass
+class GetOffersCountersMobileResponse:
+    rent: Optional[GetOffersCountersMobileCounter]
+    """Вкладка аренда"""
+    sale: Optional[GetOffersCountersMobileCounter]
+    """Вкладка продажа"""
+    archived: Optional[GetOffersCountersMobileArchivedInactiveCounter]
+    """Вкладка архивные"""
+    inactive: Optional[GetOffersCountersMobileArchivedInactiveCounter]
+    """Вкладка Неактивные + Отклоненные"""
