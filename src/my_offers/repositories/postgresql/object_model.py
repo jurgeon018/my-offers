@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import asyncpgsa
 from cian_json import json
@@ -16,6 +16,7 @@ from my_offers.repositories.postgresql.offer_conditions import prepare_condition
 OFFER_TABLE = tables.offers.c
 
 SORT_TYPE_MAP = {
+    # desktop
     enums.GetOffersSortType.by_default: OFFER_TABLE.sort_date.desc(),
     enums.GetOffersSortType.by_price_min: OFFER_TABLE.price.desc(),
     enums.GetOffersSortType.by_price_max: OFFER_TABLE.price,
@@ -25,9 +26,7 @@ SORT_TYPE_MAP = {
     enums.GetOffersSortType.by_walk_time: OFFER_TABLE.walking_time,
     enums.GetOffersSortType.by_street: OFFER_TABLE.street_name,
     enums.GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
-}
-
-SORT_TYPE_MOBILE_MAP = {
+    # mobile
     enums.MobOffersSortType.update_date: OFFER_TABLE.sort_date.desc(),
     enums.MobOffersSortType.move_to_archive_date: OFFER_TABLE.sort_date.desc(),
     enums.MobOffersSortType.price_asc: OFFER_TABLE.price,
@@ -64,7 +63,7 @@ async def get_object_models(
         filters: Dict[str, Any],
         limit: int,
         offset: int,
-        sort_type: enums.GetOffersSortType,
+        sort_type: Union[enums.GetOffersSortType, enums.MobOffersSortType],
 ) -> List[ObjectModel]:
     conditions = prepare_conditions(filters)
     sort = _prepare_sort_order(sort_type)
@@ -90,10 +89,6 @@ async def get_object_models(
 
 def _prepare_sort_order(sort_type: enums.GetOffersSortType):
     return [SORT_TYPE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
-
-
-def _prepare_sort_mobile_order(sort_type: enums.MobOffersSortType):
-    return [SORT_TYPE_MOBILE_MAP[sort_type].nullslast(), OFFER_TABLE.offer_id]
 
 
 async def get_object_model_by_id(offer_id: int) -> Optional[ObjectModel]:
