@@ -16,7 +16,7 @@ from my_offers.entities.mobile_offer import (
 )
 from my_offers.entities.page_info import MobilePageInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
-from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.offers import get_filters_mobile
 from ._get_offers_models import get_offers_with_object_model
@@ -34,20 +34,20 @@ async def v1_get_my_offers_public(
         search_text=request.search,
     )
 
-    get_offers_task: Task[List[entities.OfferWithObjectModel]] = asyncio.create_task(get_offers_with_object_model(
-        filters=filters,
-        limit=request.limit,
-        offset=request.offset,
-        sort_type=request.sort or enums.MobOffersSortType.update_date,
-    ))
-
     can_load_more_task: Task[bool] = asyncio.create_task(get_can_load_more(
         filters=filters,
         limit=request.limit,
         offset=request.offset,
     ))
 
-    foo = await get_offers_task
+    # TODO: CD-100663, CD-100665
+    # pylint: disable=unused-variable
+    offers: List[entities.OfferWithObjectModel] = await get_offers_with_object_model(
+        filters=filters,
+        limit=request.limit,
+        offset=request.offset,
+        sort_type=request.sort or enums.MobOffersSortType.update_date,
+    )
 
     return entities.MobileGetMyOffersResponse(
         page=MobilePageInfo(

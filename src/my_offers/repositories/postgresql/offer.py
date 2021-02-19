@@ -16,11 +16,11 @@ from my_offers.entities.offer import ReindexOffer
 from my_offers.enums import OfferPayedByType, OfferStatusTab
 from my_offers.helpers.fields import get_offer_payed_by
 from my_offers.helpers.statsd import async_statsd_timer
-from my_offers.mappers.object_model import object_model_mapper
 from my_offers.mappers.offer_mapper import (
     offer_mapper,
     offer_row_version_mapper,
-    offer_with_object_model_mapper, offers_creation_date_mapper,
+    offer_with_object_model_mapper,
+    offers_creation_date_mapper,
     reindex_offer_mapper,
 )
 from my_offers.repositories.postgresql import tables
