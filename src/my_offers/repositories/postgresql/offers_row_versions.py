@@ -93,7 +93,26 @@ async def get_missed_offer_ids() -> List[int]:
     return [item['offer_id'] for item in result]
 
 
-async def archive_missed_offers() -> List[int]:
+async def get_offers_ids_to_archive() -> List[int]:
+    query = """
+    select
+        o.offer_id
+    from
+        offers o
+        left join offers_row_versions orv on o.offer_id = orv.offer_id
+    where
+        orv.row_version is null
+        and o.row_version < (select max(row_version) from offers_row_versions)
+        and o.status_tab not in ('deleted', 'archived')
+        and not o.is_test
+    """
+
+    result = await pg.get().fetch(query)
+
+    return [item['offer_id'] for item in result]
+
+
+async def archive_missed_offers(ids: List[int]):
     """
     Архивируем все объявления, которых нет в С# и у которых версия ниже максимальной
     """
@@ -103,21 +122,7 @@ async def archive_missed_offers() -> List[int]:
     set
         status_tab = 'archived'
     where
-        offer_id in (
-            select
-                o.offer_id
-            from
-                offers o
-                left join offers_row_versions orv on o.offer_id = orv.offer_id
-            where
-                orv.row_version is null
-                and o.row_version < (select max(row_version) from offers_row_versions)
-                and o.status_tab not in ('deleted', 'archived')
-                and not o.is_test
-        )
-    returning offer_id
+        offer_id = any($1::bigint[])
     """
 
-    result = await pg.get().fetch(query)
-
-    return [item['offer_id'] for item in result]
+    await pg.get().fetch(query, ids)
