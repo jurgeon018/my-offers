@@ -39,6 +39,10 @@ definitions:
   WebApi.Models.Announcements.ChangedAnnouncement:
     description: Изменившиеся объявление
     properties:
+      flags:
+        description: Флаги объявления
+        format: int32
+        type: integer
       id:
         description: Id объявления
         format: int32
@@ -47,6 +51,29 @@ definitions:
         description: RowVersion
         format: int64
         type: integer
+      status:
+        description: Статус объявления
+        enum:
+        - Draft
+        - Published
+        - Deactivated
+        - Refused
+        - Deleted
+        - Sold
+        - Moderate
+        - RemovedByModerator
+        - Blocked
+        type: string
+        x-Blocked: 20 - объявление снято с публикации по причине применения санкции
+          "приостановки публикации"
+        x-Deactivated: 14 - Деактивировано (ранее было скрыто Hidden)
+        x-Deleted: 16 - Удалён
+        x-Draft: 11 - Черновик
+        x-Moderate: "18 - Требует модерации\r\nДанный статус исчез - оставим для совместимости"
+        x-Published: 12 - Опубликовано
+        x-Refused: 15 - Отклонено модератором
+        x-RemovedByModerator: 19 - Удалено модератором
+        x-Sold: 17 - Продано/Сдано
     required:
     - id
     type: object
@@ -61,7 +88,7 @@ definitions:
     required:
     - announcements
     type: object
-host: master.announcements.dev3.cian.ru
+host: cd-99970.announcements.dev3.cian.ru
 info:
   title: announcements
   version: v1
