@@ -1,0 +1,82 @@
+definitions:
+  WebApi.Models.CheckUsersNeedIdentificationRequest:
+    description: Запрос на проверку нужна ли идентификация для этих пользователей
+    properties:
+      userIds:
+        description: Ids пользователей
+        items:
+          format: int64
+          type: integer
+        type: array
+    required:
+    - userIds
+    type: object
+  WebApi.Models.UserIdentificationResult:
+    description: Результат идентификации пользователя
+    properties:
+      identificationStatus:
+        description: Статус идентификации
+        enum:
+        - okNoIdentificationNeeded
+        - notIdentified
+        - needIdentification
+        - okNoIdentificationNeededNotInCondition
+        type: string
+        x-needIdentification: Пользователь не идентифицирован, необходимо инициировать
+          идентификацию
+        x-notIdentified: Пользователь не идентифицирован еще, проверка в процессе
+        x-okNoIdentificationNeeded: Все ок, идентификация не требуется
+        x-okNoIdentificationNeededNotInCondition: Все ок, идентификация не требуется,
+          т.к. аккаунт не входят в ограничения, указанные в ТЗ идентификации через
+          SumSub (регион, признак собственника и т.д.)
+      objectIds:
+        description: Объявления, ожидающие идентификации
+        items:
+          format: int32
+          type: integer
+        type: array
+      userId:
+        description: Id пользователя
+        format: int64
+        type: integer
+    required:
+    - userId
+    - identificationStatus
+    type: object
+host: master.moderation-checks-orchestrator.dev3.cian.ru
+info:
+  title: moderation-checks-orchestrator
+  version: v1
+paths:
+  /v1/check-users-need-identification/:
+    post:
+      consumes:
+      - application/json
+      - text/json
+      - application/x-www-form-urlencoded
+      operationId: ObjectPublishCheck_CheckUsersNeedIdentificationAsync
+      parameters:
+      - in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/WebApi.Models.CheckUsersNeedIdentificationRequest'
+      produces:
+      - application/json
+      - text/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/WebApi.Models.UserIdentificationResult'
+            type: array
+      summary: Определяет надо ли отправлять пользователей на проверку идентификации
+      tags:
+      - ObjectPublishCheck
+schemes:
+- http
+swagger: '2.0'
+x-cian-mq:
+  exchanges: {}
+  spec-version: '1.0'

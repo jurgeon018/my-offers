@@ -4,15 +4,51 @@ definitions:
     properties:
       announcementCategory:
         description: Категория объявления
-        enum: [bedRent, buildingRent, buildingSale, businessRent, businessSale, carServiceRent,
-          carServiceSale, commercialLandRent, commercialLandSale, cottageRent, cottageSale,
-          dailyBedRent, dailyFlatRent, dailyHouseRent, dailyRoomRent, domesticServicesRent,
-          domesticServicesSale, flatRent, flatSale, flatShareSale, freeAppointmentObjectRent,
-          freeAppointmentObjectSale, garageRent, garageSale, houseRent, houseSale,
-          houseShareRent, houseShareSale, industryRent, industrySale, landSale, newBuildingFlatSale,
-          officeRent, officeSale, publicCateringRent, publicCateringSale, roomRent,
-          roomSale, shoppingAreaRent, shoppingAreaSale, townhouseRent, townhouseSale,
-          warehouseRent, warehouseSale]
+        enum:
+        - bedRent
+        - buildingRent
+        - buildingSale
+        - businessRent
+        - businessSale
+        - carServiceRent
+        - carServiceSale
+        - commercialLandRent
+        - commercialLandSale
+        - cottageRent
+        - cottageSale
+        - dailyBedRent
+        - dailyFlatRent
+        - dailyHouseRent
+        - dailyRoomRent
+        - domesticServicesRent
+        - domesticServicesSale
+        - flatRent
+        - flatSale
+        - flatShareSale
+        - freeAppointmentObjectRent
+        - freeAppointmentObjectSale
+        - garageRent
+        - garageSale
+        - houseRent
+        - houseSale
+        - houseShareRent
+        - houseShareSale
+        - industryRent
+        - industrySale
+        - landSale
+        - newBuildingFlatSale
+        - officeRent
+        - officeSale
+        - publicCateringRent
+        - publicCateringSale
+        - roomRent
+        - roomSale
+        - shoppingAreaRent
+        - shoppingAreaSale
+        - townhouseRent
+        - townhouseSale
+        - warehouseRent
+        - warehouseSale
         type: string
         x-bedRent: Койко-место = 0
         x-buildingRent: Здание = 1
@@ -58,49 +94,206 @@ definitions:
         x-townhouseSale: Таунхаус = 41
         x-warehouseRent: Склад = 42
         x-warehouseSale: Склад = 43
-      announcementId: {description: Id объявления, format: int32, type: integer}
-      bet: {description: Значение ставки, format: double, type: number}
-      countyId: {description: Id округа, format: int64, type: integer}
-      districtId: {description: Id района, format: int64, type: integer}
-      isFromOrder: {description: 'Флаг, показывающий установлена ли ставка через xml
-          заказа', type: boolean}
-      regionId: {description: Id региона, format: int32, type: integer}
-      rowVersion: {description: 'Версия объявления, к которой применена ставка.',
-        format: int64, type: integer}
-    required: [announcementId, bet]
+      announcementId:
+        description: Id объявления
+        format: int32
+        type: integer
+      bet:
+        description: Значение ставки
+        format: double
+        type: number
+      countyId:
+        description: Id округа
+        format: int64
+        type: integer
+      districtId:
+        description: Id района
+        format: int64
+        type: integer
+      isFromOrder:
+        description: Флаг, показывающий установлена ли ставка через xml заказа
+        type: boolean
+      regionId:
+        description: Id региона
+        format: int32
+        type: integer
+      rowVersion:
+        description: Версия объявления, к которой применена ставка.
+        format: int64
+        type: integer
+    required:
+    - announcementId
+    - bet
+    type: object
+  Common.Models.ConcurrencyTypeModel:
+    description: Уровень конкуренции
+    properties:
+      isActive:
+        description: Активная вкладка
+        type: boolean
+      name:
+        description: Название
+        type: string
+      type:
+        description: Тип
+        enum:
+        - region
+        - local
+        - nearBy
+        type: string
+        x-local: Локальная конкуренция
+        x-nearBy: Конкуренция по соседству
+        x-region: Конкуренция в регионе
+    required:
+    - type
+    - name
+    - isActive
+    type: object
+  WebApi.Models.AnnouncementBetPublic.GetMobileBetAnnouncementsInfoResponse:
+    description: Результат запроса на получение аукционной информации по объявлениям
+    properties:
+      announcements:
+        description: Аукционная информация по объявлениям
+        items:
+          $ref: '#/definitions/WebApi.Models.AnnouncementBetPublic.MobileBetAnnouncementInfo'
+        type: array
+    required:
+    - announcements
+    type: object
+  WebApi.Models.AnnouncementBetPublic.MobileBetAnnouncementInfo:
+    description: Аукционная информация
+    properties:
+      announcementId:
+        description: Id объявления
+        format: int32
+        type: integer
+      betPositionInfo:
+        description: Описание позиции с учетом сквозной конкуренции
+        type: string
+      concurrencyTypeTitle:
+        description: Название типа конкуренции
+        type: string
+      concurrencyTypes:
+        description: Доступные уровни конкуренции
+        items:
+          $ref: '#/definitions/Common.Models.ConcurrencyTypeModel'
+        type: array
+      currentBet:
+        description: Текущая ставка
+        format: int32
+        type: integer
+      increaseBetsPositionsCount:
+        description: Объявлений над вами
+        format: int32
+        type: integer
+      isAvailableAuction:
+        description: Доступность для редактирования
+        type: boolean
+      isFixedBet:
+        description: Флаг, показывающий, фиксированная ли ставка
+        type: boolean
+      isStrategyEnabled:
+        description: Флаг, показывающий, включена ли стратегия
+        type: boolean
+      noteBet:
+        description: Описание ставки
+        type: string
+      serpPosition:
+        description: Позиция в выдаче
+        format: int32
+        type: integer
+      strategyDescription:
+        description: Описание стратегии
+        type: string
+    required:
+    - announcementId
+    - concurrencyTypeTitle
+    - increaseBetsPositionsCount
+    - isAvailableAuction
+    - concurrencyTypes
+    - serpPosition
     type: object
   WebApi.Models.AnnouncementsBetResponse:
     properties:
       bets:
         description: Список ставок по объявлениям
-        items: {$ref: '#/definitions/Common.Models.AnnouncementsBetModel'}
+        items:
+          $ref: '#/definitions/Common.Models.AnnouncementsBetModel'
         type: array
     type: object
   WebApi.Models.GetAnnouncementsBetsRequest:
     properties:
       announcementsIds:
         description: Набор Id объявлений
-        items: {format: int32, type: integer}
+        items:
+          format: int32
+          type: integer
         type: array
-    required: [announcementsIds]
+    required:
+    - announcementsIds
     type: object
 host: master.auction.dev3.cian.ru
-info: {title: auction, version: v1}
+info:
+  title: auction
+  version: v1
 paths:
+  /v1/get-announcements-info-for-mobile/:
+    get:
+      consumes: []
+      operationId: AnnouncementBetMobile_GetAnnouncementsInfoForMobileAsync
+      parameters:
+      - collectionFormat: multi
+        description: Объявления
+        in: query
+        items:
+          format: int32
+          type: integer
+        name: announcementIds
+        required: true
+        type: array
+      - description: Id пользователя
+        format: int64
+        in: query
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - text/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/WebApi.Models.AnnouncementBetPublic.GetMobileBetAnnouncementsInfoResponse'
+      summary: Аукционная информация по объявлениям
+      tags:
+      - AnnouncementBetMobile
   /v1/get-bets-by-announcements:
     post:
-      consumes: [application/json, text/json, application/x-www-form-urlencoded]
+      consumes:
+      - application/json
+      - text/json
+      - application/x-www-form-urlencoded
       operationId: AnnouncementsBet_GetBetsByAnnouncementsAsync
       parameters:
       - in: body
         name: request
         required: true
-        schema: {$ref: '#/definitions/WebApi.Models.GetAnnouncementsBetsRequest'}
-      produces: [application/json, text/json]
+        schema:
+          $ref: '#/definitions/WebApi.Models.GetAnnouncementsBetsRequest'
+      produces:
+      - application/json
+      - text/json
       responses:
         '200':
           description: OK
-          schema: {$ref: '#/definitions/WebApi.Models.AnnouncementsBetResponse'}
-      tags: [AnnouncementsBet]
-schemes: [http]
+          schema:
+            $ref: '#/definitions/WebApi.Models.AnnouncementsBetResponse'
+      tags:
+      - AnnouncementsBet
+schemes:
+- http
 swagger: '2.0'
+x-cian-mq:
+  exchanges: {}
+  spec-version: '1.0'

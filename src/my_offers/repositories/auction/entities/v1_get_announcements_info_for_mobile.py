@@ -13,6 +13,8 @@ from typing import List
 
 
 @dataclass
-class GetAnnouncementsBetsRequest:
-    announcements_ids: List[int]
-    """Набор Id объявлений"""
+class V1GetAnnouncementsInfoForMobile:
+    announcement_ids: List[int]
+    """Объявления"""
+    user_id: int
+    """Id пользователя"""

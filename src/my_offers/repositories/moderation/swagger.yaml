@@ -1,0 +1,151 @@
+definitions:
+  WebApi.Models.HiddenImages.GetImageOffenceForAnnouncement:
+    description: Нарушение для скрытой фотографии
+    properties:
+      announcementId:
+        description: ID объявления
+        format: int32
+        type: integer
+      comment:
+        description: Комментарий
+        type: string
+      imageIds:
+        description: Список скрытых фотографий
+        items:
+          format: int64
+          type: integer
+        type: array
+      title:
+        description: Заголовок
+        type: string
+    required:
+    - announcementId
+    type: object
+  WebApi.Models.HiddenImages.GetImageOffencesForAnnouncementsRequest:
+    description: Запрос на получение нарушений для скрытых фотографий
+    properties:
+      announcementIds:
+        description: Идентификаторы объявлений
+        items:
+          format: int32
+          type: integer
+        type: array
+    required:
+    - announcementIds
+    type: object
+  WebApi.Models.HiddenImages.GetImageOffencesForAnnouncementsResponse:
+    description: Нарушения для скрытых фотографий
+    properties:
+      items:
+        description: Скрытые фотографии в объявлениях
+        items:
+          $ref: '#/definitions/WebApi.Models.HiddenImages.GetImageOffenceForAnnouncement'
+        type: array
+    required:
+    - items
+    type: object
+  WebApi.Models.HiddenVideos.GetVideoOffenceForAnnouncement:
+    description: Нарушение для скрытого видео
+    properties:
+      announcementId:
+        description: ID объявления
+        format: int32
+        type: integer
+      comment:
+        description: Заголовок
+        type: string
+      title:
+        description: Заголовок
+        type: string
+      videoIds:
+        description: Список скрытых видео
+        items:
+          type: string
+        type: array
+    required:
+    - announcementId
+    type: object
+  WebApi.Models.HiddenVideos.GetVideoOffencesForAnnouncementsRequest:
+    description: Запрос на получение нарушений для скрытых видео
+    properties:
+      announcementIds:
+        description: Идентификаторы объявлений
+        items:
+          format: int32
+          type: integer
+        type: array
+    required:
+    - announcementIds
+    type: object
+  WebApi.Models.HiddenVideos.GetVideoOffencesForAnnouncementsResponse:
+    description: Нарушения для скрытых видео
+    properties:
+      items:
+        description: Скрытые видео в объявлениях
+        items:
+          $ref: '#/definitions/WebApi.Models.HiddenVideos.GetVideoOffenceForAnnouncement'
+        type: array
+    required:
+    - items
+    type: object
+host: master.moderation.dev3.cian.ru
+info:
+  title: moderation
+  version: v1
+paths:
+  /v1/get-image-offences-for-announcements/:
+    post:
+      consumes:
+      - application/json
+      - text/json
+      - application/x-www-form-urlencoded
+      operationId: HiddenImages_GetImageOffencesForAnnouncementsAsync
+      parameters:
+      - description: данные для проверки видео
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/WebApi.Models.HiddenImages.GetImageOffencesForAnnouncementsRequest'
+      produces:
+      - application/json
+      - text/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/WebApi.Models.HiddenImages.GetImageOffencesForAnnouncementsResponse'
+      summary: Возращает нарушение для скрытых фотографий
+      tags:
+      - HiddenImages
+  /v1/get-video-offences-for-announcements/:
+    post:
+      consumes:
+      - application/json
+      - text/json
+      - application/x-www-form-urlencoded
+      operationId: HiddenVideos_GetVideoOffencesForAnnouncementsAsync
+      parameters:
+      - description: данные для проверки видео
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/WebApi.Models.HiddenVideos.GetVideoOffencesForAnnouncementsRequest'
+      produces:
+      - application/json
+      - text/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/WebApi.Models.HiddenVideos.GetVideoOffencesForAnnouncementsResponse'
+      summary: Возрвщает нарушение для скрытых видео
+      tags:
+      - HiddenVideos
+schemes:
+- http
+swagger: '2.0'
+x-cian-mq:
+  exchanges: {}
+  spec-version: '1.0'

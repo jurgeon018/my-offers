@@ -1,7 +1,98 @@
+import asyncio
 from pathlib import Path
 
+import pytest
+from cian_functional_test_utils.pytest_plugin import MockResponse
 
-async def test_v1_get_offers_mobile_public__200(http, pg):
+
+@pytest.fixture(name='mobile_offers_integrations_mock')
+async def _integration_mock(moderation_mock, moderation_checks_orchestrator_mock, auction_mock):
+    await asyncio.gather(
+        moderation_mock.add_stub(
+            method='POST',
+            path='/v1/get-video-offences-for-announcements/',
+            response=MockResponse(
+                body={
+                    'items': [
+                        {
+                            'announcementId': 0,
+                            'title': 'string',
+                            'comment': 'string',
+                            'videoIds': [
+                                'string'
+                            ]
+                        }
+                    ]
+                }
+            ),
+        ),
+        moderation_mock.add_stub(
+            method='POST',
+            path='/v1/get-image-offences-for-announcements/',
+            response=MockResponse(
+                body={
+                    'items': [
+                        {
+                            'announcementId': 0,
+                            'title': 'string',
+                            'comment': 'string',
+                            'imageIds': [
+                                0
+                            ]
+                        }
+                    ]
+                }
+            ),
+        ),
+        moderation_checks_orchestrator_mock.add_stub(
+            method='POST',
+            path='/v1/check-users-need-identification/',
+            response=MockResponse(
+                body=[
+                    {
+                        'userId': 29437831,
+                        'identificationStatus': 'okNoIdentificationNeeded',
+                        'objectIds': [
+                            0
+                        ]
+                    }
+                ]
+            ),
+        ),
+        auction_mock.add_stub(
+            method='GET',
+            path='/v1/get-announcements-info-for-mobile/',
+            response=MockResponse(
+                body={
+                    'announcements': [
+                        {
+                            'announcementId': 0,
+                            'concurrencyTypeTitle': 'string',
+                            'increaseBetsPositionsCount': 0,
+                            'currentBet': 0,
+                            'noteBet': 'string',
+                            'isAvailableAuction': True,
+                            'concurrencyTypes': [
+                                {
+                                    'type': 'region',
+                                    'name': 'string',
+                                    'isActive': True
+                                }
+                            ],
+                            'serpPosition': 0,
+                            'isStrategyEnabled': True,
+                            'isFixedBet': True,
+                            'strategyDescription': 'string',
+                            'betPositionInfo': 'string'
+                        }
+                    ]
+                }
+            ),
+        )
+    )
+
+
+async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrations_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
@@ -96,7 +187,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
     }
 
 
-async def test_v1_get_offers_mobile_public__200__empty_offers(http, pg):
+async def test_v1_get_offers_mobile_public__200__empty_offers(http, pg, mobile_offers_integrations_mock):
     # arrange
 
     # act
@@ -190,7 +281,7 @@ async def test_v1_get_offers_mobile_public__200__empty_offers(http, pg):
     }
 
 
-async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg):
+async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_offers_integrations_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_pagination.sql')
 
