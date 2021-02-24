@@ -1,0 +1,1 @@
+from my_offers.services.favorites._get_favorites_counts import get_favorites_counts_degradation_handler
