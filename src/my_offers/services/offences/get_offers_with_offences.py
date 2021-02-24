@@ -13,7 +13,7 @@ from my_offers.repositories.moderation.entities import (
 )
 
 
-async def _get_offers_with_media_offences(offers_ids: List[int]) -> Tuple[List[int], List[int]]:
+async def get_offers_with_media_offences(offers_ids: List[int]) -> Tuple[List[int], List[int]]:
     image_offence: GetImageOffencesForAnnouncementsResponse
     video_offence: GetVideoOffencesForAnnouncementsResponse
 

@@ -7,7 +7,7 @@ from my_offers.repositories.moderation_checks_orchestrator.entities import (
 )
 
 
-async def _get_unidentified_offers(user_id: int) -> List[int]:
+async def get_unidentified_offers(user_id: int) -> List[int]:
     result: List[UserIdentificationResult] = await v1_check_users_need_identification(
         CheckUsersNeedIdentificationRequest(
             user_ids=[user_id]

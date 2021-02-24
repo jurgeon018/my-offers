@@ -5,7 +5,7 @@ from my_offers.repositories.moderation_checks_orchestrator.entities import UserI
 from my_offers.repositories.moderation_checks_orchestrator.entities.user_identification_result import (
     IdentificationStatus,
 )
-from my_offers.services.mobile_offers.get_my_offers._get_unidentified_offers import _get_unidentified_offers
+from my_offers.services.offences.get_unidentified_offers import get_unidentified_offers
 
 
 @pytest.mark.gen_test
@@ -24,7 +24,7 @@ async def test_get_unidentified_offers(mocker):
     expected = []
 
     # act
-    result = await _get_unidentified_offers(user_id=123)
+    result = await get_unidentified_offers(user_id=123)
 
     # assert
     assert result == expected
@@ -46,7 +46,7 @@ async def test_get_unidentified_empty_offers(mocker):
     expected = [1, 2, 3]
 
     # act
-    result = await _get_unidentified_offers(user_id=123)
+    result = await get_unidentified_offers(user_id=123)
 
     # assert
     assert result == expected
