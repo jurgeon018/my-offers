@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import List
 
 import pytz
+from cian_http.exceptions import ApiClientException
 from cian_json import json
 from more_itertools import grouper
 from simple_settings import settings
@@ -107,6 +108,11 @@ async def run_resend_task(offers_ids: List[int]) -> None:
             value=len(offers),
             timestamp=datetime.now(pytz.utc).timestamp()
         )
+        send_to_graphite(
+            key='resend_job_realty_task.offers_progress',
+            value=offers_progress,
+            timestamp=datetime.now(pytz.utc).timestamp()
+        )
 
     if error_offers_ids and settings.RESEND_JOB_ALLOW_ELASTIC:
         await save_offers_from_elasticapi(offers_ids=list(map(int, error_offers_ids)))
@@ -123,9 +129,13 @@ async def _run_job(offers_ids: List[int]) -> List[int]:
 
     while True:
         await asyncio.sleep(settings.RESEND_JOB_REFRESH)
-        job: GetResendMessagesJobResponse = await monolith_cian_realty.api_v1_resend_reporting_messages_get_job(
-            ApiV1ResendReportingMessagesGetJob(id=job_id)
-        )
+        try:
+            job: GetResendMessagesJobResponse = await monolith_cian_realty.api_v1_resend_reporting_messages_get_job(
+                ApiV1ResendReportingMessagesGetJob(id=job_id)
+            )
+        except ApiClientException:
+            logger.exception('api_v1_resend_reporting_messages_get_job timeout')
+            continue
 
         if job.state in END_STATUSES:
             if job.data:

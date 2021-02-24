@@ -53,6 +53,8 @@ from my_offers.repositories.postgresql.offers_resender import get_last_row_versi
 from my_offers.repositories.postgresql.offers_row_versions import (
     archive_missed_offers,
     clean_offer_row_versions,
+    get_missed_offer_ids,
+    get_offers_ids_to_archive,
     get_outdated_offer_ids,
     save_offer_row_versions,
 )
