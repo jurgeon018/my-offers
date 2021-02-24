@@ -1,4 +1,6 @@
+import asyncio
 import datetime
+from asyncio.tasks import Task
 from typing import Any, Dict, List
 
 from my_offers import entities, enums
@@ -18,6 +20,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.offers import get_filters_mobile
 from ._get_objects_models import get_object_models_with_pagination
+from ._get_offers_with_offences import _get_offers_with_media_offences
+from ._get_unidentified_offers import _get_unidentified_offers
 
 
 async def v1_get_my_offers_public(
@@ -31,6 +35,8 @@ async def v1_get_my_offers_public(
         search_text=request.search,
     )
 
+    unidentified_offers_task: Task[List[int]] = asyncio.create_task(_get_unidentified_offers(realty_user_id))
+
     # TODO: CD-100663, CD-100665
     # pylint: disable=unused-variable
     object_models: List[ObjectModel]
@@ -41,6 +47,16 @@ async def v1_get_my_offers_public(
         offset=request.offset,
         sort_type=request.sort or enums.MobOffersSortType.update_date,
     )
+
+    image_offence: List[int]
+    video_offence: List[int]
+    # TODO: CD-100663, CD-100665
+    # pylint: disable=unused-variable
+    image_offence, video_offence = await _get_offers_with_media_offences([o.id for o in object_models if o.id])
+
+    # TODO: CD-100663, CD-100665
+    # pylint: disable=unused-variable
+    unidentified_offers: List[int] = await unidentified_offers_task
 
     return entities.MobileGetMyOffersResponse(
         page=MobilePageInfo(

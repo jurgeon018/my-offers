@@ -48,6 +48,16 @@ async def notification_center_mock(http_mock_service):
 
 
 @pytest.fixture(scope='session')
+async def moderation_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('moderation')
+
+
+@pytest.fixture(scope='session')
+async def moderation_checks_orchestrator_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('moderation-checks-orchestrator')
+
+
+@pytest.fixture(scope='session')
 async def price_estimator_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('price-estimator')
 
