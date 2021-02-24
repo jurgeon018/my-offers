@@ -1,6 +1,5 @@
 import asyncio
 import json
-import uuid
 from pathlib import Path
 
 from cian_functional_test_utils.pytest_plugin import MockResponse

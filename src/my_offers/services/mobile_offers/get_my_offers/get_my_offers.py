@@ -16,6 +16,10 @@ from my_offers.entities.page_info import MobilePageInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
+from my_offers.services.offences import (
+    get_offers_with_media_offences_degradation_handler,
+    get_unidentified_offers_degradation_handler,
+)
 from my_offers.services.offers import get_filters_mobile
 from ._get_objects_models import get_object_models_with_pagination
 
@@ -32,6 +36,9 @@ async def v1_get_my_offers_public(
     )
 
     # TODO: CD-100663, CD-100665
+    # Посмотреть что можно сделать асинхронно в контексте получения данных от интеграторов
+
+    # TODO: CD-100663, CD-100665
     # pylint: disable=unused-variable
     object_models: List[ObjectModel]
     can_load_more: bool
@@ -41,6 +48,18 @@ async def v1_get_my_offers_public(
         offset=request.offset,
         sort_type=request.sort or enums.MobOffersSortType.update_date,
     )
+
+    image_offence: List[int]
+    video_offence: List[int]
+    # TODO: CD-100663, CD-100665
+    # pylint: disable=unused-variable
+    image_offence, video_offence = (await get_offers_with_media_offences_degradation_handler(
+        [o.id for o in object_models if o.id]
+    )).value
+
+    # TODO: CD-100663, CD-100665
+    # pylint: disable=unused-variable
+    unidentified_offers: List[int] = (await get_unidentified_offers_degradation_handler(realty_user_id)).value
 
     return entities.MobileGetMyOffersResponse(
         page=MobilePageInfo(
