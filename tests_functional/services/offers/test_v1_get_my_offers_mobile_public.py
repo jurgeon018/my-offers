@@ -171,6 +171,8 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
              'price': {'currency': 'rur', 'value': 9900000.0},
              'publishTillDate': '2020-12-10 22:44:57.890178+00:00',
              'services': ['auction', 'premium'],
+             'coworkingId': 123,
+             'isPrivateAgent': True,
              'stats': {
                  'callsCount': 999,
                  'competitorsCount': 100,
@@ -265,6 +267,8 @@ async def test_v1_get_offers_mobile_public__200__empty_offers(http, pg, mobile_o
              'price': {'currency': 'rur', 'value': 9900000.0},
              'publishTillDate': '2020-12-10 22:44:57.890178+00:00',
              'services': ['auction', 'premium'],
+             'coworkingId': 123,
+             'isPrivateAgent': True,
              'stats': {
                  'callsCount': 999,
                  'competitorsCount': 100,
@@ -360,6 +364,8 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
              'price': {'currency': 'rur', 'value': 9900000.0},
              'publishTillDate': '2020-12-10 22:44:57.890178+00:00',
              'services': ['auction', 'premium'],
+             'coworkingId': 123,
+             'isPrivateAgent': True,
              'stats': {
                  'callsCount': 999,
                  'competitorsCount': 100,
