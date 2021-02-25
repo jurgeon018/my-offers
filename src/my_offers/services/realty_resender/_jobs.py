@@ -24,6 +24,7 @@ from my_offers.repositories.monolith_cian_realty.entities import (
 )
 from my_offers.repositories.monolith_cian_realty.entities.get_resend_messages_job_response import State as JobStatus
 from my_offers.repositories.monolith_cian_realty.entities.resend_announcements_messages_request import BroadcastType
+from my_offers.services.offers import delete_offers
 
 
 logger = logging.getLogger(__name__)
@@ -74,7 +75,7 @@ async def _send_offers(offers_ids: List[int]) -> None:
 
         if err_offers_ids:
             logger.info('Delete offers: %s', err_offers_ids)
-            await postgresql.set_offers_is_deleted(offers_ids=err_offers_ids)
+            await delete_offers(err_offers_ids)
 
     if realty_offers.success:
         offers = [ro.object_model for ro in realty_offers.success]

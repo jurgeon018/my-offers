@@ -41,7 +41,7 @@ async def test_reindex_offers_command(mocker):
         ])
     )
     set_offers_is_deleted_mock = mocker.patch(
-        f'{PATH}set_offers_is_deleted',
+        f'{PATH}delete_offers',
         return_value=future()
     )
     delete_reindex_items_mock = mocker.patch(

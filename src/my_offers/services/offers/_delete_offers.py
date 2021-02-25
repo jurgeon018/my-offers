@@ -1,6 +1,9 @@
 import asyncio
 import logging
+from datetime import datetime, timedelta
+from typing import List
 
+import pytz
 from cian_core.statsd import statsd
 from simple_settings import settings
 
@@ -55,3 +58,11 @@ async def delete_offers_data() -> None:
             logger.exception('Delete offers timeout')
 
         await asyncio.sleep(settings.TIMEOUT_BETWEEN_DELETE_OFFERS)
+
+
+async def delete_offers(offer_ids: List[int]) -> None:
+    await postgresql.set_offers_is_deleted(offer_ids)
+    await postgresql.add_offer_to_delete_queue(
+        offer_ids=offer_ids,
+        delete_at=datetime.now(tz=pytz.UTC) + timedelta(days=settings.COUNT_DAYS_HOLD_DELETED_OFFERS)
+    )

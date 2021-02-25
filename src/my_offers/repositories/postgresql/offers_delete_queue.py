@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import List
 
+import asyncpgsa
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
 from my_offers.repositories.postgresql.tables import metadata
@@ -24,10 +26,17 @@ async def get_offer_ids_for_delete(limit: int, timeout: int) -> List[int]:
     return [row['offer_id'] for row in rows]
 
 
-async def add_offer_to_delete_queue(offer_id: int, delete_at: datetime) -> None:
-    query = 'insert into offers_delete_queue(offer_id, delete_at) values($1, $2) on conflict do nothing'
+async def add_offer_to_delete_queue(offer_ids: List[int], delete_at: datetime) -> None:
+    data = [{'offer_id': offer_id, 'delete_at': delete_at} for offer_id in set(offer_ids)]
 
-    await pg.get().execute(query, offer_id, delete_at)
+    insert_query = insert(offers_delete_queue)
+    query, params = asyncpgsa.compile_query(
+        insert_query
+        .values(data)
+        .on_conflict_do_nothing()
+    )
+
+    await pg.get().execute(query, *params)
 
 
 async def add_offer_to_delete_queue_by_master_user_id(user_id: int) -> None:
