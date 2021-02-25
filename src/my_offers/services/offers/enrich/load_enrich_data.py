@@ -12,6 +12,7 @@ from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, ModerationOffenceStatus
 from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.repositories.postgresql.agents import get_master_user_id
+from my_offers.services import favorites
 from my_offers.services.agencies_settings import get_settings_degradation_handler
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
@@ -264,7 +265,10 @@ async def _load_searches_counts(offer_ids: List[int]) -> EnrichItem:
 
 @async_statsd_timer('enrich.load_favorites_counts')
 async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
-    result = await get_favorites_counts_degradation_handler(offer_ids)
+    if settings.FAVORITES_FROM_MCS:
+        result = await favorites.get_favorites_counts_degradation_handler(offer_ids)
+    else:
+        result = await get_favorites_counts_degradation_handler(offer_ids)
 
     return EnrichItem(key='favorites_counts', degraded=result.degraded, value=result.value)
 
