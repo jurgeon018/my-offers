@@ -2,6 +2,8 @@ from cian_enum import NoFormat, StrEnum
 
 
 class AnnouncementReportingV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
     published = 'published'
     """Опубликован"""
     change = 'change'
