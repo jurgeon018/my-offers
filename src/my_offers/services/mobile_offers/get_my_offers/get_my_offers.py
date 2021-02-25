@@ -69,26 +69,26 @@ async def v1_get_my_offers_public(
         ),
         offers=[
             MobOffer(
-                offer_id=36298746,  #
-                price=MobPrice(  #
+                offer_id=36298746,
+                price=MobPrice(
                     value=9_900_000,
                     currency=Currency.rur,
                 ),
-                status=enums.MobStatus.published,  #
-                offer_type=enums.OfferType.flat,  #
-                deal_type=enums.DealType.sale,  #
-                category=Category.flat_sale,  #
-                is_archived=False,  #
-                has_video_offence=False,  #
-                has_photo_offence=False,  #
-                is_object_on_premoderation=False,  #
-                identification_pending=False,  #
-                is_auction=True,  #
-                formatted_price='9\xa0900\xa0000₽',  #
-                formatted_info='formatted_info',  #
-                formatted_address='formatted_address',  #
-                description='тестовое описание замоканного объявления',  #
-                available_actions=AvailableActions(  #
+                status=enums.MobStatus.published,
+                offer_type=enums.OfferType.flat,
+                deal_type=enums.DealType.sale,
+                category=Category.flat_sale,
+                is_archived=False,
+                has_video_offence=False,
+                has_photo_offence=False,
+                is_object_on_premoderation=False,
+                identification_pending=False,
+                is_auction=True,
+                formatted_price='9\xa0900\xa0000₽',
+                formatted_info='formatted_info',
+                formatted_address='formatted_address',
+                description='тестовое описание замоканного объявления',
+                available_actions=AvailableActions(
                     can_edit=True,
                     can_restore=True,
                     can_update_edit_date=True,
@@ -99,12 +99,12 @@ async def v1_get_my_offers_public(
                     can_change_publisher=True,
                     can_view_similar_offers=True
                 ),
-                services=[Services.auction, Services.premium],  #
-                deactivated_service=OfferDeactivatedService(  #
+                services=[Services.auction, Services.premium],
+                deactivated_service=OfferDeactivatedService(
                     description='description',
                     is_auto_restore_on_payment_enabled=True
                 ),
-                auction=OfferAuction(  #
+                auction=OfferAuction(
                     increase_bets_positions_count=2,
                     current_bet=5.1,
                     note_bet='note_bet',
@@ -119,7 +119,7 @@ async def v1_get_my_offers_public(
                     strategy_description='strategy_description',
                     concurrency_type_title='concurrency_type_title'
                 ),
-                stats=OfferStats(  #
+                stats=OfferStats(
                     competitors_count=100,
                     duplicates_count=10,
                     calls_count=999,
@@ -128,10 +128,10 @@ async def v1_get_my_offers_public(
                     daily_views=99,
                     favorites=5
                 ),
-                archived_date=datetime.datetime(2020, 12, 14, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),  #
-                photo='https://cdn-p.cian.site/images/3/267/099/kvartira-moskva-golubinskaya-ulica-990762376-2.jpg',  #
-                publish_till_date=datetime.datetime(2020, 12, 10, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),  #
-                complaints=[OfferComplaint(  #
+                archived_date=datetime.datetime(2020, 12, 14, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),
+                photo='https://cdn-p.cian.site/images/3/267/099/kvartira-moskva-golubinskaya-ulica-990762376-2.jpg',
+                publish_till_date=datetime.datetime(2020, 12, 10, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),
+                complaints=[OfferComplaint(
                     id=1,
                     date=datetime.datetime(2020, 12, 11, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),
                     comment='comment',
