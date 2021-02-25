@@ -30,16 +30,15 @@ class AnnouncementReportingV1RoutingKey(StrEnum):
     accept_by_moderator = 'acceptbymoderator'
     """Проверка модератором объявления и его публикация"""
 
-    # не обрабатываем
-    # removed_from_archive = 'removed_from_archive'
+    removed_from_archive = 'removed_from_archive'
     # """Удалено из архива"""
-    # actualize_trust = 'actualizetrust'
+    actualize_trust = 'actualizetrust'
     # """Пересчет уровня доверия"""
-    # change_trust_for_builder = 'changetrustforbuilder'
+    change_trust_for_builder = 'changetrustforbuilder'
     # """Изменение Trust на тарифе застройщик"""
-    # prolong = 'prolong'
+    prolong = 'prolong'
     # """Продление"""
-    # sold = 'sold'
+    sold = 'sold'
     # """Продан"""
 
 
