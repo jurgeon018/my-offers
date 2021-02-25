@@ -7,6 +7,7 @@ from cian_test_utils import future
 from freezegun import freeze_time
 from mock import call
 from simple_settings import settings
+from simple_settings.utils import settings_stub
 
 from my_offers import enums
 from my_offers.entities import AgentName
@@ -893,9 +894,10 @@ async def test__load_favorites_counts(mocker):
     expected = EnrichItem(key='favorites_counts', value={1: 1, 2: 2, 3: 3}, degraded=False)
 
     # act
-    result = await _load_favorites_counts(
-        offer_ids=offer_ids
-    )
+    with settings_stub(FAVORITES_FROM_MCS=False):
+        result = await _load_favorites_counts(
+            offer_ids=offer_ids
+        )
 
     # assert
     assert result == expected
