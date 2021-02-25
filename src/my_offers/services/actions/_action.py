@@ -16,7 +16,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
 )
 from my_offers.repositories.monolith_cian_announcementapi.entities.get_job_status_response import State as JobState
 from my_offers.services import agencies_settings
-from my_offers.services.offers import delete_offers, get_agent_hierarchy_data_degradation_handler, load_object_model
+from my_offers.services.offers import get_agent_hierarchy_data_degradation_handler, load_object_model
 
 
 logger = logging.getLogger(__name__)
@@ -103,20 +103,7 @@ class OfferAction:
         try:
             await self._run_action(object_model)
         except BadRequestException as e:
-            errors = e.errors if e.errors else []
-            for error in errors:
-                if error.code == 'announcement_not_found':
-                    await delete_offers([self.offer_id])
-                    break
-            else:
-                logger.exception('Offer action BrokenRulesException offer_id %s', self.offer_id)
-                raise BrokenRulesException([
-                    Error(
-                        message=e.message.strip(),
-                        code='operation_error',
-                        key='offer_id'
-                    )
-                ]) from e
+            await self._on_bad_request_exception(e)
         except TimeoutException:
             logger.exception('Offer action TimeoutException offer_id %s', self.offer_id)
             raise BrokenRulesException([
@@ -137,6 +124,16 @@ class OfferAction:
             ])
 
         return entities.OfferActionResponse(status=OfferActionStatus.ok)
+
+    async def _on_bad_request_exception(self, e: BadRequestException):
+        logger.exception('Offer action BrokenRulesException offer_id %s', self.offer_id)
+        raise BrokenRulesException([
+            Error(
+                message=e.message.strip(),
+                code='operation_error',
+                key='offer_id'
+            )
+        ]) from e
 
     async def _run_action(self, object_model: ObjectModel) -> None:
         raise NotImplementedError

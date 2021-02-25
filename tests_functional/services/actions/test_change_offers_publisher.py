@@ -42,7 +42,7 @@ class TestChangeOffersPublisher:
         )
         await pg.execute(
             """
-            INSERT INTO public.offers (
+            INSERT INTO offers (
                 offer_id,
                 master_user_id,
                 user_id,
