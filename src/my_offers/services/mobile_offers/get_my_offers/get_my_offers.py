@@ -135,7 +135,9 @@ async def v1_get_my_offers_public(
                     id=1,
                     date=datetime.datetime(2020, 12, 11, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),
                     comment='comment',
-                )]
+                )],
+                coworking_id=123,
+                is_private_agent=True,
             )
         ]
     )
