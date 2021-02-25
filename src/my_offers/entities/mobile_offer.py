@@ -129,6 +129,10 @@ class MobOffer:
     """Дата публикации"""
     complaints: Optional[List[OfferComplaint]]
     """Жалобы"""
+    coworking_id: Optional[int]
+    """Id коворкинга"""
+    is_private_agent: bool
+    """Является компанией (либо агент, либо частный маклер)"""
 
 
 @dataclass
