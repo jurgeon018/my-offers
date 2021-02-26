@@ -6,6 +6,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set
 from simple_settings import settings
 
 from my_offers import enums
+from my_offers.entities import AgentHierarchyData
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
@@ -115,6 +116,7 @@ class EnrichItem(NamedTuple):
 
 @dataclass
 class EnrichData:
+    agent_hierarchy_data: AgentHierarchyData
     auctions: Dict[int, Any] = field(default_factory=dict)
     jk_urls: Dict[int, str] = field(default_factory=dict)
     geo_urls: Dict[GeoUrlKey, AddressUrls] = field(default_factory=dict)
@@ -128,7 +130,7 @@ class EnrichData:
     payed_till: Optional[Dict[int, datetime]] = None
     offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
     offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
-    offers_payed_by: Dict[str, Optional[OfferPayedByType]] = field(default_factory=dict)
+    offers_payed_by: Dict[int, Optional[OfferPayedByType]] = field(default_factory=dict)
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)

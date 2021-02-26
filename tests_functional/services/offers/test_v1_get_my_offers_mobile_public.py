@@ -135,15 +135,15 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
                  'strategyDescription': 'strategy_description',
              },
              'availableActions': {
-                 'canChangePublisher': True,
-                 'canDelete': True,
-                 'canEdit': True,
-                 'canMoveToArchive': True,
-                 'canRaise': True,
-                 'canRaiseWithoutAddform': True,
-                 'canRestore': True,
-                 'canUpdateEditDate': True,
-                 'canViewSimilarOffers': True
+                 'canChangePublisher': False,
+                 'canDelete': False,
+                 'canEdit': False,
+                 'canMoveToArchive': False,
+                 'canRaise': False,
+                 'canRaiseWithoutAddform': False,
+                 'canRestore': False,
+                 'canUpdateEditDate': False,
+                 'canViewSimilarOffers': False,
              },
              'category': 'flatSale',
              'complaints': [{
@@ -211,76 +211,8 @@ async def test_v1_get_offers_mobile_public__200__empty_offers(http, pg, mobile_o
     )
 
     # assert
-    # TODO: CD-100663, CD-100665
     assert response.data == {
-        'offers': [
-            {'archivedDate': '2020-12-14T22:44:57.890178+00:00',
-             'auction': {
-                 'concurrencyTypeTitle': 'concurrency_type_title',
-                 'concurrencyTypes': [{
-                     'isActive': True,
-                     'name': 'name',
-                     'type': 'type'
-                 }],
-                 'currentBet': 5.1,
-                 'increaseBetsPositionsCount': 2,
-                 'isAvailableAuction': True,
-                 'isFixedBet': False,
-                 'isStrategyEnabled': True,
-                 'noteBet': 'note_bet',
-                 'strategyDescription': 'strategy_description',
-             },
-             'availableActions': {
-                 'canChangePublisher': True,
-                 'canDelete': True,
-                 'canEdit': True,
-                 'canMoveToArchive': True,
-                 'canRaise': True,
-                 'canRaiseWithoutAddform': True,
-                 'canRestore': True,
-                 'canUpdateEditDate': True,
-                 'canViewSimilarOffers': True
-             },
-             'category': 'flatSale',
-             'complaints': [{
-                 'comment': 'comment',
-                 'date': '2020-12-11T22:44:57.890178+00:00',
-                 'id': 1,
-             }],
-             'deactivatedService': {
-                 'description': 'description',
-                 'isAutoRestoreOnPaymentEnabled': True},
-             'dealType': 'sale',
-             'description': 'тестовое описание замоканного объявления',
-             'formattedAddress': 'formatted_address',
-             'formattedInfo': 'formatted_info',
-             'formattedPrice': '9\xa0900\xa0000₽',
-             'hasPhotoOffence': False,
-             'hasVideoOffence': False,
-             'identificationPending': False,
-             'isArchived': False,
-             'isAuction': True,
-             'isObjectOnPremoderation': False,
-             'offerId': 36298746,
-             'offerType': 'flat',
-             'photo': 'https://cdn-p.cian.site/images/3/267/099/kvartira-moskva-golubinskaya-ulica-990762376-2.jpg',
-             'price': {'currency': 'rur', 'value': 9900000.0},
-             'publishTillDate': '2020-12-10 22:44:57.890178+00:00',
-             'services': ['auction', 'premium'],
-             'coworkingId': 123,
-             'isPrivateAgent': True,
-             'stats': {
-                 'callsCount': 999,
-                 'competitorsCount': 100,
-                 'dailyViews': 99,
-                 'duplicatesCount': 10,
-                 'favorites': 5,
-                 'skippedCallsCount': 1,
-                 'totalViews': 1111
-             },
-             'status': 'published'
-             }
-        ],
+        'offers': [],
         'page': {'canLoadMore': False, 'limit': 20, 'offset': 0}
     }
 
@@ -328,15 +260,15 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
                  'strategyDescription': 'strategy_description',
              },
              'availableActions': {
-                 'canChangePublisher': True,
-                 'canDelete': True,
-                 'canEdit': True,
-                 'canMoveToArchive': True,
-                 'canRaise': True,
-                 'canRaiseWithoutAddform': True,
-                 'canRestore': True,
-                 'canUpdateEditDate': True,
-                 'canViewSimilarOffers': True
+                 'canChangePublisher': False,
+                 'canDelete': False,
+                 'canEdit': False,
+                 'canMoveToArchive': False,
+                 'canRaise': False,
+                 'canRaiseWithoutAddform': False,
+                 'canRestore': False,
+                 'canUpdateEditDate': False,
+                 'canViewSimilarOffers': False,
              },
              'category': 'flatSale',
              'complaints': [{

@@ -11,7 +11,6 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Object
 from my_offers.repositories.postgresql.offers_search_log import save_offers_search_log
 from my_offers.services import offer_view
 from my_offers.services.offers._degradation_handlers import (
-    get_agent_hierarchy_data_degradation_handler,
     get_object_models_degradation_handler,
     get_object_models_total_count_degradation_handler,
 )
@@ -65,18 +64,11 @@ async def get_offer_views(
     enrich_params = prepare_enrich_params(models=object_models, user_id=user_id)
 
     # получение данных для обогащения
-    (enrich_data, degradation), agent_hierarchy_data_result = await asyncio.gather(
-        load_enrich_data(
-            params=enrich_params,
-            status_tab=status_tab
-        ),
-        get_agent_hierarchy_data_degradation_handler(user_id)
-    )
+    enrich_data, degradation = await load_enrich_data(params=enrich_params, status_tab=status_tab)
 
     # подготовка моделей для ответа
     offers = [
         offer_view.v2_build_offer_view(
-            agent_hierarchy_data=agent_hierarchy_data_result.value,
             object_model=object_model,
             enrich_data=enrich_data
         )

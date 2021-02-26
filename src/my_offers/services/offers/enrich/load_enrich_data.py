@@ -4,13 +4,13 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 
 import pytz
+from cian_core.statsd import statsd_timer
 from simple_settings import settings
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, ModerationOffenceStatus
-from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.repositories.postgresql.agents import get_master_user_id
 from my_offers.services import favorites
 from my_offers.services.agencies_settings import get_settings_degradation_handler
@@ -18,6 +18,7 @@ from my_offers.services.announcement_api import can_update_edit_date_degradation
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
 from my_offers.services.offer_relevance_warnings import get_offer_relevance_warnings_degradation_handler
 from my_offers.services.offers._degradation_handlers import (
+    get_agent_hierarchy_data_degradation_handler,
     get_agent_names_degradation_handler,
     get_favorites_counts_degradation_handler,
     get_last_import_errors_degradation_handler,
@@ -47,13 +48,16 @@ async def load_enrich_data(
     """ Загружает данные из внешних источников для разных типов вкладок. """
     offer_ids = params.get_offer_ids()
     if not offer_ids:
-        return EnrichData(), {}
+        return EnrichData(
+            agent_hierarchy_data=(await get_agent_hierarchy_data_degradation_handler(params.get_user_id())).value
+        ), {}
 
     allow_update_edit_date = (
         status_tab.is_active
         or status_tab.is_not_active
     )
     enriched = [
+        _load_agent_hierarchy_data(params.get_user_id()),
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
         _load_can_update_edit_dates(offer_ids, allow_update_edit_date),
@@ -105,7 +109,7 @@ async def load_enrich_data(
     return EnrichData(**loaded_data), degradation
 
 
-@async_statsd_timer('enrich.load_moderation_info')
+@statsd_timer(key='enrich.load_moderation_info')
 async def _load_moderation_info(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_offence_degradation_handler(
         offer_ids=offer_ids,
@@ -119,20 +123,20 @@ async def _load_moderation_info(offer_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='moderation_info', degraded=result.degraded, value=values)
 
 
-@async_statsd_timer('enrich.load_coverage')
+@statsd_timer(key='enrich.load_coverage')
 async def _load_coverage(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_search_coverage_degradation_handler(offer_ids)
 
     return EnrichItem(key='coverage', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_auctions')
+@statsd_timer(key='enrich.load_auctions')
 async def _load_auctions(offer_ids: List[int]) -> EnrichItem:
     # todo: https://jira.cian.tech/browse/CD-74479
     return EnrichItem(key='auctions', degraded=False, value={})
 
 
-@async_statsd_timer('enrich.load_jk_urls')
+@statsd_timer(key='enrich.load_jk_urls')
 async def _load_jk_urls(jk_ids: List[int]) -> EnrichItem:
     if not jk_ids:
         return EnrichItem(key='jk_urls', degraded=False, value={})
@@ -142,7 +146,14 @@ async def _load_jk_urls(jk_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='jk_urls', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_geo_urls')
+@statsd_timer(key='enrich.load_agent_hierarchy_data')
+async def _load_agent_hierarchy_data(user_id: int) -> EnrichItem:
+    result = await get_agent_hierarchy_data_degradation_handler(user_id)
+
+    return EnrichItem(key='agent_hierarchy_data', degraded=result.degraded, value=result.value)
+
+
+@statsd_timer(key='enrich.load_geo_urls')
 async def _load_geo_urls(params: List[AddressUrlParams]) -> EnrichItem:
     result: Dict[GeoUrlKey, AddressUrls] = {}
     degraded = False
@@ -166,7 +177,7 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> EnrichItem:
     return EnrichItem(key='geo_urls', degraded=degraded, value=result)
 
 
-@async_statsd_timer('enrich.load_can_update_edit_dates')
+@statsd_timer(key='enrich.load_can_update_edit_dates')
 async def _load_can_update_edit_dates(offer_ids: List[int], allow_update: bool) -> EnrichItem:
     if not allow_update:
         return EnrichItem(key='can_update_edit_dates', degraded=False, value=dict.fromkeys(offer_ids, False))
@@ -176,14 +187,14 @@ async def _load_can_update_edit_dates(offer_ids: List[int], allow_update: bool) 
     return EnrichItem(key='can_update_edit_dates', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_import_errors')
+@statsd_timer(key='enrich.load_import_errors')
 async def _load_import_errors(offer_ids: List[int]) -> EnrichItem:
     result = await get_last_import_errors_degradation_handler(offer_ids)
 
     return EnrichItem(key='import_errors', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_agency_settings')
+@statsd_timer(key='enrich.load_agency_settings')
 async def _load_agency_settings(user_id: int) -> EnrichItem:
     agency_id = await get_master_user_id(user_id)
     if not agency_id:
@@ -194,7 +205,7 @@ async def _load_agency_settings(user_id: int) -> EnrichItem:
     return EnrichItem(key='agency_settings', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_subagents')
+@statsd_timer(key='enrich.load_subagents')
 async def _load_subagents(user_ids: List[int]) -> EnrichItem:
     if not user_ids:
         return EnrichItem(key='subagents', degraded=False, value=None)
@@ -212,14 +223,14 @@ async def _load_subagents(user_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='subagents', degraded=data.degraded, value=result)
 
 
-@async_statsd_timer('enrich.load_premoderation_info')
+@statsd_timer(key='enrich.load_premoderation_info')
 async def _load_premoderation_info(offer_ids: List[int]) -> EnrichItem:
     result = await get_offer_premoderations_degradation_handler(offer_ids)
 
     return EnrichItem(key='premoderation_info', degraded=result.degraded, value=set(result.value))
 
 
-@async_statsd_timer('enrich.load_archive_date')
+@statsd_timer(key='enrich.load_archive_date')
 async def _load_archive_date(offer_ids: List[int]) -> EnrichItem:
     # todo: CD-77579 Сейчас, по договоренности с продуктом, делаю костыть,
     # исправить в задаче https://jira.cian.tech/browse/CD-77579
@@ -230,14 +241,14 @@ async def _load_archive_date(offer_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='archive_date', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_payed_till')
+@statsd_timer(key='enrich.load_payed_till')
 async def _load_payed_till(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_payed_till_excluding_calltracking_degradation_handler(offer_ids)
 
     return EnrichItem(key='payed_till', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_views_counts')
+@statsd_timer(key='enrich.load_views_counts')
 async def _load_views_counts(offer_ids: List[int]) -> EnrichItem:
     date_to = datetime.now(tz=pytz.utc)
     date_from = date_to - timedelta(days=settings.DAYS_FOR_STATISTICS)
@@ -250,7 +261,7 @@ async def _load_views_counts(offer_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='views_counts', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_searches_counts')
+@statsd_timer(key='enrich.load_searches_counts')
 async def _load_searches_counts(offer_ids: List[int]) -> EnrichItem:
     date_to = datetime.now(tz=pytz.utc)
     date_from = date_to - timedelta(days=settings.DAYS_FOR_STATISTICS)
@@ -263,7 +274,7 @@ async def _load_searches_counts(offer_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='searches_counts', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_favorites_counts')
+@statsd_timer(key='enrich.load_favorites_counts')
 async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
     if settings.FAVORITES_FROM_MCS:
         result = await favorites.get_favorites_counts_degradation_handler(offer_ids)
@@ -273,7 +284,7 @@ async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='favorites_counts', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_similars_counters')
+@statsd_timer(key='enrich.load_similars_counters')
 async def _load_offers_similars_counters(*, offer_ids: List[int], is_test: bool) -> EnrichItem:
     if not offer_ids:
         return EnrichItem(key='offers_similars_counts', degraded=False, value={})
@@ -297,14 +308,14 @@ async def _load_offers_similars_counters(*, offer_ids: List[int], is_test: bool)
     return EnrichItem(key='offers_similars_counts', degraded=False, value=value)
 
 
-@async_statsd_timer('enrich.load_offers_payed_by')
+@statsd_timer(key='enrich.load_offers_payed_by')
 async def _load_offers_payed_by(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_payed_by_degradation_handler(offer_ids)
 
     return EnrichItem(key='offers_payed_by', degraded=result.degraded, value=result.value)
 
 
-@async_statsd_timer('enrich.load_offer_relevance_warnings')
+@statsd_timer(key='enrich.load_offer_relevance_warnings')
 async def _load_offer_relevance_warnings(offer_ids: List[int]) -> EnrichItem:
     result = await get_offer_relevance_warnings_degradation_handler(offer_ids)
 
