@@ -16,6 +16,10 @@ from my_offers.services import favorites
 from my_offers.services.agencies_settings import get_settings_degradation_handler
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls_degradation_handler
+from my_offers.services.offences import (
+    get_offers_with_image_offences_degradation_handler,
+    get_offers_with_video_offences_degradation_handler,
+)
 from my_offers.services.offer_relevance_warnings import get_offer_relevance_warnings_degradation_handler
 from my_offers.services.offers._degradation_handlers import (
     get_agent_hierarchy_data_degradation_handler,
@@ -31,13 +35,70 @@ from my_offers.services.offers._degradation_handlers import (
     get_similars_counters_by_offer_ids_degradation_handler,
     get_views_counts_degradation_handler,
 )
-from my_offers.services.offers.enrich.enrich_data import AddressUrls, EnrichData, EnrichItem, EnrichParams, GeoUrlKey
+from my_offers.services.offers.enrich.enrich_data import (
+    AddressUrls,
+    EnrichData,
+    EnrichItem,
+    EnrichParams,
+    GeoUrlKey,
+    MobileEnrichData,
+)
 from my_offers.services.search_coverage import get_offers_search_coverage_degradation_handler
 from my_offers.services.seo_urls.get_seo_urls import get_query_strings_for_address_degradation_handler
 from my_offers.services.similars.helpers.table import get_similar_table_suffix_by_params
 
 
 logger = logging.getLogger(__name__)
+
+
+async def load_mobile_enrich_data(
+        *,
+        params: EnrichParams,
+        tab_type: enums.MobTabType,
+) -> MobileEnrichData:
+    """ Загружает данные из внешних источников для разных типов вкладок. """
+    offer_ids = params.get_offer_ids()
+    if not offer_ids:
+        return MobileEnrichData(
+            agent_hierarchy_data=(await get_agent_hierarchy_data_degradation_handler(params.get_user_id())).value
+        )
+
+    is_active = tab_type.is_rent or tab_type.is_sale
+
+    enriched = [
+        _load_agent_hierarchy_data(params.get_user_id()),
+        _load_can_update_edit_dates(
+            offer_ids=offer_ids,
+            status_tab=enums.OfferStatusTab.active if is_active else enums.OfferStatusTab.archived
+        ),
+        _load_agency_settings(params.get_user_id()),
+        _load_offers_payed_by(offer_ids),
+    ]
+
+    if is_active:
+        enriched.extend([
+            _load_favorites_counts(offer_ids),
+            _load_searches_counts(offer_ids),
+            _load_views_counts(offer_ids),
+            _load_payed_till(offer_ids),
+            _load_offers_similars_counters(
+                offer_ids=params.get_similar_offers(),
+                is_test=params.is_test_offers
+            ),
+        ])
+    else:
+        enriched.extend([
+            _load_video_offenses(offer_ids),
+            _load_image_offenses(offer_ids),
+        ])
+
+    data = await asyncio.gather(*enriched)
+
+    loaded_data = {}
+    for item in data:
+        loaded_data[item.key] = item.value
+
+    return MobileEnrichData(**loaded_data)
 
 
 async def load_enrich_data(
@@ -52,18 +113,14 @@ async def load_enrich_data(
             agent_hierarchy_data=(await get_agent_hierarchy_data_degradation_handler(params.get_user_id())).value
         ), {}
 
-    allow_update_edit_date = (
-        status_tab.is_active
-        or status_tab.is_not_active
-    )
     enriched = [
         _load_agent_hierarchy_data(params.get_user_id()),
+        _load_can_update_edit_dates(offer_ids=offer_ids, status_tab=status_tab),
+        _load_agency_settings(params.get_user_id()),
+        _load_offers_payed_by(offer_ids),
         _load_jk_urls(params.get_jk_ids()),
         _load_geo_urls(params.get_geo_url_params()),
-        _load_can_update_edit_dates(offer_ids, allow_update_edit_date),
-        _load_agency_settings(params.get_user_id()),
         _load_subagents(params.get_agent_ids()),
-        _load_offers_payed_by(offer_ids)
     ]
 
     if status_tab.is_active:
@@ -178,8 +235,8 @@ async def _load_geo_urls(params: List[AddressUrlParams]) -> EnrichItem:
 
 
 @statsd_timer(key='enrich.load_can_update_edit_dates')
-async def _load_can_update_edit_dates(offer_ids: List[int], allow_update: bool) -> EnrichItem:
-    if not allow_update:
+async def _load_can_update_edit_dates(offer_ids: List[int], status_tab: enums.OfferStatusTab) -> EnrichItem:
+    if not (status_tab.is_active or status_tab.is_not_active):
         return EnrichItem(key='can_update_edit_dates', degraded=False, value=dict.fromkeys(offer_ids, False))
 
     result = await can_update_edit_date_degradation_handler(offer_ids)
@@ -320,3 +377,17 @@ async def _load_offer_relevance_warnings(offer_ids: List[int]) -> EnrichItem:
     result = await get_offer_relevance_warnings_degradation_handler(offer_ids)
 
     return EnrichItem(key='offer_relevance_warnings', degraded=result.degraded, value=result.value)
+
+
+@statsd_timer(key='enrich.load_video_offenses')
+async def _load_video_offenses(offer_ids: List[int]) -> EnrichItem:
+    result = await get_offers_with_video_offences_degradation_handler(offer_ids)
+
+    return EnrichItem(key='video_offences', degraded=result.degraded, value=result.value)
+
+
+@statsd_timer(key='enrich.load_image_offenses')
+async def _load_image_offenses(offer_ids: List[int]) -> EnrichItem:
+    result = await get_offers_with_image_offences_degradation_handler(offer_ids)
+
+    return EnrichItem(key='image_offences', degraded=result.degraded, value=result.value)

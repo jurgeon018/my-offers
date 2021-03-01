@@ -115,26 +115,42 @@ class EnrichItem(NamedTuple):
 
 
 @dataclass
-class EnrichData:
+class BaseEnrichData:
     agent_hierarchy_data: AgentHierarchyData
-    auctions: Dict[int, Any] = field(default_factory=dict)
-    jk_urls: Dict[int, str] = field(default_factory=dict)
-    geo_urls: Dict[GeoUrlKey, AddressUrls] = field(default_factory=dict)
-    can_update_edit_dates: Dict[int, bool] = field(default_factory=dict)
-    import_errors: Dict[int, str] = field(default_factory=dict)
-    moderation_info: Optional[Dict[int, OfferOffence]] = None
     agency_settings: Optional[AgencySettings] = None
-    subagents: Optional[Dict[int, Subagent]] = None
-    premoderation_info: Optional[Set[int]] = None
-    archive_date: Optional[Dict[int, datetime]] = None
-    payed_till: Optional[Dict[int, datetime]] = None
-    offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
-    offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
     offers_payed_by: Dict[int, Optional[OfferPayedByType]] = field(default_factory=dict)
+    can_update_edit_dates: Dict[int, bool] = field(default_factory=dict)
+    payed_till: Optional[Dict[int, datetime]] = None
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)
     favorites_counts: Dict[int, int] = field(default_factory=dict)
+    offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
+
+    def get_payed_till(self, offer_id: int) -> Optional[datetime]:
+        if not self.payed_till:
+            return None
+
+        return self.payed_till.get(offer_id)
+
+    def get_duplicates_counts(self, offer_id: int) -> Optional[int]:
+        return self.offers_similars_counts.get(DuplicateTabType.duplicate, {}).get(offer_id)
+
+    def get_same_building_counts(self, offer_id: int) -> Optional[int]:
+        return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
+
+
+@dataclass
+class EnrichData(BaseEnrichData):
+    auctions: Dict[int, Any] = field(default_factory=dict)
+    jk_urls: Dict[int, str] = field(default_factory=dict)
+    geo_urls: Dict[GeoUrlKey, AddressUrls] = field(default_factory=dict)
+    import_errors: Dict[int, str] = field(default_factory=dict)
+    moderation_info: Optional[Dict[int, OfferOffence]] = None
+    subagents: Optional[Dict[int, Subagent]] = None
+    premoderation_info: Optional[Set[int]] = None
+    archive_date: Optional[Dict[int, datetime]] = None
+    offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
 
     def get_urls_by_types(
             self,
@@ -172,20 +188,14 @@ class EnrichData:
 
         return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
 
-    def get_payed_till(self, offer_id: int) -> Optional[datetime]:
-        if not self.payed_till:
-            return None
-
-        return self.payed_till.get(offer_id)
-
-    def get_duplicates_counts(self, offer_id: int) -> Optional[int]:
-        return self.offers_similars_counts.get(DuplicateTabType.duplicate, {}).get(offer_id)
-
-    def get_same_building_counts(self, offer_id: int) -> Optional[int]:
-        return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
-
     def get_offer_relevance_warning(self, offer_id: int) -> Optional[OfferRelevanceWarning]:
         if not self.offer_relevance_warnings:
             return None
 
         return self.offer_relevance_warnings.get(offer_id)
+
+
+@dataclass
+class MobileEnrichData(BaseEnrichData):
+    video_offences: Set[int] = field(default_factory=set)
+    image_offences: Set[int] = field(default_factory=set)

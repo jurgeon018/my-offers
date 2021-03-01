@@ -35,11 +35,9 @@ async def get_filters_mobile(
     result: Dict[str, Any] = get_offers_filters_mobile_mapper.map_to(filters) or {}
 
     user_filter: Dict[str, Any] = await get_user_filter(user_id)
-
     result.update(user_filter)
 
-    if tab_type in MOBILE_TAB_TYPE_TO_STATUS_TYPE:
-        result['status_tab'] = MOBILE_TAB_TYPE_TO_STATUS_TYPE[tab_type]
+    result['status_tab'] = MOBILE_TAB_TYPE_TO_STATUS_TYPE[tab_type]
 
     if search_text:
         result['search_text'] = prepare_search_text(search_text)

@@ -18,8 +18,8 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.offers import get_filters_mobile
-from ...offers.enrich.enrich_data import EnrichData
-from ...offers.enrich.load_enrich_data import load_enrich_data
+from ...offers.enrich.enrich_data import MobileEnrichData
+from ...offers.enrich.load_enrich_data import load_mobile_enrich_data
 from ...offers.enrich.prepare_enrich_params import prepare_enrich_params
 from ._get_objects_models import get_object_models_with_pagination
 
@@ -44,7 +44,7 @@ async def v1_get_my_offers_public(
         sort_type=request.sort or enums.MobOffersSortType.update_date,
     )
 
-    offers = await _prepare_offers(user_id=realty_user_id, object_models=object_models)
+    offers = await _prepare_offers(user_id=realty_user_id, object_models=object_models, tab_type=request.tab_type)
 
     return entities.MobileGetMyOffersResponse(
         page=MobilePageInfo(
@@ -56,10 +56,15 @@ async def v1_get_my_offers_public(
     )
 
 
-async def _prepare_offers(*, user_id: int, object_models: List[ObjectModel]) -> List[MobOffer]:
+async def _prepare_offers(
+        *,
+        user_id: int,
+        object_models: List[ObjectModel],
+        tab_type: enums.MobTabType,
+) -> List[MobOffer]:
     # получение данных для обогащения
     enrich_params = prepare_enrich_params(models=object_models, user_id=user_id)
-    enrich_data, _ = await load_enrich_data(params=enrich_params, status_tab=enums.OfferStatusTab.active)
+    enrich_data = await load_mobile_enrich_data(params=enrich_params, tab_type=tab_type)
 
     return [
         _prepare_offer(object_model=object_model, enrich_data=enrich_data)
@@ -67,13 +72,13 @@ async def _prepare_offers(*, user_id: int, object_models: List[ObjectModel]) -> 
     ]
 
 
-def _prepare_offer(*, object_model: ObjectModel, enrich_data: EnrichData) -> MobOffer:
-    realty_offer_id = object_model.id
+def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) -> MobOffer:
+    offer_id = object_model.id
     manual = is_manual(object_model.source)
     archived = is_archived(object_model.flags)
     force_raise = bool(
-        enrich_data.get_duplicates_counts(realty_offer_id)
-        or enrich_data.get_same_building_counts(realty_offer_id)
+        enrich_data.get_duplicates_counts(offer_id)
+        or enrich_data.get_same_building_counts(offer_id)
     )
     agent_hierarchy_data = enrich_data.agent_hierarchy_data
 
@@ -88,8 +93,8 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: EnrichData) -> Mob
         deal_type=enums.DealType.sale,
         category=Category.flat_sale,
         is_archived=False,
-        has_video_offence=False,
-        has_photo_offence=False,
+        has_video_offence=offer_id in enrich_data.video_offences,
+        has_photo_offence=offer_id in enrich_data.image_offences,
         is_object_on_premoderation=False,
         identification_pending=False,
         is_auction=True,
@@ -101,7 +106,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: EnrichData) -> Mob
             status=object_model.status,
             is_archived=archived,
             is_manual=manual,
-            can_update_edit_date=enrich_data.can_update_edit_dates.get(realty_offer_id, False),
+            can_update_edit_date=enrich_data.can_update_edit_dates.get(offer_id, False),
             agency_settings=enrich_data.agency_settings,
             is_in_hidden_base=object_model.is_in_hidden_base,
             agent_hierarchy_data=agent_hierarchy_data,
@@ -110,7 +115,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: EnrichData) -> Mob
                 status=object_model.status,
                 category=object_model.category
             ),
-            payed_by=enrich_data.offers_payed_by.get(realty_offer_id)
+            payed_by=enrich_data.offers_payed_by.get(offer_id)
         ),
         services=[Services.auction, Services.premium],
         deactivated_service=OfferDeactivatedService(
@@ -133,13 +138,13 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: EnrichData) -> Mob
             concurrency_type_title='concurrency_type_title'
         ),
         stats=OfferStats(
-            competitors_count=100,
-            duplicates_count=10,
+            competitors_count=enrich_data.get_same_building_counts(offer_id),
+            duplicates_count=enrich_data.get_duplicates_counts(offer_id),
             calls_count=999,
             skipped_calls_count=1,
-            total_views=1111,
+            total_views=enrich_data.views_counts.get(offer_id),
             daily_views=99,
-            favorites=5
+            favorites=enrich_data.favorites_counts.get(offer_id),
         ),
         archived_date=datetime.datetime(2020, 12, 14, 22, 44, 57, 890178, tzinfo=datetime.timezone.utc),
         photo='https://cdn-p.cian.site/images/3/267/099/kvartira-moskva-golubinskaya-ulica-990762376-2.jpg',

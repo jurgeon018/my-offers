@@ -7,13 +7,13 @@ from .get_unidentified_offers import get_unidentified_offers
 get_offers_with_image_offences_degradation_handler = get_degradation_handler(
     func=get_offers_with_image_offences,
     key='moderation.get_offers_with_image_offences',
-    default=[],
+    default=set(),
 )
 
 get_offers_with_video_offences_degradation_handler = get_degradation_handler(
     func=get_offers_with_video_offences,
     key='moderation.get_offers_with_video_offences',
-    default=[],
+    default=set(),
 )
 
 get_unidentified_offers_degradation_handler = get_degradation_handler(
