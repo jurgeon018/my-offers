@@ -404,4 +404,4 @@ async def _load_calls(offer_ids: List[int]) -> EnrichItem:
         return EnrichItem(key='calls_count', degraded=result.degraded, value={})
 
     data: List[OfferCallCount] = result.value.data
-    return EnrichItem(key='image_offences', degraded=result.degraded, value={item.offer_id: item for item in data})
+    return EnrichItem(key='calls_count', degraded=result.degraded, value={item.offer_id: item for item in data})

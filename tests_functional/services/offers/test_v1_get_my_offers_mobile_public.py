@@ -220,7 +220,6 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
     )
 
     # assert
-    # TODO: CD-100663, CD-100665
     assert response.data == {'offers': [
         {
             'archivedDate': None,
@@ -272,4 +271,129 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
         }
     ],
         'page': {'canLoadMore': True, 'limit': 1, 'offset': 0}
+    }
+
+
+async def test_v1_get_offers_mobile_public__200__enrichment(http, pg,  moderation_mock, callbook_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_pagination.sql')
+
+    await callbook_mock.add_stub(
+        method='POST',
+        path='/v1/get-user-calls-by-offers-totals/',
+        response=MockResponse(
+            body={
+                'data': [
+                    {
+                        'callsCount': 10,
+                        'missedCallsCount': 9,
+                        'offerId': 209194477,
+                    }
+                ]
+            }
+        ),
+    )
+    await moderation_mock.add_stub(
+        method='POST',
+        path='/v1/get-video-offences-for-announcements/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'announcementId': 209194477,
+                        'title': 'string',
+                        'comment': 'string',
+                        'videoIds': [
+                            'string'
+                        ]
+                    }
+                ]
+            }
+        ),
+    )
+    await moderation_mock.add_stub(
+        method='POST',
+        path='/v1/get-image-offences-for-announcements/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'announcementId': 209194477,
+                        'title': 'string',
+                        'comment': 'string',
+                        'imageIds': [
+                            0
+                        ]
+                    }
+                ]
+            }
+        ),
+    )
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-my-offers-mobile/',
+        headers={
+            'X-Real-UserId': 29437831
+        },
+        json={
+            'limit': 1,
+            'offset': 0,
+            'tabType': 'inactive',
+        }
+    )
+
+    # assert
+    assert response.data == {'offers': [
+        {
+            'archivedDate': '2020-05-16T06:28:06.246658+00:00',
+            'auction': None,
+            'availableActions': {
+                'canChangePublisher': False,
+                'canDelete': False,
+                'canEdit': False,
+                'canMoveToArchive': False,
+                'canRaise': False,
+                'canRaiseWithoutAddform': False,
+                'canRestore': False,
+                'canUpdateEditDate': False,
+                'canViewSimilarOffers': False
+            },
+            'category': 'landSale',
+            'complaints': None,
+            'coworkingId': 123,
+            'deactivatedService': None,
+            'dealType': 'sale',
+            'description': ANY,
+            'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
+                                'Солонцы, Времена Года ДНП',
+            'formattedInfo': 'CHANGEME',
+            'formattedPrice': '2\xa0594\xa0400\xa0₽',
+            'hasPhotoOffence': True,
+            'hasVideoOffence': True,
+            'identificationPending': False,
+            'isArchived': False,
+            'isAuction': False,
+            'isObjectOnPremoderation': False,
+            'isPrivateAgent': False,
+            'offerId': 209194477,
+            'offerType': 'suburban',
+            'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
+            'price': {'currency': 'rur', 'value': 2594400.0},
+            'publishTillDate': None,
+            'services': [],
+            'stats': {
+                'callsCount': 10,
+                'competitorsCount': None,
+                'dailyViews': 99,
+                'duplicatesCount': None,
+                'favorites': None,
+                'skippedCallsCount': 9,
+                'totalViews': None
+            },
+            'status': 'published'
+        }
+    ],
+        'page': {'canLoadMore': False, 'limit': 1, 'offset': 0}
     }
