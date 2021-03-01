@@ -14,6 +14,21 @@ from my_offers.services.offers.enrich.load_enrich_data import load_mobile_enrich
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
 
 
+def _parse_services(terms: Optional[PublishTerms]) -> List[Services]:
+    result: Set[Services] = set()
+
+    if not terms or not terms.terms:
+        return list(result)
+
+    for term in terms.terms:
+        if not term.services:
+            continue
+        for service in term.services:
+            result.add(service)
+
+    return list(result)
+
+
 async def prepare_offers(
         *,
         user_id: int,
@@ -41,12 +56,13 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
     )
     agent_hierarchy_data = enrich_data.agent_hierarchy_data
     price_info = get_price_info(object_model)
+    services: List[Services] = _parse_services(obj_model.publish_terms)
 
     return MobOffer(
         offer_id=offer_id,
         price=MobPrice(value=object_model.bargain_terms.price, currency=object_model.bargain_terms.currency),
         category=object_model.category,
-        status=enums.MobStatus.published,
+        status=MobStatus[object_model.status.name],
         publish_till_date=enrich_data.get_payed_till(offer_id),
         complaints=None,
         offer_type=offer_type,
@@ -88,7 +104,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
             force_raise=force_raise,
             can_view_similar_offers=is_offer_for_similar(
                 status=object_model.status,
-                category=object_model.category
+                category=object_model.category,
             ),
             payed_by=enrich_data.offers_payed_by.get(offer_id)
         ),
