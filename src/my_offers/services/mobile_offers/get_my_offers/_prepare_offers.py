@@ -7,7 +7,8 @@ from cian_core.degradation import DegradationResult
 
 from my_offers.entities import AvailableActions, OfferSimilarCounter
 from my_offers.entities.mobile_offer import (
-    ConcurrencyType, MobOffer,
+    ConcurrencyType,
+    MobOffer,
     MobPrice,
     OfferAuction,
     OfferComplaint,
