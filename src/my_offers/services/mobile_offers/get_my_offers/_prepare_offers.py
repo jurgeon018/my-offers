@@ -1,13 +1,13 @@
 import asyncio
 from asyncio.tasks import Task
 from datetime import datetime
-from typing import Dict, List, Mapping, Optional
+from typing import Dict, List, Mapping, Optional, Set
 
 from cian_core.degradation import DegradationResult
 
 from my_offers.entities import AvailableActions, OfferSimilarCounter
 from my_offers.entities.mobile_offer import (
-    MobOffer,
+    ConcurrencyType, MobOffer,
     MobPrice,
     OfferAuction,
     OfferComplaint,
@@ -15,7 +15,7 @@ from my_offers.entities.mobile_offer import (
     OfferStats,
 )
 from my_offers.entities.moderation import OfferOffence
-from my_offers.enums import OfferServices
+from my_offers.enums import MobStatus
 from my_offers.helpers import is_archived
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
@@ -26,8 +26,8 @@ from my_offers.repositories.moderation.entities import (
     GetImageOffencesForAnnouncementsResponse,
     GetVideoOffencesForAnnouncementsResponse,
 )
-from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.services.announcement.fields.services import get_services
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.favorites import get_favorites_counts_degradation_handler
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 
@@ -53,12 +53,21 @@ def _parse_auctions(auctions: GetMobileBetAnnouncementsInfoResponse) -> Mapping[
     result: Dict[int, OfferAuction] = {}
 
     for auction_item in auctions.announcements:
+        concurrency_types: List[ConcurrencyType] = []
+
+        for c_t in auction_item.concurrency_types:
+            concurrency_types.append(ConcurrencyType(
+                is_active=c_t.is_active,
+                name=c_t.name,
+                type=c_t.type.value
+            ))
+
         auction: OfferAuction = OfferAuction(
             increase_bets_positions_count=auction_item.increase_bets_positions_count,
             current_bet=auction_item.current_bet,
             note_bet=auction_item.note_bet,
             is_available_auction=auction_item.is_available_auction,
-            concurrency_types=auction_item.concurrency_types,
+            concurrency_types=concurrency_types,
             is_strategy_enabled=auction_item.is_strategy_enabled,
             is_fixed_bet=auction_item.is_fixed_bet,
             strategy_description=auction_item.strategy_description,
@@ -67,6 +76,21 @@ def _parse_auctions(auctions: GetMobileBetAnnouncementsInfoResponse) -> Mapping[
         result[auction_item.announcement_id] = auction
 
     return result
+
+
+def _parse_services(terms: Optional[PublishTerms]) -> List[Services]:
+    result: Set[Services] = set()
+
+    if not terms or not terms.terms:
+        return list(result)
+
+    for term in terms.terms:
+        if not term.services:
+            continue
+        for service in term.services:
+            result.add(service)
+
+    return list(result)
 
 
 async def prepare_data_for_mobile_offers(
@@ -112,13 +136,13 @@ async def prepare_data_for_mobile_offers(
 
         calls: Optional[OfferCallCount] = raw_calls_counts.get(realty_offer_id)
 
-        services: List[OfferServices] = get_services(obj_model.publish_terms)
+        services: List[Services] = _parse_services(obj_model.publish_terms)
 
         result.append(MobOffer(
             offer_id=realty_offer_id,
             price=MobPrice(value=obj_model.bargain_terms.price, currency=obj_model.bargain_terms.currency),
             category=obj_model.category,
-            status=obj_model.status,
+            status=MobStatus[obj_model.status.name],
             publish_till_date=publish_tills.get(realty_offer_id),
             complaints=complaints.get(realty_offer_id),
             offer_type=offer_type,
@@ -131,7 +155,7 @@ async def prepare_data_for_mobile_offers(
             deactivated_service=deactivated_service.get(realty_offer_id),
             is_object_on_premoderation=realty_offer_id in premoderation_offers,
             identification_pending=realty_offer_id in offers_with_pending_identification,
-            is_auction=OfferServices.auction in services,
+            is_auction=Services.auction in services,
             auction=auctions.get(realty_offer_id),
             formatted_price=get_price_info(obj_model).exact,
             formatted_info='CHANGEME',  # Не сделано
