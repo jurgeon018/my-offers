@@ -121,6 +121,7 @@ class BaseEnrichData:
     offers_payed_by: Dict[int, Optional[OfferPayedByType]] = field(default_factory=dict)
     can_update_edit_dates: Dict[int, bool] = field(default_factory=dict)
     payed_till: Optional[Dict[int, datetime]] = None
+    archive_date: Optional[Dict[int, datetime]] = None
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)
@@ -139,6 +140,16 @@ class BaseEnrichData:
     def get_same_building_counts(self, offer_id: int) -> Optional[int]:
         return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
 
+    def get_archive_date(self, offer_id: int) -> Optional[datetime]:
+        if not self.archive_date:
+            return None
+
+        updated_at = self.archive_date.get(offer_id)
+        if not updated_at:
+            return None
+
+        return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
+
 
 @dataclass
 class EnrichData(BaseEnrichData):
@@ -149,7 +160,6 @@ class EnrichData(BaseEnrichData):
     moderation_info: Optional[Dict[int, OfferOffence]] = None
     subagents: Optional[Dict[int, Subagent]] = None
     premoderation_info: Optional[Set[int]] = None
-    archive_date: Optional[Dict[int, datetime]] = None
     offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
 
     def get_urls_by_types(
@@ -177,16 +187,6 @@ class EnrichData(BaseEnrichData):
             return False
 
         return offer_id in self.premoderation_info
-
-    def get_archive_date(self, offer_id: int) -> Optional[datetime]:
-        if not self.archive_date:
-            return None
-
-        updated_at = self.archive_date.get(offer_id)
-        if not updated_at:
-            return None
-
-        return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
 
     def get_offer_relevance_warning(self, offer_id: int) -> Optional[OfferRelevanceWarning]:
         if not self.offer_relevance_warnings:

@@ -90,6 +90,7 @@ async def load_mobile_enrich_data(
         enriched.extend([
             _load_video_offenses(offer_ids),
             _load_image_offenses(offer_ids),
+            _load_archive_date(offer_ids),
         ])
 
     data = await asyncio.gather(*enriched)
