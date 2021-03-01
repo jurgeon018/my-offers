@@ -1,0 +1,117 @@
+definitions:
+  Web.Billing.App.Tariffication.Models.GetDeactivatedAdditionalServicesResponse:
+    description: Ответ со списком отключённых из-за недостатка средств доп. услуг.
+    properties:
+      deactivatedServices:
+        description: Список отключённых из-за недостатка средств доп. услуг.
+        items:
+          $ref: '#/definitions/Web.Billing.App.Tariffication.Models.GetDeactivatedAdditionalServicesResponse.DeactivatedService'
+        type: array
+      isAutoRestoreOnPaymentEnabled:
+        description: У пользователя включено "Возобновление публикации".
+        type: boolean
+    required:
+    - isAutoRestoreOnPaymentEnabled
+    - deactivatedServices
+    type: object
+  Web.Billing.App.Tariffication.Models.GetDeactivatedAdditionalServicesResponse.DeactivatedService:
+    description: Информация об отключённой доп. услуге.
+    properties:
+      announcementId:
+        description: Id объявления.
+        format: int32
+        type: integer
+      auctionBet:
+        description: Ставка аукциона.
+        format: int32
+        type: integer
+      serviceType:
+        description: Услуга.
+        enum:
+        - FreeObject
+        - DebitObject
+        - PremiumObject
+        - Top3
+        - Highlight
+        - calltracking
+        - XmlImport
+        - SubscriptionForPackage
+        - StatusPro
+        - ServicePackageActivation
+        - Penalty
+        - OrderCancellation
+        - OrderTransfer
+        - TechSpend
+        - TechTransfer
+        - BonusPaymentExpiration
+        - auction
+        - demand
+        - demandPackage
+        - cplCalltracking
+        type: string
+        x-BonusPaymentExpiration: Списание истекшего бонусного пополнения
+        x-DebitObject: Платная публикация
+        x-FreeObject: Бесплатная публикация
+        x-Highlight: Выделение цветом
+        x-OrderCancellation: Отмена платежа
+        x-OrderTransfer: перенос платежа
+        x-Penalty: Штрафное списание
+        x-PremiumObject: Премиум публикация
+        x-ServicePackageActivation: Массовый пакет
+        x-StatusPro: Признак статуса ПРО
+        x-SubscriptionForPackage: Абонентская плата за пакет
+        x-TechSpend: Произвольное списание
+        x-TechTransfer: Перенос произвольной суммы
+        x-Top3: Тор 3
+        x-XmlImport: Выгрузка объявлений через XML
+        x-auction: Списание за аукцион
+        x-calltracking: Подмена номера, Calltracking, оно же "защита номера"
+        x-cplCalltracking: Коллтрекинг по модели CPL
+        x-demand: Списание за заявку на спрос
+        x-demandPackage: Списание за пакет заявок на спрос
+    required:
+    - announcementId
+    - serviceType
+    type: object
+host: master.monolith-cian-bill.dev3.cian.ru
+info:
+  title: monolith-cian-bill
+  version: v1
+paths:
+  /v1/tariffication/get-deactivated-additional-services/:
+    get:
+      consumes: []
+      operationId: Tariffication_GetDeactivatedAdditionalServicesAsync
+      parameters:
+      - description: Realty Id пользователя.
+        format: int32
+        in: query
+        name: userId
+        required: true
+        type: integer
+      - collectionFormat: multi
+        description: ID объявлений.
+        in: query
+        items:
+          format: int32
+          type: integer
+        name: announcementIds
+        required: true
+        type: array
+      produces:
+      - application/json
+      - text/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Web.Billing.App.Tariffication.Models.GetDeactivatedAdditionalServicesResponse'
+      summary: Возвращает деактивированные из-за нехватки средств дополнительные услуги.
+      tags:
+      - Tariffication
+schemes:
+- http
+swagger: '2.0'
+x-cian-mq:
+  exchanges: {}
+  spec-version: '1.0'
