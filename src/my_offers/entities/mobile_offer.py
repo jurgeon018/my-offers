@@ -38,9 +38,13 @@ class OfferDeactivatedService:
 
 @dataclass
 class ConcurrencyType:
-    type: str
-    name: str
     is_active: bool
+    """Активная вкладка"""
+    name: str
+    """Название"""
+    type: str
+    """Тип"""
+
 
 
 @dataclass
@@ -127,7 +131,7 @@ class MobOffer:
     """Дата попадания в архив"""
     photo: Optional[str]
     """Url фото"""
-    publish_till_date: Optional[str]
+    publish_till_date: Optional[datetime]
     """Дата публикации"""
     complaints: Optional[List[OfferComplaint]]
     """Жалобы"""
