@@ -11,6 +11,7 @@ from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, ModerationOffenceStatus
+from my_offers.repositories.callbook.entities import OfferCallCount
 from my_offers.repositories.postgresql.agents import get_master_user_id
 from my_offers.services import favorites
 from my_offers.services.agencies_settings import get_settings_degradation_handler
@@ -24,6 +25,7 @@ from my_offers.services.offer_relevance_warnings import get_offer_relevance_warn
 from my_offers.services.offers._degradation_handlers import (
     get_agent_hierarchy_data_degradation_handler,
     get_agent_names_degradation_handler,
+    get_calls_count_degradation_handler,
     get_favorites_counts_degradation_handler,
     get_last_import_errors_degradation_handler,
     get_offer_premoderations_degradation_handler,
@@ -73,6 +75,7 @@ async def load_mobile_enrich_data(
         ),
         _load_agency_settings(params.get_user_id()),
         _load_offers_payed_by(offer_ids),
+        _load_calls(offer_ids),
     ]
 
     if is_active:
@@ -392,3 +395,13 @@ async def _load_image_offenses(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_with_image_offences_degradation_handler(offer_ids)
 
     return EnrichItem(key='image_offences', degraded=result.degraded, value=result.value)
+
+
+@statsd_timer(key='enrich.load_calls')
+async def _load_calls(offer_ids: List[int]) -> EnrichItem:
+    result = await get_calls_count_degradation_handler(offer_ids)
+    if result.degraded:
+        return EnrichItem(key='calls_count', degraded=result.degraded, value={})
+
+    data: List[OfferCallCount] = result.value.data
+    return EnrichItem(key='image_offences', degraded=result.degraded, value={item.offer_id: item for item in data})

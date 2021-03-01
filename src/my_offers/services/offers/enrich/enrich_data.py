@@ -13,6 +13,7 @@ from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
+from my_offers.repositories.callbook.entities import OfferCallCount
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 
 
@@ -199,3 +200,16 @@ class EnrichData(BaseEnrichData):
 class MobileEnrichData(BaseEnrichData):
     video_offences: Set[int] = field(default_factory=set)
     image_offences: Set[int] = field(default_factory=set)
+    calls_count: Dict[int, OfferCallCount] = field(default_factory=dict)
+
+    def get_calls_count(self, offer_id: int) -> Optional[int]:
+        if offer_id not in self.calls_count:
+            return None
+
+        return self.calls_count[offer_id].calls_count
+
+    def get_missed_calls_count(self, offer_id: int) -> Optional[int]:
+        if offer_id not in self.calls_count:
+            return None
+
+        return self.calls_count[offer_id].missed_calls_count

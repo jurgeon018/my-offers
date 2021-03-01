@@ -2,7 +2,7 @@ from typing import List
 
 from my_offers import enums
 from my_offers.entities.mobile_offer import MobOffer, MobPrice, OfferStats
-from my_offers.helpers import is_manual, is_archived, get_available_actions
+from my_offers.helpers import get_available_actions, is_archived, is_manual
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
 from my_offers.helpers.price import get_price_info
@@ -46,7 +46,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         offer_id=offer_id,
         price=MobPrice(value=object_model.bargain_terms.price, currency=object_model.bargain_terms.currency),
         category=object_model.category,
-        status=object_model.status,
+        status=enums.MobStatus.published,
         publish_till_date=enrich_data.get_payed_till(offer_id),
         complaints=None,
         offer_type=offer_type,
@@ -61,19 +61,19 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         identification_pending=False,
         is_auction=False,
         auction=None,
-        formatted_price=price_info.exact if price_info.exact else ' '.join(price_info.range),
+        formatted_price=str(price_info),
         formatted_info='CHANGEME',  # Не сделано
         formatted_address=get_address_for_push(object_model.geo),
         stats=OfferStats(
             competitors_count=enrich_data.get_same_building_counts(offer_id),
             duplicates_count=enrich_data.get_duplicates_counts(offer_id),
-            calls_count=999,
-            skipped_calls_count=1,
+            calls_count=enrich_data.get_calls_count(offer_id),
+            skipped_calls_count=enrich_data.get_missed_calls_count(offer_id),
             total_views=enrich_data.views_counts.get(offer_id),
             daily_views=99,
             favorites=enrich_data.favorites_counts.get(offer_id),
         ),
-        services=services,
+        services=[],
         description=object_model.description,
         coworking_id=123,  # Не сделано
         is_private_agent=False,  # Не сделано
