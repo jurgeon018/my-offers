@@ -1,13 +1,16 @@
-from typing import List
+from operator import attrgetter
+from typing import List, Optional, Set
 
 from my_offers import enums
 from my_offers.entities.mobile_offer import MobOffer, MobPrice, OfferStats
+from my_offers.enums import MobStatus
 from my_offers.helpers import get_available_actions, is_archived, is_manual
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
 from my_offers.helpers.price import get_price_info
 from my_offers.helpers.similar import is_offer_for_similar
-from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
+from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms
+from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 from my_offers.services.offers.enrich.enrich_data import MobileEnrichData
 from my_offers.services.offers.enrich.load_enrich_data import load_mobile_enrich_data
@@ -26,7 +29,7 @@ def _parse_services(terms: Optional[PublishTerms]) -> List[Services]:
         for service in term.services:
             result.add(service)
 
-    return list(result)
+    return sorted(list(result), key=attrgetter('name'))
 
 
 async def prepare_offers(
@@ -56,7 +59,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
     )
     agent_hierarchy_data = enrich_data.agent_hierarchy_data
     price_info = get_price_info(object_model)
-    services: List[Services] = _parse_services(obj_model.publish_terms)
+    services: List[Services] = _parse_services(object_model.publish_terms)
 
     return MobOffer(
         offer_id=offer_id,
@@ -89,7 +92,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
             daily_views=99,
             favorites=enrich_data.favorites_counts.get(offer_id),
         ),
-        services=[],
+        services=services,
         description=object_model.description,
         coworking_id=123,  # Не сделано
         is_private_agent=False,  # Не сделано
