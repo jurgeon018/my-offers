@@ -16,7 +16,6 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 
 def v2_build_offer_view(
         *,
-        agent_hierarchy_data: AgentHierarchyData,
         object_model: ObjectModel,
         enrich_data: EnrichData,
 ) -> get_offers.GetOfferV2:
@@ -39,6 +38,7 @@ def v2_build_offer_view(
     realty_offer_id = object_model.id
     status_tab = get_status_tab(offer_flags=object_model.flags, offer_status=object_model.status)
     display_date = get_sort_date(object_model=object_model, status_tab=status_tab)
+    agent_hierarchy_data = enrich_data.agent_hierarchy_data
     force_raise = bool(
         enrich_data.get_duplicates_counts(realty_offer_id)
         or enrich_data.get_same_building_counts(realty_offer_id)

@@ -4,7 +4,7 @@ import pytest
 from cian_helpers.timezone import TIMEZONE
 from cian_test_utils import future
 
-from my_offers.entities import GetOffersPrivateRequest
+from my_offers.entities import GetOffersPrivateRequest, AgentHierarchyData
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.get_offers import ActiveInfo, Filter, GetOfferV2, PageSpecificInfo, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
@@ -63,6 +63,10 @@ async def test_v2_get_offer_views(mocker):
         'my_offers.services.offers._get_offers.load_enrich_data',
         return_value=future((
             EnrichData(
+                agent_hierarchy_data=AgentHierarchyData(
+                    is_master_agent=False,
+                    is_sub_agent=False,
+                ),
                 auctions={},
                 jk_urls={},
                 geo_urls={},

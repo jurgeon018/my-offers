@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import asyncpgsa
 import pytz
+from cian_core.statsd import statsd_timer
 from simple_settings import settings
 from sqlalchemy import and_, select, text, update
 from sqlalchemy.dialects.postgresql import insert
@@ -15,7 +16,6 @@ from my_offers.entities.get_offers import OfferCounters
 from my_offers.entities.offer import ReindexOffer
 from my_offers.enums import OfferPayedByType, OfferStatusTab
 from my_offers.helpers.fields import get_offer_payed_by
-from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.offer_mapper import (
     offer_mapper,
     offer_row_version_mapper,
@@ -163,7 +163,7 @@ async def get_offer_by_id(offer_id: int) -> Optional[entities.Offer]:
     return offer_mapper.map_from(row)
 
 
-@async_statsd_timer('psql.get_offer_counters')
+@statsd_timer(key='psql.get_offer_counters')
 async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
     conditions = prepare_conditions(filters)
     status_tab = tables.offers.c.status_tab
@@ -184,7 +184,7 @@ async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
     )
 
 
-@async_statsd_timer('psql.get_offer_counters_mobile')
+@statsd_timer(key='psql.get_offer_counters_mobile')
 async def get_offer_counters_mobile(filters: Dict[str, Any]) -> entities.GetOffersCountersMobileResponse:
     conditions = prepare_conditions(filters)
 
@@ -324,7 +324,7 @@ async def update_offer_master_user_id_and_payed_by(*, offer_id: int, master_user
     await pg.get().execute(query, master_user_id, offer_id, master_user_id, payed_by, payed_by)
 
 
-@async_statsd_timer('psql.get_offers_ids_by_tab')
+@statsd_timer(key='psql.get_offers_ids_by_tab')
 async def get_offers_ids_by_tab(filters: Dict[str, Any]) -> List[int]:
     conditions = prepare_conditions(filters)
     query, params = asyncpgsa.compile_query(

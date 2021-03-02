@@ -1,4 +1,4 @@
-from my_offers.helpers.page_info import get_page_info, get_pagination
+from my_offers.services.offers._degradation_handlers import get_agent_hierarchy_data_degradation_handler
 from my_offers.services.offers._filters import get_filters, get_filters_mobile, get_user_filter
 from my_offers.services.offers._get_offers import get_offer_views
 from my_offers.services.offers._get_offers_for_calltracking import (

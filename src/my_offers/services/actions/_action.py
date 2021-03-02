@@ -16,8 +16,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import (
 )
 from my_offers.repositories.monolith_cian_announcementapi.entities.get_job_status_response import State as JobState
 from my_offers.services import agencies_settings
-from my_offers.services.offers import load_object_model
-from my_offers.services.offers._get_offers import get_agent_hierarchy_data_degradation_handler
+from my_offers.services.offers import get_agent_hierarchy_data_degradation_handler, load_object_model
 
 
 logger = logging.getLogger(__name__)
