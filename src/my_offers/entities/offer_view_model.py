@@ -13,6 +13,15 @@ class PriceInfo:
     range: Optional[List[str]] = None
     """Диапазон цен"""
 
+    def __str__(self) -> str:
+        if self.exact:
+            return self.exact
+
+        if self.range:
+            return ' '.join(self.range)
+
+        return ''
+
 
 @dataclass
 class Subagent:

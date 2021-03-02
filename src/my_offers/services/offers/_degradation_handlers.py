@@ -4,6 +4,7 @@ from simple_settings import settings
 from my_offers.entities import AgentHierarchyData, GetOffersCountersMobileResponse
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.repositories import postgresql
+from my_offers.repositories.callbook import v1_get_user_calls_by_offers_totals
 from my_offers.repositories.postgresql import get_object_models, get_offers_offence
 from my_offers.repositories.postgresql.agents import get_agent_hierarchy_data, get_agent_names
 from my_offers.repositories.postgresql.billing import get_offers_payed_till_excluding_calltracking
@@ -126,4 +127,11 @@ get_favorites_counts_degradation_handler = get_degradation_handler(
     func=statistics.get_favorites_counts,
     key='cassandra.get_favorites_counts',
     default=dict(),
+)
+
+
+get_calls_count_degradation_handler = get_degradation_handler(
+    func=v1_get_user_calls_by_offers_totals,
+    key='v1_get_user_calls_by_offers_totals',
+    default=None,
 )

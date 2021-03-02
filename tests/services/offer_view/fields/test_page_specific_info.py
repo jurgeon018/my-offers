@@ -1,5 +1,6 @@
 import pytest
 
+from my_offers.entities import AgentHierarchyData
 from my_offers.entities.get_offers import ActiveInfo, DeclinedInfo, Moderation, NotActiveInfo, PageSpecificInfo
 from my_offers.enums.not_active_status import NotActiveStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
@@ -79,7 +80,10 @@ from tests_api.cian.my_offers.entities.filter import StatusTab
 def test_get_page_specific_info(object_model, status_tab, expected):
     # arrange
     enrich_data = EnrichData(
-
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},

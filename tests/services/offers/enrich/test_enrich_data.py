@@ -7,6 +7,7 @@ from cian_test_utils import v
 from simple_settings.utils import settings_stub
 
 from my_offers import enums
+from my_offers.entities import AgentHierarchyData
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarningInfo
 from my_offers.entities.offer_view_model import Subagent
@@ -59,7 +60,10 @@ def test_address_urls__none__none(mocker):
 def test_enrich_data__get_offer_offence__moderation_info_is_none(mocker):
     # arrange
     enrich_data = EnrichData(
-
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -82,7 +86,10 @@ def test_enrich_data__get_offer_offence__moderation_info_is_none(mocker):
 def test_enrich_data__get_offer_offence(mocker, moderation_info, expected):
     # arrange
     enrich_data = EnrichData(
-
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -108,7 +115,10 @@ def test_enrich_data__get_offer_offence(mocker, moderation_info, expected):
 def test_get_subagent(mocker, user_id, expected):
     # arrange
     enrich_data = EnrichData(
-
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -127,7 +137,10 @@ def test_get_subagent(mocker, user_id, expected):
 def test_get_subagent__none__none(mocker):
     # arrange
     enrich_data = EnrichData(
-
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -152,7 +165,10 @@ def test_get_subagent__none__none(mocker):
 def test_on_premoderation(mocker, offer_id, expected):
     # arrange
     enrich_data = EnrichData(
-
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -179,7 +195,10 @@ def test_on_premoderation(mocker, offer_id, expected):
 async def test_get_archive_date(mocker, offer_id, expected):
     # arrange
     enrich_data = EnrichData(
-
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -207,7 +226,10 @@ async def test_get_archive_date(mocker, offer_id, expected):
 async def test_get_payed_till(mocker, offer_id, expected):
     # arrange
     enrich_data = EnrichData(
-
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -239,6 +261,10 @@ async def test_get_payed_till(mocker, offer_id, expected):
 def test_offer_relevance_warning(mocker, offer_id, expected):
     # arrange
     enrich_data = EnrichData(
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         offer_relevance_warnings={
             1: v(OfferRelevanceWarningInfo(
                 offer_id=1,

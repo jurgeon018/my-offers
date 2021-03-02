@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 
 import pytest
+from cian_functional_test_utils.helpers import ANY
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
 
@@ -114,77 +115,56 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
         }
     )
 
-    # assert
-    # TODO: CD-100663, CD-100665
-    assert response.data == {
-        'offers': [
-            {'archivedDate': '2020-12-14T22:44:57.890178+00:00',
-             'auction': {
-                 'concurrencyTypeTitle': 'concurrency_type_title',
-                 'concurrencyTypes': [{
-                     'isActive': True,
-                     'name': 'name',
-                     'type': 'type'
-                 }],
-                 'currentBet': 5.1,
-                 'increaseBetsPositionsCount': 2,
-                 'isAvailableAuction': True,
-                 'isFixedBet': False,
-                 'isStrategyEnabled': True,
-                 'noteBet': 'note_bet',
-                 'strategyDescription': 'strategy_description',
-             },
-             'availableActions': {
-                 'canChangePublisher': True,
-                 'canDelete': True,
-                 'canEdit': True,
-                 'canMoveToArchive': True,
-                 'canRaise': True,
-                 'canRaiseWithoutAddform': True,
-                 'canRestore': True,
-                 'canUpdateEditDate': True,
-                 'canViewSimilarOffers': True
-             },
-             'category': 'flatSale',
-             'complaints': [{
-                 'comment': 'comment',
-                 'date': '2020-12-11T22:44:57.890178+00:00',
-                 'id': 1,
-             }],
-             'deactivatedService': {
-                 'description': 'description',
-                 'isAutoRestoreOnPaymentEnabled': True},
-             'dealType': 'sale',
-             'description': 'тестовое описание замоканного объявления',
-             'formattedAddress': 'formatted_address',
-             'formattedInfo': 'formatted_info',
-             'formattedPrice': '9\xa0900\xa0000₽',
-             'hasPhotoOffence': False,
-             'hasVideoOffence': False,
-             'identificationPending': False,
-             'isArchived': False,
-             'isAuction': True,
-             'isObjectOnPremoderation': False,
-             'offerId': 36298746,
-             'offerType': 'flat',
-             'photo': 'https://cdn-p.cian.site/images/3/267/099/kvartira-moskva-golubinskaya-ulica-990762376-2.jpg',
-             'price': {'currency': 'rur', 'value': 9900000.0},
-             'publishTillDate': '2020-12-10 22:44:57.890178+00:00',
-             'services': ['auction', 'premium'],
-             'coworkingId': 123,
-             'isPrivateAgent': True,
-             'stats': {
-                 'callsCount': 999,
-                 'competitorsCount': 100,
-                 'dailyViews': 99,
-                 'duplicatesCount': 10,
-                 'favorites': 5,
-                 'skippedCallsCount': 1,
-                 'totalViews': 1111
-             },
-             'status': 'published'
-             }
-        ],
+    assert response.data == {'offers': [
+        {
+            'archivedDate': None,
+            'auction': None,
+            'availableActions': {
+                'canChangePublisher': False,
+                'canDelete': False,
+                'canEdit': False,
+                'canMoveToArchive': False,
+                'canRaise': False,
+                'canRaiseWithoutAddform': False,
+                'canRestore': False,
+                'canUpdateEditDate': False,
+                'canViewSimilarOffers': False
+            },
+            'category': 'landSale',
+            'complaints': None,
+            'coworkingId': 123,
+            'deactivatedService': None,
+            'dealType': 'sale',
+            'description': ANY,
+            'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
+                                'Солонцы, Времена Года ДНП',
+            'formattedInfo': 'CHANGEME',
+            'formattedPrice': '2\xa0594\xa0400\xa0₽',
+            'hasPhotoOffence': False,
+            'hasVideoOffence': False,
+            'identificationPending': False,
+            'isArchived': False,
+            'isAuction': False,
+            'isObjectOnPremoderation': False,
+            'isPrivateAgent': False,
+            'offerId': 209194477,
+            'offerType': 'suburban',
+            'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
+            'price': {'currency': 'rur', 'value': 2594400.0},
+            'publishTillDate': None,
+            'services': ['calltracking', 'paid'],
+            'stats': {
+                'callsCount': None,
+                'competitorsCount': None,
+                'dailyViews': 99,
+                'duplicatesCount': None,
+                'favorites': None,
+                'skippedCallsCount': None,
+                'totalViews': None
+            },
+            'status': 'published'
+        }
+    ],
         'page': {'canLoadMore': False, 'limit': 20, 'offset': 0}
     }
 
@@ -211,76 +191,8 @@ async def test_v1_get_offers_mobile_public__200__empty_offers(http, pg, mobile_o
     )
 
     # assert
-    # TODO: CD-100663, CD-100665
     assert response.data == {
-        'offers': [
-            {'archivedDate': '2020-12-14T22:44:57.890178+00:00',
-             'auction': {
-                 'concurrencyTypeTitle': 'concurrency_type_title',
-                 'concurrencyTypes': [{
-                     'isActive': True,
-                     'name': 'name',
-                     'type': 'type'
-                 }],
-                 'currentBet': 5.1,
-                 'increaseBetsPositionsCount': 2,
-                 'isAvailableAuction': True,
-                 'isFixedBet': False,
-                 'isStrategyEnabled': True,
-                 'noteBet': 'note_bet',
-                 'strategyDescription': 'strategy_description',
-             },
-             'availableActions': {
-                 'canChangePublisher': True,
-                 'canDelete': True,
-                 'canEdit': True,
-                 'canMoveToArchive': True,
-                 'canRaise': True,
-                 'canRaiseWithoutAddform': True,
-                 'canRestore': True,
-                 'canUpdateEditDate': True,
-                 'canViewSimilarOffers': True
-             },
-             'category': 'flatSale',
-             'complaints': [{
-                 'comment': 'comment',
-                 'date': '2020-12-11T22:44:57.890178+00:00',
-                 'id': 1,
-             }],
-             'deactivatedService': {
-                 'description': 'description',
-                 'isAutoRestoreOnPaymentEnabled': True},
-             'dealType': 'sale',
-             'description': 'тестовое описание замоканного объявления',
-             'formattedAddress': 'formatted_address',
-             'formattedInfo': 'formatted_info',
-             'formattedPrice': '9\xa0900\xa0000₽',
-             'hasPhotoOffence': False,
-             'hasVideoOffence': False,
-             'identificationPending': False,
-             'isArchived': False,
-             'isAuction': True,
-             'isObjectOnPremoderation': False,
-             'offerId': 36298746,
-             'offerType': 'flat',
-             'photo': 'https://cdn-p.cian.site/images/3/267/099/kvartira-moskva-golubinskaya-ulica-990762376-2.jpg',
-             'price': {'currency': 'rur', 'value': 9900000.0},
-             'publishTillDate': '2020-12-10 22:44:57.890178+00:00',
-             'services': ['auction', 'premium'],
-             'coworkingId': 123,
-             'isPrivateAgent': True,
-             'stats': {
-                 'callsCount': 999,
-                 'competitorsCount': 100,
-                 'dailyViews': 99,
-                 'duplicatesCount': 10,
-                 'favorites': 5,
-                 'skippedCallsCount': 1,
-                 'totalViews': 1111
-             },
-             'status': 'published'
-             }
-        ],
+        'offers': [],
         'page': {'canLoadMore': False, 'limit': 20, 'offset': 0}
     }
 
@@ -308,75 +220,180 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
     )
 
     # assert
-    # TODO: CD-100663, CD-100665
-    assert response.data == {
-        'offers': [
-            {'archivedDate': '2020-12-14T22:44:57.890178+00:00',
-             'auction': {
-                 'concurrencyTypeTitle': 'concurrency_type_title',
-                 'concurrencyTypes': [{
-                     'isActive': True,
-                     'name': 'name',
-                     'type': 'type'
-                 }],
-                 'currentBet': 5.1,
-                 'increaseBetsPositionsCount': 2,
-                 'isAvailableAuction': True,
-                 'isFixedBet': False,
-                 'isStrategyEnabled': True,
-                 'noteBet': 'note_bet',
-                 'strategyDescription': 'strategy_description',
-             },
-             'availableActions': {
-                 'canChangePublisher': True,
-                 'canDelete': True,
-                 'canEdit': True,
-                 'canMoveToArchive': True,
-                 'canRaise': True,
-                 'canRaiseWithoutAddform': True,
-                 'canRestore': True,
-                 'canUpdateEditDate': True,
-                 'canViewSimilarOffers': True
-             },
-             'category': 'flatSale',
-             'complaints': [{
-                 'comment': 'comment',
-                 'date': '2020-12-11T22:44:57.890178+00:00',
-                 'id': 1,
-             }],
-             'deactivatedService': {
-                 'description': 'description',
-                 'isAutoRestoreOnPaymentEnabled': True},
-             'dealType': 'sale',
-             'description': 'тестовое описание замоканного объявления',
-             'formattedAddress': 'formatted_address',
-             'formattedInfo': 'formatted_info',
-             'formattedPrice': '9\xa0900\xa0000₽',
-             'hasPhotoOffence': False,
-             'hasVideoOffence': False,
-             'identificationPending': False,
-             'isArchived': False,
-             'isAuction': True,
-             'isObjectOnPremoderation': False,
-             'offerId': 36298746,
-             'offerType': 'flat',
-             'photo': 'https://cdn-p.cian.site/images/3/267/099/kvartira-moskva-golubinskaya-ulica-990762376-2.jpg',
-             'price': {'currency': 'rur', 'value': 9900000.0},
-             'publishTillDate': '2020-12-10 22:44:57.890178+00:00',
-             'services': ['auction', 'premium'],
-             'coworkingId': 123,
-             'isPrivateAgent': True,
-             'stats': {
-                 'callsCount': 999,
-                 'competitorsCount': 100,
-                 'dailyViews': 99,
-                 'duplicatesCount': 10,
-                 'favorites': 5,
-                 'skippedCallsCount': 1,
-                 'totalViews': 1111
-             },
-             'status': 'published'
-             }
-        ],
+    assert response.data == {'offers': [
+        {
+            'archivedDate': None,
+            'auction': None,
+            'availableActions': {
+                'canChangePublisher': False,
+                'canDelete': False,
+                'canEdit': False,
+                'canMoveToArchive': False,
+                'canRaise': False,
+                'canRaiseWithoutAddform': False,
+                'canRestore': False,
+                'canUpdateEditDate': False,
+                'canViewSimilarOffers': False
+            },
+            'category': 'landSale',
+            'complaints': None,
+            'coworkingId': 123,
+            'deactivatedService': None,
+            'dealType': 'sale',
+            'description': ANY,
+            'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
+                                'Солонцы, Времена Года ДНП',
+            'formattedInfo': 'CHANGEME',
+            'formattedPrice': '2\xa0594\xa0400\xa0₽',
+            'hasPhotoOffence': False,
+            'hasVideoOffence': False,
+            'identificationPending': False,
+            'isArchived': False,
+            'isAuction': False,
+            'isObjectOnPremoderation': False,
+            'isPrivateAgent': False,
+            'offerId': 209194477,
+            'offerType': 'suburban',
+            'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
+            'price': {'currency': 'rur', 'value': 2594400.0},
+            'publishTillDate': None,
+            'services': ['calltracking', 'paid'],
+            'stats': {
+                'callsCount': None,
+                'competitorsCount': None,
+                'dailyViews': 99,
+                'duplicatesCount': None,
+                'favorites': None,
+                'skippedCallsCount': None,
+                'totalViews': None
+            },
+            'status': 'published'
+        }
+    ],
         'page': {'canLoadMore': True, 'limit': 1, 'offset': 0}
+    }
+
+
+async def test_v1_get_offers_mobile_public__200__enrichment(http, pg,  moderation_mock, callbook_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_pagination.sql')
+
+    await callbook_mock.add_stub(
+        method='POST',
+        path='/v1/get-user-calls-by-offers-totals/',
+        response=MockResponse(
+            body={
+                'data': [
+                    {
+                        'callsCount': 10,
+                        'missedCallsCount': 9,
+                        'offerId': 209194477,
+                    }
+                ]
+            }
+        ),
+    )
+    await moderation_mock.add_stub(
+        method='POST',
+        path='/v1/get-video-offences-for-announcements/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'announcementId': 209194477,
+                        'title': 'string',
+                        'comment': 'string',
+                        'videoIds': [
+                            'string'
+                        ]
+                    }
+                ]
+            }
+        ),
+    )
+    await moderation_mock.add_stub(
+        method='POST',
+        path='/v1/get-image-offences-for-announcements/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'announcementId': 209194477,
+                        'title': 'string',
+                        'comment': 'string',
+                        'imageIds': [
+                            0
+                        ]
+                    }
+                ]
+            }
+        ),
+    )
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-my-offers-mobile/',
+        headers={
+            'X-Real-UserId': 29437831
+        },
+        json={
+            'limit': 1,
+            'offset': 0,
+            'tabType': 'inactive',
+        }
+    )
+
+    # assert
+    assert response.data == {'offers': [
+        {
+            'archivedDate': '2020-05-16T06:28:06.246658+00:00',
+            'auction': None,
+            'availableActions': {
+                'canChangePublisher': False,
+                'canDelete': False,
+                'canEdit': False,
+                'canMoveToArchive': False,
+                'canRaise': False,
+                'canRaiseWithoutAddform': False,
+                'canRestore': False,
+                'canUpdateEditDate': False,
+                'canViewSimilarOffers': False
+            },
+            'category': 'landSale',
+            'complaints': None,
+            'coworkingId': 123,
+            'deactivatedService': None,
+            'dealType': 'sale',
+            'description': ANY,
+            'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
+                                'Солонцы, Времена Года ДНП',
+            'formattedInfo': 'CHANGEME',
+            'formattedPrice': '2\xa0594\xa0400\xa0₽',
+            'hasPhotoOffence': True,
+            'hasVideoOffence': True,
+            'identificationPending': False,
+            'isArchived': False,
+            'isAuction': False,
+            'isObjectOnPremoderation': False,
+            'isPrivateAgent': False,
+            'offerId': 209194477,
+            'offerType': 'suburban',
+            'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
+            'price': {'currency': 'rur', 'value': 2594400.0},
+            'publishTillDate': None,
+            'services': ['calltracking', 'paid'],
+            'stats': {
+                'callsCount': 10,
+                'competitorsCount': None,
+                'dailyViews': 99,
+                'duplicatesCount': None,
+                'favorites': None,
+                'skippedCallsCount': 9,
+                'totalViews': None
+            },
+            'status': 'published'
+        }
+    ],
+        'page': {'canLoadMore': False, 'limit': 1, 'offset': 0}
     }

@@ -1,0 +1,92 @@
+definitions:
+  callbook.entities.calls.GetUserCallsByOffersStatsRequestSchema:
+    properties:
+      offerIds:
+        description: Список id объявлений
+        items:
+          format: int64
+          title: offer_ids
+          type: integer
+        title: offer_ids
+        type: array
+      userId:
+        description: Id пользователя
+        format: int64
+        title: user_id
+        type: integer
+    required:
+    - offerIds
+    - userId
+    type: object
+  callbook.entities.calls.GetUserCallsByOffersTotalsResponseSchema:
+    properties:
+      data:
+        description: Статистика по звонкам за все время по объявлениям
+        items:
+          $ref: '#/definitions/callbook.entities.calls.OfferCallCountSchema'
+        type: array
+    required:
+    - data
+    type: object
+  callbook.entities.calls.OfferCallCountSchema:
+    properties:
+      callsCount:
+        description: Кол-во звонков
+        format: int64
+        title: calls_count
+        type: integer
+      missedCallsCount:
+        description: Кол-во пропущенных звонков
+        format: int64
+        title: missed_calls_count
+        type: integer
+      offerId:
+        description: Id объявления
+        format: int64
+        title: offer_id
+        type: integer
+    required:
+    - callsCount
+    - missedCallsCount
+    - offerId
+    type: object
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items:
+          title: errors
+          type: object
+        title: errors
+        type: array
+      message:
+        title: message
+        type: string
+    type: object
+info:
+  description: Information and notes about calls and contacts
+  title: callbook
+  version: 1.0.0
+paths:
+  /v1/get-user-calls-by-offers-totals/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/callbook.entities.calls.GetUserCallsByOffersStatsRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/callbook.entities.calls.GetUserCallsByOffersTotalsResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+      tags:
+      - monolith
+swagger: '2.0'
+x-cian-mq:
+  exchanges: {}
+  spec-version: '1.0'
