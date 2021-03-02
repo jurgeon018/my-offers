@@ -16,6 +16,7 @@ from my_offers.entities.page_info import MobilePageInfo
 from my_offers.repositories.monolith_cian_announcementapi.entities.bargain_terms import Currency
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, ObjectModel
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
+from my_offers.services.deactivated_service.get_deactivated_services import get_deactivated_services_degradation_handler
 from my_offers.services.offences import (
     get_offers_with_media_offences_degradation_handler,
     get_unidentified_offers_degradation_handler,
@@ -60,6 +61,13 @@ async def v1_get_my_offers_public(
     # TODO: CD-100663, CD-100665
     # pylint: disable=unused-variable
     unidentified_offers: List[int] = (await get_unidentified_offers_degradation_handler(realty_user_id)).value
+
+    # TODO: CD-100663, CD-100665
+    # pylint: disable=unused-variable
+    deactivated_service: Dict[int, OfferDeactivatedService] = (await get_deactivated_services_degradation_handler(
+        user_id=realty_user_id,
+        offer_ids=[o.id for o in object_models if o.id]
+    )).value
 
     return entities.MobileGetMyOffersResponse(
         page=MobilePageInfo(
