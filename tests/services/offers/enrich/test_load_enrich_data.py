@@ -20,10 +20,7 @@ from my_offers.enums import DuplicateTabType, ModerationOffenceStatus, OfferStat
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
-from my_offers.repositories.search_offers.entities import (
-    EnrichOffersWithFormattedFieldsRequest,
-    EnrichOffersWithFormattedFieldsResponse,
-)
+from my_offers.repositories.search_offers.entities import EnrichOffersWithFormattedFieldsResponse
 from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem, EnrichParams
 from my_offers.services.offers.enrich.load_enrich_data import (
     _load_agency_settings,
@@ -979,7 +976,7 @@ async def test_load_offers_formatted_fields__empty_response(mocker):
     offer_ids = [1, 2]
 
     load_offers_formatted_fields_mock = mocker.patch(
-        f'{PATH}get_offers_formatted_fields',
+        f'{PATH}get_offers_formatted_fields_handler',
         return_value=future(
             DegradationResult(
                 value=EnrichOffersWithFormattedFieldsResponse(None),

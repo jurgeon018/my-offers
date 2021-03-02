@@ -152,6 +152,7 @@ async def _integration_mock(
 async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrations_mock):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'agents_hiearachy.sql')
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_offences.sql')
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_premoderations.sql')
 
@@ -219,7 +220,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
             'isArchived': False,
             'isAuction': False,
             'isObjectOnPremoderation': False,
-            'isPrivateAgent': False,
+            'isPrivateAgent': True,
             'offerId': 209194477,
             'offerType': 'suburban',
             'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',

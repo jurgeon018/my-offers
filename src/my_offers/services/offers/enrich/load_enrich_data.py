@@ -28,6 +28,7 @@ from my_offers.services.offences import (
 )
 from my_offers.services.offer_relevance_warnings import get_offer_relevance_warnings_degradation_handler
 from my_offers.services.offers._degradation_handlers import (
+    get_agent_data_handler,
     get_agent_hierarchy_data_degradation_handler,
     get_agent_names_degradation_handler,
     get_auctions_mobile_degradation_handler,
@@ -35,12 +36,12 @@ from my_offers.services.offers._degradation_handlers import (
     get_favorites_counts_degradation_handler,
     get_last_import_errors_degradation_handler,
     get_offer_premoderations_degradation_handler,
-    get_offers_formatted_fields,
+    get_offers_formatted_fields_handler,
     get_offers_offence_degradation_handler,
     get_offers_payed_by_degradation_handler,
     get_offers_payed_till_excluding_calltracking_degradation_handler,
     get_offers_update_at_degradation_handler,
-    get_offers_with_pending_identification,
+    get_offers_with_pending_identification_handler,
     get_searches_counts_degradation_handler,
     get_similars_counters_by_offer_ids_degradation_handler,
     get_views_counts_degradation_handler,
@@ -84,6 +85,7 @@ async def load_mobile_enrich_data(
         asyncio.ensure_future(_load_agency_settings(params.get_user_id())),
         asyncio.ensure_future(_load_offers_payed_by(offer_ids)),
         asyncio.ensure_future(_load_calls(offer_ids)),
+        asyncio.ensure_future(_load_agent_data(params.get_user_id())),
         asyncio.ensure_future(_load_offers_formatted_fields(offer_ids)),
     ]
 
@@ -221,7 +223,7 @@ async def _load_moderation_mobile_info(offer_ids: List[int]) -> EnrichItem:
 
 @statsd_timer(key='enrich.load_moderation_mobile_info')
 async def _load_pending_identification_offers(user_ids: List[int]) -> EnrichItem:
-    result = await get_offers_with_pending_identification(user_ids)
+    result = await get_offers_with_pending_identification_handler(user_ids)
     if result.degraded:
         return EnrichItem(key='offer_with_pending_identification', degraded=result.degraded, value=result.value)
 
@@ -238,7 +240,7 @@ async def _load_pending_identification_offers(user_ids: List[int]) -> EnrichItem
 
 @statsd_timer(key='enrich.load_moderation_mobile_info')
 async def _load_offers_formatted_fields(offer_ids: List[int]) -> EnrichItem:
-    result = await get_offers_formatted_fields(offer_ids)
+    result = await get_offers_formatted_fields_handler(offer_ids)
     if result.degraded or not result.value:
         return EnrichItem(key='formatted_fields', degraded=result.degraded, value=result.value)
 
@@ -319,6 +321,13 @@ async def _load_agent_hierarchy_data(user_id: int) -> EnrichItem:
     result = await get_agent_hierarchy_data_degradation_handler(user_id)
 
     return EnrichItem(key='agent_hierarchy_data', degraded=result.degraded, value=result.value)
+
+
+@statsd_timer(key='enrich.load_agent_data')
+async def _load_agent_data(user_id: int) -> EnrichItem:
+    result = await get_agent_data_handler(user_id)
+
+    return EnrichItem(key='agent_data', degraded=result.degraded, value=result.value)
 
 
 @statsd_timer(key='enrich.load_geo_urls')
