@@ -116,4 +116,3 @@ async def test_delete_offer__error__error(http, pg, monolith_cian_realty_mock):
     # assert
     assert response.data['errors'][0]['code'] == 'operationError'
     assert status_tab == 'notActive'
-

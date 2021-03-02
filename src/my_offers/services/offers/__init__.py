@@ -1,6 +1,5 @@
 from my_offers.services.offers._degradation_handlers import get_agent_hierarchy_data_degradation_handler
 from my_offers.services.offers._delete_offers import delete_offers, delete_offers_data
-from my_offers.services.offers._degradation_handlers import get_agent_hierarchy_data_degradation_handler
 from my_offers.services.offers._filters import get_filters, get_filters_mobile, get_user_filter
 from my_offers.services.offers._get_offers import get_offer_views
 from my_offers.services.offers._get_offers_for_calltracking import (
