@@ -42,7 +42,7 @@ def _get_description(
 def _get_offer_deactivated_services(
     services: List[DeactivatedService],
     is_auto_restore_on_payment_enabled: bool
-):
+) -> OfferDeactivatedService:
     contexts = []
     service_names = []
     for service in services:
@@ -53,7 +53,7 @@ def _get_offer_deactivated_services(
             contexts.append(DeactivatedServicesContext.auction)
             service_names.append(f'ставка {service.auction_bet} ₽/сут.')
 
-    if len(services) > 2:
+    if len(services) > 2 or not contexts:
         context = DeactivatedServicesContext.undefined
     elif len(contexts) == 2:
         context = DeactivatedServicesContext.highlight_and_auction
