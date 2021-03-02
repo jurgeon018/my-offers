@@ -1,0 +1,170 @@
+definitions:
+  cian_web.schemas.ErrorResponseSchema:
+    properties:
+      errors:
+        items:
+          title: errors
+          type: object
+        title: errors
+        type: array
+      message:
+        title: message
+        type: string
+    type: object
+  search_offers.entities.offer_for_mobile.offer.AreaPartSchema:
+    properties:
+      area:
+        description: Площадь части, м²
+        title: area
+        type: string
+      price:
+        description: Цена части
+        title: price
+        type: string
+      pricePerMeter:
+        description: Цена за м²
+        title: price_per_meter
+        type: string
+    required:
+    - area
+    - price
+    - pricePerMeter
+    type: object
+  search_offers.web.entities.EnrichOffersWithFormattedFieldsItemSchema:
+    properties:
+      fields:
+        $ref: '#/definitions/search_offers.web.entities.FormattedFieldsSchema'
+        description: Форматированные поля
+      id:
+        description: Realty id объявления
+        format: int64
+        title: id
+        type: integer
+    type: object
+  search_offers.web.entities.FormattedFieldsSchema:
+    properties:
+      formattedAdditionalExtraInfo:
+        description: Дополнительная информация с агентской комиссией
+        title: formatted_additional_extra_info
+        type: string
+      formattedAdditionalInfo:
+        description: Дополнительная информация об объекте
+        title: formatted_additional_info
+        type: string
+      formattedAdditionalPrice:
+        description: Дополнительная строка с ценой, например, за квадратный метр
+        title: formatted_additional_price
+        type: string
+      formattedAddress:
+        description: Адрес объекта
+        title: formatted_address
+        type: string
+      formattedAreaParts:
+        description: Части объявления
+        items:
+          $ref: '#/definitions/search_offers.entities.offer_for_mobile.offer.AreaPartSchema'
+        type: array
+      formattedCardInfo:
+        description: Информация об объекте для карточки
+        title: formatted_card_info
+        type: string
+      formattedCommunalInfo:
+        description: Информация о коммунальных платежах
+        title: formatted_communal_info
+        type: string
+      formattedFullInfo:
+        description: Полная информация об объекте
+        title: formatted_full_info
+        type: string
+      formattedFullPrice:
+        description: Строка с полной ценой
+        title: formatted_full_price
+        type: string
+      formattedPremisesInfo:
+        description: Информация о занятости помещения
+        title: formatted_premises_info
+        type: string
+      formattedPricePerMeter:
+        description: Строка с ценой за метр
+        title: formatted_price_per_meter
+        type: string
+      formattedShortInfo:
+        description: Краткая информация об объекте
+        title: formatted_short_info
+        type: string
+      formattedShortPrice:
+        description: Строка с ценой
+        title: formatted_short_price
+        type: string
+      formattedVatType:
+        description: Информация о НДС
+        title: formatted_vat_type
+        type: string
+    type: object
+  search_offers.web.schemas.EnrichOffersWithFormattedFieldsRequestSchema:
+    properties:
+      dealType:
+        description: Тип сделки
+        enum:
+        - rent
+        - sale
+        type: string
+        x-rent: Аренда
+        x-sale: Продажа
+      offerIds:
+        description: ID офферов
+        items:
+          format: int64
+          title: offer_ids
+          type: integer
+        title: offer_ids
+        type: array
+      offerType:
+        description: Тип объявления
+        enum:
+        - commercial
+        - flat
+        - newobject
+        - suburban
+        type: string
+        x-commercial: коммерческая
+        x-flat: квартиры
+        x-newobject: новостройки
+        x-suburban: загородка
+    required:
+    - offerIds
+    type: object
+  search_offers.web.schemas.EnrichOffersWithFormattedFieldsResponseSchema:
+    properties:
+      formattedData:
+        description: Словарь с id и форматированными полями
+        items:
+          $ref: '#/definitions/search_offers.web.entities.EnrichOffersWithFormattedFieldsItemSchema'
+        type: array
+    type: object
+info:
+  description: Microservice which searches for offers
+  title: search-offers
+  version: 1.0.0
+paths:
+  /v1/enrich-offers-with-formatted-fields/:
+    post:
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/search_offers.web.schemas.EnrichOffersWithFormattedFieldsRequestSchema'
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/search_offers.web.schemas.EnrichOffersWithFormattedFieldsResponseSchema'
+        '400':
+          schema:
+            $ref: '#/definitions/cian_web.schemas.ErrorResponseSchema'
+swagger: '2.0'
+x-cian-mq:
+  exchanges: {}
+  spec-version: '1.0'

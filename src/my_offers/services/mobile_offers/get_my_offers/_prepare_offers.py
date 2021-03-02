@@ -11,6 +11,7 @@ from my_offers.helpers.price import get_price_info
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
+from my_offers.repositories.search_offers.entities import FormattedFields
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 from my_offers.services.offers.enrich.enrich_data import MobileEnrichData
 from my_offers.services.offers.enrich.load_enrich_data import load_mobile_enrich_data
@@ -61,13 +62,15 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
     price_info = get_price_info(object_model)
     services: List[Services] = _parse_services(object_model.publish_terms)
 
+    formatted_fields: Optional[FormattedFields] = enrich_data.get_formatted_fields(offer_id)
+
     return MobOffer(
         offer_id=offer_id,
         price=MobPrice(value=object_model.bargain_terms.price, currency=object_model.bargain_terms.currency),
         category=object_model.category,
         status=MobStatus[object_model.status.name],
         publish_till_date=enrich_data.get_payed_till(offer_id),
-        complaints=None,
+        complaints=enrich_data.get_offer_offence(offer_id),
         offer_type=offer_type,
         deal_type=deal_type,
         is_archived=archived,
@@ -75,13 +78,13 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         photo=get_main_photo_url(object_model.photos, better_quality=True),
         has_video_offence=offer_id in enrich_data.video_offences,
         has_photo_offence=offer_id in enrich_data.image_offences,
-        deactivated_service=None,
-        is_object_on_premoderation=False,
-        identification_pending=False,
-        is_auction=False,
-        auction=None,
+        deactivated_service=None,  # Не сделано TODO: CD-101747
+        is_object_on_premoderation=enrich_data.on_premoderation(offer_id),
+        identification_pending=enrich_data.wait_identification(offer_id),
+        is_auction=Services.auction in services,
+        auction=enrich_data.get_offer_auction(offer_id),
         formatted_price=str(price_info),
-        formatted_info='CHANGEME',  # Не сделано
+        formatted_info=formatted_fields.formatted_full_info if formatted_fields else None,
         formatted_address=get_address_for_push(object_model.geo),
         stats=OfferStats(
             competitors_count=enrich_data.get_same_building_counts(offer_id),
@@ -89,7 +92,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
             calls_count=enrich_data.get_calls_count(offer_id),
             skipped_calls_count=enrich_data.get_missed_calls_count(offer_id),
             total_views=enrich_data.views_counts.get(offer_id),
-            daily_views=99,
+            daily_views=enrich_data.views_daily_counts.get(offer_id),
             favorites=enrich_data.favorites_counts.get(offer_id),
         ),
         services=services,
