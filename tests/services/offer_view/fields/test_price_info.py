@@ -271,3 +271,19 @@ def test__calc_utilities_delta(locations, price, included_in_price, use_include_
 
     # assert
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    ('exact', 'rang', 'excepted'),
+    (
+        ('zzz', ['yyy'], 'zzz'),
+        (None, ['yyy', 'xxx'], 'yyy xxx'),
+        (None, None, ''),
+    )
+)
+def test_price_info__str__result(exact, rang, excepted):
+    # act
+    result = str(PriceInfo(exact=exact, range=rang))
+
+    # assert
+    assert result == excepted

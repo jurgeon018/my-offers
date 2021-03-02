@@ -6,12 +6,14 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set
 from simple_settings import settings
 
 from my_offers import enums
+from my_offers.entities import AgentHierarchyData
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
+from my_offers.repositories.callbook.entities import OfferCallCount
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 
 
@@ -114,25 +116,52 @@ class EnrichItem(NamedTuple):
 
 
 @dataclass
-class EnrichData:
-    auctions: Dict[int, Any] = field(default_factory=dict)
-    jk_urls: Dict[int, str] = field(default_factory=dict)
-    geo_urls: Dict[GeoUrlKey, AddressUrls] = field(default_factory=dict)
-    can_update_edit_dates: Dict[int, bool] = field(default_factory=dict)
-    import_errors: Dict[int, str] = field(default_factory=dict)
-    moderation_info: Optional[Dict[int, OfferOffence]] = None
+class BaseEnrichData:
+    agent_hierarchy_data: AgentHierarchyData
     agency_settings: Optional[AgencySettings] = None
-    subagents: Optional[Dict[int, Subagent]] = None
-    premoderation_info: Optional[Set[int]] = None
-    archive_date: Optional[Dict[int, datetime]] = None
+    offers_payed_by: Dict[int, Optional[OfferPayedByType]] = field(default_factory=dict)
+    can_update_edit_dates: Dict[int, bool] = field(default_factory=dict)
     payed_till: Optional[Dict[int, datetime]] = None
-    offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
-    offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
-    offers_payed_by: Dict[str, Optional[OfferPayedByType]] = field(default_factory=dict)
+    archive_date: Optional[Dict[int, datetime]] = None
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)
     favorites_counts: Dict[int, int] = field(default_factory=dict)
+    offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
+
+    def get_payed_till(self, offer_id: int) -> Optional[datetime]:
+        if not self.payed_till:
+            return None
+
+        return self.payed_till.get(offer_id)
+
+    def get_duplicates_counts(self, offer_id: int) -> Optional[int]:
+        return self.offers_similars_counts.get(DuplicateTabType.duplicate, {}).get(offer_id)
+
+    def get_same_building_counts(self, offer_id: int) -> Optional[int]:
+        return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
+
+    def get_archive_date(self, offer_id: int) -> Optional[datetime]:
+        if not self.archive_date:
+            return None
+
+        updated_at = self.archive_date.get(offer_id)
+        if not updated_at:
+            return None
+
+        return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
+
+
+@dataclass
+class EnrichData(BaseEnrichData):
+    auctions: Dict[int, Any] = field(default_factory=dict)
+    jk_urls: Dict[int, str] = field(default_factory=dict)
+    geo_urls: Dict[GeoUrlKey, AddressUrls] = field(default_factory=dict)
+    import_errors: Dict[int, str] = field(default_factory=dict)
+    moderation_info: Optional[Dict[int, OfferOffence]] = None
+    subagents: Optional[Dict[int, Subagent]] = None
+    premoderation_info: Optional[Set[int]] = None
+    offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
 
     def get_urls_by_types(
             self,
@@ -160,30 +189,27 @@ class EnrichData:
 
         return offer_id in self.premoderation_info
 
-    def get_archive_date(self, offer_id: int) -> Optional[datetime]:
-        if not self.archive_date:
-            return None
-
-        updated_at = self.archive_date.get(offer_id)
-        if not updated_at:
-            return None
-
-        return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
-
-    def get_payed_till(self, offer_id: int) -> Optional[datetime]:
-        if not self.payed_till:
-            return None
-
-        return self.payed_till.get(offer_id)
-
-    def get_duplicates_counts(self, offer_id: int) -> Optional[int]:
-        return self.offers_similars_counts.get(DuplicateTabType.duplicate, {}).get(offer_id)
-
-    def get_same_building_counts(self, offer_id: int) -> Optional[int]:
-        return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
-
     def get_offer_relevance_warning(self, offer_id: int) -> Optional[OfferRelevanceWarning]:
         if not self.offer_relevance_warnings:
             return None
 
         return self.offer_relevance_warnings.get(offer_id)
+
+
+@dataclass
+class MobileEnrichData(BaseEnrichData):
+    video_offences: Set[int] = field(default_factory=set)
+    image_offences: Set[int] = field(default_factory=set)
+    calls_count: Dict[int, OfferCallCount] = field(default_factory=dict)
+
+    def get_calls_count(self, offer_id: int) -> Optional[int]:
+        if offer_id not in self.calls_count:
+            return None
+
+        return self.calls_count[offer_id].calls_count
+
+    def get_missed_calls_count(self, offer_id: int) -> Optional[int]:
+        if offer_id not in self.calls_count:
+            return None
+
+        return self.calls_count[offer_id].missed_calls_count
