@@ -68,6 +68,11 @@ async def monolith_cian_announcementapi_mock(http_mock_service):
 
 
 @pytest.fixture(scope='session')
+async def monolith_cian_bill_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('monolith-cian-bill')
+
+
+@pytest.fixture(scope='session')
 async def monolith_cian_ms_announcements_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('monolith-cian-ms-announcements')
 

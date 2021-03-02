@@ -8,6 +8,7 @@ from simple_settings import settings
 from my_offers import enums
 from my_offers.entities import AgentHierarchyData
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.mobile_offer import OfferDeactivatedService
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
 from my_offers.entities.offer_view_model import Subagent
@@ -201,6 +202,7 @@ class MobileEnrichData(BaseEnrichData):
     video_offences: Set[int] = field(default_factory=set)
     image_offences: Set[int] = field(default_factory=set)
     calls_count: Dict[int, OfferCallCount] = field(default_factory=dict)
+    deactivated_service: Dict[int, OfferDeactivatedService] = field(default_factory=dict)
 
     def get_calls_count(self, offer_id: int) -> Optional[int]:
         if offer_id not in self.calls_count:
@@ -213,3 +215,9 @@ class MobileEnrichData(BaseEnrichData):
             return None
 
         return self.calls_count[offer_id].missed_calls_count
+
+    def get_deactivated_service(self, offer_id: int) -> Optional[OfferDeactivatedService]:
+        if offer_id not in self.deactivated_service:
+            return None
+
+        return self.deactivated_service[offer_id]

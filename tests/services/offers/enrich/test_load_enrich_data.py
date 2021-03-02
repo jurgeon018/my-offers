@@ -10,7 +10,7 @@ from simple_settings import settings
 from simple_settings.utils import settings_stub
 
 from my_offers import enums
-from my_offers.entities import AgentName, AgentHierarchyData
+from my_offers.entities import AgentHierarchyData, AgentName
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent

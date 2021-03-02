@@ -75,7 +75,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         photo=get_main_photo_url(object_model.photos, better_quality=True),
         has_video_offence=offer_id in enrich_data.video_offences,
         has_photo_offence=offer_id in enrich_data.image_offences,
-        deactivated_service=None,
+        deactivated_service=enrich_data.get_deactivated_service(offer_id),
         is_object_on_premoderation=False,
         identification_pending=False,
         is_auction=False,

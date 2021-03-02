@@ -274,7 +274,13 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
     }
 
 
-async def test_v1_get_offers_mobile_public__200__enrichment(http, pg,  moderation_mock, callbook_mock):
+async def test_v1_get_offers_mobile_public__200__enrichment(
+        http,
+        pg,
+        moderation_mock,
+        callbook_mock,
+        monolith_cian_bill_mock,
+):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_pagination.sql')
 
@@ -329,6 +335,26 @@ async def test_v1_get_offers_mobile_public__200__enrichment(http, pg,  moderatio
             }
         ),
     )
+    await monolith_cian_bill_mock.add_stub(
+        method='GET',
+        path='/v1/tariffication/get-deactivated-additional-services/',
+        response=MockResponse(
+            body={
+                'deactivatedServices': [{
+                    'announcementId': 209194477,
+                    'serviceType': 'Highlight',
+                    'isAutoRestoreOnPaymentEnabled': True,
+                    'auctionBet': None
+                }, {
+                    'announcementId': 209194477,
+                    'serviceType': 'auction',
+                    'isAutoRestoreOnPaymentEnabled': True,
+                    'auctionBet': 10
+                }],
+                'isAutoRestoreOnPaymentEnabled': True,
+            }
+        )
+    )
 
     # act
     response = await http.request(
@@ -363,7 +389,11 @@ async def test_v1_get_offers_mobile_public__200__enrichment(http, pg,  moderatio
             'category': 'landSale',
             'complaints': None,
             'coworkingId': 123,
-            'deactivatedService': None,
+            'deactivatedService': {
+                'description': 'Выделение цветом и ставка 10 ₽/сут. отключены из-за нехватки средств. После пополнения'
+                               ' баланса опции будут активированы автоматически.',
+                'isAutoRestoreOnPaymentEnabled': True
+            },
             'dealType': 'sale',
             'description': ANY,
             'formattedAddress': 'Красноярский край, Емельяновский район, пос. '

@@ -26,6 +26,7 @@ from my_offers.services.offers._degradation_handlers import (
     get_agent_hierarchy_data_degradation_handler,
     get_agent_names_degradation_handler,
     get_calls_count_degradation_handler,
+    get_deactivated_services_degradation_handler,
     get_favorites_counts_degradation_handler,
     get_last_import_errors_degradation_handler,
     get_offer_premoderations_degradation_handler,
@@ -60,6 +61,7 @@ async def load_mobile_enrich_data(
 ) -> MobileEnrichData:
     """ Загружает данные из внешних источников для разных типов вкладок. """
     offer_ids = params.get_offer_ids()
+    user_id = params.get_user_id()
     if not offer_ids:
         return MobileEnrichData(
             agent_hierarchy_data=(await get_agent_hierarchy_data_degradation_handler(params.get_user_id())).value
@@ -68,14 +70,15 @@ async def load_mobile_enrich_data(
     is_active = tab_type.is_rent or tab_type.is_sale
 
     enriched = [
-        _load_agent_hierarchy_data(params.get_user_id()),
+        _load_agent_hierarchy_data(user_id),
         _load_can_update_edit_dates(
             offer_ids=offer_ids,
             status_tab=enums.OfferStatusTab.active if is_active else enums.OfferStatusTab.archived
         ),
-        _load_agency_settings(params.get_user_id()),
+        _load_agency_settings(user_id),
         _load_offers_payed_by(offer_ids),
         _load_calls(offer_ids),
+        _load_deactivated_service(user_id, offer_ids)
     ]
 
     if is_active:
@@ -405,3 +408,12 @@ async def _load_calls(offer_ids: List[int]) -> EnrichItem:
 
     data: List[OfferCallCount] = result.value.data
     return EnrichItem(key='calls_count', degraded=result.degraded, value={item.offer_id: item for item in data})
+
+
+@statsd_timer(key='enrich.deactivated_service')
+async def _load_deactivated_service(user_id: int, offer_ids: List[int]) -> EnrichItem:
+    result = await get_deactivated_services_degradation_handler(user_id, offer_ids)
+    if result.degraded:
+        return EnrichItem(key='deactivated_service', degraded=result.degraded, value={})
+
+    return EnrichItem(key='deactivated_service', degraded=result.degraded, value=result.value)

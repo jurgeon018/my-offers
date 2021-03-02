@@ -1,13 +1,13 @@
-from itertools import groupby
-from operator import attrgetter
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
-from cian_core.degradation import get_degradation_handler
 from my_offers.entities.mobile_offer import OfferDeactivatedService
 from my_offers.enums.deactivated_service import DeactivatedServicesContext
 from my_offers.repositories.monolith_cian_bill import v1_tariffication_get_deactivated_additional_services
-from my_offers.repositories.monolith_cian_bill.entities import V1TarifficationGetDeactivatedAdditionalServices, \
-    GetDeactivatedAdditionalServicesResponse, DeactivatedService
+from my_offers.repositories.monolith_cian_bill.entities import (
+    DeactivatedService,
+    GetDeactivatedAdditionalServicesResponse,
+    V1TarifficationGetDeactivatedAdditionalServices,
+)
 
 
 def _get_description(
@@ -25,11 +25,11 @@ def _get_description(
         return None
 
     if context == DeactivatedServicesContext.highlight_and_auction:
-        options_will = u'опции будут активированы'
-        options_were = u'опции были активированы'
+        options_will = 'опции будут активированы'
+        options_were = 'опции были активированы'
     else:
-        options_will = u'опция будет активирована'
-        options_were = u'опция была активирована'
+        options_will = 'опция будет активирована'
+        options_were = 'опция была активирована'
 
     if is_auto_restore_on_payment_enabled:
         what = f'После пополнения баланса {options_will} автоматически.'
@@ -70,11 +70,10 @@ def _get_offer_deactivated_services(
     )
 
 
-def get_deactivated_services_for_offers(
+async def get_deactivated_services_for_offers(
     user_id: int,
     offer_ids: List[int]
 ) -> Dict[int, OfferDeactivatedService]:
-
     response: GetDeactivatedAdditionalServicesResponse
     response = await v1_tariffication_get_deactivated_additional_services(
         V1TarifficationGetDeactivatedAdditionalServices(
@@ -83,22 +82,18 @@ def get_deactivated_services_for_offers(
         )
     )
 
-    keyfunc = attrgetter('announcement_id')
-    sorted_services = sorted(response.deactivated_services, key=keyfunc)
+    offer_id_services: Dict[int, List[DeactivatedService]] = {}
+    for service in response.deactivated_services:
+        if offer_id_services.get(service.announcement_id):
+            offer_id_services[service.announcement_id].append(service)
+        else:
+            offer_id_services[service.announcement_id] = [service]
 
-    result: Dict[int, OfferDeactivatedService] = {
-        offer_id: _get_offer_deactivated_services(
-            services=list(services),
+    result: Dict[int, OfferDeactivatedService] = {}
+    for offer_id, services in offer_id_services.items():
+        result[offer_id] = _get_offer_deactivated_services(
+            services=services,
             is_auto_restore_on_payment_enabled=response.is_auto_restore_on_payment_enabled,
         )
-        for offer_id, services in groupby(sorted_services, key=keyfunc)
-    }
 
     return result
-
-
-get_deactivated_services_degradation_handler = get_degradation_handler(
-    func=get_deactivated_services_for_offers,
-    key='monolith_cian_bill.get_deactivated_services',
-    default={},
-)
