@@ -30,7 +30,7 @@ alias = "default"
 
 [job.web]
 type = "web"
-memory = 128
+memory = 256
 
 [job.web.prod]
 type = "web"
