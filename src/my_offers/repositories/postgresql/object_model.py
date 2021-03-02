@@ -1,12 +1,12 @@
 from typing import Any, Dict, List, Optional, Union
 
 import asyncpgsa
+from cian_core.statsd import statsd_timer
 from cian_json import json
 from simple_settings import settings
 from sqlalchemy import and_, func, select
 
 from my_offers import enums, pg
-from my_offers.helpers.statsd import async_statsd_timer
 from my_offers.mappers.object_model import object_model_mapper
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import tables
@@ -48,7 +48,7 @@ async def get_object_model(filters: Dict[str, Any]) -> Optional[ObjectModel]:
     return object_models[0]
 
 
-@async_statsd_timer('psql.get_object_models_total_count')
+@statsd_timer(key='psql.get_object_models_total_count')
 async def get_object_models_total_count(filters: Dict[str, Any]):
     conditions = prepare_conditions(filters)
 
@@ -57,7 +57,7 @@ async def get_object_models_total_count(filters: Dict[str, Any]):
     return await pg.get().fetchval(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
 
 
-@async_statsd_timer('psql.get_object_models')
+@statsd_timer(key='psql.get_object_models')
 async def get_object_models(
         *,
         filters: Dict[str, Any],

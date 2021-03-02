@@ -14,6 +14,10 @@ from my_offers.services.offers.enrich.enrich_data import EnrichData
 @pytest.fixture(name='enrich_data_mock')
 def enrich_data_fixture():
     return EnrichData(
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=True,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -25,6 +29,10 @@ def enrich_data_fixture():
 @pytest.fixture(name='enrich_data_with_offers_payed_by_mock')
 def enrich_data_with_offers_payed_by_fixture():
     return EnrichData(
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=True,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -34,7 +42,7 @@ def enrich_data_with_offers_payed_by_fixture():
             1: OfferPayedByType.by_agent,
             2: OfferPayedByType.by_master,
             3: None
-            }
+        }
     )
 
 
@@ -88,14 +96,9 @@ def test_build_offer_view(enrich_data_mock):
         status_type=None,
         payed_by=None
     )
-    agent_hierarchy_data = AgentHierarchyData(
-        is_master_agent=True,
-        is_sub_agent=False,
-    )
 
     # act
     result = v2_build_offer_view(
-        agent_hierarchy_data=agent_hierarchy_data,
         object_model=raw_offer,
         enrich_data=enrich_data_mock
     )
@@ -187,14 +190,9 @@ def test_build_offer_view_depends_on_payed_by(
         status_type=None,
         payed_by=enrich_data_with_offers_payed_by_mock.offers_payed_by.get(offer_id_from_mock)
     )
-    agent_hierarchy_data = AgentHierarchyData(
-        is_master_agent=True,
-        is_sub_agent=False,
-    )
 
     # act
     result = v2_build_offer_view(
-        agent_hierarchy_data=agent_hierarchy_data,
         object_model=raw_offer,
         enrich_data=enrich_data_with_offers_payed_by_mock
     )

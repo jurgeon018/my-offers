@@ -10,7 +10,7 @@ from simple_settings import settings
 from simple_settings.utils import settings_stub
 
 from my_offers import enums
-from my_offers.entities import AgentName
+from my_offers.entities import AgentName, AgentHierarchyData
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent
@@ -111,6 +111,10 @@ async def test_load_enrich_data__active_tab(mocker):
     )
 
     expected_data = EnrichData(
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -126,6 +130,7 @@ async def test_load_enrich_data__active_tab(mocker):
         offer_relevance_warnings={},
     )
     expected_degradation = {
+        'agent_hierarchy_data': True,
         'agency_settings': False,
         'auctions': False,
         'can_update_edit_dates': False,
@@ -154,7 +159,7 @@ async def test_load_enrich_data__active_tab(mocker):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11], True)
+    load_can_update_edit_dates_mock.assert_called_once_with(offer_ids=[11], status_tab=OfferStatusTab.active)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_auctions_mock.assert_called_once_with([11])
@@ -215,8 +220,11 @@ async def test_load_enrich_data__not_active_tab(mocker):
         return_value=future(EnrichItem(key='offers_payed_by', degraded=False, value={})),
     )
 
-
     expected_data = EnrichData(
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -231,6 +239,7 @@ async def test_load_enrich_data__not_active_tab(mocker):
         payed_till=None,
     )
     expected_degradation = {
+        'agent_hierarchy_data': True,
         'agency_settings': False,
         'can_update_edit_dates': False,
         'geo_urls': False,
@@ -256,7 +265,7 @@ async def test_load_enrich_data__not_active_tab(mocker):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11], True)
+    load_can_update_edit_dates_mock.assert_called_once_with(offer_ids=[11], status_tab=OfferStatusTab.not_active)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_premoderation_info_mock.assert_called_once_with([11])
@@ -306,8 +315,11 @@ async def test_load_enrich_data__declined_tab(mocker):
         return_value=future(EnrichItem(key='offers_payed_by', degraded=False, value={})),
     )
 
-
     expected_data = EnrichData(
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -322,6 +334,7 @@ async def test_load_enrich_data__declined_tab(mocker):
         payed_till=None,
     )
     expected_degradation = {
+        'agent_hierarchy_data': True,
         'agency_settings': False,
         'can_update_edit_dates': False,
         'geo_urls': False,
@@ -345,7 +358,7 @@ async def test_load_enrich_data__declined_tab(mocker):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11], False)
+    load_can_update_edit_dates_mock.assert_called_once_with(offer_ids=[11], status_tab=OfferStatusTab.declined)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_moderation_info_mock.assert_called_once_with([11])
@@ -395,6 +408,10 @@ async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
     )
 
     expected_data = EnrichData(
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -409,6 +426,7 @@ async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
         payed_till=None,
     )
     expected_degradation = {
+        'agent_hierarchy_data': True,
         'agency_settings': False,
         'can_update_edit_dates': False,
         'geo_urls': False,
@@ -431,7 +449,7 @@ async def test_load_enrich_data__tabs_without_enrich(mocker, status_tab):
             address_info=[AddressInfo(id=1, type=Type.location)]
         )
     ])
-    load_can_update_edit_dates_mock.assert_called_once_with([11], False)
+    load_can_update_edit_dates_mock.assert_called_once_with(offer_ids=[11], status_tab=status_tab)
     load_agency_settings_mock.assert_called_once_with(111)
     load_subagents_mock.assert_called_once_with([])
     load_offers_payed_by.assert_called_once_with([11])
@@ -442,6 +460,10 @@ async def test_load_enrich_data__empty__empty():
     # arrange
     params = EnrichParams(111)
     expected = EnrichData(
+        agent_hierarchy_data=AgentHierarchyData(
+            is_master_agent=False,
+            is_sub_agent=False,
+        ),
         auctions={},
         jk_urls={},
         geo_urls={},
@@ -580,7 +602,7 @@ async def test__load_can_update_edit_date(mocker):
     expected = EnrichItem(key='can_update_edit_dates', degraded=False, value={11: True, 12: False})
 
     # act
-    result = await _load_can_update_edit_dates([11, 22], True)
+    result = await _load_can_update_edit_dates([11, 22], status_tab=OfferStatusTab.active)
 
     # assert
     assert result == expected
