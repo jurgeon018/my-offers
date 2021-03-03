@@ -84,7 +84,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         is_auction=Services.auction in services,
         auction=enrich_data.get_offer_auction(offer_id),
         formatted_price=str(price_info),
-        formatted_info=formatted_fields.formatted_full_info if formatted_fields else None,
+        formatted_info=formatted_fields.formatted_full_info if formatted_fields else None,  # TODO CD-102079
         formatted_address=get_address_for_push(object_model.geo),
         stats=OfferStats(
             competitors_count=enrich_data.get_same_building_counts(offer_id),
@@ -92,7 +92,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
             calls_count=enrich_data.get_calls_count(offer_id),
             skipped_calls_count=enrich_data.get_missed_calls_count(offer_id),
             total_views=enrich_data.views_counts.get(offer_id),
-            daily_views=enrich_data.views_daily_counts.get(offer_id),
+            daily_views=enrich_data.views_daily_counts.get(offer_id),  # TODO CD-102080
             favorites=enrich_data.favorites_counts.get(offer_id),
         ),
         services=services,
