@@ -17,7 +17,6 @@ from my_offers.repositories.auction.entities import MobileBetAnnouncementInfo, V
 from my_offers.repositories.callbook.entities import OfferCallCount
 from my_offers.repositories.moderation_checks_orchestrator.entities import UserIdentificationResult
 from my_offers.repositories.postgresql.agents import get_master_user_id
-from my_offers.repositories.search_offers.entities import EnrichOffersWithFormattedFieldsResponse
 from my_offers.services import favorites
 from my_offers.services.agencies_settings import get_settings_degradation_handler
 from my_offers.services.announcement_api import can_update_edit_date_degradation_handler
@@ -28,7 +27,6 @@ from my_offers.services.offences import (
 )
 from my_offers.services.offer_relevance_warnings import get_offer_relevance_warnings_degradation_handler
 from my_offers.services.offers._degradation_handlers import (
-    get_agent_data_handler,
     get_agent_hierarchy_data_degradation_handler,
     get_agent_names_degradation_handler,
     get_auctions_mobile_degradation_handler,
@@ -36,7 +34,6 @@ from my_offers.services.offers._degradation_handlers import (
     get_favorites_counts_degradation_handler,
     get_last_import_errors_degradation_handler,
     get_offer_premoderations_degradation_handler,
-    get_offers_formatted_fields_handler,
     get_offers_offence_degradation_handler,
     get_offers_payed_by_degradation_handler,
     get_offers_payed_till_excluding_calltracking_degradation_handler,
@@ -85,7 +82,6 @@ async def load_mobile_enrich_data(
         asyncio.ensure_future(_load_agency_settings(params.get_user_id())),
         asyncio.ensure_future(_load_offers_payed_by(offer_ids)),
         asyncio.ensure_future(_load_calls(offer_ids)),
-        asyncio.ensure_future(_load_offers_formatted_fields(offer_ids)),
     ]
 
     if is_active:
@@ -235,22 +231,6 @@ async def _load_pending_identification_offers(user_ids: List[int]) -> EnrichItem
             values.update(pending_result.object_ids)
 
     return EnrichItem(key='offer_with_pending_identification', degraded=result.degraded, value=values)
-
-
-@statsd_timer(key='enrich.load_moderation_mobile_info')
-async def _load_offers_formatted_fields(offer_ids: List[int]) -> EnrichItem:
-    result = await get_offers_formatted_fields_handler(offer_ids)
-    if result.degraded or not result.value:
-        return EnrichItem(key='formatted_fields', degraded=result.degraded, value=result.value)
-
-    data: EnrichOffersWithFormattedFieldsResponse = result.value
-
-    if not data.formatted_data:
-        return EnrichItem(key='formatted_fields', degraded=result.degraded, value=result.value)
-
-    values = {fd.id: fd.fields for fd in data.formatted_data}
-
-    return EnrichItem(key='formatted_fields', degraded=result.degraded, value=values)
 
 
 @statsd_timer(key='enrich.load_coverage')

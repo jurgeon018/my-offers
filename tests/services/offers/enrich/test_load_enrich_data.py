@@ -20,7 +20,6 @@ from my_offers.enums import DuplicateTabType, ModerationOffenceStatus, OfferStat
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
 from my_offers.repositories.monolith_cian_announcementapi.entities.address_info import AddressInfo, Type
-from my_offers.repositories.search_offers.entities import EnrichOffersWithFormattedFieldsResponse
 from my_offers.services.offers.enrich.enrich_data import EnrichData, EnrichItem, EnrichParams
 from my_offers.services.offers.enrich.load_enrich_data import (
     _load_agency_settings,
@@ -34,7 +33,6 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_jk_urls,
     _load_moderation_info,
     _load_moderation_mobile_info,
-    _load_offers_formatted_fields,
     _load_offers_payed_by,
     _load_offers_similars_counters,
     _load_payed_till,
@@ -969,35 +967,6 @@ async def test_load_moderation_mobile_info(mocker):
         offer_ids=offer_ids,
         status=ModerationOffenceStatus.confirmed,
     )
-
-
-async def test_load_offers_formatted_fields__empty_response(mocker):
-    # arrange
-    offer_ids = [1, 2]
-
-    load_offers_formatted_fields_mock = mocker.patch(
-        f'{PATH}get_offers_formatted_fields_handler',
-        return_value=future(
-            DegradationResult(
-                value=EnrichOffersWithFormattedFieldsResponse(None),
-                degraded=False,
-            )
-        )
-    )
-    expected = EnrichItem(
-        key='formatted_fields',
-        value=EnrichOffersWithFormattedFieldsResponse(formatted_data=None),
-        degraded=False,
-    )
-
-    # act
-    result = await _load_offers_formatted_fields(
-        offer_ids=offer_ids
-    )
-
-    # assert
-    assert result == expected
-    load_offers_formatted_fields_mock.assert_called_once_with([1, 2])
 
 
 async def test__load_searches_counts(mocker):

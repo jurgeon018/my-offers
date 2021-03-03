@@ -11,7 +11,6 @@ from my_offers.helpers.price import get_price_info
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
-from my_offers.repositories.search_offers.entities import FormattedFields
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 from my_offers.services.offers.enrich.enrich_data import MobileEnrichData
 from my_offers.services.offers.enrich.load_enrich_data import load_mobile_enrich_data
@@ -62,8 +61,6 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
     price_info = get_price_info(object_model)
     services: List[Services] = _parse_services(object_model.publish_terms)
 
-    formatted_fields: Optional[FormattedFields] = enrich_data.get_formatted_fields(offer_id)
-
     return MobOffer(
         offer_id=offer_id,
         price=MobPrice(value=object_model.bargain_terms.price, currency=object_model.bargain_terms.currency),
@@ -84,7 +81,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         is_auction=Services.auction in services,
         auction=enrich_data.get_offer_auction(offer_id),
         formatted_price=str(price_info),
-        formatted_info=formatted_fields.formatted_full_info if formatted_fields else None,  # TODO CD-102079
+        formatted_info='CHANGEME',  # TODO CD-102079
         formatted_address=get_address_for_push(object_model.geo),
         stats=OfferStats(
             competitors_count=enrich_data.get_same_building_counts(offer_id),

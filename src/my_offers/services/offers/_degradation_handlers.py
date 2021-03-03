@@ -19,7 +19,6 @@ from my_offers.repositories.postgresql.offer import (
 )
 from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
-from my_offers.repositories.search_offers import v1_enrich_offers_with_formatted_fields
 from my_offers.services import statistics
 
 
@@ -154,10 +153,4 @@ get_offers_with_pending_identification_handler = get_degradation_handler(
     func=v1_check_users_need_identification,
     key='v1_check_users_need_identification',
     default=set(),
-)
-
-get_offers_formatted_fields_handler = get_degradation_handler(
-    func=v1_enrich_offers_with_formatted_fields,
-    key='v1_enrich_offers_with_formatted_fields',
-    default=dict(),
 )

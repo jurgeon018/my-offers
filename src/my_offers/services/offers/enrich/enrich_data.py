@@ -16,7 +16,6 @@ from my_offers.enums import DuplicateTabType, OfferPayedByType
 from my_offers.repositories.agencies_settings.entities import AgencySettings
 from my_offers.repositories.callbook.entities import OfferCallCount
 from my_offers.repositories.monolith_cian_announcementapi.entities import address_info
-from my_offers.repositories.search_offers.entities import FormattedFields
 
 
 class GeoUrlKey(NamedTuple):
@@ -208,7 +207,6 @@ class MobileEnrichData(BaseEnrichData):
     calls_count: Dict[int, OfferCallCount] = field(default_factory=dict)
     auctions: Dict[int, OfferAuction] = field(default_factory=dict)
     views_daily_counts: Dict[int, int] = field(default_factory=dict)
-    formatted_fields: Dict[int, Optional[FormattedFields]] = field(default_factory=dict)
 
     def get_calls_count(self, offer_id: int) -> Optional[int]:
         if offer_id not in self.calls_count:
@@ -245,9 +243,3 @@ class MobileEnrichData(BaseEnrichData):
             return False
 
         return offer_id in self.offer_with_pending_identification
-
-    def get_formatted_fields(self, offer_id) -> Optional[FormattedFields]:
-        if not self.formatted_fields:
-            return None
-
-        return self.formatted_fields.get(offer_id)
