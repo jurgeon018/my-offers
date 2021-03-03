@@ -1,6 +1,6 @@
 import pytest
 
-from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerms, PublishTerm
+from my_offers.repositories.monolith_cian_announcementapi.entities import PublishTerm, PublishTerms
 from my_offers.services.mobile_offers.get_my_offers._prepare_offers import _parse_services
 
 
