@@ -212,7 +212,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
             'description': ANY,
             'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
                                 'Солонцы, Времена Года ДНП',
-            'formattedInfo': 'CHANGEME',
+            'formattedInfo': 'Земельный участок • 14.93\xa0сот.',
             'formattedPrice': '2\xa0594\xa0400\xa0₽',
             'hasPhotoOffence': False,
             'hasVideoOffence': False,
@@ -297,7 +297,7 @@ async def test_v1_get_offers_mobile_public__200_inactive(http, pg, mobile_offers
                 'description': ANY,
                 'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
                                     'Солонцы, Времена Года ДНП',
-                'formattedInfo': 'CHANGEME',
+                'formattedInfo': 'Земельный участок • 14.93\xa0сот.',
                 'formattedPrice': '2\xa0594\xa0400\xa0₽',
                 'hasPhotoOffence': True,
                 'hasVideoOffence': True,
@@ -402,7 +402,7 @@ async def test_v1_get_offers_mobile_public__200__degradations(http, pg):
                 'description': ANY,
                 'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
                                     'Солонцы, Времена Года ДНП',
-                'formattedInfo': 'CHANGEME',
+                'formattedInfo': 'Земельный участок • 14.93\xa0сот.',
                 'formattedPrice': '2\xa0594\xa0400\xa0₽',
                 'hasPhotoOffence': False,
                 'hasVideoOffence': False,
@@ -497,7 +497,7 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
             'description': ANY,
             'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
                                 'Солонцы, Времена Года ДНП',
-            'formattedInfo': 'CHANGEME',
+            'formattedInfo': 'Земельный участок • 14.93\xa0сот.',
             'formattedPrice': '2\xa0594\xa0400\xa0₽',
             'hasPhotoOffence': False,
             'hasVideoOffence': False,
@@ -660,7 +660,7 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
             'description': ANY,
             'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
                                 'Солонцы, Времена Года ДНП',
-            'formattedInfo': 'CHANGEME',
+            'formattedInfo': 'Земельный участок • 14.93\xa0сот.',
             'formattedPrice': '2\xa0594\xa0400\xa0₽',
             'hasPhotoOffence': True,
             'hasVideoOffence': True,
