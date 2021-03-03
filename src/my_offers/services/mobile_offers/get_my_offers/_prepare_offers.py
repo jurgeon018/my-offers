@@ -9,6 +9,7 @@ from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
 from my_offers.helpers.price import get_price_info
 from my_offers.helpers.similar import is_offer_for_similar
+from my_offers.helpers.title import get_mobile_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.offer_view.fields.geo import get_address_for_push
@@ -81,7 +82,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         is_auction=False,
         auction=None,
         formatted_price=str(price_info),
-        formatted_info='CHANGEME',  # Не сделано
+        formatted_info=get_mobile_offer_title(object_model=object_model),
         formatted_address=get_address_for_push(object_model.geo),
         stats=OfferStats(
             competitors_count=enrich_data.get_same_building_counts(offer_id),

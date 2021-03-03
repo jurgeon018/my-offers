@@ -147,8 +147,16 @@ def get_properties(object_model: ObjectModel) -> List[str]:
     return list(filter(None, [title, area, floors]))
 
 
+def _get_offer_title(*, object_model: ObjectModel, separator: str) -> str:
+    return separator.join(get_properties(object_model))
+
+
 def get_offer_title(object_model: ObjectModel) -> str:
-    return ', '.join(get_properties(object_model))
+    return _get_offer_title(object_model=object_model, separator=', ')
+
+
+def get_mobile_offer_title(object_model: ObjectModel) -> str:
+    return _get_offer_title(object_model=object_model, separator=' • ')
 
 
 def _get_floors(floor_number: Optional[int], floors_count: Optional[int]) -> Optional[str]:
