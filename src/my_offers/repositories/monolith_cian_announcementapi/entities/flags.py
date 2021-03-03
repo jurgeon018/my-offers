@@ -52,5 +52,7 @@ class Flags:
     """Причина перевода объявления в черновик"""
     is_archived: Optional[bool] = None
     """Объявление архивировано."""
+    is_commercial_ownership_verified: Optional[bool] = None
+    """Объявление от собственника коммерческой с проверенным правом собственности."""
     is_deal_rent: Optional[bool] = None
     """Объявление из сделки в аренде."""

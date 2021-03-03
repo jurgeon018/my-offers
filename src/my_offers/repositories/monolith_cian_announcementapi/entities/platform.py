@@ -14,6 +14,18 @@ from typing import Optional
 from cian_enum import NoFormat, StrEnum
 
 
+class ExternalSource(StrEnum):
+    __value_format__ = NoFormat
+    emls = 'emls'
+    """ЕМЛС"""
+    sub_agents = 'subAgents'
+    """Субагенты"""
+    n1 = 'n1'
+    """N1"""
+    mlsn = 'mlsn'
+    """N1"""
+
+
 class Type(StrEnum):
     __value_format__ = NoFormat
     web_site = 'webSite'
@@ -26,5 +38,8 @@ class Type(StrEnum):
 
 @dataclass
 class Platform:
+    external_id: Optional[str] = None
+    """Внешний id объявления"""
+    external_source: Optional[ExternalSource] = None
     type: Optional[Type] = None
     version: Optional[str] = None

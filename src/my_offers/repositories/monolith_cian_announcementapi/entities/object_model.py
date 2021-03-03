@@ -551,14 +551,14 @@ class ObjectModel:
     """Флаги объявления."""
     flat_type: Optional[FlatType] = None
     """Тип квартиры"""
+    floor_from: Optional[int] = None
+    """Этаж с"""
     floor_material_type: Optional[FloorMaterialType] = None
     """Материал пола"""
     floor_number: Optional[int] = None
     """Этаж"""
-    floor_from: Optional[int] = None
-    """Располагается на этаже начиная"""
     floor_to: Optional[int] = None
-    """Располагается на этаже заканчивая"""
+    """Этаж по"""
     furniture_presence: Optional[FurniturePresence] = None
     """Мебель"""
     garage: Optional[Garage] = None
@@ -659,6 +659,8 @@ class ObjectModel:
     """Помещение занято"""
     is_penthouse: Optional[bool] = None
     """Пентхаус"""
+    is_realty_demonstration_enabled: Optional[bool] = None
+    """Демонстрация недвижимости доступна"""
     is_rent_by_parts: Optional[bool] = None
     """Сдается ли в аренду частями"""
     is_secret: Optional[bool] = None
@@ -706,7 +708,7 @@ class ObjectModel:
     property_type: Optional[PropertyType] = None
     """Тип недвижимости"""
     publish_terms: Optional[PublishTerms] = None
-    """Условия размещения объявления"""
+    'Условия размещения объявления <br />\r\nСрок размещения платного в аренде жилой - 7 дней, продаже жилой - 30 дней.<br />\r\nСрок размещения платного в аренде коммерческой - 30 дней, продаже коммерческой - 30 дней.<br />\r\nПремиум и Топ размещение - посуточно.<br />\r\nСрок действия Выделенние цветом такой же, как и у размещения на которое вы его добавляете (платное или премиум)'
     published_user_id: Optional[int] = None
     """ID пользователя в Realty от имени которого оно отображается"""
     rent_by_parts_description: Optional[str] = None

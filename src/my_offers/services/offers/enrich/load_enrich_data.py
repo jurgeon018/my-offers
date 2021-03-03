@@ -85,7 +85,6 @@ async def load_mobile_enrich_data(
         asyncio.ensure_future(_load_agency_settings(params.get_user_id())),
         asyncio.ensure_future(_load_offers_payed_by(offer_ids)),
         asyncio.ensure_future(_load_calls(offer_ids)),
-        asyncio.ensure_future(_load_agent_data(params.get_user_id())),
         asyncio.ensure_future(_load_offers_formatted_fields(offer_ids)),
     ]
 
@@ -321,13 +320,6 @@ async def _load_agent_hierarchy_data(user_id: int) -> EnrichItem:
     result = await get_agent_hierarchy_data_degradation_handler(user_id)
 
     return EnrichItem(key='agent_hierarchy_data', degraded=result.degraded, value=result.value)
-
-
-@statsd_timer(key='enrich.load_agent_data')
-async def _load_agent_data(user_id: int) -> EnrichItem:
-    result = await get_agent_data_handler(user_id)
-
-    return EnrichItem(key='agent_data', degraded=result.degraded, value=result.value)
 
 
 @statsd_timer(key='enrich.load_geo_urls')

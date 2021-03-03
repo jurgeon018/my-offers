@@ -6,7 +6,7 @@ from typing import Any, Dict, List, NamedTuple, Optional, Set
 from simple_settings import settings
 
 from my_offers import enums
-from my_offers.entities import Agent, AgentHierarchyData
+from my_offers.entities import AgentHierarchyData
 from my_offers.entities.enrich import AddressUrlParams
 from my_offers.entities.mobile_offer import OfferAuction, OfferComplaint
 from my_offers.entities.moderation import OfferOffence
@@ -209,7 +209,6 @@ class MobileEnrichData(BaseEnrichData):
     auctions: Dict[int, OfferAuction] = field(default_factory=dict)
     views_daily_counts: Dict[int, int] = field(default_factory=dict)
     formatted_fields: Dict[int, Optional[FormattedFields]] = field(default_factory=dict)
-    agent_data: Optional[Agent] = field(default=None)
 
     def get_calls_count(self, offer_id: int) -> Optional[int]:
         if offer_id not in self.calls_count:

@@ -3,7 +3,7 @@ from typing import List, Optional, Set
 
 from my_offers import enums
 from my_offers.entities.mobile_offer import MobOffer, MobPrice, OfferStats
-from my_offers.enums import AgentAccountType, MobStatus
+from my_offers.enums import MobStatus
 from my_offers.helpers import get_available_actions, is_archived, is_manual
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
@@ -64,8 +64,6 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
 
     formatted_fields: Optional[FormattedFields] = enrich_data.get_formatted_fields(offer_id)
 
-    account_type: Optional[AgentAccountType] = enrich_data.agent_data.account_type if enrich_data.agent_data else None
-
     return MobOffer(
         offer_id=offer_id,
         price=MobPrice(value=object_model.bargain_terms.price, currency=object_model.bargain_terms.currency),
@@ -99,8 +97,8 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         ),
         services=services,
         description=object_model.description,
-        coworking_id=123,  # Не сделано. ObjectModel->coworking не содержит ID после обновления codegen
-        is_private_agent=account_type == AgentAccountType.specialist,
+        coworking_id=object_model.coworking.id if object_model.coworking else None,
+        is_private_agent=agent_hierarchy_data.is_agent,
         available_actions=get_available_actions(
             status=object_model.status,
             is_archived=archived,
