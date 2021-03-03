@@ -10,21 +10,24 @@ from my_offers.repositories.monolith_cian_bill.entities import (
 )
 
 
+# Логика взята из монолита cian/my_offers/services/get_offers_deactivated_services.py
+
+
 def _get_description(
     context: DeactivatedServicesContext,
     service_names: List[str],
     is_auto_restore_on_payment_enabled: bool
 ) -> Optional[str]:
-    if context == DeactivatedServicesContext.highlight:
+    if context.is_highlight:
         deactivated = 'отключено'
-    elif context == DeactivatedServicesContext.auction:
+    elif context.is_auction:
         deactivated = 'отключена'
-    elif context == DeactivatedServicesContext.highlight_and_auction:
+    elif context.is_highlight_and_auction:
         deactivated = 'отключены'
     else:
         return None
 
-    if context == DeactivatedServicesContext.highlight_and_auction:
+    if context.is_highlight_and_auction:
         options_will = 'опции будут активированы'
         options_were = 'опции были активированы'
     else:

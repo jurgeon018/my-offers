@@ -413,7 +413,4 @@ async def _load_calls(offer_ids: List[int]) -> EnrichItem:
 @statsd_timer(key='enrich.deactivated_service')
 async def _load_deactivated_service(user_id: int, offer_ids: List[int]) -> EnrichItem:
     result = await get_deactivated_services_degradation_handler(user_id, offer_ids)
-    if result.degraded:
-        return EnrichItem(key='deactivated_service', degraded=result.degraded, value={})
-
     return EnrichItem(key='deactivated_service', degraded=result.degraded, value=result.value)
