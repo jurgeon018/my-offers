@@ -30,8 +30,10 @@ class OfferComplaint:
 
 @dataclass
 class OfferDeactivatedService:
-    description: str
+    description: Optional[str]
+    """Текст, что именно отключилось и каким образом добиться возобновления услуг"""
     is_auto_restore_on_payment_enabled: bool
+    """Включено ли автовозобновление публикации"""
 
 
 @dataclass

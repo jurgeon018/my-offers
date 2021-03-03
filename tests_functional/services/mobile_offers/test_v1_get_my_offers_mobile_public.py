@@ -528,10 +528,89 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
     }
 
 
-async def test_v1_get_offers_mobile_public__200__enrichment(http, pg, mobile_offers_integrations_mock):
+async def test_v1_get_offers_mobile_public__200__enrichment(
+        http,
+        pg,
+        moderation_mock,
+        callbook_mock,
+        monolith_cian_bill_mock,
+        mobile_offers_integrations_mock
+):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_pagination.sql')
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_offences.sql')
+
+    await callbook_mock.add_stub(
+        method='POST',
+        path='/v1/get-user-calls-by-offers-totals/',
+        response=MockResponse(
+            body={
+                'data': [
+                    {
+                        'callsCount': 10,
+                        'missedCallsCount': 9,
+                        'offerId': 209194477,
+                    }
+                ]
+            }
+        ),
+    )
+    await moderation_mock.add_stub(
+        method='POST',
+        path='/v1/get-video-offences-for-announcements/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'announcementId': 209194477,
+                        'title': 'string',
+                        'comment': 'string',
+                        'videoIds': [
+                            'string'
+                        ]
+                    }
+                ]
+            }
+        ),
+    )
+    await moderation_mock.add_stub(
+        method='POST',
+        path='/v1/get-image-offences-for-announcements/',
+        response=MockResponse(
+            body={
+                'items': [
+                    {
+                        'announcementId': 209194477,
+                        'title': 'string',
+                        'comment': 'string',
+                        'imageIds': [
+                            0
+                        ]
+                    }
+                ]
+            }
+        ),
+    )
+    await monolith_cian_bill_mock.add_stub(
+        method='GET',
+        path='/v1/tariffication/get-deactivated-additional-services/',
+        response=MockResponse(
+            body={
+                'deactivatedServices': [{
+                    'announcementId': 209194477,
+                    'serviceType': 'Highlight',
+                    'isAutoRestoreOnPaymentEnabled': True,
+                    'auctionBet': None
+                }, {
+                    'announcementId': 209194477,
+                    'serviceType': 'auction',
+                    'isAutoRestoreOnPaymentEnabled': True,
+                    'auctionBet': 10
+                }],
+                'isAutoRestoreOnPaymentEnabled': True,
+            }
+        )
+    )
 
     # act
     response = await http.request(
@@ -572,7 +651,11 @@ async def test_v1_get_offers_mobile_public__200__enrichment(http, pg, mobile_off
                 }
             ],
             'coworkingId': None,
-            'deactivatedService': None,
+            'deactivatedService': {
+                'description': 'Выделение цветом и ставка 10 ₽/сут. отключены из-за нехватки средств. После пополнения'
+                               ' баланса опции будут активированы автоматически.',
+                'isAutoRestoreOnPaymentEnabled': True
+            },
             'dealType': 'sale',
             'description': ANY,
             'formattedAddress': 'Красноярский край, Емельяновский район, пос. '
