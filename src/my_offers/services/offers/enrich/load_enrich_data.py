@@ -4,14 +4,18 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 
 import pytz
+from cian_core.degradation import DegradationResult
 from cian_core.statsd import statsd_timer
 from simple_settings import settings
 
 from my_offers import enums
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.mobile_offer import ConcurrencyType, OfferAuction, OfferComplaint
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, ModerationOffenceStatus
+from my_offers.repositories.auction.entities import MobileBetAnnouncementInfo, V1GetAnnouncementsInfoForMobile
 from my_offers.repositories.callbook.entities import OfferCallCount
+from my_offers.repositories.moderation_checks_orchestrator.entities import UserIdentificationResult
 from my_offers.repositories.postgresql.agents import get_master_user_id
 from my_offers.services import favorites
 from my_offers.services.agencies_settings import get_settings_degradation_handler
@@ -25,6 +29,7 @@ from my_offers.services.offer_relevance_warnings import get_offer_relevance_warn
 from my_offers.services.offers._degradation_handlers import (
     get_agent_hierarchy_data_degradation_handler,
     get_agent_names_degradation_handler,
+    get_auctions_mobile_degradation_handler,
     get_calls_count_degradation_handler,
     get_favorites_counts_degradation_handler,
     get_last_import_errors_degradation_handler,
@@ -33,6 +38,7 @@ from my_offers.services.offers._degradation_handlers import (
     get_offers_payed_by_degradation_handler,
     get_offers_payed_till_excluding_calltracking_degradation_handler,
     get_offers_update_at_degradation_handler,
+    get_offers_with_pending_identification_handler,
     get_searches_counts_degradation_handler,
     get_similars_counters_by_offer_ids_degradation_handler,
     get_views_counts_degradation_handler,
@@ -68,32 +74,36 @@ async def load_mobile_enrich_data(
     is_active = tab_type.is_rent or tab_type.is_sale
 
     enriched = [
-        _load_agent_hierarchy_data(params.get_user_id()),
-        _load_can_update_edit_dates(
+        asyncio.ensure_future(_load_agent_hierarchy_data(params.get_user_id())),
+        asyncio.ensure_future(_load_can_update_edit_dates(
             offer_ids=offer_ids,
             status_tab=enums.OfferStatusTab.active if is_active else enums.OfferStatusTab.archived
-        ),
-        _load_agency_settings(params.get_user_id()),
-        _load_offers_payed_by(offer_ids),
-        _load_calls(offer_ids),
+        )),
+        asyncio.ensure_future(_load_agency_settings(params.get_user_id())),
+        asyncio.ensure_future(_load_offers_payed_by(offer_ids)),
+        asyncio.ensure_future(_load_calls(offer_ids)),
     ]
 
     if is_active:
         enriched.extend([
-            _load_favorites_counts(offer_ids),
-            _load_searches_counts(offer_ids),
-            _load_views_counts(offer_ids),
-            _load_payed_till(offer_ids),
-            _load_offers_similars_counters(
+            asyncio.ensure_future(_load_favorites_counts(offer_ids)),
+            asyncio.ensure_future(_load_searches_counts(offer_ids)),
+            asyncio.ensure_future(_load_views_counts(offer_ids)),
+            asyncio.ensure_future(_load_payed_till(offer_ids)),
+            asyncio.ensure_future(_load_mobile_auctions(offer_ids, params.get_user_id())),
+            asyncio.ensure_future(_load_pending_identification_offers([params.get_user_id()])),
+            asyncio.ensure_future(_load_offers_similars_counters(
                 offer_ids=params.get_similar_offers(),
                 is_test=params.is_test_offers
-            ),
+            )),
         ])
     else:
         enriched.extend([
-            _load_video_offenses(offer_ids),
-            _load_image_offenses(offer_ids),
-            _load_archive_date(offer_ids),
+            asyncio.ensure_future(_load_video_offenses(offer_ids)),
+            asyncio.ensure_future(_load_image_offenses(offer_ids)),
+            asyncio.ensure_future(_load_archive_date(offer_ids)),
+            asyncio.ensure_future(_load_moderation_mobile_info(offer_ids)),
+            asyncio.ensure_future(_load_premoderation_info(offer_ids)),
         ])
 
     data = await asyncio.gather(*enriched)
@@ -118,37 +128,37 @@ async def load_enrich_data(
         ), {}
 
     enriched = [
-        _load_agent_hierarchy_data(params.get_user_id()),
-        _load_can_update_edit_dates(offer_ids=offer_ids, status_tab=status_tab),
-        _load_agency_settings(params.get_user_id()),
-        _load_offers_payed_by(offer_ids),
-        _load_jk_urls(params.get_jk_ids()),
-        _load_geo_urls(params.get_geo_url_params()),
-        _load_subagents(params.get_agent_ids()),
+        asyncio.ensure_future(_load_agent_hierarchy_data(params.get_user_id())),
+        asyncio.ensure_future(_load_can_update_edit_dates(offer_ids=offer_ids, status_tab=status_tab)),
+        asyncio.ensure_future(_load_agency_settings(params.get_user_id())),
+        asyncio.ensure_future(_load_offers_payed_by(offer_ids)),
+        asyncio.ensure_future(_load_jk_urls(params.get_jk_ids())),
+        asyncio.ensure_future(_load_geo_urls(params.get_geo_url_params())),
+        asyncio.ensure_future(_load_subagents(params.get_agent_ids())),
     ]
 
     if status_tab.is_active:
         enriched.extend([
-            _load_favorites_counts(offer_ids),
-            _load_searches_counts(offer_ids),
-            _load_views_counts(offer_ids),
-            _load_auctions(offer_ids),
-            _load_payed_till(offer_ids),
-            _load_offers_similars_counters(
+            asyncio.ensure_future(_load_favorites_counts(offer_ids)),
+            asyncio.ensure_future(_load_searches_counts(offer_ids)),
+            asyncio.ensure_future(_load_views_counts(offer_ids)),
+            asyncio.ensure_future(_load_auctions(offer_ids)),
+            asyncio.ensure_future(_load_payed_till(offer_ids)),
+            asyncio.ensure_future(_load_offers_similars_counters(
                 offer_ids=params.get_similar_offers(),
                 is_test=params.is_test_offers
-            ),
-            _load_offer_relevance_warnings(offer_ids),
+            )),
+            asyncio.ensure_future(_load_offer_relevance_warnings(offer_ids)),
         ])
     elif status_tab.is_not_active:
         enriched.extend([
-            _load_import_errors(offer_ids),
-            _load_premoderation_info(offer_ids),
-            _load_archive_date(offer_ids),
+            asyncio.ensure_future(_load_import_errors(offer_ids)),
+            asyncio.ensure_future(_load_premoderation_info(offer_ids)),
+            asyncio.ensure_future(_load_archive_date(offer_ids)),
         ])
     elif status_tab.is_declined:
         enriched.extend([
-            _load_moderation_info(offer_ids),
+            asyncio.ensure_future(_load_moderation_info(offer_ids)),
         ])
     elif status_tab.is_archived:
         # не требуется доп. обогащений
@@ -184,6 +194,45 @@ async def _load_moderation_info(offer_ids: List[int]) -> EnrichItem:
     return EnrichItem(key='moderation_info', degraded=result.degraded, value=values)
 
 
+@statsd_timer(key='enrich.load_moderation_mobile_info')
+async def _load_moderation_mobile_info(offer_ids: List[int]) -> EnrichItem:
+    result = await get_offers_offence_degradation_handler(
+        offer_ids=offer_ids,
+        status=ModerationOffenceStatus.confirmed
+    )
+    values = {}
+
+    for offence_item in result.value:
+        complaint = OfferComplaint(
+            id=offence_item.offence_id,
+            date=offence_item.created_date,
+            comment=offence_item.offence_text,
+        )
+        if offence_item.offer_id not in values:
+            values[offence_item.offer_id] = [complaint]
+        else:
+            values[offence_item.offer_id].append(complaint)
+
+    return EnrichItem(key='moderation_info', degraded=result.degraded, value=values)
+
+
+@statsd_timer(key='enrich.load_moderation_mobile_info')
+async def _load_pending_identification_offers(user_ids: List[int]) -> EnrichItem:
+    result = await get_offers_with_pending_identification_handler(user_ids)
+    if result.degraded:
+        return EnrichItem(key='offer_with_pending_identification', degraded=result.degraded, value=result.value)
+
+    data: List[UserIdentificationResult] = result.value
+
+    values = set()
+
+    for pending_result in data:
+        if pending_result.object_ids:
+            values.update(pending_result.object_ids)
+
+    return EnrichItem(key='offer_with_pending_identification', degraded=result.degraded, value=values)
+
+
 @statsd_timer(key='enrich.load_coverage')
 async def _load_coverage(offer_ids: List[int]) -> EnrichItem:
     result = await get_offers_search_coverage_degradation_handler(offer_ids)
@@ -195,6 +244,45 @@ async def _load_coverage(offer_ids: List[int]) -> EnrichItem:
 async def _load_auctions(offer_ids: List[int]) -> EnrichItem:
     # todo: https://jira.cian.tech/browse/CD-74479
     return EnrichItem(key='auctions', degraded=False, value={})
+
+
+@statsd_timer(key='enrich.load_mobile_auctions')
+async def _load_mobile_auctions(offer_ids: List[int], user_id: int) -> EnrichItem:
+    result: DegradationResult = await get_auctions_mobile_degradation_handler(V1GetAnnouncementsInfoForMobile(
+        announcement_ids=offer_ids,
+        user_id=user_id,
+    ))
+    if result.degraded:
+        return EnrichItem(key='auctions', degraded=result.degraded, value=result.value)
+
+    data: List[MobileBetAnnouncementInfo] = result.value.announcements
+
+    values: Dict[int, OfferAuction] = {}
+
+    for auction_item in data:
+        concurrency_types: List[ConcurrencyType] = []
+
+        for ct in auction_item.concurrency_types:
+            concurrency_types.append(ConcurrencyType(
+                is_active=ct.is_active,
+                name=ct.name,
+                type=ct.type.value
+            ))
+
+        auction: OfferAuction = OfferAuction(
+            increase_bets_positions_count=auction_item.increase_bets_positions_count,
+            current_bet=auction_item.current_bet,
+            note_bet=auction_item.note_bet,
+            is_available_auction=auction_item.is_available_auction,
+            concurrency_types=concurrency_types,
+            is_strategy_enabled=auction_item.is_strategy_enabled,
+            is_fixed_bet=auction_item.is_fixed_bet,
+            strategy_description=auction_item.strategy_description,
+            concurrency_type_title=auction_item.concurrency_type_title,
+        )
+        values[auction_item.announcement_id] = auction
+
+    return EnrichItem(key='auctions', degraded=False, value=values)
 
 
 @statsd_timer(key='enrich.load_jk_urls')
@@ -320,6 +408,19 @@ async def _load_views_counts(offer_ids: List[int]) -> EnrichItem:
     )
 
     return EnrichItem(key='views_counts', degraded=result.degraded, value=result.value)
+
+
+@statsd_timer(key='enrich.load_views_daily_counts')
+async def _load_views_daily_counts(offer_ids: List[int]) -> EnrichItem:
+    date_to = datetime.now(tz=pytz.utc)
+    date_from = datetime.now(tz=pytz.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    result = await get_views_counts_degradation_handler(
+        offer_ids=offer_ids,
+        date_from=date_from,
+        date_to=date_to
+    )
+
+    return EnrichItem(key='views_daily_counts', degraded=result.degraded, value=result.value)
 
 
 @statsd_timer(key='enrich.load_searches_counts')

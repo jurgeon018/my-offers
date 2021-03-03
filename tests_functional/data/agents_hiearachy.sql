@@ -1,0 +1,1 @@
+INSERT INTO public.agents_hierarchy (id, row_version, account_type, realty_user_id, master_agent_user_id, created_at, updated_at, first_name, middle_name, last_name) VALUES (1378680, 19891450502, 'Specialist', 29437831, null, '2020-08-03 14:44:05.822437', '2020-08-03 14:44:05.848671', 'QAы', null, 'Testing');

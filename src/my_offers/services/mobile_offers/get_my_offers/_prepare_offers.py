@@ -68,7 +68,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         category=object_model.category,
         status=MobStatus[object_model.status.name],
         publish_till_date=enrich_data.get_payed_till(offer_id),
-        complaints=None,
+        complaints=enrich_data.get_offer_offence(offer_id),
         offer_type=offer_type,
         deal_type=deal_type,
         is_archived=archived,
@@ -76,11 +76,11 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         photo=get_main_photo_url(object_model.photos, better_quality=True),
         has_video_offence=offer_id in enrich_data.video_offences,
         has_photo_offence=offer_id in enrich_data.image_offences,
-        deactivated_service=None,
-        is_object_on_premoderation=False,
-        identification_pending=False,
-        is_auction=False,
-        auction=None,
+        deactivated_service=None,  # Не сделано TODO: CD-101747
+        is_object_on_premoderation=enrich_data.on_premoderation(offer_id),
+        identification_pending=enrich_data.wait_identification(offer_id),
+        is_auction=Services.auction in services,
+        auction=enrich_data.get_offer_auction(offer_id),
         formatted_price=str(price_info),
         formatted_info=get_mobile_offer_title(object_model=object_model),
         formatted_address=get_address_for_push(object_model.geo),
@@ -90,13 +90,13 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
             calls_count=enrich_data.get_calls_count(offer_id),
             skipped_calls_count=enrich_data.get_missed_calls_count(offer_id),
             total_views=enrich_data.views_counts.get(offer_id),
-            daily_views=99,
+            daily_views=enrich_data.views_daily_counts.get(offer_id),  # TODO CD-102080
             favorites=enrich_data.favorites_counts.get(offer_id),
         ),
         services=services,
         description=object_model.description,
-        coworking_id=123,  # Не сделано
-        is_private_agent=False,  # Не сделано
+        coworking_id=object_model.coworking.id if object_model.coworking else None,
+        is_private_agent=agent_hierarchy_data.is_agent,
         available_actions=get_available_actions(
             status=object_model.status,
             is_archived=archived,
