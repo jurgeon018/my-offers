@@ -75,11 +75,11 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         photo=get_main_photo_url(object_model.photos, better_quality=True),
         has_video_offence=offer_id in enrich_data.video_offences,
         has_photo_offence=offer_id in enrich_data.image_offences,
-        deactivated_service=None,  # Не сделано TODO: CD-101747
         is_object_on_premoderation=enrich_data.on_premoderation(offer_id),
         identification_pending=enrich_data.wait_identification(offer_id),
         is_auction=Services.auction in services,
         auction=enrich_data.get_offer_auction(offer_id),
+        deactivated_service=enrich_data.get_deactivated_service(offer_id),
         formatted_price=str(price_info),
         formatted_info='CHANGEME',  # TODO CD-102079
         formatted_address=get_address_for_push(object_model.geo),
