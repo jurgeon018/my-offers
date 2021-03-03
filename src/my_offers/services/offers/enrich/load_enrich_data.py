@@ -80,8 +80,8 @@ async def load_mobile_enrich_data(
         asyncio.ensure_future(_load_can_update_edit_dates(
             offer_ids=offer_ids,
             status_tab=enums.OfferStatusTab.active if is_active else enums.OfferStatusTab.archived
-        ),
-        asyncio.ensure_future(_load_agency_settings(params.get_user_id())),
+        )),
+        asyncio.ensure_future(_load_agency_settings(user_id)),
         asyncio.ensure_future(_load_offers_payed_by(offer_ids)),
         asyncio.ensure_future(_load_calls(offer_ids)),
         asyncio.ensure_future(_load_deactivated_service(user_id, offer_ids)),

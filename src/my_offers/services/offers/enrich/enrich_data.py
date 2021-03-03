@@ -8,8 +8,7 @@ from simple_settings import settings
 from my_offers import enums
 from my_offers.entities import AgentHierarchyData
 from my_offers.entities.enrich import AddressUrlParams
-from my_offers.entities.mobile_offer import OfferAuction, OfferComplaint
-from my_offers.entities.mobile_offer import OfferDeactivatedService
+from my_offers.entities.mobile_offer import OfferAuction, OfferComplaint, OfferDeactivatedService
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
 from my_offers.entities.offer_view_model import Subagent

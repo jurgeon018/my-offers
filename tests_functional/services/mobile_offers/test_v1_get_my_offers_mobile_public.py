@@ -528,13 +528,13 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
     }
 
 
-async def test_v1_get_offers_mobile_public__200__enrichment(http, pg, mobile_offers_integrations_mock):
 async def test_v1_get_offers_mobile_public__200__enrichment(
         http,
         pg,
         moderation_mock,
         callbook_mock,
         monolith_cian_bill_mock,
+        mobile_offers_integrations_mock
 ):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_pagination.sql')
