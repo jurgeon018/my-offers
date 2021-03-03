@@ -131,6 +131,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
                 'canViewSimilarOffers': False
             },
             'category': 'landSale',
+            'cianUserId': 29437831,
             'complaints': None,
             'coworkingId': 123,
             'deactivatedService': None,
@@ -152,6 +153,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
             'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
+            'realtyUserId': 29437831,
             'services': ['calltracking', 'paid'],
             'stats': {
                 'callsCount': None,
@@ -236,6 +238,7 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
                 'canViewSimilarOffers': False
             },
             'category': 'landSale',
+            'cianUserId': 29437831,
             'complaints': None,
             'coworkingId': 123,
             'deactivatedService': None,
@@ -257,6 +260,7 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
             'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
+            'realtyUserId': 29437831,
             'services': ['calltracking', 'paid'],
             'stats': {
                 'callsCount': None,
@@ -361,6 +365,7 @@ async def test_v1_get_offers_mobile_public__200__enrichment(http, pg,  moderatio
                 'canViewSimilarOffers': False
             },
             'category': 'landSale',
+            'cianUserId': 29437831,
             'complaints': None,
             'coworkingId': 123,
             'deactivatedService': None,
@@ -382,6 +387,7 @@ async def test_v1_get_offers_mobile_public__200__enrichment(http, pg,  moderatio
             'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
+            'realtyUserId': 29437831,
             'services': ['calltracking', 'paid'],
             'stats': {
                 'callsCount': 10,

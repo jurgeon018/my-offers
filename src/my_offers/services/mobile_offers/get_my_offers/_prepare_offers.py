@@ -63,6 +63,8 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
 
     return MobOffer(
         offer_id=offer_id,
+        cian_user_id=object_model.cian_user_id,
+        realty_user_id=object_model.user_id,
         price=MobPrice(value=object_model.bargain_terms.price, currency=object_model.bargain_terms.currency),
         category=object_model.category,
         status=MobStatus[object_model.status.name],
