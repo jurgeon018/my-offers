@@ -53,6 +53,11 @@ async def moderation_mock(http_mock_service):
 
 
 @pytest.fixture(scope='session')
+async def search_offers_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('search-offers')
+
+
+@pytest.fixture(scope='session')
 async def moderation_checks_orchestrator_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('moderation-checks-orchestrator')
 

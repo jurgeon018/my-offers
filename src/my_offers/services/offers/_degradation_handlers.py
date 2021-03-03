@@ -4,9 +4,11 @@ from simple_settings import settings
 from my_offers.entities import AgentHierarchyData, GetOffersCountersMobileResponse
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.repositories import postgresql
+from my_offers.repositories.auction import v1_get_announcements_info_for_mobile
 from my_offers.repositories.callbook import v1_get_user_calls_by_offers_totals
+from my_offers.repositories.moderation_checks_orchestrator import v1_check_users_need_identification
 from my_offers.repositories.postgresql import get_object_models, get_offers_offence
-from my_offers.repositories.postgresql.agents import get_agent_hierarchy_data, get_agent_names
+from my_offers.repositories.postgresql.agents import get_agent_by_user_id, get_agent_hierarchy_data, get_agent_names
 from my_offers.repositories.postgresql.billing import get_offers_payed_till_excluding_calltracking
 from my_offers.repositories.postgresql.object_model import get_object_models_total_count
 from my_offers.repositories.postgresql.offer import (
@@ -82,6 +84,12 @@ get_agent_hierarchy_data_degradation_handler = get_degradation_handler(
     ),
 )
 
+get_agent_data_handler = get_degradation_handler(
+    func=get_agent_by_user_id,
+    key='psql.get_agent_by_user_id',
+    default=None,
+)
+
 get_offer_premoderations_degradation_handler = get_degradation_handler(
     func=get_offer_premoderations,
     key='psql.get_offer_premoderations',
@@ -130,11 +138,22 @@ get_favorites_counts_degradation_handler = get_degradation_handler(
     default=dict(),
 )
 
-
 get_calls_count_degradation_handler = get_degradation_handler(
     func=v1_get_user_calls_by_offers_totals,
     key='v1_get_user_calls_by_offers_totals',
     default=None,
+)
+
+get_auctions_mobile_degradation_handler = get_degradation_handler(
+    func=v1_get_announcements_info_for_mobile,
+    key='v1_get_announcements_info_for_mobile',
+    default=dict(),
+)
+
+get_offers_with_pending_identification_handler = get_degradation_handler(
+    func=v1_check_users_need_identification,
+    key='v1_check_users_need_identification',
+    default=set(),
 )
 
 get_deactivated_services_degradation_handler = get_degradation_handler(
