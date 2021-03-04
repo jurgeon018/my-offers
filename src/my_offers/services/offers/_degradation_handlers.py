@@ -20,6 +20,7 @@ from my_offers.repositories.postgresql.offer import (
 from my_offers.repositories.postgresql.offer_import_error import get_last_import_errors
 from my_offers.repositories.postgresql.offer_premoderation import get_offer_premoderations
 from my_offers.services import statistics
+from my_offers.services.deactivated_service.get_deactivated_services import get_deactivated_services_for_offers
 
 
 get_object_models_degradation_handler = get_degradation_handler(
@@ -153,4 +154,10 @@ get_offers_with_pending_identification_handler = get_degradation_handler(
     func=v1_check_users_need_identification,
     key='v1_check_users_need_identification',
     default=set(),
+)
+
+get_deactivated_services_degradation_handler = get_degradation_handler(
+    func=get_deactivated_services_for_offers,
+    key='get_deactivated_services_for_offers',
+    default=dict(),
 )

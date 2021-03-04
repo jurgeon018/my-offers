@@ -9,6 +9,7 @@ from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_main_photo_url
 from my_offers.helpers.price import get_price_info
 from my_offers.helpers.similar import is_offer_for_similar
+from my_offers.helpers.title import get_mobile_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.offer_view.fields.geo import get_address_for_push
@@ -77,13 +78,13 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         photo=get_main_photo_url(object_model.photos, better_quality=True),
         has_video_offence=offer_id in enrich_data.video_offences,
         has_photo_offence=offer_id in enrich_data.image_offences,
-        deactivated_service=None,  # Не сделано TODO: CD-101747
         is_object_on_premoderation=enrich_data.on_premoderation(offer_id),
         identification_pending=enrich_data.wait_identification(offer_id),
         is_auction=Services.auction in services,
         auction=enrich_data.get_offer_auction(offer_id),
+        deactivated_service=enrich_data.get_deactivated_service(offer_id),
         formatted_price=str(price_info),
-        formatted_info='CHANGEME',  # TODO CD-102079
+        formatted_info=get_mobile_offer_title(object_model=object_model),
         formatted_address=get_address_for_push(object_model.geo),
         stats=OfferStats(
             competitors_count=enrich_data.get_same_building_counts(offer_id),
