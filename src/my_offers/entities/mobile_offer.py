@@ -90,6 +90,10 @@ class MobPrice:
 class MobOffer:
     offer_id: int
     """Id оффера"""
+    cian_user_id: int
+    """Cian id юзера, создавшего оффер"""
+    realty_user_id: int
+    """Realty id юзера, создавшего оффер"""
     price: MobPrice
     """Цена"""
     status: enums.MobStatus
