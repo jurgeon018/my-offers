@@ -8,6 +8,7 @@ from simple_settings import settings
 from my_offers import enums
 from my_offers.entities import AgentHierarchyData
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.mobile_offer import OfferAuction, OfferComplaint, OfferDeactivatedService
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarning
 from my_offers.entities.offer_view_model import Subagent
@@ -200,7 +201,13 @@ class EnrichData(BaseEnrichData):
 class MobileEnrichData(BaseEnrichData):
     video_offences: Set[int] = field(default_factory=set)
     image_offences: Set[int] = field(default_factory=set)
+    moderation_info: Optional[Dict[int, List[OfferComplaint]]] = field(default=None)
+    premoderation_info: Optional[Set[int]] = field(default=None)
+    offer_with_pending_identification: Set[int] = field(default_factory=set)
     calls_count: Dict[int, OfferCallCount] = field(default_factory=dict)
+    auctions: Dict[int, OfferAuction] = field(default_factory=dict)
+    views_daily_counts: Dict[int, int] = field(default_factory=dict)
+    deactivated_service: Dict[int, OfferDeactivatedService] = field(default_factory=dict)
 
     def get_calls_count(self, offer_id: int) -> Optional[int]:
         if offer_id not in self.calls_count:
@@ -213,3 +220,33 @@ class MobileEnrichData(BaseEnrichData):
             return None
 
         return self.calls_count[offer_id].missed_calls_count
+
+    def get_offer_offence(self, offer_id: int) -> Optional[List[OfferComplaint]]:
+        if not self.moderation_info:
+            return None
+
+        return self.moderation_info.get(offer_id)
+
+    def get_offer_auction(self, offer_id: int) -> Optional[OfferAuction]:
+        if not self.auctions:
+            return None
+
+        return self.auctions.get(offer_id)
+
+    def on_premoderation(self, offer_id) -> bool:
+        if not self.premoderation_info:
+            return False
+
+        return offer_id in self.premoderation_info
+
+    def wait_identification(self, offer_id) -> bool:
+        if not self.offer_with_pending_identification:
+            return False
+
+        return offer_id in self.offer_with_pending_identification
+
+    def get_deactivated_service(self, offer_id: int) -> Optional[OfferDeactivatedService]:
+        if offer_id not in self.deactivated_service:
+            return None
+
+        return self.deactivated_service[offer_id]
