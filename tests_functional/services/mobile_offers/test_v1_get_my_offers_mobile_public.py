@@ -699,3 +699,27 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
     ],
         'page': {'canLoadMore': False, 'limit': 1, 'offset': 0}
     }
+
+
+async def test_v1_get_offers_mobile_public__rent__200(http, pg, mobile_offers_integrations_mock):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'agents_hiearachy.sql')
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_offences.sql')
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_premoderations.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-my-offers-mobile/',
+        headers={
+            'X-Real-UserId': 29437831
+        },
+        json={
+            'limit': 20,
+            'offset': 0,
+            'tabType': 'rent'
+        }
+    )
+
+    assert response.data == {'offers': [], 'page': {'canLoadMore': False, 'limit': 20, 'offset': 0}}
