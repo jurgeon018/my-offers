@@ -12,12 +12,35 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
         headers={
             'X-Real-UserId': 29437831
         },
-        json={'search': 'test_search'}
+        json={}
     )
 
     # assert
     assert response.data == {
         'sale': {'commercial': 0, 'suburban': 1, 'total': 1, 'flat': 0},
+        'rent': {'commercial': 0, 'suburban': 0, 'total': 0, 'flat': 0},
+        'archived': {'sale': 0, 'rent': 0, 'total': 0},
+        'inactive': {'sale': 0, 'rent': 0, 'total': 0},
+    }
+
+
+async def test_v1_get_offers_mobile_public__search__200(http, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/get-offers-counters-mobile/',
+        headers={
+            'X-Real-UserId': 29437831
+        },
+        json={'search': 'test_search'}
+    )
+
+    # assert
+    assert response.data == {
+        'sale': {'commercial': 0, 'suburban': 0, 'total': 0, 'flat': 0},
         'rent': {'commercial': 0, 'suburban': 0, 'total': 0, 'flat': 0},
         'archived': {'sale': 0, 'rent': 0, 'total': 0},
         'inactive': {'sale': 0, 'rent': 0, 'total': 0},
