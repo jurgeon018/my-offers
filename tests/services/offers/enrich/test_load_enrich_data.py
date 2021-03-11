@@ -934,7 +934,7 @@ async def test_load_moderation_mobile_info(mocker):
                         created_date=ANY,
                         created_by=14037408,
                         offer_id=209194477,
-                        offence_type=1,
+                        offence_type=55,
                         offence_status=ModerationOffenceStatus.confirmed,
                         offence_text='Тестовое удаление Тестовое удаление',
                         row_version=20038084139,
@@ -949,8 +949,8 @@ async def test_load_moderation_mobile_info(mocker):
         key='moderation_info',
         value={
             209194477: [
-                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление'),
-                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление')
+                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление', decline=False),
+                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление', decline=True),
             ]
         },
         degraded=False,

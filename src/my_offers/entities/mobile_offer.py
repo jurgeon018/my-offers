@@ -26,6 +26,8 @@ class OfferComplaint:
     """Дата жалобы"""
     comment: str
     """Комментарий"""
+    decline: bool
+    """Отклонено модератором"""
 
 
 @dataclass
@@ -90,6 +92,8 @@ class MobPrice:
 class MobOffer:
     offer_id: int
     """Id оффера"""
+    cian_id: Optional[int]
+    """ID объявления на ЦИАНе"""
     cian_user_id: int
     """Cian id юзера, создавшего оффер"""
     realty_user_id: int
