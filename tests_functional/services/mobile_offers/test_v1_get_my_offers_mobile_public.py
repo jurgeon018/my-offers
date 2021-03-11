@@ -223,6 +223,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
             'isObjectOnPremoderation': False,
             'isPrivateAgent': True,
             'offerId': 209194477,
+            'cianId': 209194477,
             'offerType': 'suburban',
             'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
             'price': {'currency': 'rur', 'value': 2594400.0},
@@ -291,7 +292,8 @@ async def test_v1_get_offers_mobile_public__200_inactive(http, pg, mobile_offers
                     {
                         'comment': 'Тестовое удаление Тестовое удаление',
                         'date': '2021-02-04T14:21:28.276339+00:00',
-                        'id': 1833685
+                        'id': 1833685,
+                        'decline': False,
                     }
                 ],
                 'coworkingId': None,
@@ -310,6 +312,7 @@ async def test_v1_get_offers_mobile_public__200_inactive(http, pg, mobile_offers
                 'isObjectOnPremoderation': True,
                 'isPrivateAgent': True,
                 'offerId': 209194477,
+                'cianId': 209194477,
                 'offerType': 'suburban',
                 'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
                 'price': {'currency': 'rur', 'value': 2594400.0},
@@ -417,6 +420,7 @@ async def test_v1_get_offers_mobile_public__200__degradations(http, pg):
                 'isObjectOnPremoderation': False,
                 'isPrivateAgent': True,
                 'offerId': 209194477,
+                'cianId': 209194477,
                 'offerType': 'suburban',
                 'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
                 'price': {
@@ -514,6 +518,7 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
             'isObjectOnPremoderation': False,
             'isPrivateAgent': True,
             'offerId': 209194477,
+            'cianId': 209194477,
             'offerType': 'suburban',
             'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
             'price': {'currency': 'rur', 'value': 2594400.0},
@@ -656,7 +661,8 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
                 {
                     'comment': 'Тестовое удаление Тестовое удаление',
                     'date': '2021-02-04T14:21:28.276339+00:00',
-                    'id': 1833685
+                    'id': 1833685,
+                    'decline': False,
                 }
             ],
             'coworkingId': None,
@@ -679,6 +685,7 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
             'isObjectOnPremoderation': False,
             'isPrivateAgent': True,
             'offerId': 209194477,
+            'cianId': 209194477,
             'offerType': 'suburban',
             'photo': 'https://cdn-p.cian.site/images/1/138/977/779831175-2.jpg',
             'price': {'currency': 'rur', 'value': 2594400.0},

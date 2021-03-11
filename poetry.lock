@@ -1048,14 +1048,14 @@ reference = "cian"
 
 [[package]]
 name = "diff-cover"
-version = "5.0.0"
+version = "5.0.1"
 description = "Automatically find diff lines that need test coverage."
 category = "dev"
 optional = false
 python-versions = ">= 3.6"
 
 [package.dependencies]
-chardet = "4.0.0"
+chardet = ">=3.0.0"
 Jinja2 = ">=2.7.1"
 jinja2-pluralize = "*"
 pluggy = "*"
@@ -1101,7 +1101,7 @@ reference = "cian"
 
 [[package]]
 name = "faker"
-version = "6.5.2"
+version = "6.6.0"
 description = "Faker is a Python package that generates fake data for you."
 category = "main"
 optional = false
@@ -3065,8 +3065,8 @@ decorator = [
     {file = "decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7"},
 ]
 diff-cover = [
-    {file = "diff_cover-5.0.0-py2.py3-none-any.whl", hash = "sha256:6749ddddc6cb089e34193c99d2e71013670572612aa6099f9a731ca93877b737"},
-    {file = "diff_cover-5.0.0.tar.gz", hash = "sha256:6066ad945de68d20b7a8c0461b99c37d2a0a456b4ecec2d79052701e46334b5f"},
+    {file = "diff_cover-5.0.1-py3-none-any.whl", hash = "sha256:1953185a930f6c973d7ea752989246e7bf6d3181b73e925437664a47e39c63ff"},
+    {file = "diff_cover-5.0.1.tar.gz", hash = "sha256:e80f7a4979b7a9d373903776588279ed2898f17729e608255c4119462c822edb"},
 ]
 distlib = [
     {file = "distlib-0.3.1-py2.py3-none-any.whl", hash = "sha256:8c09de2c67b3e7deef7184574fc060ab8a793e7adbb183d942c389c8b13c52fb"},
@@ -3077,8 +3077,8 @@ factory-boy = [
     {file = "factory_boy-3.2.0.tar.gz", hash = "sha256:401cc00ff339a022f84d64a4339503d1689e8263a4478d876e58a3295b155c5b"},
 ]
 faker = [
-    {file = "Faker-6.5.2-py3-none-any.whl", hash = "sha256:ee86c3140e1d1651b76a7aab637c7da068660f33937143e7063c663f4cec45ab"},
-    {file = "Faker-6.5.2.tar.gz", hash = "sha256:97fb6748031569a65265d38d85370b3c3970f4333b40430d52a60b37dea97877"},
+    {file = "Faker-6.6.0-py3-none-any.whl", hash = "sha256:38bd2ff0afb7d9956fed477a2cd1007a7012b401a9ffd3de5fb909d739880582"},
+    {file = "Faker-6.6.0.tar.gz", hash = "sha256:0a68a539b236a614157581a135c82a27024a66dc96b9a491883fe583ae3689f9"},
 ]
 filelock = [
     {file = "filelock-3.0.12-py3-none-any.whl", hash = "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"},
