@@ -210,7 +210,6 @@ async def _load_moderation_mobile_info(offer_ids: List[int]) -> EnrichItem:
             id=offence_item.offence_id,
             date=offence_item.created_date,
             comment=offence_item.offence_text,
-            decline=offence_item.offence_type in (55, 66)  # cian web_api/presenters.py:404
         )
         if offence_item.offer_id not in values:
             values[offence_item.offer_id] = [complaint]

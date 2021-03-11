@@ -11,6 +11,7 @@ from my_offers.helpers.price import get_price_info
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.helpers.title import get_mobile_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 from my_offers.services.offers.enrich.enrich_data import MobileEnrichData
@@ -115,4 +116,5 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
             ),
             payed_by=enrich_data.offers_payed_by.get(offer_id)
         ),
+        is_declined=object_model.status in (Status.refused, Status.removed_by_moderator)
     )

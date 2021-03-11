@@ -207,6 +207,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
             'category': 'landSale',
             'cianUserId': 29437831,
             'complaints': None,
+            'isDeclined': False,
             'coworkingId': None,
             'deactivatedService': None,
             'dealType': 'sale',
@@ -293,9 +294,9 @@ async def test_v1_get_offers_mobile_public__200_inactive(http, pg, mobile_offers
                         'comment': 'Тестовое удаление Тестовое удаление',
                         'date': '2021-02-04T14:21:28.276339+00:00',
                         'id': 1833685,
-                        'decline': False,
                     }
                 ],
+                'isDeclined': False,
                 'coworkingId': None,
                 'deactivatedService': None,
                 'dealType': 'sale',
@@ -404,6 +405,7 @@ async def test_v1_get_offers_mobile_public__200__degradations(http, pg):
                 'category': 'landSale',
                 'cianUserId': 29437831,
                 'complaints': None,
+                'isDeclined': False,
                 'coworkingId': None,
                 'deactivatedService': None,
                 'dealType': 'sale',
@@ -502,6 +504,7 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
             'category': 'landSale',
             'cianUserId': 29437831,
             'complaints': None,
+            'isDeclined': False,
             'coworkingId': None,
             'deactivatedService': None,
             'dealType': 'sale',
@@ -662,9 +665,9 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
                     'comment': 'Тестовое удаление Тестовое удаление',
                     'date': '2021-02-04T14:21:28.276339+00:00',
                     'id': 1833685,
-                    'decline': False,
                 }
             ],
+            'isDeclined': False,
             'coworkingId': None,
             'deactivatedService': {
                 'description': 'Выделение цветом и ставка 10 ₽/сут. отключены из-за нехватки средств. После пополнения'

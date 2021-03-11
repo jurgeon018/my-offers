@@ -26,8 +26,6 @@ class OfferComplaint:
     """Дата жалобы"""
     comment: str
     """Комментарий"""
-    decline: bool
-    """Отклонено модератором"""
 
 
 @dataclass
@@ -147,6 +145,8 @@ class MobOffer:
     """Id коворкинга"""
     is_private_agent: bool
     """Является компанией (либо агент, либо частный маклер)"""
+    is_declined: bool
+    """Отклонено модератором"""
 
 
 @dataclass

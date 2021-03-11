@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-async def test_v1_get_offers_mobile_public__200(http, pg):
+async def test_v1_get_offers_counters_mobile_public__200(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
@@ -24,7 +24,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg):
     }
 
 
-async def test_v1_get_offers_mobile_public__search__200(http, pg):
+async def test_v1_get_offers_counters_mobile_public__search__200(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
@@ -47,7 +47,7 @@ async def test_v1_get_offers_mobile_public__search__200(http, pg):
     }
 
 
-async def test_v1_get_offers_mobile_public__200__degradation_wrong_user_id(http, pg):
+async def test_v1_get_offers_counters_mobile_public__200__degradation_wrong_user_id(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
