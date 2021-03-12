@@ -949,8 +949,8 @@ async def test_load_moderation_mobile_info(mocker):
         key='moderation_info',
         value={
             209194477: [
-                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление', decline=False),
-                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление', decline=True),
+                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление'),
+                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление'),
             ]
         },
         degraded=False,
