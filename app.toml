@@ -35,7 +35,7 @@ memory = 256
 [job.web.prod]
 type = "web"
 instances = 6
-cpu = 4096
+cpu = 2000
 memory = 256
 
 [job.process_announcement_consumer]
