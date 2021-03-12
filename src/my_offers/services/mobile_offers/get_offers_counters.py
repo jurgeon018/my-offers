@@ -8,11 +8,12 @@ from my_offers.services.offers._degradation_handlers import get_offer_counters_m
 
 
 async def v1_get_offers_counters_mobile_public(
-        # TODO: Пока suspended до 2го релиза CD-100659
         request: entities.GetOffersCountersMobileRequest,
         realty_user_id: int,
 ) -> entities.GetOffersCountersMobileResponse:
     filters: Dict[str, Any] = await get_user_filter(realty_user_id)
+    if request.search:
+        filters['search_text'] = request.search
 
     result: DegradationResult = await get_offer_counters_mobile_degradation_handler(filters)
 

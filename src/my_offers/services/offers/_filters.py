@@ -33,6 +33,10 @@ async def get_filters_mobile(
         search_text: Optional[str],
 ) -> Dict[str, Any]:
     result: Dict[str, Any] = get_offers_filters_mobile_mapper.map_to(filters) or {}
+    if tab_type.is_sale:
+        result['deal_type'] = enums.DealType.sale.value
+    elif tab_type.is_rent:
+        result['deal_type'] = enums.DealType.rent.value
 
     user_filter: Dict[str, Any] = await get_user_filter(user_id)
     result.update(user_filter)

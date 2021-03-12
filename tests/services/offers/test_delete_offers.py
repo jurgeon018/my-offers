@@ -8,7 +8,7 @@ from simple_settings.utils import settings_stub
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offers_delete_queue import offers_delete_queue
 from my_offers.repositories.postgresql.offers_duplicates import offers_duplicates
-from my_offers.services.offers.delete_offers import delete_offers_data
+from my_offers.services.offers._delete_offers import delete_offers_data
 
 
 class TestDeleteOffersService:
@@ -17,7 +17,7 @@ class TestDeleteOffersService:
     async def test_right_params_in_get_offers_id_older_than(self, mocker):
 
         get_offer_ids_for_delete_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.postgresql.get_offer_ids_for_delete',
+            'my_offers.services.offers._delete_offers.postgresql.get_offer_ids_for_delete',
             side_effect=[
                 future([888, 999]),
                 Exception(),
@@ -41,19 +41,19 @@ class TestDeleteOffersService:
     async def test_has_data__process(self, mocker):
         offers_to_delete = [888, 999]
         get_offer_ids_for_delete_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.postgresql.get_offer_ids_for_delete',
+            'my_offers.services.offers._delete_offers.postgresql.get_offer_ids_for_delete',
             side_effect=[
                 future(offers_to_delete),
                 Exception(),
             ]
         )
         delete_offers_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.postgresql.delete_offers',
+            'my_offers.services.offers._delete_offers.postgresql.delete_offers',
             return_value=future(offers_to_delete),
         )
 
         delete_rows_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_rows_by_offer_id',
+            'my_offers.services.offers._delete_offers.delete_rows_by_offer_id',
             side_effect=(
                 future(),
                 future(),
@@ -117,19 +117,19 @@ class TestDeleteOffersService:
     async def test_no_data__sleep(self, mocker):
         # arrange
         get_offer_ids_for_delete_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.postgresql.get_offer_ids_for_delete',
+            'my_offers.services.offers._delete_offers.postgresql.get_offer_ids_for_delete',
             side_effect=[
                 future(None),
                 Exception(),
             ]
         )
         delete_rows_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_rows_by_offer_id',
+            'my_offers.services.offers._delete_offers.delete_rows_by_offer_id',
             return_value=future(None)
         )
 
         sleep_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.asyncio.sleep',
+            'my_offers.services.offers._delete_offers.asyncio.sleep',
             return_value=future(None)
         )
 
@@ -146,19 +146,19 @@ class TestDeleteOffersService:
     async def test_timeout__sleep(self, mocker):
         # arrange
         get_offer_ids_for_delete_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.postgresql.get_offer_ids_for_delete',
+            'my_offers.services.offers._delete_offers.postgresql.get_offer_ids_for_delete',
             side_effect=[
                 asyncio.exceptions.TimeoutError(),
                 Exception(),
             ]
         )
         delete_rows_by_offer_id_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.delete_rows_by_offer_id',
+            'my_offers.services.offers._delete_offers.delete_rows_by_offer_id',
             return_value=future(None)
         )
 
         sleep_mock = mocker.patch(
-            'my_offers.services.offers.delete_offers.asyncio.sleep',
+            'my_offers.services.offers._delete_offers.asyncio.sleep',
             return_value=future(None)
         )
 

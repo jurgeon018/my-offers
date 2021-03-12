@@ -1,10 +1,8 @@
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
-import pytz
 from cian_core.statsd import statsd
-from simple_settings import settings
 
 from my_offers import entities
 from my_offers.helpers.category import get_types
@@ -22,6 +20,7 @@ from my_offers.services.announcement.fields.services import get_services
 from my_offers.services.announcement.fields.street_name import get_street_name
 from my_offers.services.announcement.fields.total_area import get_total_area
 from my_offers.services.announcement.fields.walking_time import get_walking_time
+from my_offers.services.offers import delete_offers
 
 
 FAKE_ROW_VERSION = -1
@@ -109,10 +108,7 @@ class AnnouncementProcessor:
 
     async def _add_to_delete_queue(self, offer: entities.Offer) -> None:
         if offer.status_tab.is_deleted:
-            await postgresql.add_offer_to_delete_queue(
-                offer_id=offer.offer_id,
-                delete_at=datetime.now(tz=pytz.UTC) + timedelta(days=settings.COUNT_DAYS_HOLD_DELETED_OFFERS)
-            )
+            await delete_offers([offer.offer_id])
 
     async def _save_stats(self, offer: entities.Offer) -> None:
         statsd.incr('offer.change.{}.{}.{}'.format(

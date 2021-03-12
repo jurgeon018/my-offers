@@ -53,6 +53,11 @@ async def moderation_mock(http_mock_service):
 
 
 @pytest.fixture(scope='session')
+async def search_offers_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('search-offers')
+
+
+@pytest.fixture(scope='session')
 async def moderation_checks_orchestrator_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('moderation-checks-orchestrator')
 
@@ -65,6 +70,11 @@ async def price_estimator_mock(http_mock_service):
 @pytest.fixture(scope='session')
 async def monolith_cian_announcementapi_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('monolith_cian_announcementapi')
+
+
+@pytest.fixture(scope='session')
+async def monolith_cian_bill_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('monolith-cian-bill')
 
 
 @pytest.fixture(scope='session')

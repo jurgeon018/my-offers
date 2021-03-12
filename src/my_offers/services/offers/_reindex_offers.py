@@ -12,9 +12,10 @@ from my_offers.repositories.monolith_cian_elasticapi.entities import (
     ElasticResultIElasticAnnouncementElasticAnnouncementError,
     GetApiElasticAnnouncementGet,
 )
-from my_offers.repositories.postgresql.offer import get_offers_for_reindex, set_offers_is_deleted
+from my_offers.repositories.postgresql.offer import get_offers_for_reindex
 from my_offers.repositories.postgresql.offers_reindex_queue import delete_reindex_items, get_reindex_items
 from my_offers.services.announcement import process_announcement_service
+from my_offers.services.offers import delete_offers
 from my_offers.services.realty_resender._jobs import ELASTIC_OFFER_INVALID_CODES
 
 
@@ -46,7 +47,7 @@ async def reindex_offers_command() -> None:
             await processor.process(object_model)
 
         if not_found_ids:
-            await set_offers_is_deleted(not_found_ids)
+            await delete_offers(not_found_ids)
 
         await delete_reindex_items(list(offer_ids_map.keys()))
 

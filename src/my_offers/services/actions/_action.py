@@ -103,14 +103,7 @@ class OfferAction:
         try:
             await self._run_action(object_model)
         except BadRequestException as e:
-            logger.exception('Offer action BrokenRulesException offer_id %s', self.offer_id)
-            raise BrokenRulesException([
-                Error(
-                    message=e.message.strip(),
-                    code='operation_error',
-                    key='offer_id'
-                )
-            ])
+            await self._on_bad_request_exception(e)
         except TimeoutException:
             logger.exception('Offer action TimeoutException offer_id %s', self.offer_id)
             raise BrokenRulesException([
@@ -131,6 +124,16 @@ class OfferAction:
             ])
 
         return entities.OfferActionResponse(status=OfferActionStatus.ok)
+
+    async def _on_bad_request_exception(self, e: BadRequestException):
+        logger.exception('Offer action BrokenRulesException offer_id %s', self.offer_id)
+        raise BrokenRulesException([
+            Error(
+                message=e.message.strip(),
+                code='operation_error',
+                key='offer_id'
+            )
+        ]) from e
 
     async def _run_action(self, object_model: ObjectModel) -> None:
         raise NotImplementedError

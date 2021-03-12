@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 import pytz
 from cian_core.degradation import DegradationResult
+from cian_functional_test_utils.helpers import ANY
 from cian_test_utils import future
 from freezegun import freeze_time
 from mock import call
@@ -10,8 +11,9 @@ from simple_settings import settings
 from simple_settings.utils import settings_stub
 
 from my_offers import enums
-from my_offers.entities import AgentName, AgentHierarchyData
+from my_offers.entities import AgentHierarchyData, AgentName
 from my_offers.entities.enrich import AddressUrlParams
+from my_offers.entities.mobile_offer import OfferComplaint
 from my_offers.entities.moderation import OfferOffence
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, ModerationOffenceStatus, OfferStatusTab
@@ -30,6 +32,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_import_errors,
     _load_jk_urls,
     _load_moderation_info,
+    _load_moderation_mobile_info,
     _load_offers_payed_by,
     _load_offers_similars_counters,
     _load_payed_till,
@@ -37,6 +40,7 @@ from my_offers.services.offers.enrich.load_enrich_data import (
     _load_searches_counts,
     _load_subagents,
     _load_views_counts,
+    _load_views_daily_counts,
     load_enrich_data,
 )
 
@@ -875,6 +879,93 @@ async def test__load_views_counts(mocker):
         offer_ids=offer_ids,
         date_from=date_from,
         date_to=date_to
+    )
+
+
+async def test_load_views_daily_counts(mocker):
+    # arrange
+    offer_ids = [1, 2, 3]
+    date_to = datetime(2020, 4, 10, tzinfo=pytz.utc)
+    date_from = datetime(2020, 4, 10, tzinfo=pytz.utc)
+
+    get_views_counts_mock = mocker.patch(
+        f'{PATH}get_views_counts_degradation_handler',
+        return_value=future(DegradationResult(value={1: 1, 2: 2, 3: 3}, degraded=False))
+    )
+    expected = EnrichItem(key='views_daily_counts', value={1: 1, 2: 2, 3: 3}, degraded=False)
+
+    # act
+    with freeze_time(date_to):
+        result = await _load_views_daily_counts(
+            offer_ids=offer_ids
+        )
+
+    # assert
+    assert result == expected
+    get_views_counts_mock.assert_called_once_with(
+        offer_ids=offer_ids,
+        date_from=date_from,
+        date_to=date_to
+    )
+
+
+async def test_load_moderation_mobile_info(mocker):
+    # arrange
+    offer_ids = [1, 2]
+
+    load_moderation_mobile_info_mock = mocker.patch(
+        f'{PATH}get_offers_offence_degradation_handler',
+        return_value=future(
+            DegradationResult(
+                value=[OfferOffence(
+                    offence_id=1833685,
+                    created_date=ANY,
+                    created_by=14037408,
+                    offer_id=209194477,
+                    offence_type=1,
+                    offence_status=ModerationOffenceStatus.confirmed,
+                    offence_text='Тестовое удаление Тестовое удаление',
+                    row_version=20038084139,
+                    created_at=ANY,
+                    updated_at=ANY
+                ),
+                    OfferOffence(
+                        offence_id=1833685,
+                        created_date=ANY,
+                        created_by=14037408,
+                        offer_id=209194477,
+                        offence_type=55,
+                        offence_status=ModerationOffenceStatus.confirmed,
+                        offence_text='Тестовое удаление Тестовое удаление',
+                        row_version=20038084139,
+                        created_at=ANY,
+                        updated_at=ANY
+                    )],
+                degraded=False,
+            )
+        )
+    )
+    expected = EnrichItem(
+        key='moderation_info',
+        value={
+            209194477: [
+                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление'),
+                OfferComplaint(id=1833685, date=ANY, comment='Тестовое удаление Тестовое удаление'),
+            ]
+        },
+        degraded=False,
+    )
+
+    # act
+    result = await _load_moderation_mobile_info(
+        offer_ids=offer_ids
+    )
+
+    # assert
+    assert result == expected
+    load_moderation_mobile_info_mock.assert_called_once_with(
+        offer_ids=offer_ids,
+        status=ModerationOffenceStatus.confirmed,
     )
 
 

@@ -30,8 +30,10 @@ class OfferComplaint:
 
 @dataclass
 class OfferDeactivatedService:
-    description: str
+    description: Optional[str]
+    """Текст, что именно отключилось и каким образом добиться возобновления услуг"""
     is_auto_restore_on_payment_enabled: bool
+    """Включено ли автовозобновление публикации"""
 
 
 @dataclass
@@ -88,6 +90,12 @@ class MobPrice:
 class MobOffer:
     offer_id: int
     """Id оффера"""
+    cian_id: Optional[int]
+    """ID объявления на ЦИАНе"""
+    cian_user_id: int
+    """Cian id юзера, создавшего оффер"""
+    realty_user_id: int
+    """Realty id юзера, создавшего оффер"""
     price: MobPrice
     """Цена"""
     status: enums.MobStatus
@@ -137,6 +145,8 @@ class MobOffer:
     """Id коворкинга"""
     is_private_agent: bool
     """Является компанией (либо агент, либо частный маклер)"""
+    is_declined: bool
+    """Отклонено модератором"""
 
 
 @dataclass
