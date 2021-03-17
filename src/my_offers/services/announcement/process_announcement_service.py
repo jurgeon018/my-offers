@@ -4,7 +4,7 @@ from typing import Optional
 
 from cian_core.statsd import statsd
 
-from my_offers import entities
+from my_offers import entities, pg
 from my_offers.helpers.category import get_types
 from my_offers.helpers.fields import get_sort_date, is_test
 from my_offers.helpers.status_tab import get_status_tab
@@ -13,6 +13,7 @@ from my_offers.repositories import postgresql
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import ObjectModel
 from my_offers.repositories.postgresql.agents import get_master_user_id
 from my_offers.repositories.postgresql.billing import get_offer_publisher_user_id
+from my_offers.repositories.postgresql.blocks import advisory_lock_for_offer_id
 from my_offers.services import similars
 from my_offers.services.announcement.fields.prices import get_prices
 from my_offers.services.announcement.fields.search_text import get_search_text
@@ -42,8 +43,11 @@ class AnnouncementProcessor:
             payed_by=payed_by
         )
 
-        if await self._save_offer(offer):
-            await self._post_process_offer(offer=offer, object_model=object_model)
+        conn = pg.get()
+        async with conn.transaction():
+            if await self._save_offer(offer):
+                await advisory_lock_for_offer_id(object_model.id)
+                await self._post_process_offer(offer=offer, object_model=object_model)
 
     async def _save_offer(self, offer: entities.Offer) -> bool:
         raise NotImplementedError()
@@ -95,12 +99,10 @@ class AnnouncementProcessor:
         return offer
 
     async def _post_process_offer(self, *, offer: entities.Offer, object_model: ObjectModel) -> None:
-        await asyncio.gather(
-            self._update_offer_import_error(object_model),
-            similars.update(object_model),
-            self._add_to_delete_queue(offer),
-            self._save_stats(offer),
-        )
+        await self._update_offer_import_error(object_model)
+        await similars.update(object_model)
+        await self._add_to_delete_queue(offer)
+        await self._save_stats(offer)
 
     async def _update_offer_import_error(self, object_model: ObjectModel) -> None:
         if not object_model.status.is_draft:

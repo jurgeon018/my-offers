@@ -7,7 +7,6 @@ from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.queue.producers import offer_duplicate_price_changed_producer
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.postgresql import offers_similars
-from my_offers.repositories.postgresql.offer import advisory_lock_for_offer_id
 from my_offers.repositories.postgresql.offers_duplicates import get_duplicate_group_id
 from my_offers.services.convert_price import get_price_rur
 from my_offers.services.similars.helpers.district import get_district_id
@@ -50,7 +49,6 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
     is_price_changed = False
     conn = pg.get()
     async with conn.transaction():
-        await advisory_lock_for_offer_id(similar.offer_id)
         offer = await offers_similars.get_offer_similar_for_update(
             suffix=suffix,
             offer_id=similar.offer_id
