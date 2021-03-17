@@ -445,3 +445,12 @@ async def update_offer_has_active_relevance_warning(*, offer_id: int, has_active
     """
 
     await pg.get().execute(query, has_active_relevance_warning, offer_id)
+
+
+async def advisory_lock_for_offer_id(offer_id: int):
+    """ https://postgrespro.ru/docs/postgresql/12/functions-admin#FUNCTIONS-ADVISORY-LOCKS
+    рекомендательная блокировка pg_advisory_xact_lock действует на уровне транзакции
+    и сама снимается после ее завершения"""
+
+    query = """SELECT pg_advisory_xact_lock(offer_id) FROM offers WHERE offer_id = $1"""
+    await pg.get().execute(query, offer_id)
