@@ -104,7 +104,6 @@ async def load_mobile_enrich_data(
         enriched.extend([
             asyncio.ensure_future(_load_video_offenses(offer_ids)),
             asyncio.ensure_future(_load_image_offenses(offer_ids)),
-            asyncio.ensure_future(_load_archive_date(offer_ids)),
             asyncio.ensure_future(_load_moderation_mobile_info(offer_ids)),
             asyncio.ensure_future(_load_premoderation_info(offer_ids)),
         ])

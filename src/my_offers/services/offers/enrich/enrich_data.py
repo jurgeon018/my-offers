@@ -123,7 +123,6 @@ class BaseEnrichData:
     offers_payed_by: Dict[int, Optional[OfferPayedByType]] = field(default_factory=dict)
     can_update_edit_dates: Dict[int, bool] = field(default_factory=dict)
     payed_till: Optional[Dict[int, datetime]] = None
-    archive_date: Optional[Dict[int, datetime]] = None
     # statistics
     views_counts: Dict[int, int] = field(default_factory=dict)
     searches_counts: Dict[int, int] = field(default_factory=dict)
@@ -142,16 +141,6 @@ class BaseEnrichData:
     def get_same_building_counts(self, offer_id: int) -> Optional[int]:
         return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
 
-    def get_archive_date(self, offer_id: int) -> Optional[datetime]:
-        if not self.archive_date:
-            return None
-
-        updated_at = self.archive_date.get(offer_id)
-        if not updated_at:
-            return None
-
-        return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
-
 
 @dataclass
 class EnrichData(BaseEnrichData):
@@ -163,6 +152,7 @@ class EnrichData(BaseEnrichData):
     subagents: Optional[Dict[int, Subagent]] = None
     premoderation_info: Optional[Set[int]] = None
     offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
+    archive_date: Optional[Dict[int, datetime]] = None
 
     def get_urls_by_types(
             self,
@@ -195,6 +185,16 @@ class EnrichData(BaseEnrichData):
             return None
 
         return self.offer_relevance_warnings.get(offer_id)
+
+    def get_archive_date(self, offer_id: int) -> Optional[datetime]:
+        if not self.archive_date:
+            return None
+
+        updated_at = self.archive_date.get(offer_id)
+        if not updated_at:
+            return None
+
+        return updated_at + timedelta(days=settings.DAYS_BEFORE_ARCHIVATION)
 
 
 @dataclass
