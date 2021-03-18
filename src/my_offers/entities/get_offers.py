@@ -59,6 +59,8 @@ class Statistics:
     """Количество просмотров карточки"""
     favorites: Optional[int] = None
     """Количество добавлений в избранное"""
+    calls: Optional[int] = None
+    """Кол-во звонков по объявлению"""
 
 
 @dataclass

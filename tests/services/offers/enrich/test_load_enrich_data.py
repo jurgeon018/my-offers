@@ -137,6 +137,7 @@ async def test_load_enrich_data__active_tab(mocker):
         'agent_hierarchy_data': True,
         'agency_settings': False,
         'auctions': False,
+        'calls_count': True,
         'can_update_edit_dates': False,
         'geo_urls': False,
         'jk_urls': False,
