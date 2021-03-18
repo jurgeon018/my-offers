@@ -12,7 +12,9 @@ from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.delete import delete_rows_by_offer_id
 from my_offers.repositories.postgresql.offers_delete_queue import offers_delete_queue
+from my_offers.repositories.postgresql.offers_duplicate_notification import offers_duplicate_notification
 from my_offers.repositories.postgresql.offers_duplicates import offers_duplicates
+from my_offers.repositories.postgresql.offers_similars import offers_similars_flat, offers_similars_test
 
 
 logger = logging.getLogger(__name__)
@@ -26,6 +28,9 @@ TABLES_TO_DELETE = (
     tables.offers_premoderations,
     tables.offers_reindex_queue,
     tables.offer_relevance_warnings,
+    offers_similars_flat,
+    offers_similars_test,
+    offers_duplicate_notification,
 )
 
 
