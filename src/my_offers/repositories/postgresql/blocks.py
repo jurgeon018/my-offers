@@ -6,5 +6,5 @@ async def advisory_lock_for_offer_id(offer_id: int):
     рекомендательная блокировка pg_advisory_xact_lock действует на уровне транзакции
     и сама снимается после ее завершения"""
 
-    query = """SELECT pg_advisory_xact_lock(offer_id) FROM offers WHERE offer_id = $1"""
+    query = """SELECT pg_advisory_xact_lock($1)"""
     await pg.get().execute(query, offer_id)

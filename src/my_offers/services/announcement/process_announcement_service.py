@@ -45,8 +45,8 @@ class AnnouncementProcessor:
 
         conn = pg.get()
         async with conn.transaction():
+            await advisory_lock_for_offer_id(object_model.id)
             if await self._save_offer(offer):
-                await advisory_lock_for_offer_id(object_model.id)
                 await self._post_process_offer(offer=offer, object_model=object_model)
 
     async def _save_offer(self, offer: entities.Offer) -> bool:
