@@ -321,12 +321,12 @@ async def test_v1_get_offers_mobile_public__200_inactive(http, pg, mobile_offers
                 'realtyUserId': 29437831,
                 'services': ['calltracking', 'paid'],
                 'stats': {
-                    'callsCount': 10,
+                    'callsCount': None,
                     'competitorsCount': None,
                     'dailyViews': None,
                     'duplicatesCount': None,
                     'favorites': None,
-                    'skippedCallsCount': 9,
+                    'skippedCallsCount': None,
                     'totalViews': None
                 },
                 'status': 'published'
@@ -696,12 +696,12 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
             'realtyUserId': 29437831,
             'services': ['calltracking', 'paid'],
             'stats': {
-                'callsCount': 10,
+                'callsCount': None,
                 'competitorsCount': None,
                 'dailyViews': None,
                 'duplicatesCount': None,
                 'favorites': None,
-                'skippedCallsCount': 9,
+                'skippedCallsCount': None,
                 'totalViews': None
             },
             'status': 'published'

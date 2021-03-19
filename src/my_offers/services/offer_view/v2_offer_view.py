@@ -1,3 +1,4 @@
+from my_offers import entities
 from my_offers.entities import AgentHierarchyData, get_offers
 from my_offers.helpers import get_available_actions
 from my_offers.helpers.category import get_types
@@ -9,7 +10,6 @@ from my_offers.helpers.title import get_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.services.offer_view.fields import get_features, get_offer_url, get_status, prepare_geo
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
-from my_offers.services.offer_view.fields.statistics import get_statistics
 from my_offers.services.offer_view.fields.status import get_status_type
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
@@ -54,10 +54,11 @@ def v2_build_offer_view(
         price_info=price_info,
         features=features,
         is_manual=manual,
-        statistics=get_statistics(
-            views=enrich_data.views_counts.get(realty_offer_id),
+        statistics=entities.Statistics(
+            calls=enrich_data.get_calls_count(realty_offer_id),
+            views=enrich_data.views_counts.get(realty_offer_id),  # Количество просмотров карточки == Количество показов
             favorites=enrich_data.favorites_counts.get(realty_offer_id),
-            searches=enrich_data.searches_counts.get(realty_offer_id),
+            shows=enrich_data.searches_counts.get(realty_offer_id),  # Количество показов в поиске == Количество поисков
         ),
         archived_at=object_model.archived_date,
         status=get_status(status=object_model.status, is_archived=archived),
