@@ -83,7 +83,6 @@ async def load_mobile_enrich_data(
         )),
         asyncio.ensure_future(_load_agency_settings(user_id)),
         asyncio.ensure_future(_load_offers_payed_by(offer_ids)),
-        asyncio.ensure_future(_load_calls(offer_ids)),
         asyncio.ensure_future(_load_deactivated_service(user_id, offer_ids)),
     ]
 
@@ -92,6 +91,7 @@ async def load_mobile_enrich_data(
             asyncio.ensure_future(_load_favorites_counts(offer_ids)),
             asyncio.ensure_future(_load_searches_counts(offer_ids)),
             asyncio.ensure_future(_load_views_counts(offer_ids)),
+            asyncio.ensure_future(_load_calls(offer_ids)),
             asyncio.ensure_future(_load_payed_till(offer_ids)),
             asyncio.ensure_future(_load_mobile_auctions(offer_ids, params.get_user_id())),
             asyncio.ensure_future(_load_pending_identification_offers([params.get_user_id()])),
@@ -138,6 +138,7 @@ async def load_enrich_data(
         asyncio.ensure_future(_load_jk_urls(params.get_jk_ids())),
         asyncio.ensure_future(_load_geo_urls(params.get_geo_url_params())),
         asyncio.ensure_future(_load_subagents(params.get_agent_ids())),
+
     ]
 
     if status_tab.is_active:
@@ -145,6 +146,7 @@ async def load_enrich_data(
             asyncio.ensure_future(_load_favorites_counts(offer_ids)),
             asyncio.ensure_future(_load_searches_counts(offer_ids)),
             asyncio.ensure_future(_load_views_counts(offer_ids)),
+            asyncio.ensure_future(_load_calls(offer_ids)),
             asyncio.ensure_future(_load_auctions(offer_ids)),
             asyncio.ensure_future(_load_payed_till(offer_ids)),
             asyncio.ensure_future(_load_offers_similars_counters(
@@ -152,6 +154,7 @@ async def load_enrich_data(
                 is_test=params.is_test_offers
             )),
             asyncio.ensure_future(_load_offer_relevance_warnings(offer_ids)),
+
         ])
     elif status_tab.is_not_active:
         enriched.extend([
