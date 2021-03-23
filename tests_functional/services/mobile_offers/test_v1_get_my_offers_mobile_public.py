@@ -274,7 +274,7 @@ async def test_v1_get_offers_mobile_public__200_inactive(http, pg, mobile_offers
     assert response.data == {
         'offers': [
             {
-                'archivedDate': '2020-05-16T06:28:06.246658+00:00',
+                'archivedDate': None,
                 'auction': None,
                 'availableActions': {
                     'canChangePublisher': False,
@@ -645,7 +645,7 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
     # assert
     assert response.data == {'offers': [
         {
-            'archivedDate': '2020-05-16T06:28:06.246658+00:00',
+            'archivedDate': None,
             'auction': None,
             'availableActions': {
                 'canChangePublisher': False,

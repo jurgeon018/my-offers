@@ -76,7 +76,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         offer_type=offer_type,
         deal_type=deal_type,
         is_archived=archived,
-        archived_date=enrich_data.get_archive_date(offer_id),
+        archived_date=object_model.archived_date,
         photo=get_main_photo_url(object_model.photos, better_quality=True),
         has_video_offence=offer_id in enrich_data.video_offences,
         has_photo_offence=offer_id in enrich_data.image_offences,
