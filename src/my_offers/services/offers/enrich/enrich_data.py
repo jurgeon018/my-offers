@@ -128,6 +128,7 @@ class BaseEnrichData:
     searches_counts: Dict[int, int] = field(default_factory=dict)
     favorites_counts: Dict[int, int] = field(default_factory=dict)
     offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
+    calls_count: Dict[int, OfferCallCount] = field(default_factory=dict)
 
     def get_payed_till(self, offer_id: int) -> Optional[datetime]:
         if not self.payed_till:
@@ -140,6 +141,18 @@ class BaseEnrichData:
 
     def get_same_building_counts(self, offer_id: int) -> Optional[int]:
         return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
+
+    def get_calls_count(self, offer_id: int) -> Optional[int]:
+        if offer_id not in self.calls_count:
+            return None
+
+        return self.calls_count[offer_id].calls_count
+
+    def get_missed_calls_count(self, offer_id: int) -> Optional[int]:
+        if offer_id not in self.calls_count:
+            return None
+
+        return self.calls_count[offer_id].missed_calls_count
 
 
 @dataclass
@@ -204,22 +217,10 @@ class MobileEnrichData(BaseEnrichData):
     moderation_info: Optional[Dict[int, List[OfferComplaint]]] = field(default=None)
     premoderation_info: Optional[Set[int]] = field(default=None)
     offer_with_pending_identification: Set[int] = field(default_factory=set)
-    calls_count: Dict[int, OfferCallCount] = field(default_factory=dict)
     auctions: Dict[int, OfferAuction] = field(default_factory=dict)
     views_daily_counts: Dict[int, int] = field(default_factory=dict)
     deactivated_service: Dict[int, OfferDeactivatedService] = field(default_factory=dict)
 
-    def get_calls_count(self, offer_id: int) -> Optional[int]:
-        if offer_id not in self.calls_count:
-            return None
-
-        return self.calls_count[offer_id].calls_count
-
-    def get_missed_calls_count(self, offer_id: int) -> Optional[int]:
-        if offer_id not in self.calls_count:
-            return None
-
-        return self.calls_count[offer_id].missed_calls_count
 
     def get_offer_offence(self, offer_id: int) -> Optional[List[OfferComplaint]]:
         if not self.moderation_info:
