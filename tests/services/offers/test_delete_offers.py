@@ -7,7 +7,9 @@ from simple_settings.utils import settings_stub
 
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.offers_delete_queue import offers_delete_queue
+from my_offers.repositories.postgresql.offers_duplicate_notification import offers_duplicate_notification
 from my_offers.repositories.postgresql.offers_duplicates import offers_duplicates
+from my_offers.repositories.postgresql.offers_similars import offers_similars_flat, offers_similars_test
 from my_offers.services.offers._delete_offers import delete_offers_data
 
 
@@ -62,6 +64,10 @@ class TestDeleteOffersService:
                 future(),
                 future(),
                 future(),
+                future(),
+                future(),
+                future(),
+                future()
             )
         )
 
@@ -111,6 +117,26 @@ class TestDeleteOffersService:
                 offer_ids=offers_to_delete,
                 timeout=30,
             ),
+            mocker.call(
+                table=tables.offer_relevance_warnings,
+                offer_ids=offers_to_delete,
+                timeout=30,
+            ),
+            mocker.call(
+                table=offers_similars_flat,
+                offer_ids=offers_to_delete,
+                timeout=30,
+            ),
+            mocker.call(
+                table=offers_similars_test,
+                offer_ids=offers_to_delete,
+                timeout=30,
+            ),
+            mocker.call(
+                table=offers_duplicate_notification,
+                offer_ids=offers_to_delete,
+                timeout=30,
+            )
         ])
 
     @pytest.mark.gen_test
