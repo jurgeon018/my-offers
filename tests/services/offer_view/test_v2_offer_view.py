@@ -94,7 +94,8 @@ def test_build_offer_view(enrich_data_mock):
             declined_info=None
         ),
         status_type=None,
-        payed_by=None
+        payed_by=None,
+        multiposting=None
     )
 
     # act
@@ -188,7 +189,8 @@ def test_build_offer_view_depends_on_payed_by(
             declined_info=None
         ),
         status_type=None,
-        payed_by=enrich_data_with_offers_payed_by_mock.offers_payed_by.get(offer_id_from_mock)
+        payed_by=enrich_data_with_offers_payed_by_mock.offers_payed_by.get(offer_id_from_mock),
+        multiposting=None
     )
 
     # act
