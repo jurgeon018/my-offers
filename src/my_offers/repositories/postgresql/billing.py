@@ -7,7 +7,7 @@ from sqlalchemy import all_, and_, any_, not_, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql import func
 
-from my_offers import enums, pg
+from my_offers import pg
 from my_offers.entities import OfferBillingContract
 from my_offers.enums import OfferServiceTypes
 from my_offers.mappers.billing import offer_billing_contract_mapper
@@ -83,7 +83,7 @@ async def get_offers_payed_till(
         )).where(
             and_(
                 *options
-                )
+            )
         ).group_by(collumn.offer_id)
     )
 
@@ -100,24 +100,31 @@ async def get_offers_payed_till_excluding_calltracking(offer_ids: List[int]) -> 
 
     return await get_offers_payed_till(
         offer_ids=offer_ids,
-        exclude_service_type=enums.OfferServiceTypes.calltracking.value
+        exclude_service_type=OfferServiceTypes.calltracking.value
     )
 
 
 async def get_offer_publisher_user_id(offer_id: int) -> Optional[int]:
-    query = """
-    select
-        publisher_user_id
-    from
-        offers_billing_contracts
-    where
-        offer_id = $1
-    order by
-        row_version desc
-    limit
-        1
-    """
+    contracts = tables.offers_billing_contracts
+    options = [
+        contracts.c.offer_id == offer_id,
+        #  исключаем аукцион, может быть оплачен мастером для объявления за счет саба, CD-104024
+        OfferServiceTypes.auction.value != all_(contracts.c.service_types)
+    ]
 
-    row = await pg.get().fetchrow(query, offer_id)
+    query, params = asyncpgsa.compile_query(
+        select((
+            contracts.c.publisher_user_id,
+        )).where(
+            and_(
+                *options
+            )
+        ).order_by(
+            contracts.c.row_version.desc()
+        ).limit(
+            1
+        )
+    )
+    row = await pg.get().fetchrow(query, *params)
 
     return row['publisher_user_id'] if row else None
