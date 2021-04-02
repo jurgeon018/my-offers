@@ -6,7 +6,7 @@ from cian_test_utils import future, v
 from freezegun import freeze_time
 
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
-from my_offers.enums import TargetObjectType
+from my_offers.enums import TargetObjectType, OfferServiceTypes
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
     post_save_contract,
@@ -269,3 +269,31 @@ async def test_post_save_contract(mocker):
         master_user_id=master_user_id,
         payed_by=publisher_user_id
     )
+
+
+async def test_post_save_contract__passed_auction_contract__returned_without_calls(mocker):
+    # arrange
+    offer_contract = OfferBillingContract(
+        id=1,
+        user_id=555,
+        actor_user_id=777,
+        publisher_user_id=2,
+        start_date=datetime(2020, 1, 2),
+        payed_till=datetime(2020, 2, 2),
+        offer_id=2,
+        row_version=0,
+        is_deleted=False,
+        created_at=datetime(2020, 2, 2),
+        updated_at=datetime(2020, 2, 2),
+        service_types=[OfferServiceTypes.auction]
+    )
+
+    get_master_user_id = mocker.patch(
+        'my_offers.services.billing.contracts_service.postgresql.get_master_user_id'
+    )
+
+    # act
+    await post_save_contract(offer_contract)
+
+    # assert
+    assert not get_master_user_id.called

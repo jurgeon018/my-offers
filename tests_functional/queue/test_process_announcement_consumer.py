@@ -299,7 +299,6 @@ async def test_process_announcement_consumer__payed_by(
             2, 1, master_user_id, None, now, now, 'Agency'
         ]
     )
-    await asyncio.sleep(1)
 
     # arrange
     await pg.execute(
@@ -324,7 +323,6 @@ async def test_process_announcement_consumer__payed_by(
             1, 1, 1, publisher_user_id, offer_id, now, now, 1, False, now, now
         ]
     )
-    await asyncio.sleep(1)
 
     offer['model']['publishedUserId'] = published_user_id
     offer['model']['userId'] = published_user_id
@@ -561,8 +559,6 @@ async def test_process_announcement_consumer__payed_by_exists_billing_after_offe
         ]
     )
 
-    await asyncio.sleep(1)
-
     await queue_service.wait_consumer('my-offers.process_announcement_v2')
     await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
     await asyncio.sleep(2)
@@ -597,3 +593,77 @@ async def test_process_announcement_consumer__deleted__delete(queue_service, pg,
     assert row['status_tab'] == 'deleted'
     row = await pg.fetchrow('SELECT * FROM offers_delete_queue ORDER BY offer_id DESC LIMIT 1')
     assert row['offer_id'] == 227888824
+
+
+@pytest.mark.parametrize(('offer'), [
+    (load_json_data(__file__, 'announcement.json')),
+])
+async def test_process_announcement_consumer__contract_with_auction_exist__ignored_for_payed_by(
+        queue_service,
+        pg,
+        offer,
+):
+    """
+    Проверка проставления корректного значения в поле payed_by
+    в случае наличия контракта с аукционом, должен игнорироваться.
+    """
+    # arrange
+    now = datetime.now()
+    await pg.execute(
+        """
+        INSERT INTO public.agents_hierarchy (
+            id,
+            row_version,
+            realty_user_id,
+            master_agent_user_id,
+            created_at,
+            updated_at,
+            account_type
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7),
+            ($8, $9, $10, $11, $12, $13, $14)
+        """,
+        [
+            1, 1, 39401272, 2, now, now, 'Specialist',
+            2, 1, 2, None, now, now, 'Agency'
+        ]
+    )
+
+    # arrange
+    await pg.execute(
+        """
+        INSERT INTO public.offers_billing_contracts (
+            id,
+            user_id,
+            actor_user_id,
+            publisher_user_id,
+            offer_id,
+            start_date,
+            payed_till,
+            row_version,
+            is_deleted,
+            created_at,
+            updated_at,
+            service_types
+        )
+        VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12),
+            ($13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
+        """,
+        [
+            1, 1, 1, 1, 228433597, now, now, 1, False, now, now, ['FreeObject'],
+            2, 1, 1, 2, 228433597, now, now, 2, False, now, now, ['auction']
+        ],
+    )
+
+    # act
+    await queue_service.wait_consumer('my-offers.process_announcement_v2')
+    await queue_service.publish('announcement_reporting.change', offer, exchange='announcements')
+    await asyncio.sleep(1)
+
+    # assert
+    row = await pg.fetchrow('SELECT * FROM offers ORDER BY offer_id DESC LIMIT 1')
+
+    assert row['payed_by'] == 1
+    assert row['master_user_id'] == 2
