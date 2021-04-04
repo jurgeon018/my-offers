@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
+from my_offers.enums import OfferServiceTypes
 from my_offers.repositories import postgresql
 
 
@@ -46,6 +47,10 @@ async def post_save_contract(contract: OfferBillingContract) -> None:
         Если не удается определить мастера для пользователя контракта,
         то используем в объявлении publisher_id в качестве мастера.
     """
+    #  исключаем аукцион, может быть оплачен мастером для объявления за счет саба, CD-104024
+    if OfferServiceTypes.auction in contract.service_types:
+        return
+
     master_user_id = await postgresql.get_master_user_id(contract.user_id)
 
     await postgresql.update_offer_master_user_id_and_payed_by(
