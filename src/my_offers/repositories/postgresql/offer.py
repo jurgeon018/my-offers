@@ -468,7 +468,7 @@ async def update_offers_master_user_id_by_old_master_and_user_id(
         ).where(
             and_(
                 tables.offers.c.user_id == user_id,
-                tables.offers.c.master_user_id == (old_master_user_id)
+                tables.offers.c.master_user_id == old_master_user_id
             )
         )
     )
