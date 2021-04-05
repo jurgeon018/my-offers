@@ -48,7 +48,7 @@ async def post_save_contract(contract: OfferBillingContract) -> None:
         то используем в объявлении publisher_id в качестве мастера.
     """
     #  исключаем аукцион, может быть оплачен мастером для объявления за счет саба, CD-104024
-    if OfferServiceTypes.auction in contract.service_types:
+    if [OfferServiceTypes.auction] == contract.service_types:
         return
 
     master_user_id = await postgresql.get_master_user_id(contract.user_id)

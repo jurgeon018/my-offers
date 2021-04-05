@@ -30,6 +30,11 @@ async def test_update_agents_hierarchy(mocker):
         master_agent_user_id=333,
         account_type=AgentAccountType.agency
     ))
+    mocker.patch(
+        'my_offers.services.agents._agents_hierarchy.postgresql.get_agent_by_user_id',
+        return_value=future()
+    )
+
     save_agent_mock = mocker.patch(
         'my_offers.services.agents._agents_hierarchy.postgresql.save_agent',
         return_value=future()

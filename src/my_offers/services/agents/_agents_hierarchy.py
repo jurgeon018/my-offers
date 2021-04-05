@@ -29,7 +29,7 @@ async def update_agents_hierarchy(agent: AgentMessage) -> None:
         return
 
     now = datetime.now(pytz.utc)
-    agent = Agent(
+    new_agent = Agent(
         id=agent.id,
         row_version=agent.row_version,
         realty_user_id=agent.realty_user_id,
@@ -41,12 +41,28 @@ async def update_agents_hierarchy(agent: AgentMessage) -> None:
         middle_name=agent.middle_name,
         last_name=agent.last_name,
     )
+    old_agent = await postgresql.get_agent_by_user_id(user_id=new_agent.realty_user_id)
 
     try:
-        await postgresql.save_agent(agent=agent)
+        await postgresql.save_agent(agent=new_agent)
     except UniqueViolationError:
         logger.exception('cannot save agent: %s', agent)
-        await _handle_unique_violation_conflict(agent)
+        await _handle_unique_violation_conflict(new_agent=new_agent)
+
+    if not old_agent:
+        return
+
+    is_new_row_version_superior = old_agent.row_version < new_agent.row_version
+    is_master_agent_user_id_changed = old_agent.master_agent_user_id != new_agent.master_agent_user_id
+    if (
+        is_new_row_version_superior
+        and is_master_agent_user_id_changed
+    ):
+        await postgresql.update_offers_master_user_id_by_old_master_and_user_id(
+            old_master_user_id=old_agent.master_agent_user_id or old_agent.realty_user_id,
+            new_master_user_id=new_agent.master_agent_user_id or new_agent.realty_user_id,
+            user_id=old_agent.realty_user_id
+        )
 
 
 async def _handle_unique_violation_conflict(new_agent: Agent) -> None:

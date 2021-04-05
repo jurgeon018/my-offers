@@ -6,7 +6,7 @@ from cian_test_utils import future, v
 from freezegun import freeze_time
 
 from my_offers.entities.billing import AnnouncementBillingContract, OfferBillingContract
-from my_offers.enums import TargetObjectType, OfferServiceTypes
+from my_offers.enums import OfferServiceTypes, TargetObjectType
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
     post_save_contract,

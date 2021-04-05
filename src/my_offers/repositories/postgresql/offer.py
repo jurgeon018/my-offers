@@ -445,3 +445,32 @@ async def update_offer_has_active_relevance_warning(*, offer_id: int, has_active
     """
 
     await pg.get().execute(query, has_active_relevance_warning, offer_id)
+
+
+async def update_offers_master_user_id_by_old_master_and_user_id(
+    *,
+    old_master_user_id: int,
+    new_master_user_id: int,
+    user_id: int
+) -> None:
+    now = datetime.now(tz=pytz.UTC)
+
+    values = {
+        'master_user_id': new_master_user_id,
+        'updated_at': now
+    }
+
+    query, params = asyncpgsa.compile_query(
+        update(
+            tables.offers
+        ).values(
+            values
+        ).where(
+            and_(
+                tables.offers.c.user_id == user_id,
+                tables.offers.c.master_user_id == (old_master_user_id)
+            )
+        )
+    )
+
+    await pg.get().execute(query, *params)
