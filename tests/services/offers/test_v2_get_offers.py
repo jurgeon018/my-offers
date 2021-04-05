@@ -124,7 +124,8 @@ async def test_v2_get_offer_views(mocker):
                     ),
                 ),
                 status_type=None,
-                payed_by=None
+                payed_by=None,
+                multiposting=None
             )
         ],
         {}
