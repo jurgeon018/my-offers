@@ -221,7 +221,6 @@ class MobileEnrichData(BaseEnrichData):
     views_daily_counts: Dict[int, int] = field(default_factory=dict)
     deactivated_service: Dict[int, OfferDeactivatedService] = field(default_factory=dict)
 
-
     def get_offer_offence(self, offer_id: int) -> Optional[List[OfferComplaint]]:
         if not self.moderation_info:
             return None
@@ -251,3 +250,9 @@ class MobileEnrichData(BaseEnrichData):
             return None
 
         return self.deactivated_service[offer_id]
+
+    def get_views_daily_counts(self, offer_id: int) -> Optional[int]:
+        if self.views_daily_counts is None:
+            return None
+
+        return self.views_daily_counts.get(offer_id, 0)
