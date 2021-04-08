@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import Dict, List
 
 from cian_cassandra.statement import CassandraStatement
 from cian_entities import EntityMapper
 
 from my_offers.services.statistics._helpers import cassandra_execute, cassandra_execute_grouped
+
 
 stmts = CassandraStatement('statistics')
 

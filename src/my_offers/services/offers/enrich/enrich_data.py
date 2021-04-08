@@ -218,7 +218,7 @@ class MobileEnrichData(BaseEnrichData):
     premoderation_info: Optional[Set[int]] = field(default=None)
     offer_with_pending_identification: Set[int] = field(default_factory=set)
     auctions: Dict[int, OfferAuction] = field(default_factory=dict)
-    views_daily_counts: Dict[int, int] = field(default_factory=dict)
+    views_daily_counts: Optional[Dict[int, int]] = field(default=None)
     deactivated_service: Dict[int, OfferDeactivatedService] = field(default_factory=dict)
 
     def get_offer_offence(self, offer_id: int) -> Optional[List[OfferComplaint]]:

@@ -886,27 +886,23 @@ async def test__load_views_counts(mocker):
 async def test_load_views_daily_counts(mocker):
     # arrange
     offer_ids = [1, 2, 3]
-    date_to = datetime(2020, 4, 10, tzinfo=pytz.utc)
-    date_from = datetime(2020, 4, 10, tzinfo=pytz.utc)
+    date = datetime(2020, 4, 10, tzinfo=pytz.utc)
 
     get_views_counts_mock = mocker.patch(
-        f'{PATH}get_views_counts_degradation_handler',
+        f'{PATH}get_views_current_degradation_handler',
         return_value=future(DegradationResult(value={1: 1, 2: 2, 3: 3}, degraded=False))
     )
     expected = EnrichItem(key='views_daily_counts', value={1: 1, 2: 2, 3: 3}, degraded=False)
 
     # act
-    with freeze_time(date_to):
-        result = await _load_views_daily_counts(
-            offer_ids=offer_ids
-        )
+    with freeze_time(date):
+        result = await _load_views_daily_counts(offer_ids)
 
     # assert
     assert result == expected
     get_views_counts_mock.assert_called_once_with(
         offer_ids=offer_ids,
-        date_from=date_from,
-        date_to=date_to
+        date=date,
     )
 
 
