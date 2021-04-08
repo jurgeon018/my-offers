@@ -1,7 +1,9 @@
 import asyncio
+from datetime import datetime
 from pathlib import Path
 
 import pytest
+import pytz
 from cian_functional_test_utils.helpers import ANY
 from cian_functional_test_utils.pytest_plugin import MockResponse
 
@@ -149,12 +151,32 @@ async def _integration_mock(
     )
 
 
-async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrations_mock):
+async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrations_mock, cassandra_statistics):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'agents_hiearachy.sql')
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_offences.sql')
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_premoderations.sql')
+
+    date = datetime.now(tz=pytz.UTC)
+    await cassandra_statistics.execute(
+        """
+            update
+                views_current
+            set
+                views = views + 22
+            where
+                offer_id = 209194477 and
+                year = %s and
+                month = %s and
+                day = %s
+        """,
+        [
+            date.year,
+            date.month,
+            date.day,
+        ]
+    )
 
     # act
     response = await http.request(
@@ -234,7 +256,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
             'stats': {
                 'callsCount': 10,
                 'competitorsCount': None,
-                'dailyViews': None,
+                'dailyViews': 22,
                 'duplicatesCount': None,
                 'favorites': None,
                 'skippedCallsCount': 9,
@@ -435,7 +457,7 @@ async def test_v1_get_offers_mobile_public__200__degradations(http, pg):
                 'stats': {
                     'callsCount': None,
                     'competitorsCount': None,
-                    'dailyViews': None,
+                    'dailyViews': 0,
                     'duplicatesCount': None,
                     'favorites': None,
                     'skippedCallsCount': None,
@@ -531,7 +553,7 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
             'stats': {
                 'callsCount': 10,
                 'competitorsCount': None,
-                'dailyViews': None,
+                'dailyViews': 0,
                 'duplicatesCount': None,
                 'favorites': None,
                 'skippedCallsCount': 9,
