@@ -94,7 +94,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
             calls_count=enrich_data.get_calls_count(offer_id),
             skipped_calls_count=enrich_data.get_missed_calls_count(offer_id),
             total_views=enrich_data.views_counts.get(offer_id),
-            daily_views=enrich_data.views_daily_counts.get(offer_id),  # TODO CD-102080
+            daily_views=enrich_data.get_views_daily_counts(offer_id),
             favorites=enrich_data.favorites_counts.get(offer_id),
         ),
         services=services,
