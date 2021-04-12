@@ -29,6 +29,7 @@ class DeleteOfferAction(OfferAction):
                 cian_user_id=get_user_cian_id_by_realty_id(self.user_id),
             )
         )
+        await delete_offers([self.offer_id])
 
     async def _on_bad_request_exception(self, e: BadRequestException):
         errors = e.errors if e.errors else []
