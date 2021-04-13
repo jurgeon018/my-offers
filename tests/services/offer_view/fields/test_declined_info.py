@@ -1,10 +1,11 @@
 from datetime import datetime
 
+from tests_api.cian.announcementapi.entities.object_model import Status
+
 from my_offers.entities.get_offers import DeclinedInfo
 from my_offers.entities.moderation import OfferOffence
 from my_offers.enums import ModerationOffenceStatus
 from my_offers.services.offer_view.fields.declined_info import get_declined_info
-from tests_api.cian.announcementapi.entities.object_model import Status
 
 
 def test_get_declined_info(mocker):

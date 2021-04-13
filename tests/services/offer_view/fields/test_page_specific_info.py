@@ -1,4 +1,5 @@
 import pytest
+from tests_api.cian.my_offers.entities.filter import StatusTab
 
 from my_offers.entities import AgentHierarchyData
 from my_offers.entities.get_offers import ActiveInfo, DeclinedInfo, Moderation, NotActiveInfo, PageSpecificInfo
@@ -7,7 +8,6 @@ from my_offers.repositories.monolith_cian_announcementapi.entities import Bargai
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
 from my_offers.services.offers.enrich.enrich_data import EnrichData
-from tests_api.cian.my_offers.entities.filter import StatusTab
 
 
 @pytest.mark.parametrize(

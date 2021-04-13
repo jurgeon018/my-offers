@@ -84,7 +84,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found
                 'auctionBet': '+\xa012\xa0₽',
                 'title': 'Квартира-студия, 28\xa0м², 9/14\xa0этаж',
                 'type': 'duplicate',
-                'url': 'http://master.dev3.cian.ru/rent/flat/173975523',
+                'url': 'http://master.dev3.cian.ru/rent/flat/173975523/',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/1/644/244/'
                                 'kvartira-tula-prospekt-lenina-442446187-3.jpg',
                 'vas': ['auction', 'top3'],
@@ -100,7 +100,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found
                 'offerId': 231659418,
                 'title': '2-комн.\xa0кв., 59\xa0м², 3/3\xa0этаж',
                 'type': 'duplicate',
-                'url': 'http://master.dev3.cian.ru/sale/flat/231659418',
+                'url': 'http://master.dev3.cian.ru/sale/flat/231659418/',
                 'displayDate': '2020-05-09T10:06:29.159746+00:00',
                 'mainPhotoUrl': 'https://cdn-p.cian.site/images/6/179/378/'
                                 'kvartira-nizhniy-tagil-ulica-ciolkovskogo-873971625-3.jpg',
@@ -158,7 +158,7 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__offers_found__20
     assert response.data == {
         'offers': [
             {
-                'type': 'duplicate', 'url': 'http://master.dev3.cian.ru/rent/flat/177300443',
+                'type': 'duplicate', 'url': 'http://master.dev3.cian.ru/rent/flat/177300443/',
                 'title': '1-комн.\xa0кв., 33\xa0м², 4/7\xa0этаж',
                 'displayDate': '2020-07-08T12:28:46.727000+00:00',
                 'vas': [],

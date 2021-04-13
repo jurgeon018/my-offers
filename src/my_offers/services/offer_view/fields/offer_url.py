@@ -12,4 +12,4 @@ def get_offer_url(
     """ Получить ссылку на объявление на сайте.
         Важно: при формировании сслыки нужно учитывать, что должен быть передан cian_id, а не realty_offer_id.
     """
-    return f'{settings.CIAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{cian_offer_id}'
+    return f'{settings.CIAN_BASE_URL}/{deal_type.value}/{offer_type.value}/{cian_offer_id}/'
