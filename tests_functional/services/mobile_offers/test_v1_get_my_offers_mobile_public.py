@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -178,6 +178,26 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
         ]
     )
 
+    date = datetime.now(tz=pytz.UTC) - timedelta(days=1)
+    await cassandra_statistics.execute(
+        """
+            update
+                views_total
+            set
+                views_total = 80
+            where
+                offer_id = 209194477 and
+                year = %s and
+                month = %s and
+                day = %s
+        """,
+        [
+            date.year,
+            date.month,
+            date.day,
+        ]
+    )
+
     # act
     response = await http.request(
         'POST',
@@ -260,7 +280,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
                 'duplicatesCount': None,
                 'favorites': None,
                 'skippedCallsCount': 9,
-                'totalViews': None
+                'totalViews': 102,
             },
             'status': 'published'
         }
@@ -461,7 +481,7 @@ async def test_v1_get_offers_mobile_public__200__degradations(http, pg):
                     'duplicatesCount': None,
                     'favorites': None,
                     'skippedCallsCount': None,
-                    'totalViews': None
+                    'totalViews': 0,
                 },
                 'status': 'published'
             }
@@ -557,7 +577,7 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
                 'duplicatesCount': None,
                 'favorites': None,
                 'skippedCallsCount': 9,
-                'totalViews': None
+                'totalViews': 0,
             },
             'status': 'published'
         }

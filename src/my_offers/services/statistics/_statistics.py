@@ -184,3 +184,12 @@ async def get_views_current(offer_ids: List[int], date: datetime) -> Dict[int, i
         month=date.month,
         day=date.day,
     )
+
+
+async def get_views_total(offer_ids: List[int], date: datetime) -> Dict[int, int]:
+    return await views_cs_repo.get_views_total_day(
+        offer_ids=offer_ids,
+        year=date.year,
+        month=date.month,
+        day=date.day,
+    )

@@ -44,6 +44,7 @@ from my_offers.services.offers._degradation_handlers import (
     get_similars_counters_by_offer_ids_degradation_handler,
     get_views_counts_degradation_handler,
     get_views_current_degradation_handler,
+    get_views_total_degradation_handler,
 )
 from my_offers.services.offers.enrich.enrich_data import (
     AddressUrls,
@@ -90,8 +91,7 @@ async def load_mobile_enrich_data(
     if is_active:
         enriched.extend([
             asyncio.ensure_future(_load_favorites_counts(offer_ids)),
-            asyncio.ensure_future(_load_searches_counts(offer_ids)),
-            asyncio.ensure_future(_load_views_counts(offer_ids)),
+            asyncio.ensure_future(_load_views_totals_counts(offer_ids)),
             asyncio.ensure_future(_load_views_daily_counts(offer_ids)),
             asyncio.ensure_future(_load_calls(offer_ids)),
             asyncio.ensure_future(_load_payed_till(offer_ids)),
@@ -425,6 +425,16 @@ async def _load_views_daily_counts(offer_ids: List[int]) -> EnrichItem:
     )
 
     return EnrichItem(key='views_daily_counts', degraded=result.degraded, value=result.value)
+
+
+@statsd_timer(key='enrich.load_views_totals')
+async def _load_views_totals_counts(offer_ids: List[int]) -> EnrichItem:
+    result = await get_views_total_degradation_handler(
+        offer_ids=offer_ids,
+        date=datetime.now(tz=pytz.utc) - timedelta(days=1),
+    )
+
+    return EnrichItem(key='views_totals_counts', degraded=result.degraded, value=result.value)
 
 
 @statsd_timer(key='enrich.load_searches_counts')
