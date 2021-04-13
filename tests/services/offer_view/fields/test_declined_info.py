@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from tests_api.cian.announcementapi.entities.object_model import Status
-
-from my_offers.entities.get_offers import DeclinedInfo
+from my_offers.entities.get_offers import DeclinedInfo, Moderation
 from my_offers.entities.moderation import OfferOffence
 from my_offers.enums import ModerationOffenceStatus
+from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 from my_offers.services.offer_view.fields.declined_info import get_declined_info
 
 
@@ -24,7 +23,12 @@ def test_get_declined_info(mocker):
         created_at=datetime(2020, 1, 1),
     )
 
-    expected = DeclinedInfo(moderation=None)
+    expected = DeclinedInfo(moderation=Moderation(
+        declined_date=None,
+        is_declined=False,
+        reason=None,
+        offence_status='Заблокировано',
+    ))
 
     # act
     result = get_declined_info(status=status, offer_offence=offer_offence)
