@@ -2,8 +2,6 @@
 .cache/
 .direnv/
 .envrc
-.mypy_cache/
-.tox/
 __pycache__/
 .idea/
 logs/

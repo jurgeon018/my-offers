@@ -71,7 +71,7 @@ async def test_new_offer_duplicate_notification_consumer(queue_service, pg, kafk
                 'transportsToSend': ['mobilePush'],
                 'userId': '6808488',
                 'webPushPayload': None,
-                'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140'
+                'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140/'
             }
         ]
     }

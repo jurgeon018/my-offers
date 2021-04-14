@@ -2,12 +2,12 @@ import pytest
 
 from my_offers.entities import AgentHierarchyData
 from my_offers.entities.get_offers import ActiveInfo, DeclinedInfo, Moderation, NotActiveInfo, PageSpecificInfo
+from my_offers.enums import OfferStatusTab
 from my_offers.enums.not_active_status import NotActiveStatus
 from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.services.offer_view.fields.page_specific_info import get_page_specific_info
 from my_offers.services.offers.enrich.enrich_data import EnrichData
-from tests_api.cian.my_offers.entities.filter import StatusTab
 
 
 @pytest.mark.parametrize(
@@ -21,7 +21,7 @@ from tests_api.cian.my_offers.entities.filter import StatusTab
                 phones=[Phone(country_code='1', number='12312')],
                 status=Status.published,
             ),
-            StatusTab.active,
+            OfferStatusTab.active,
             PageSpecificInfo(
                 active_info=ActiveInfo(
                     vas=[],
@@ -42,7 +42,7 @@ from tests_api.cian.my_offers.entities.filter import StatusTab
                 phones=[Phone(country_code='1', number='12312')],
                 status=Status.draft,
             ),
-            StatusTab.not_active,
+            OfferStatusTab.not_active,
             PageSpecificInfo(
                 active_info=None,
                 not_active_info=NotActiveInfo(
@@ -61,7 +61,7 @@ from tests_api.cian.my_offers.entities.filter import StatusTab
                 phones=[Phone(country_code='1', number='12312')],
                 status=Status.blocked,
             ),
-            StatusTab.declined,
+            OfferStatusTab.declined,
             PageSpecificInfo(
                 active_info=None,
                 not_active_info=None,

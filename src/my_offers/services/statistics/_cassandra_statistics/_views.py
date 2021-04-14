@@ -47,6 +47,18 @@ WHERE
   AND day = ?
 """
 
+stmts.select_views_total_day = """
+SELECT
+   offer_id, views_total
+FROM
+  statistics.views_total
+WHERE
+  offer_id in ?
+  AND year = ?
+  AND month = ?
+  AND day = ?
+"""
+
 
 @dataclass
 class ViewsRow:
@@ -104,3 +116,21 @@ class ViewsCassandraRepository:
         )
 
         return {row.offer_id: row.views for row in rows}
+
+    async def get_views_total_day(
+            self,
+            offer_ids: List[int],
+            year: int,
+            month: int,
+            day: int,
+    ) -> Dict[int, int]:
+        rows = await cassandra_execute_grouped(
+            alias=self.KEYSPACE,
+            stmt=stmts.select_views_total_day,
+            params=[year, month, day],
+            keys=offer_ids,
+            keyspace=self.KEYSPACE,
+            table='views_total',
+        )
+
+        return {row.offer_id: row.views_total for row in rows}

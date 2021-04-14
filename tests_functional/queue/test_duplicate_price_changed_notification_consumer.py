@@ -85,7 +85,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_increa
                 'transportsToSend': ['mobilePush'],
                 'userId': '6808488',
                 'webPushPayload': None,
-                'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140'
+                'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140/'
             }
         ]
     }
@@ -172,7 +172,7 @@ async def test_offer_duplicate_price_changed_notification_consumer__price_reduce
                 'transportsToSend': ['mobilePush'],
                 'userId': '6808488',
                 'webPushPayload': None,
-                'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140'
+                'webUrl': 'http://master.dev3.cian.ru/rent/flat/231655140/'
             }
         ]
     }

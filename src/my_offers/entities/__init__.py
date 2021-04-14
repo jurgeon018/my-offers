@@ -17,9 +17,9 @@ from my_offers.entities.duplicates import (
     OfferDuplicateDesktop,
     OfferDuplicatesCount,
     OfferSimilarCounter,
+    PriceInfo as PriceInfoWithTrend,
+    Tab,
 )
-from my_offers.entities.duplicates import PriceInfo as PriceInfoWithTrend
-from my_offers.entities.duplicates import Tab
 from my_offers.entities.get_offers import (
     GetOffersPrivateRequest,
     GetOffersRequest,

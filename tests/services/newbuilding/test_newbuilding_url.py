@@ -2,9 +2,9 @@ import pytest
 from cian_test_utils import future
 
 from my_offers.repositories.newbuilding_search.entities import (
-    GetNewbuildingByIdsItem,
     GetNewBuildingsByIdsRequest,
     GetNewBuildingsByIdsResponse,
+    GetNewbuildingByIdsItem,
 )
 from my_offers.services.newbuilding.newbuilding_url import get_newbuilding_urls
 
