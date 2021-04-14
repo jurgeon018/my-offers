@@ -447,11 +447,31 @@ async def update_offer_has_active_relevance_warning(*, offer_id: int, has_active
     await pg.get().execute(query, has_active_relevance_warning, offer_id)
 
 
-async def update_offers_master_user_id_by_old_master_and_user_id(
+async def get_offer_ids_by_master_and_user_id(
     *,
-    old_master_user_id: int,
-    new_master_user_id: int,
+    master_user_id: int,
     user_id: int
+) -> List[int]:
+    query, params = asyncpgsa.compile_query(
+        select(
+            [
+                tables.offers.c.offer_id
+            ]
+        ).where(
+            and_(
+                tables.offers.c.user_id == user_id,
+                tables.offers.c.master_user_id == master_user_id
+            )
+        )
+    )
+
+    return [row[0] for row in await pg.get().fetch(query, *params)]
+
+
+async def update_offer_master_user_id_by_id(
+    *,
+    offer_id: int,
+    new_master_user_id: int
 ) -> None:
     now = datetime.now(tz=pytz.UTC)
 
@@ -466,10 +486,7 @@ async def update_offers_master_user_id_by_old_master_and_user_id(
         ).values(
             values
         ).where(
-            and_(
-                tables.offers.c.user_id == user_id,
-                tables.offers.c.master_user_id == old_master_user_id
-            )
+            tables.offers.c.offer_id == offer_id
         )
     )
 

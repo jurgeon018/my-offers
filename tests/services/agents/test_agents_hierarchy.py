@@ -40,6 +40,12 @@ async def test_update_agents_hierarchy(mocker):
         return_value=future()
     )
 
+    mocker.patch(
+        'my_offers.services.agents._agents_hierarchy.postgresql.get_offer_ids_by_master_and_user_id',
+        return_value=future([])
+    )
+
+
     # act
     with freeze_time(now):
         await agents.update_agents_hierarchy(agent=agent)
@@ -70,27 +76,32 @@ async def test_update_agents_hierarchy__realty_user_id_is_none(mocker):
     save_agent_mock.assert_not_called()
 
 
-async def test_update_agents_hierarchy__unique_violation_error__agent_not_found(mocker):
+async def test_update_agents_hierarchy__new_agent_row_version_lower_old__returned_without_call(mocker):
     # arrange
+    now = datetime.utcnow()
     agent = v(AgentMessage(
         id=1,
         row_version=0,
-        realty_user_id=222,
+        realty_user_id=None,
         master_agent_user_id=333,
-        account_type=AgentAccountType.agency
     ))
-    mocker.patch(
+    save_agent_mock = mocker.patch(
         'my_offers.services.agents._agents_hierarchy.postgresql.save_agent',
-        return_value=future(exception=UniqueViolationError())
+        return_value=future(
+            Agent(
+                id=1,
+                row_version=1,
+                realty_user_id=222,
+                master_agent_user_id=333,
+                created_at=now,
+                updated_at=now,
+                account_type=AgentAccountType.agency
+            )
+        )
     )
-    mocker.patch(
-        'my_offers.services.agents._agents_hierarchy.postgresql.get_agent_by_user_id',
-        return_value=future()
-    )
-    logger = mocker.patch('my_offers.services.agents._agents_hierarchy.logger')
 
     # act
     await agents.update_agents_hierarchy(agent=agent)
 
     # assert
-    logger.warning.assert_called_with('agent id %s not found', agent.id)
+    save_agent_mock.assert_not_called()

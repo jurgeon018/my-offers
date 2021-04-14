@@ -1,8 +1,11 @@
+import asyncio
 import logging
 from datetime import datetime
+from typing import Optional
 
 import pytz
 from asyncpg import UniqueViolationError
+from simple_settings import settings
 
 from my_offers import pg
 from my_offers.entities import AgentMessage
@@ -43,29 +46,61 @@ async def update_agents_hierarchy(agent: AgentMessage) -> None:
     )
     old_agent = await postgresql.get_agent_by_user_id(user_id=new_agent.realty_user_id)
 
+    if (
+        old_agent
+        and old_agent.row_version >= new_agent.row_version
+    ):
+        return
+
     try:
         await postgresql.save_agent(agent=new_agent)
     except UniqueViolationError:
         logger.exception('cannot save agent: %s', agent)
-        await _handle_unique_violation_conflict(new_agent=new_agent)
-
-    if not old_agent:
-        return
-
-    is_new_row_version_superior = old_agent.row_version < new_agent.row_version
-    is_master_agent_user_id_changed = old_agent.master_agent_user_id != new_agent.master_agent_user_id
-    if (
-        is_new_row_version_superior
-        and is_master_agent_user_id_changed
-    ):
-        await postgresql.update_offers_master_user_id_by_old_master_and_user_id(
-            old_master_user_id=old_agent.master_agent_user_id or old_agent.realty_user_id,
-            new_master_user_id=new_agent.master_agent_user_id or new_agent.realty_user_id,
-            user_id=old_agent.realty_user_id
+        await _handle_unique_violation_conflict(
+            old_agent=old_agent,
+            new_agent=new_agent
         )
 
+    await reindex_agent_offers_master(
+        old_agent=old_agent,
+        new_agent=new_agent
+    )
 
-async def _handle_unique_violation_conflict(new_agent: Agent) -> None:
+
+async def reindex_agent_offers_master(
+    old_agent: Optional[Agent],
+    new_agent: Agent
+):
+    old_master_user_id = old_agent.master_agent_user_id if old_agent else new_agent.realty_user_id
+    new_master_user_id = new_agent.master_agent_user_id or new_agent.realty_user_id
+
+    is_master_changed = old_master_user_id != new_master_user_id
+
+    if not is_master_changed:
+        return
+
+    offer_ids = await postgresql.get_offer_ids_by_master_and_user_id(
+        master_user_id=old_master_user_id,
+        user_id=new_agent.realty_user_id
+    )
+    chunk_size = settings.SAVE_AGENT_UPDATE_AGENT_OFFERS_CHUNK
+    for i in range(0, len(offer_ids), chunk_size):
+        update_master_futures = []
+
+        for offer_id in offer_ids[i: i + chunk_size]:
+            update_master_futures.append(
+                postgresql.update_offer_master_user_id_by_id(
+                    offer_id=offer_id,
+                    new_master_user_id=new_master_user_id
+                )
+        )
+        await asyncio.gather(*update_master_futures)
+
+
+async def _handle_unique_violation_conflict(
+    old_agent: Agent,
+    new_agent: Agent
+) -> Optional[int]:
     """
     Иногда в очередь приходят сообщения по одному и тому же пользователю,
     но с разными id агента.
@@ -92,15 +127,6 @@ async def _handle_unique_violation_conflict(new_agent: Agent) -> None:
     Задача на исправление в шарпе https://jira.cian.tech/browse/CD-94360
     После фикса этот код выпилить
     """
-    old_agent = await postgresql.get_agent_by_user_id(user_id=new_agent.realty_user_id)
-    if old_agent is None:
-        logger.warning('agent id %s not found', new_agent.id)
-        return
-
-    if new_agent.row_version <= old_agent.row_version:
-        logger.warning('discard agent changes: old state %s, new state %s', old_agent, new_agent)
-        return
-
     async with pg.get().transaction():
         await postgresql.delete_agents_hierarchy(user_id=old_agent.realty_user_id)
         await postgresql.save_agent(new_agent)
