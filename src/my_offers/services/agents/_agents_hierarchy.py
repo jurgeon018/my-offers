@@ -73,7 +73,11 @@ async def reindex_agent_offers_master(
 ) -> None:
     """Переиндексируем объявления агента в зависимости от того, изменился ли мастер аккаунт."""
 
-    old_master_user_id = old_agent.master_agent_user_id if old_agent else new_agent.realty_user_id
+    old_master_user_id = (
+        old_agent.master_agent_user_id
+        if (old_agent and old_agent.master_agent_user_id)
+        else new_agent.realty_user_id
+    )
     new_master_user_id = new_agent.master_agent_user_id or new_agent.realty_user_id
 
     is_master_changed = old_master_user_id != new_master_user_id
