@@ -70,7 +70,9 @@ async def update_agents_hierarchy(agent: AgentMessage) -> None:
 async def reindex_agent_offers_master(
     old_agent: Optional[Agent],
     new_agent: Agent
-):
+) -> None:
+    """Переиндексируем объявления агента в зависимости от того, изменился ли мастер аккаунт."""
+
     old_master_user_id = old_agent.master_agent_user_id if old_agent else new_agent.realty_user_id
     new_master_user_id = new_agent.master_agent_user_id or new_agent.realty_user_id
 
@@ -79,11 +81,11 @@ async def reindex_agent_offers_master(
     if not is_master_changed:
         return
 
+    chunk_size = settings.SAVE_AGENT_UPDATE_AGENT_OFFERS_CHUNK
     offer_ids = await postgresql.get_offer_ids_by_master_and_user_id(
         master_user_id=old_master_user_id,
         user_id=new_agent.realty_user_id
     )
-    chunk_size = settings.SAVE_AGENT_UPDATE_AGENT_OFFERS_CHUNK
     for i in range(0, len(offer_ids), chunk_size):
         update_master_futures = []
 

@@ -18,7 +18,7 @@ async def get_agent_by_user_id(user_id: int) -> Optional[Agent]:
     return None
 
 
-async def save_agent(agent: Agent):
+async def save_agent(agent: Agent) -> None:
     insert_values = agent_mapper.map_to(agent)
     insert_query = insert(agents_hierarchy)
 
@@ -40,7 +40,7 @@ async def save_agent(agent: Agent):
         )
     )
 
-    await pg.get().fetchval(query, *params)
+    await pg.get().execute(query, *params)
 
 
 async def get_master_user_id(user_id: int) -> Optional[int]:
