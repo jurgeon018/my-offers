@@ -108,7 +108,7 @@ async def test_save_agent():
     await postgresql.save_agent(agent=agent)
 
     # assert
-    pg.get().fetchval.assert_called_with(
+    pg.get().execute.assert_called_with(
         'INSERT INTO agents_hierarchy (id, account_type, realty_user_id, master_agent_user_id, row_version,'
         ' created_at, updated_at) VALUES ($3, $1, $5, $4, $7, $2, $8) ON CONFLICT (id) DO UPDATE SET realty'
         '_user_id = excluded.realty_user_id, master_agent_user_id = excluded.master_agent_user_id, row_vers'

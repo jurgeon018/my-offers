@@ -95,14 +95,14 @@ async def reindex_agent_offers_master(
                     offer_id=offer_id,
                     new_master_user_id=new_master_user_id
                 )
-        )
+            )
         await asyncio.gather(*update_master_futures)
 
 
 async def _handle_unique_violation_conflict(
     old_agent: Agent,
     new_agent: Agent
-) -> Optional[int]:
+) -> None:
     """
     Иногда в очередь приходят сообщения по одному и тому же пользователю,
     но с разными id агента.

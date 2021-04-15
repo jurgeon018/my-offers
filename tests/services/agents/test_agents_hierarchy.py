@@ -9,6 +9,7 @@ from my_offers.entities import AgentMessage
 from my_offers.entities.agents import Agent
 from my_offers.enums import AgentAccountType
 from my_offers.services import agents
+from my_offers.services.agents._agents_hierarchy import reindex_agent_offers_master
 
 
 async def test_update_agents_hierarchy(mocker):
@@ -105,3 +106,39 @@ async def test_update_agents_hierarchy__new_agent_row_version_lower_old__returne
 
     # assert
     save_agent_mock.assert_not_called()
+
+
+async def test_reindex_agent_offers_master__master_not_changed__not_called_get(mocker):
+    # arrange
+    now = datetime.utcnow()
+    old_agent = Agent(
+                id=1,
+                row_version=1,
+                realty_user_id=222,
+                master_agent_user_id=333,
+                created_at=now,
+                updated_at=now,
+                account_type=AgentAccountType.agency
+    )
+
+    new_agent = Agent(
+                id=1,
+                row_version=1,
+                realty_user_id=222,
+                master_agent_user_id=333,
+                created_at=now,
+                updated_at=now,
+                account_type=AgentAccountType.agency
+    )
+    get_offer_ids_by_master_and_user_id_mock = mocker.patch(
+        'my_offers.services.agents._agents_hierarchy.postgresql.get_offer_ids_by_master_and_user_id',
+    )
+
+    # act
+    await reindex_agent_offers_master(
+        old_agent=old_agent,
+        new_agent=new_agent
+    )
+
+    # assert
+    get_offer_ids_by_master_and_user_id_mock.assert_not_called()

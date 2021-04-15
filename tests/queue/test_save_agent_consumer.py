@@ -67,4 +67,4 @@ async def test_save_agent_callback__new_agent_row_version_lower_than_old__return
     await save_agent_callback([message])
 
     # assert
-    assert not save_agent_mock.called
+    save_agent_mock.assert_not_called()
