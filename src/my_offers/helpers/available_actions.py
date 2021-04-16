@@ -11,7 +11,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 
 CAN_ARCHIVE_STATUSES = (Status.deactivated, Status.published, Status.draft)
 CAN_DELETE_STATUSES = (Status.published, Status.draft, Status.blocked, Status.deactivated, Status.refused)
-CAN_CHANGE_PUBLISHER = (Status.published, Status.draft, Status.sold)
+CAN_CHANGE_PUBLISHER = (Status.published, Status.deactivated, Status.draft, Status.sold)
 STATUSES_FOR_DISCONTINUED = (
     Status.deactivated,
     Status.deleted,
@@ -88,6 +88,8 @@ def get_available_actions(
         )
 
     can_edit = not is_archived and not status.is_removed_by_moderator
+    can_change_publisher = not is_archived and agent_hierarchy_data.is_master_agent and status in CAN_CHANGE_PUBLISHER
+
     return entities.AvailableActions(
         can_edit=status.is_draft or status.is_published and can_edit,
         can_raise=_can_raise(
@@ -111,7 +113,7 @@ def get_available_actions(
         ),
         can_update_edit_date=not is_archived and status.is_published and can_update_edit_date,
         can_move_to_archive=not is_archived and status in CAN_ARCHIVE_STATUSES,
-        can_change_publisher=agent_hierarchy_data.is_master_agent and status in CAN_CHANGE_PUBLISHER,
+        can_change_publisher=can_change_publisher,
         can_view_similar_offers=can_view_similar_offers
     )
 
