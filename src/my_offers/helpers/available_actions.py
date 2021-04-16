@@ -11,7 +11,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
 
 CAN_ARCHIVE_STATUSES = (Status.deactivated, Status.published, Status.draft)
 CAN_DELETE_STATUSES = (Status.published, Status.draft, Status.blocked, Status.deactivated, Status.refused)
-CAN_CHANGE_PUBLISHER = (Status.published, Status.draft, Status.deactivated, Status.sold)
+CAN_CHANGE_PUBLISHER = (Status.published, Status.draft, Status.sold)
 STATUSES_FOR_DISCONTINUED = (
     Status.deactivated,
     Status.deleted,
