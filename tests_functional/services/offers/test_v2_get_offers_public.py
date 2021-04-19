@@ -273,7 +273,7 @@ async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
 
     await pg.execute(
         """
-        INSERT INTO public.agents_hierarchy (
+        INSERT INTO agents_hierarchy (
             id,
             row_version,
             realty_user_id,
@@ -303,7 +303,7 @@ async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
 
     await pg.execute(
         """
-        INSERT INTO public.offers (
+        INSERT INTO offers (
             offer_id,
             master_user_id,
             user_id,
@@ -331,20 +331,22 @@ async def test_v2_get_offers_public__can_view_similar_offers(http, pg):
     )
 
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id, price, rooms_count) '
-        'VALUES(11111111, \'sale\', \'2020-08-10\', 11111111, 123, 10990000, 4)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id, price, rooms_count, '
+        'publisher_user_id) '
+        'VALUES(11111111, \'sale\', \'2020-08-10\', 11111111, 123, 10990000, 4, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(231659418, \'sale\', \'2020-08-10\', 11111111)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(231659418, \'sale\', \'2020-08-10\', 11111111, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(173975523, \'sale\', \'2020-08-10\', 11111111)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(173975523, \'sale\', \'2020-08-10\', 11111111, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id, price, rooms_count) '
-        'VALUES(22222222, \'sale\', \'2020-08-10\', 22222222, 123, 10990000, 4)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id, price, rooms_count, '
+        'publisher_user_id) '
+        'VALUES(22222222, \'sale\', \'2020-08-10\', 22222222, 123, 10990000, 4, 1)'
     )
 
     # act
