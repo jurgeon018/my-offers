@@ -40,6 +40,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                 rooms_count=2,
                 group_id=None,
                 old_price=None,
+                publisher_user_id=None,
             ),
             [
                 entities.OfferSimilar(
@@ -52,6 +53,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                     rooms_count=2,
                     group_id=2,
                     old_price=None,
+                    publisher_user_id=None,
                 ),
             ],
             True,
@@ -69,6 +71,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                     rooms_count=2,
                     group_id=2,
                     old_price=None,
+                    publisher_user_id=None,
                 ),
             ],
             False,
@@ -84,6 +87,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                 rooms_count=2,
                 group_id=None,
                 old_price=None,
+                publisher_user_id=None,
             ),
             [
                 entities.OfferSimilar(
@@ -96,6 +100,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                     rooms_count=2,
                     group_id=2,
                     old_price=None,
+                    publisher_user_id=None,
                 ),
             ],
             False,
@@ -111,6 +116,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                 rooms_count=2,
                 group_id=None,
                 old_price=None,
+                publisher_user_id=None,
             ),
             [
                 entities.OfferSimilar(
@@ -123,6 +129,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                     rooms_count=2,
                     group_id=2,
                     old_price=None,
+                    publisher_user_id=None,
                 ),
             ],
             False,
@@ -138,6 +145,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                 rooms_count=2,
                 group_id=None,
                 old_price=None,
+                publisher_user_id=None,
             ),
             [
                 entities.OfferSimilar(
@@ -150,6 +158,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                     rooms_count=5,
                     group_id=2,
                     old_price=None,
+                    publisher_user_id=None,
                 ),
             ],
             False,
@@ -165,6 +174,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                 rooms_count=None,
                 group_id=None,
                 old_price=None,
+                publisher_user_id=None,
             ),
             [
                 entities.OfferSimilar(
@@ -177,6 +187,7 @@ async def test_update_offers_duplicate_no_offers__return(mocker):
                     rooms_count=5,
                     group_id=None,
                     old_price=None,
+                    publisher_user_id=None,
                 ),
             ],
             False,

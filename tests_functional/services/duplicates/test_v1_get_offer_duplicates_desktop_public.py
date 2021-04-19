@@ -38,16 +38,16 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__duplicates_found
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
 
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(231659418, \'sale\', \'2020-08-10\', 231655140)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(231659418, \'sale\', \'2020-08-10\', 231655140, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(173975523, \'sale\', \'2020-08-11\', 231655140)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(173975523, \'sale\', \'2020-08-11\', 231655140, 1)'
     )
 
     auction_stub = await auction_mock.add_stub(
@@ -119,24 +119,24 @@ async def test_v1_get_offer_duplicates_desktop_public__tab_all__offers_found__20
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_similar_tab_all.sql')
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(236308049, \'sale\', \'2020-08-10\', 236308049)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(236308049, \'sale\', \'2020-08-10\', 236308049, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(236213060, \'sale\', \'2020-08-10\', 236308049)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(236213060, \'sale\', \'2020-08-10\', 236308049, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(236331615, \'sale\', \'2020-08-10\', 236308049)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(236331615, \'sale\', \'2020-08-10\', 236308049, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(233353644, \'sale\', \'2020-08-10\', 236308049)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(233353644, \'sale\', \'2020-08-10\', 236308049, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(177300443, \'sale\', \'2020-08-10\', 236308049)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(177300443, \'sale\', \'2020-08-10\', 236308049, 1)'
     )
 
     # act

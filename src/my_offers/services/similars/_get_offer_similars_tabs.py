@@ -18,6 +18,7 @@ async def v1_get_offer_similars_tabs_public(
         return entities.GetOfferDuplicatesTabsResponse(tabs=[])
 
     counter = await postgresql.get_similar_counter_by_offer_id(
+        user_id=realty_user_id,
         offer_id=object_model.id,
         price_kf=settings.SIMILAR_PRICE_KF,
         room_delta=settings.SIMILAR_ROOM_DELTA,

@@ -131,6 +131,7 @@ async def test_send_duplicate_price_changed_notifications__owner__skip(mocker):
             rooms_count=None,
             price=1000000,
             old_price=1100000,
+            publisher_user_id=None,
         ))
     )
 
