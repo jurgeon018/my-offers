@@ -105,7 +105,7 @@ async def test_load_enrich_data__active_tab(mocker):
         f'{PATH}_load_offers_similars_counters',
         return_value=future(EnrichItem(key='favorites_counts', degraded=False, value={})),
     )
-    load_offers_payed_by = mocker.patch(
+    mocker.patch(
         f'{PATH}_load_offers_payed_by',
         return_value=future(EnrichItem(key='offers_payed_by', degraded=False, value={})),
     )
@@ -172,7 +172,7 @@ async def test_load_enrich_data__active_tab(mocker):
     load_views_counts_mock.assert_called_once_with([11])
     load_searches_counts_mock.assert_called_once_with([11])
     load_favorites_counts_mock.assert_called_once_with([11])
-    load_offers_similars_counters_mock.assert_called_once_with(offer_ids=[11], is_test=False)
+    load_offers_similars_counters_mock.assert_called_once_with(offer_ids=[11], is_test=False, user_id=111)
     load_offers_payed_by.assert_called_once_with([11])
 
 
@@ -1027,6 +1027,7 @@ async def test__load_offers_similars_counters__offers_ids_is_empty(mocker):
 
     # act
     result = await _load_offers_similars_counters(
+        user_id=1,
         offer_ids=offer_ids,
         is_test=True
     )
@@ -1048,6 +1049,7 @@ async def test__load_offers_similars_counters__degraded(mocker):
 
     # act
     result = await _load_offers_similars_counters(
+        user_id=1,
         offer_ids=offer_ids,
         is_test=True
     )
@@ -1056,6 +1058,7 @@ async def test__load_offers_similars_counters__degraded(mocker):
     assert result == expected
     get_similars_counters_by_offer_ids_mock.assert_called_once_with(
         offer_ids=offer_ids,
+        user_id=1,
         price_kf=settings.SIMILAR_PRICE_KF,
         room_delta=settings.SIMILAR_ROOM_DELTA,
         suffix='test',

@@ -44,6 +44,7 @@ async def _save(*, suffix: str, object_model: ObjectModel) -> None:
             flat_type=object_model.flat_type,
         ),
         sort_date=get_sort_date(object_model=object_model, status_tab=enums.OfferStatusTab.active),
+        publisher_user_id=object_model.published_user_id,
     )
 
     is_price_changed = False

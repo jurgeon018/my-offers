@@ -98,6 +98,7 @@ async def load_mobile_enrich_data(
             asyncio.ensure_future(_load_mobile_auctions(offer_ids, params.get_user_id())),
             asyncio.ensure_future(_load_pending_identification_offers([params.get_user_id()])),
             asyncio.ensure_future(_load_offers_similars_counters(
+                user_id=params.get_user_id(),
                 offer_ids=params.get_similar_offers(),
                 is_test=params.is_test_offers
             )),
@@ -151,6 +152,7 @@ async def load_enrich_data(
             asyncio.ensure_future(_load_auctions(offer_ids)),
             asyncio.ensure_future(_load_payed_till(offer_ids)),
             asyncio.ensure_future(_load_offers_similars_counters(
+                user_id=params.get_user_id(),
                 offer_ids=params.get_similar_offers(),
                 is_test=params.is_test_offers
             )),
@@ -461,13 +463,14 @@ async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
 
 
 @statsd_timer(key='enrich.load_similars_counters')
-async def _load_offers_similars_counters(*, offer_ids: List[int], is_test: bool) -> EnrichItem:
+async def _load_offers_similars_counters(*, offer_ids: List[int], user_id: int, is_test: bool) -> EnrichItem:
     if not offer_ids:
         return EnrichItem(key='offers_similars_counts', degraded=False, value={})
 
     suffix = get_similar_table_suffix_by_params(is_test=is_test)
     result = await get_similars_counters_by_offer_ids_degradation_handler(
         offer_ids=offer_ids,
+        user_id=user_id,
         price_kf=settings.SIMILAR_PRICE_KF,
         room_delta=settings.SIMILAR_ROOM_DELTA,
         suffix=suffix,

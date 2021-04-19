@@ -7,24 +7,26 @@ async def test_v1_get_offers_duplicates_count__200(http, pg):
 
     await pg.execute(
         'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, house_id, district_id,'
-        'price, rooms_count) '
-        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140, 4424291, 4298, 1350000, 2)'
+        'price, rooms_count, publisher_user_id) '
+        'VALUES(231655140, \'sale\', \'2020-08-10\', 231655140, 4424291, 4298, 1350000, 2, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(231659418, \'sale\', \'2020-08-10\', 231655140)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(231659418, \'sale\', \'2020-08-10\', 231655140, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id) '
-        'VALUES(173975523, \'sale\', \'2020-08-10\', 231655140)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, group_id, publisher_user_id) '
+        'VALUES(173975523, \'sale\', \'2020-08-10\', 231655140, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, house_id, price, rooms_count) '
-        'VALUES(173975529, \'sale\', \'2020-08-10\', 4424291, 1350000, 2)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, house_id, price, rooms_count, '
+        'publisher_user_id) '
+        'VALUES(173975529, \'sale\', \'2020-08-10\', 4424291, 1350000, 2, 1)'
     )
     await pg.execute(
-        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, district_id, price, rooms_count) '
-        'VALUES(173975530, \'sale\', \'2020-08-10\', 4298, 1350000, 2)'
+        'INSERT INTO offers_similars_flat(offer_id, deal_type, sort_date, district_id, price, rooms_count, '
+        'publisher_user_id) '
+        'VALUES(173975530, \'sale\', \'2020-08-10\', 4298, 1350000, 2, 1)'
     )
 
     # act
