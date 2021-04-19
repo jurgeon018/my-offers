@@ -1,7 +1,7 @@
 import typing
 
 import cian_core
-from cian_core.registry import postgres_connections
+from cian_core.registry import kafka_producers, postgres_connections
 
 
 if typing.TYPE_CHECKING:
@@ -9,6 +9,7 @@ if typing.TYPE_CHECKING:
     from cian_core.registry.base import Value
 
 pg: 'Value[PostgresConnection]' = postgres_connections('my_offers')
+kafka = kafka_producers('default')
 
 
 def setup() -> None:

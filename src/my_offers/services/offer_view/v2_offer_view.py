@@ -84,4 +84,5 @@ def v2_build_offer_view(
             enrich_data=enrich_data,
             status_tab=status_tab,
         ),
+        multiposting=object_model.multiposting,
     )

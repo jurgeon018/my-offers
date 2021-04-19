@@ -8,8 +8,7 @@ from my_offers.entities.duplicates import DuplicateSubscription
 from my_offers.helpers.page_info import get_page_info, get_pagination
 from my_offers.helpers.similar import is_offer_for_similar
 from my_offers.repositories import postgresql
-from my_offers.services import auctions, offer_view
-from my_offers.services import offers as offers_module
+from my_offers.services import auctions, offer_view, offers as offers_module
 from my_offers.services.notifications import get_notification_settings
 from my_offers.services.similars.helpers.table import get_similar_table_suffix
 

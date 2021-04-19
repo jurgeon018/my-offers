@@ -60,7 +60,7 @@ def test_build_offer_view(enrich_data_mock):
         id=111,
         main_photo_url=None,
         title='',
-        url='https://cian.ru/rent/flat/111',
+        url='https://cian.ru/rent/flat/111/',
         geo=OfferGeo(address=None, newbuilding=None, underground=None),
         subagent=None,
         price_info=PriceInfo(exact=None, range=None),
@@ -94,7 +94,8 @@ def test_build_offer_view(enrich_data_mock):
             declined_info=None
         ),
         status_type=None,
-        payed_by=None
+        payed_by=None,
+        multiposting=None
     )
 
     # act
@@ -164,7 +165,7 @@ def test_build_offer_view_depends_on_payed_by(
         id=offer_id_from_mock,
         main_photo_url=None,
         title='',
-        url=f'https://cian.ru/rent/flat/{offer_id_from_mock}',
+        url=f'https://cian.ru/rent/flat/{offer_id_from_mock}/',
         geo=OfferGeo(address=None, newbuilding=None, underground=None),
         subagent=None,
         price_info=PriceInfo(exact=None, range=None),
@@ -188,7 +189,8 @@ def test_build_offer_view_depends_on_payed_by(
             declined_info=None
         ),
         status_type=None,
-        payed_by=enrich_data_with_offers_payed_by_mock.offers_payed_by.get(offer_id_from_mock)
+        payed_by=enrich_data_with_offers_payed_by_mock.offers_payed_by.get(offer_id_from_mock),
+        multiposting=None
     )
 
     # act

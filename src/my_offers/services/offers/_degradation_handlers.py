@@ -126,6 +126,18 @@ get_views_counts_degradation_handler = get_degradation_handler(
     default=dict(),
 )
 
+get_views_current_degradation_handler = get_degradation_handler(
+    func=statistics.get_views_current,
+    key='cassandra.get_views_current',
+    default=None,
+)
+
+get_views_total_degradation_handler = get_degradation_handler(
+    func=statistics.get_views_total,
+    key='cassandra.get_views_total',
+    default=None,
+)
+
 get_searches_counts_degradation_handler = get_degradation_handler(
     func=statistics.get_searches_counts,
     key='cassandra.get_searches_counts',

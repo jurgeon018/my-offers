@@ -31,6 +31,7 @@ from .home_owner import HomeOwner
 from .kp import Kp
 from .land import Land
 from .monthly_income import MonthlyIncome
+from .multiposting import Multiposting
 from .phone import Phone
 from .photo import Photo
 from .platform import Platform
@@ -685,6 +686,8 @@ class ObjectModel:
     """Площадь от"""
     monthly_income: Optional[MonthlyIncome] = None
     """Месячная прибыль"""
+    multiposting: Optional[Multiposting] = None
+    """Мультипостинг"""
     name: Optional[str] = None
     """Наименование"""
     object_guid: Optional[str] = None

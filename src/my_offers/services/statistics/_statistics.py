@@ -175,3 +175,21 @@ async def _get_views_by_date_range(
     daily_stats = views_daily_rows + views_current_rows
 
     return sum(s.views for s in daily_stats)
+
+
+async def get_views_current(offer_ids: List[int], date: datetime) -> Dict[int, int]:
+    return await views_cs_repo.get_views_current_day(
+        offer_ids=offer_ids,
+        year=date.year,
+        month=date.month,
+        day=date.day,
+    )
+
+
+async def get_views_total(offer_ids: List[int], date: datetime) -> Dict[int, int]:
+    return await views_cs_repo.get_views_total_day(
+        offer_ids=offer_ids,
+        year=date.year,
+        month=date.month,
+        day=date.day,
+    )

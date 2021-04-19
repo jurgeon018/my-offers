@@ -39,11 +39,11 @@ async def test_save_offer_contract(mocker):
     pg.get().fetchrow.assert_called_once_with(
         'INSERT INTO offers_billing_contracts (id, user_id, actor_user_id, publisher_user_id, '
         'offer_id, start_date, payed_till, row_version, is_deleted, created_at, updated_at, '
-        'service_types) VALUES ($3, $24, $1, $18, $5, $22, $17, $20, $4, $2, $23, CAST($21 '
-        'AS offer_billing_service_type[])) ON CONFLICT (id) DO UPDATE SET id = $6, user_id '
+        'service_types) VALUES ($3, $24, $1, $18, $5, $22, $17, $20, $4, $2, $23, $21)'
+        ' ON CONFLICT (id) DO UPDATE SET id = $6, user_id '
         '= $9, actor_user_id = $10, publisher_user_id = $11, offer_id = $12, start_date = '
         '$13, payed_till = $14, row_version = $15, is_deleted = $16, updated_at = $7, '
-        'service_types = CAST($8 AS offer_billing_service_type[]) WHERE offers_billing'
+        'service_types = $8 WHERE offers_billing'
         '_contracts.row_version < $19 RETURNING offers_billing_contracts.id',
         offer_contract.actor_user_id,
         now,

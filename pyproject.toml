@@ -18,12 +18,12 @@ url = "https://nexus.cian.tech/repository/cian/simple/"
 default = true
 
 [tool.poetry.dependencies]
-python = ">=3.8.1,<4.0"
+python = "^3.9"
 asyncpgsa = "^0.26"
 cassandra-driver = "^3.19"
 cian-cache = "^1.1"
 cian-cassandra = "^0.10"
-cian-core = {version = "^1.25", extras = ["rabbitmq_consumer_cli", "graphite", "postgres", "cache", "cassandra", "kafka"]}
+cian-core = {version = "^1.35", extras = ["rabbitmq_consumer_cli", "graphite", "postgres", "cache", "cassandra", "kafka"]}
 cian-entities = "^1.7"
 cian-enum = "^1.1"
 cian-http = "^0.22"
@@ -45,16 +45,10 @@ tornado = "^6.0"
 automation-helpers = "*"
 cian-automation = "^2.0"
 cian-functional-test-utils = {version = "*", extras = ["python", "postgres", "graphite", "rabbitmq", "cache", "cassandra", "kafka"]}
-cian-lint = "*"
 cian-test-utils = "^1.2"
-diff-cover = "*"
 freezegun = "*"
-isort = "*"
 pytest = "*"
-pytest-cov = "*"
-pytest-env = "*"
 pytest-mock = "*"
 pytest-tornado = "*"
-tox = "*"
-tox-poetry = "*"
-astroid = "==2.4.2"
+astroid = "<2.5.3"
+cian-tools = ">=0.4"
