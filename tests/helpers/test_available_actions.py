@@ -35,7 +35,7 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_restore=True,
                                     can_raise=False,
                                     can_raise_without_addform=False,
-                                    can_change_publisher=True,
+                                    can_change_publisher=False,
                                     can_view_similar_offers=False
                                 )
                             ),
