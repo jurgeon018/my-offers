@@ -6,8 +6,8 @@ from my_offers.helpers.numbers import get_pretty_number
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 from my_offers.repositories.notification_center import v2_register_notifications
 from my_offers.repositories.notification_center.entities import (
-    RegisterNotificationsV2Request,
     RegisterNotificationV2Request,
+    RegisterNotificationsV2Request,
 )
 from my_offers.repositories.notification_center.entities.register_notification_v2_request import (
     NotificationType,

@@ -4,13 +4,14 @@ import pytest
 
 
 @pytest.fixture(autouse=True, scope='session')
-async def start(runner, pg, queue_service, cassandra_service, global_runtime_settings):
+async def start(runner, pg, queue_service, cassandra_service, global_runtime_settings, cassandra_statistics):
     await global_runtime_settings.set(
         RABBITMQ_CONNECT_TO_QUEUE_MASTER=False,
         RABBITMQ_CHECK_QUEUE_MASTER_INTERVAL=0,
     )
 
-    await cassandra_service.get_keyspace(alias='statistics', keyspace='statistics')
+    await cassandra_statistics.execute_scripts(Path('contrib') / 'cassandra' / 'schema_for_tests.ddl')
+
     await cassandra_service.get_keyspace(alias='search_coverage', keyspace='search_coverage')
 
     await pg.execute_scripts((Path('contrib') / 'postgresql' / 'migrations').glob('*.sql'))
@@ -111,3 +112,8 @@ async def favorites_mock(http_mock_service):
 @pytest.fixture(scope='session')
 async def callbook_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('callbook')
+
+
+@pytest.fixture(scope='session')
+async def cassandra_statistics(cassandra_service):
+    yield await cassandra_service.get_keyspace(alias='statistics', keyspace='statistics')

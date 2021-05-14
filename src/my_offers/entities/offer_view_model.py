@@ -72,6 +72,12 @@ class OfferGeo:
 
 
 @dataclass
+class Multiposting:
+    enabled: bool
+    """Включен ли Мультипостинг на объявлении?"""
+
+
+@dataclass
 class OfferViewModelV2:
     id: int
     """ID объявления"""
@@ -101,3 +107,5 @@ class OfferViewModelV2:
     """Тип статуса объявления"""
     payed_by: Optional[enums.OfferPayedByType]
     """За чей счет оплачена подача объявления"""
+    multiposting: Optional[Multiposting]
+    """Информация о Мультипостинге"""

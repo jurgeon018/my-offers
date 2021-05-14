@@ -92,7 +92,7 @@ async def test_v2_get_offer_views(mocker):
             GetOfferV2(
                 main_photo_url=None,
                 title='',
-                url='https://cian.ru/rent/flat/111',
+                url='https://cian.ru/rent/flat/111/',
                 geo=OfferGeo(address=None, newbuilding=None, underground=None),
                 subagent=None,
                 price_info=PriceInfo(exact=None, range=None),
@@ -124,7 +124,8 @@ async def test_v2_get_offer_views(mocker):
                     ),
                 ),
                 status_type=None,
-                payed_by=None
+                payed_by=None,
+                multiposting=None
             )
         ],
         {}

@@ -8,9 +8,7 @@ from tornado.ioloop import IOLoop
 
 from my_offers import setup
 from my_offers.helpers.schemas import get_entity_schema
-from my_offers.queue import consumers
-from my_offers.queue import entities as mq_entities
-from my_offers.queue import queues, schemas
+from my_offers.queue import consumers, entities as mq_entities, queues, schemas
 from my_offers.services import realty_resender
 from my_offers.services.duplicates import sync_offer_duplicates
 from my_offers.services.offers import delete_offers_data, reindex_offers_command, sync_offers

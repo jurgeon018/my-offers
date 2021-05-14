@@ -124,8 +124,6 @@ class BaseEnrichData:
     can_update_edit_dates: Dict[int, bool] = field(default_factory=dict)
     payed_till: Optional[Dict[int, datetime]] = None
     # statistics
-    views_counts: Dict[int, int] = field(default_factory=dict)
-    searches_counts: Dict[int, int] = field(default_factory=dict)
     favorites_counts: Dict[int, int] = field(default_factory=dict)
     offers_similars_counts: Dict[DuplicateTabType, Dict[int, int]] = field(default_factory=dict)
     calls_count: Dict[int, OfferCallCount] = field(default_factory=dict)
@@ -166,6 +164,8 @@ class EnrichData(BaseEnrichData):
     premoderation_info: Optional[Set[int]] = None
     offer_relevance_warnings: Optional[Dict[int, OfferRelevanceWarning]] = None
     archive_date: Optional[Dict[int, datetime]] = None
+    views_counts: Dict[int, int] = field(default_factory=dict)
+    searches_counts: Dict[int, int] = field(default_factory=dict)
 
     def get_urls_by_types(
             self,
@@ -218,9 +218,9 @@ class MobileEnrichData(BaseEnrichData):
     premoderation_info: Optional[Set[int]] = field(default=None)
     offer_with_pending_identification: Set[int] = field(default_factory=set)
     auctions: Dict[int, OfferAuction] = field(default_factory=dict)
-    views_daily_counts: Dict[int, int] = field(default_factory=dict)
     deactivated_service: Dict[int, OfferDeactivatedService] = field(default_factory=dict)
-
+    views_daily_counts: Optional[Dict[int, int]] = field(default=None)
+    views_totals_counts: Optional[Dict[int, int]] = field(default=None)
 
     def get_offer_offence(self, offer_id: int) -> Optional[List[OfferComplaint]]:
         if not self.moderation_info:
@@ -251,3 +251,19 @@ class MobileEnrichData(BaseEnrichData):
             return None
 
         return self.deactivated_service[offer_id]
+
+    def get_views_daily_counts(self, offer_id: int) -> Optional[int]:
+        if self.views_daily_counts is None:
+            return None
+
+        return self.views_daily_counts.get(offer_id, 0)
+
+    def get_views_total_counts(self, offer_id: int) -> Optional[int]:
+        if self.views_totals_counts is None:
+            return None
+
+        totals = self.views_totals_counts.get(offer_id, 0)
+        if current := self.get_views_daily_counts(offer_id):
+            totals += current
+
+        return totals

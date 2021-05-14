@@ -15,8 +15,8 @@ from my_offers.queue.producers import announcement_models_producer
 from my_offers.repositories import monolith_cian_elasticapi, monolith_cian_realty, postgresql
 from my_offers.repositories.monolith_cian_elasticapi.entities import (
     ElasticResultIElasticAnnouncementElasticAnnouncementError as ElasticAnnouncementGetResponse,
+    GetApiElasticAnnouncementGet,
 )
-from my_offers.repositories.monolith_cian_elasticapi.entities import GetApiElasticAnnouncementGet
 from my_offers.repositories.monolith_cian_realty.entities import (
     ApiV1ResendReportingMessagesGetJob,
     GetResendMessagesJobResponse,

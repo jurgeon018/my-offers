@@ -54,6 +54,7 @@ from .home_owner import HomeOwner
 from .kp import Kp
 from .land import Land
 from .monthly_income import MonthlyIncome
+from .multiposting import Multiposting
 from .rent_by_parts import RentByParts
 from .photo import Photo
 from .source_phone import SourcePhone
