@@ -69,6 +69,8 @@ info:
 paths:
   /v1/get-user-calls-by-offers-totals/:
     post:
+      consumes:
+      - application/json
       parameters:
       - in: body
         name: body
