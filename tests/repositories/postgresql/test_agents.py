@@ -9,11 +9,7 @@ from my_offers import pg
 from my_offers.entities.agents import Agent, AgentName
 from my_offers.enums import AgentAccountType
 from my_offers.repositories import postgresql
-from my_offers.repositories.postgresql.agents import (
-    get_agent_by_user_id_checking_row_version,
-    get_agent_names,
-    get_master_user_id,
-)
+from my_offers.repositories.postgresql.agents import get_agent_names, get_master_user_id
 
 
 pytestmark = pytest.mark.gen_test
@@ -164,19 +160,3 @@ async def test_get_agent_names():
         [11],
         timeout=3,
     )
-
-
-async def test_get_agent_by_user_id_checking_row_version__no_row_returned__return_none(
-    mocker
-):
-    # arrange
-    pg.get().fetchrow.return_value = future()
-
-    # act
-    result = await get_agent_by_user_id_checking_row_version(
-        user_id=mocker.sentinel.user_id,
-        new_row_version=mocker.sentinel.new_row_version
-    )
-
-    # assert
-    assert result is None

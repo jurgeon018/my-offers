@@ -43,13 +43,15 @@ async def update_agents_hierarchy(agent: AgentMessage) -> None:
         middle_name=agent.middle_name,
         last_name=agent.last_name,
     )
-    old_agent = await postgresql.get_agent_by_user_id_checking_row_version(
-        user_id=new_agent.realty_user_id,
-        new_row_version=new_agent.row_version
-    )
 
-    if not old_agent:
+    old_agent = await postgresql.get_agent_by_user_id(user_id=new_agent.realty_user_id)
+
+    if (
+        old_agent
+        and old_agent.row_version >= new_agent.row_version
+    ):
         return
+
 
     try:
         await postgresql.save_agent(agent=new_agent)
@@ -72,6 +74,8 @@ async def reindex_agent_offers_master(
 ) -> None:
     """Отправляем событие об изменении мастера объявления в зависимости от того, изменился ли мастер аккаунт."""
 
+    # Cтарый идентификатор мастера на объявлениях - это либо идентификатор самого агента,
+    # если мастера не было, либо идентификатор мастер аккаунта
     old_master_user_id = (
         old_agent.master_agent_user_id
         if (old_agent and old_agent.master_agent_user_id)

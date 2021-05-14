@@ -183,5 +183,5 @@ async def update_offer_master_user_callback(messages: List[Message[UpdateOfferMa
     for message in messages:
         update_offer_master_message: UpdateOfferMasterUserMessage = message.data
 
-        with new_operation_id():
+        with new_operation_id(update_offer_master_message.operation_id):
             await update_offer_master_user(update_offer_master_message)
