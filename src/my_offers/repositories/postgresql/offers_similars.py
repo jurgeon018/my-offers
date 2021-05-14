@@ -22,6 +22,7 @@ offers_similars_flat = sa.Table(
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
     sa.Column('old_price', sa.FLOAT, nullable=True),
+    sa.Column('publisher_user_id', sa.BIGINT, nullable=True),
 )
 
 offers_similars_test = sa.Table(
@@ -36,6 +37,7 @@ offers_similars_test = sa.Table(
     sa.Column('rooms_count', sa.INT, nullable=True),
     sa.Column('sort_date', sa.TIMESTAMP, nullable=False),
     sa.Column('old_price', sa.FLOAT, nullable=True),
+    sa.Column('publisher_user_id', sa.BIGINT, nullable=True),
 )
 
 TABLES_MAP = {
@@ -108,6 +110,7 @@ async def unset_group_id(offer_ids: List[int]) -> None:
 async def get_similars_by_offer_id(
         *,
         offer_id: int,
+        user_id: int,
         price_kf: float,
         room_delta: int,
         limit: int,
@@ -154,6 +157,7 @@ async def get_similars_by_offer_id(
     where
       os.deal_type = offer.deal_type
       and os.offer_id <> offer.offer_id
+      and os.publisher_user_id <> $4
       and ({tab_condition})
     order by
         case
@@ -166,13 +170,14 @@ async def get_similars_by_offer_id(
     offset $3
     """
 
-    rows = await pg.get().fetch(query, offer_id, limit, offset)
+    rows = await pg.get().fetch(query, offer_id, limit, offset, user_id)
     return {row['offer_id']: offer_similar_with_type_mapper.map_from(row) for row in rows}
 
 
 async def get_similars_counters_by_offer_ids(
         *,
         offer_ids: List[int],
+        user_id: int,
         price_kf: float,
         room_delta: int,
         suffix: str,
@@ -213,12 +218,13 @@ async def get_similars_counters_by_offer_ids(
     where
       os.deal_type = offer.deal_type
       and os.offer_id <> offer.offer_id
+      and os.publisher_user_id <> $2
       and ({tab_condition})
     group by
         offer.offer_id
     """
 
-    rows = await pg.get().fetch(query, offer_ids)
+    rows = await pg.get().fetch(query, offer_ids, user_id)
 
     return [_map_offer_similar_counter(row) for row in rows]
 
@@ -226,12 +232,14 @@ async def get_similars_counters_by_offer_ids(
 async def get_similar_counter_by_offer_id(
         *,
         offer_id: int,
+        user_id: int,
         price_kf: float,
         room_delta: int,
         suffix: str,
 ) -> entities.OfferSimilarCounter:
     data = await get_similars_counters_by_offer_ids(
         offer_ids=[offer_id],
+        user_id=user_id,
         price_kf=price_kf,
         room_delta=room_delta,
         suffix=suffix,

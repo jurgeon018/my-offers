@@ -14,7 +14,7 @@ from my_offers.entities.mobile_offer import ConcurrencyType, OfferAuction, Offer
 from my_offers.entities.offer_view_model import Subagent
 from my_offers.enums import DuplicateTabType, ModerationOffenceStatus
 from my_offers.repositories.auction.entities import MobileBetAnnouncementInfo, V1GetAnnouncementsInfoForMobile
-from my_offers.repositories.callbook.entities import OfferCallCount
+from my_offers.repositories.callbook.entities import GetUserCallsByOffersStatsRequest, OfferCallCount
 from my_offers.repositories.moderation_checks_orchestrator.entities import UserIdentificationResult
 from my_offers.repositories.postgresql.agents import get_master_user_id
 from my_offers.services import favorites
@@ -93,11 +93,12 @@ async def load_mobile_enrich_data(
             asyncio.ensure_future(_load_favorites_counts(offer_ids)),
             asyncio.ensure_future(_load_views_totals_counts(offer_ids)),
             asyncio.ensure_future(_load_views_daily_counts(offer_ids)),
-            asyncio.ensure_future(_load_calls(offer_ids)),
+            asyncio.ensure_future(_load_calls(params.get_user_id(), offer_ids)),
             asyncio.ensure_future(_load_payed_till(offer_ids)),
             asyncio.ensure_future(_load_mobile_auctions(offer_ids, params.get_user_id())),
             asyncio.ensure_future(_load_pending_identification_offers([params.get_user_id()])),
             asyncio.ensure_future(_load_offers_similars_counters(
+                user_id=params.get_user_id(),
                 offer_ids=params.get_similar_offers(),
                 is_test=params.is_test_offers
             )),
@@ -147,10 +148,11 @@ async def load_enrich_data(
             asyncio.ensure_future(_load_favorites_counts(offer_ids)),
             asyncio.ensure_future(_load_searches_counts(offer_ids)),
             asyncio.ensure_future(_load_views_counts(offer_ids)),
-            asyncio.ensure_future(_load_calls(offer_ids)),
+            asyncio.ensure_future(_load_calls(params.get_user_id(), offer_ids)),
             asyncio.ensure_future(_load_auctions(offer_ids)),
             asyncio.ensure_future(_load_payed_till(offer_ids)),
             asyncio.ensure_future(_load_offers_similars_counters(
+                user_id=params.get_user_id(),
                 offer_ids=params.get_similar_offers(),
                 is_test=params.is_test_offers
             )),
@@ -461,13 +463,14 @@ async def _load_favorites_counts(offer_ids: List[int]) -> EnrichItem:
 
 
 @statsd_timer(key='enrich.load_similars_counters')
-async def _load_offers_similars_counters(*, offer_ids: List[int], is_test: bool) -> EnrichItem:
+async def _load_offers_similars_counters(*, offer_ids: List[int], user_id: int, is_test: bool) -> EnrichItem:
     if not offer_ids:
         return EnrichItem(key='offers_similars_counts', degraded=False, value={})
 
     suffix = get_similar_table_suffix_by_params(is_test=is_test)
     result = await get_similars_counters_by_offer_ids_degradation_handler(
         offer_ids=offer_ids,
+        user_id=user_id,
         price_kf=settings.SIMILAR_PRICE_KF,
         room_delta=settings.SIMILAR_ROOM_DELTA,
         suffix=suffix,
@@ -513,8 +516,11 @@ async def _load_image_offenses(offer_ids: List[int]) -> EnrichItem:
 
 
 @statsd_timer(key='enrich.load_calls')
-async def _load_calls(offer_ids: List[int]) -> EnrichItem:
-    result = await get_calls_count_degradation_handler(offer_ids)
+async def _load_calls(user_id: int, offer_ids: List[int]) -> EnrichItem:
+    result = await get_calls_count_degradation_handler(GetUserCallsByOffersStatsRequest(
+        user_id=user_id,
+        offer_ids=offer_ids
+    ))
     if result.degraded:
         return EnrichItem(key='calls_count', degraded=result.degraded, value={})
 

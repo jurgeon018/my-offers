@@ -23,6 +23,7 @@ async def v1_get_offers_similars_count(
     suffix = get_similar_table_suffix(object_model)
 
     counters = await get_similars_counters_by_offer_ids(
+        user_id=object_model.published_user_id,
         offer_ids=offer_ids,
         price_kf=settings.SIMILAR_PRICE_KF,
         room_delta=settings.SIMILAR_ROOM_DELTA,

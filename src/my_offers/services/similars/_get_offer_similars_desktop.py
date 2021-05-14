@@ -33,6 +33,7 @@ async def v1_get_offer_similars_desktop_public(
     # todo: https://jira.cian.tech/browse/CD-85593 - для вкладки ВСЕ общее кол-во можно считать через window функцию
     similars, counter = await asyncio.gather(
         postgresql.get_similars_by_offer_id(
+            user_id=realty_user_id,
             tab_type=enums.DuplicateTabType.all,
             offer_id=object_model.id,
             limit=limit,
@@ -42,6 +43,7 @@ async def v1_get_offer_similars_desktop_public(
             suffix=suffix
         ),
         postgresql.get_similar_counter_by_offer_id(
+            user_id=realty_user_id,
             offer_id=object_model.id,
             price_kf=settings.SIMILAR_PRICE_KF,
             room_delta=settings.SIMILAR_ROOM_DELTA,
