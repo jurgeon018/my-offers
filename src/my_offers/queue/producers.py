@@ -34,7 +34,7 @@ async def _get_offer_duplicate_price_changed_message(offer_id: int) -> OfferDupl
     )
 
 
-async def _get_announcement_models(model):
+async def _get_announcement_models(model) -> AnnouncementMessage:
     return AnnouncementMessage(
         model=model,
         operation_id=get_operation_id(),
@@ -46,7 +46,7 @@ async def _get_update_offer_master_message(
     *,
     offer_id: int,
     new_master_user_id: int
-):
+) -> UpdateOfferMasterUserMessage:
     return UpdateOfferMasterUserMessage(
         offer_id=offer_id,
         new_master_user_id=new_master_user_id,
