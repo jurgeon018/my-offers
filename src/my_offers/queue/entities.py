@@ -132,3 +132,15 @@ class OfferRelevanceWarningMessage:
     """Планируемая дата отклонения объявления"""
     relevance_type_message: Optional[str] = None
     """Тип сообщения для пользователя"""
+
+
+@dataclass
+class UpdateOfferMasterUserMessage:
+    offer_id: int
+    """Идентификатор объявления"""
+    new_master_user_id: int
+    """Идентификатор нового мастера объявления"""
+    operation_id: str
+    """Operation id"""
+    date: datetime
+    """Время изменения"""

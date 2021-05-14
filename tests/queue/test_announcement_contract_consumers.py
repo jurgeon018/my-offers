@@ -66,7 +66,7 @@ async def test_mark_to_delete_announcement_contract_callback(mocker):
     message.data = ServiceContractMessage(
         service_contract_reporting_model=offer_contract,
         operation_id=opeartion_id,
-        date=datetime(2019, 1, 2),
+        date=datetime(2021, 4, 22),
     )
     mark_to_delete_announcement_contract = mocker.patch(
         'my_offers.queue.consumers.mark_to_delete_announcement_contract',

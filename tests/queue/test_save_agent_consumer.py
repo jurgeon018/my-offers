@@ -1,10 +1,8 @@
-from datetime import datetime
-
 import pytest
 from cian_core.rabbitmq.consumer import Message
 from cian_test_utils import future, v
 
-from my_offers.entities import Agent, AgentMessage
+from my_offers.entities import AgentMessage
 from my_offers.queue.consumers import save_agent_callback
 
 
@@ -52,13 +50,8 @@ async def test_save_agent_callback__new_agent_row_version_lower_than_old__return
     message.data = event
     new_operation_id_mock = mocker.patch('my_offers.queue.consumers.new_operation_id')
     mocker.patch(
-        'my_offers.services.agents._agents_hierarchy.postgresql.get_agent_by_user_id',
-        return_value=future(Agent(
-            id=1,
-            row_version=2,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
-        ))
+        'my_offers.services.agents._agents_hierarchy.postgresql.get_agent_by_user_id_checking_row_version',
+        return_value=future()
     )
     save_agent_mock = mocker.patch('my_offers.services.agents._agents_hierarchy.postgresql.save_agent')
     new_operation_id_mock.return_value.__enter__.return_value = operation_id

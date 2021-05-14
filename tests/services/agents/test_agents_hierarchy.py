@@ -17,6 +17,16 @@ async def test_update_agents_hierarchy(mocker):
     now = datetime.now(pytz.utc)
     expected_agent = v(Agent(
         id=1,
+        row_version=1,
+        realty_user_id=222,
+        master_agent_user_id=333,
+        created_at=now,
+        updated_at=now,
+        account_type=AgentAccountType.agency
+    ))
+
+    old_agent = v(Agent(
+        id=1,
         row_version=0,
         realty_user_id=222,
         master_agent_user_id=333,
@@ -24,16 +34,19 @@ async def test_update_agents_hierarchy(mocker):
         updated_at=now,
         account_type=AgentAccountType.agency
     ))
+
     agent = v(AgentMessage(
         id=1,
-        row_version=0,
+        row_version=1,
         realty_user_id=222,
         master_agent_user_id=333,
         account_type=AgentAccountType.agency
     ))
     mocker.patch(
-        'my_offers.services.agents._agents_hierarchy.postgresql.get_agent_by_user_id',
-        return_value=future()
+        'my_offers.services.agents._agents_hierarchy.postgresql.get_agent_by_user_id_checking_row_version',
+        return_value=future(
+            old_agent
+        )
     )
 
     save_agent_mock = mocker.patch(

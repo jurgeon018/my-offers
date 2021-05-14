@@ -20,6 +20,7 @@ from my_offers.queue.entities import (
     OfferRelevanceWarningMessage,
     SaveUnloadErrorMessage,
     ServiceContractMessage,
+    UpdateOfferMasterUserMessage,
 )
 from my_offers.repositories.postgresql.offer_premoderation import save_offer_premoderation
 from my_offers.services.agents import update_agents_hierarchy
@@ -32,6 +33,7 @@ from my_offers.services.duplicates import send_new_duplicate_notifications, upda
 from my_offers.services.duplicates.send_duplicate_notifications import send_duplicate_price_changed_notifications
 from my_offers.services.moderation.moderation_service import save_offer_offence
 from my_offers.services.offer_relevance_warnings import save_offer_relevance_warning
+from my_offers.services.offers import update_offer_master_user
 from my_offers.services.offers_import import save_offers_import_error
 from my_offers.services.users import delete_user_data
 
@@ -175,3 +177,11 @@ async def save_offer_relevance_warning_callback(messages: List[Message[OfferRele
 
         with new_operation_id():
             await save_offer_relevance_warning(offer_relevance_warning)
+
+
+async def update_offer_master_user_callback(messages: List[Message[UpdateOfferMasterUserMessage]]) -> None:
+    for message in messages:
+        update_offer_master_message: UpdateOfferMasterUserMessage = message.data
+
+        with new_operation_id():
+            await update_offer_master_user(update_offer_master_message)

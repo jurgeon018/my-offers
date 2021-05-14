@@ -2,6 +2,7 @@ from typing import List, Optional
 
 import asyncpgsa
 from simple_settings import settings
+from sqlalchemy import and_
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
@@ -12,6 +13,28 @@ from my_offers.repositories.postgresql.tables import agents_hierarchy
 
 async def get_agent_by_user_id(user_id: int) -> Optional[Agent]:
     select_query = agents_hierarchy.select().where(agents_hierarchy.c.realty_user_id == user_id)
+    query, params = asyncpgsa.compile_query(select_query)
+    if row := await pg.get().fetchrow(query, *params):
+        return agent_mapper.map_from(row)
+    return None
+
+
+async def get_agent_by_user_id_checking_row_version(
+    *,
+    user_id: int,
+    new_row_version: int
+) -> Optional[Agent]:
+    """
+    Получаем агента с проверкой, что его row_version меньше переданного.
+    Нужно для того, чтобы убедиться, что в базе лежит старый агент, а прилетело событие с новым.
+    """
+
+    select_query = agents_hierarchy.select().where(
+        and_(
+            agents_hierarchy.c.realty_user_id == user_id,
+            agents_hierarchy.c.row_version < new_row_version,
+        )
+    )
     query, params = asyncpgsa.compile_query(select_query)
     if row := await pg.get().fetchrow(query, *params):
         return agent_mapper.map_from(row)

@@ -90,6 +90,12 @@ class OfferDuplicateV1RoutingKey(StrEnum):
     price_changed = 'my-offers.offer-duplicate.v1.price_changed'
 
 
+class OfferMasterUserV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    update = 'my-offers.offer-master-user.v1.update'
+
+
 class OffersResendV1RoutingKey(StrEnum):
     __value_format__ = NoFormat
 
