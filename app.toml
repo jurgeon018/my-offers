@@ -171,3 +171,8 @@ command = "clean-users-command"
 [job.sync_offers]
 type = "manage"
 command = "sync-offers-command"
+
+[job.sync_offers_cron]
+type = "cron"
+command = "sync-offers-command"
+cron = "0 21 * * *"
