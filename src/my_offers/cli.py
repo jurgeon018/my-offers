@@ -168,6 +168,13 @@ register_consumer(
     dead_queue_enabled=True,
 )
 
+register_consumer(
+    command=cli.command('update_offer_master_user_consumer'),
+    queue=queues.update_offer_master_user_queue,
+    callback=consumers.update_offer_master_user_callback,
+    schema_cls=get_entity_schema(mq_entities.UpdateOfferMasterUserMessage),
+    dead_queue_enabled=True,
+)
 
 @cli.command()
 def reindex_offers() -> None:

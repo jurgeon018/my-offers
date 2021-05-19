@@ -14,6 +14,7 @@ from my_offers.repositories.postgresql.object_model import (
 from my_offers.repositories.postgresql.offer import (
     delete_offers,
     get_offer_counters_mobile,
+    get_offer_ids_by_master_and_user_id,
     get_offers_creation_date,
     get_offers_ids_by_tab,
     get_offers_row_version,
@@ -23,6 +24,7 @@ from my_offers.repositories.postgresql.offer import (
     update_offer,
     update_offer_has_active_relevance_warning,
     update_offer_master_user_id_and_payed_by,
+    update_offer_master_user_id_by_id,
     update_offers_master_user_id_and_payed_by,
 )
 from my_offers.repositories.postgresql.offer_import_error import delete_offer_import_error

@@ -109,7 +109,7 @@ async def get_offer_publisher_user_id(offer_id: int) -> Optional[int]:
     options = [
         contracts.c.offer_id == offer_id,
         #  исключаем аукцион, может быть оплачен мастером для объявления за счет саба, CD-104024
-        OfferServiceTypes.auction.value != all_(contracts.c.service_types)
+        [OfferServiceTypes.auction.value] != contracts.c.service_types
     ]
 
     query, params = asyncpgsa.compile_query(

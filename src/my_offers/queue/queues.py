@@ -11,6 +11,7 @@ from my_offers.queue.routing_keys import (
     AnnouncementsRelevanceReportingV1RoutingKey,
     ModerationOfferOffenceReportingV1RoutingKey,
     OfferDuplicateV1RoutingKey,
+    OfferMasterUserV1RoutingKey,
     OffersResendV1RoutingKey,
     ServiceContractsReportingV1RoutingKey,
     UnloadOrderReportingV1RoutingKey,
@@ -170,6 +171,16 @@ offer_duplicate_price_changed_notification_queue = Queue(
         QueueBinding(
             exchange=my_offers_exchange,
             routing_key=OfferDuplicateV1RoutingKey.price_changed.value,
+        ),
+    ],
+)
+
+update_offer_master_user_queue = Queue(
+    name=get_modified_queue_name('update_offer_master_user'),
+    bindings=[
+        QueueBinding(
+            exchange=my_offers_exchange,
+            routing_key=OfferMasterUserV1RoutingKey.update.value,
         ),
     ],
 )
