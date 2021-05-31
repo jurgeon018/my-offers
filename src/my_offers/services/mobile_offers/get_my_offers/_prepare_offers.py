@@ -89,7 +89,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         formatted_info=get_mobile_offer_title(object_model=object_model),
         formatted_address=get_address_for_push(object_model.geo),
         stats=OfferStats(
-            competitors_count=enrich_data.get_same_building_counts(offer_id),
+            competitors_count=enrich_data.get_total_similar_count(offer_id),
             duplicates_count=enrich_data.get_duplicates_counts(offer_id),
             calls_count=enrich_data.get_calls_count(offer_id),
             skipped_calls_count=enrich_data.get_missed_calls_count(offer_id),

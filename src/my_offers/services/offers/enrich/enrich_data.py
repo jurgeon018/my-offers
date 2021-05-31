@@ -140,6 +140,9 @@ class BaseEnrichData:
     def get_same_building_counts(self, offer_id: int) -> Optional[int]:
         return self.offers_similars_counts.get(DuplicateTabType.same_building, {}).get(offer_id)
 
+    def get_total_similar_count(self, offer_id: int) -> Optional[int]:
+        return self.offers_similars_counts.get(DuplicateTabType.all, {}).get(offer_id)
+
     def get_calls_count(self, offer_id: int) -> Optional[int]:
         if offer_id not in self.calls_count:
             return None
