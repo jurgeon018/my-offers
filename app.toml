@@ -153,6 +153,8 @@ memory = 2048
 type = "consumer"
 command = "sync-offer-duplicates-cron"
 
+[job.sync_offer_duplicates_cron.prod]
+cpu = 0.6
 
 [job.clear_deleted_offer_cron]
 type = "consumer"
