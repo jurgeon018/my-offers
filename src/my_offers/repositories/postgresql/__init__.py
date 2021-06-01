@@ -13,7 +13,8 @@ from my_offers.repositories.postgresql.object_model import (
 )
 from my_offers.repositories.postgresql.offer import (
     delete_offers,
-    get_offer_counters_mobile,
+    get_offer_counters_mobile_v1,
+    get_offer_counters_mobile_v2,
     get_offer_ids_by_master_and_user_id,
     get_offers_creation_date,
     get_offers_ids_by_tab,

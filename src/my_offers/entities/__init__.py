@@ -71,7 +71,8 @@ from .mobile_offer import (
     GetOffersCountersMobileArchivedInactiveCounter,
     GetOffersCountersMobileCounter,
     GetOffersCountersMobileRequest,
-    GetOffersCountersMobileResponse,
+    GetOffersCountersMobileResponseV1,
+    GetOffersCountersMobileResponseV2,
     MobileGetMyOffersRequest,
     MobileGetMyOffersResponse,
 )
