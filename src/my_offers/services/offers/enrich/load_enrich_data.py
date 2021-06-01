@@ -482,7 +482,8 @@ async def _load_offers_similars_counters(*, offer_ids: List[int], user_id: int, 
 
     value = {
         DuplicateTabType.duplicate: {c.offer_id: c.duplicates_count for c in result.value},
-        DuplicateTabType.same_building: {c.offer_id: c.same_building_count for c in result.value}
+        DuplicateTabType.same_building: {c.offer_id: c.same_building_count for c in result.value},
+        DuplicateTabType.all: {c.offer_id: c.total_count for c in result.value}
     }
     return EnrichItem(key='offers_similars_counts', degraded=False, value=value)
 
