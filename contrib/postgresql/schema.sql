@@ -283,3 +283,10 @@ create table users_reindex_queue
 );
 
 create index on users_reindex_queue(created_at);
+
+
+create table moderation_alerts
+(
+    user_id         bigint                   not null primary key,
+    last_visit_date timestamp with time zone not null
+);

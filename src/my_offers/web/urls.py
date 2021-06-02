@@ -6,7 +6,7 @@ from tornado.web import url
 from my_offers import entities
 from my_offers.entities.get_offers import GetOfferV2
 from my_offers.entities.qa import QaGetByIdRequest
-from my_offers.services import actions, mobile_offers, notifications, offers, qa, similars, valuation
+from my_offers.services import actions, mobile_offers, moderation_alerts, notifications, offers, qa, similars, valuation
 from my_offers.web.handlers import PublicHandler
 
 
@@ -153,6 +153,17 @@ urlpatterns = base_urls.urlpatterns + [
             method='GET',  # pragma: no mutate
             response_schema=entities.DuplicateSubscription,
             base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
+        r'/public/v1/hide-warnings/$',
+        get_handler(
+            service=moderation_alerts.v1_hide_warnings_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.HideWarningsRequest,
+            response_schema=None,
+            base_handler_cls=PublicHandler,
+            tags=['mobile']
         )
     ),
 
