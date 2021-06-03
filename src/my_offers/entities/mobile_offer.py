@@ -46,7 +46,6 @@ class ConcurrencyType:
     """Тип"""
 
 
-
 @dataclass
 class OfferAuction:
     increase_bets_positions_count: Optional[int]
