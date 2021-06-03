@@ -75,3 +75,4 @@ from .mobile_offer import (
     MobileGetMyOffersRequest,
     MobileGetMyOffersResponse,
 )
+from .moderation_alerts import HideWarningsRequest

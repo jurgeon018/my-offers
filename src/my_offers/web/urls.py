@@ -160,7 +160,7 @@ urlpatterns = base_urls.urlpatterns + [
         get_handler(
             service=moderation_alerts.v1_hide_warnings_public,
             method='POST',  # pragma: no mutate
-            request_schema=None,
+            request_schema=entities.HideWarningsRequest,
             response_schema=None,
             base_handler_cls=PublicHandler,
             tags=['mobile']

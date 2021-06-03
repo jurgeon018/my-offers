@@ -7,7 +7,7 @@ from my_offers import pg
 from my_offers.repositories.postgresql import tables
 
 
-async def save_last_visit_date(*, user_id: int, last_visit_date: datetime) -> None:
+async def save_moderation_alerts_last_visit_date(*, user_id: int, last_visit_date: datetime) -> None:
     insert_query = insert(tables.moderation_alerts)
 
     values = dict(

@@ -60,3 +60,23 @@ async def test_v1_hide_warnings__200__update_record(http, pg):
     assert row_after_second_request['last_visit_date'].date() == datetime.now().date()
 
     assert row_after_first_request['last_visit_date'] < row_after_second_request['last_visit_date']
+
+
+async def test_v1_hide_warnings__200__sale_tab_type(http, pg):
+    # arrange
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v1/hide-warnings/',
+        headers={
+            'X-Real-UserId': 29437831
+        },
+        json={'tabType': 'sale'},
+    )
+
+    row = await pg.fetchrow('SELECT * FROM moderation_alerts')
+
+    # assert
+    assert response.body == b''
+    assert row is None
