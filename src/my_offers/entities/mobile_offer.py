@@ -46,7 +46,6 @@ class ConcurrencyType:
     """Тип"""
 
 
-
 @dataclass
 class OfferAuction:
     increase_bets_positions_count: Optional[int]
@@ -202,7 +201,7 @@ class GetOffersCountersMobileArchivedInactiveCounter:
 
 
 @dataclass
-class GetOffersCountersMobileResponse:
+class GetOffersCountersMobileResponseV1:
     rent: Optional[GetOffersCountersMobileCounter]
     """Вкладка аренда"""
     sale: Optional[GetOffersCountersMobileCounter]
@@ -211,3 +210,17 @@ class GetOffersCountersMobileResponse:
     """Вкладка архивные"""
     inactive: Optional[GetOffersCountersMobileArchivedInactiveCounter]
     """Вкладка Неактивные + Отклоненные"""
+
+
+@dataclass
+class GetOffersCountersMobileResponseV2:
+    rent: Optional[GetOffersCountersMobileCounter]
+    """Вкладка аренда"""
+    sale: Optional[GetOffersCountersMobileCounter]
+    """Вкладка продажа"""
+    archived: Optional[GetOffersCountersMobileArchivedInactiveCounter]
+    """Вкладка архивные"""
+    inactive: Optional[GetOffersCountersMobileArchivedInactiveCounter]
+    """Вкладка Неактивные"""
+    declined: Optional[GetOffersCountersMobileArchivedInactiveCounter]
+    """Вкладка Отклоненные"""

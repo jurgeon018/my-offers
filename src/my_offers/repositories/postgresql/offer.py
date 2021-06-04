@@ -184,8 +184,8 @@ async def get_offer_counters(filters: Dict[str, Any]) -> OfferCounters:
     )
 
 
-@statsd_timer(key='psql.get_offer_counters_mobile')
-async def get_offer_counters_mobile(filters: Dict[str, Any]) -> entities.GetOffersCountersMobileResponse:
+@statsd_timer(key='psql.get_offer_counters_mobile_v1')
+async def get_offer_counters_mobile_v1(filters: Dict[str, Any]) -> entities.GetOffersCountersMobileResponseV1:
     conditions = prepare_conditions(filters)
 
     raw_query: TextClause = text("""
@@ -229,7 +229,7 @@ async def get_offer_counters_mobile(filters: Dict[str, Any]) -> entities.GetOffe
 
     result = await pg.get().fetchrow(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
 
-    return entities.GetOffersCountersMobileResponse(
+    return entities.GetOffersCountersMobileResponseV1(
         rent=entities.GetOffersCountersMobileCounter(
             total=result['rent_total'],
             flat=result['rent_flat'],
@@ -251,6 +251,89 @@ async def get_offer_counters_mobile(filters: Dict[str, Any]) -> entities.GetOffe
             total=result['inactive_total'],
             rent=result['inactive_rent'],
             sale=result['inactive_sale'],
+        ),
+    )
+
+
+@statsd_timer(key='psql.get_offer_counters_mobile_v2')
+async def get_offer_counters_mobile_v2(filters: Dict[str, Any]) -> entities.GetOffersCountersMobileResponseV2:
+    conditions = prepare_conditions(filters)
+
+    raw_query: TextClause = text("""
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'flat' THEN 1 END), 0)
+           AS rent_flat,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'suburban' THEN 1 END), 0)
+           AS rent_suburban,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' AND offer_type = 'commercial' THEN 1 END), 0)
+           AS rent_commercial,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'active' THEN 1 END), 0)
+           AS rent_total,
+
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'flat' THEN 1 END), 0)
+           AS sale_flat,
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'suburban' THEN 1 END), 0)
+           AS sale_suburban,
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' AND offer_type = 'commercial' THEN 1 END), 0)
+           AS sale_commercial,
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'active' THEN 1 END), 0)
+           AS sale_total,
+
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'archived' THEN 1 END), 0)
+           AS archived_sale,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'archived' THEN 1 END), 0)
+           AS archived_rent,
+       COALESCE(SUM(CASE WHEN status_tab = 'archived' THEN 1 END), 0)
+           AS archived_total,
+
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'notActive' THEN 1 END), 0)
+           AS inactive_sale,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'notActive' THEN 1 END), 0)
+           AS inactive_rent,
+       COALESCE(SUM(CASE WHEN status_tab = 'notActive' THEN 1 END), 0)
+           AS inactive_total,
+
+       COALESCE(SUM(CASE WHEN deal_type = 'sale' AND status_tab = 'declined' THEN 1 END), 0)
+           AS declined_sale,
+       COALESCE(SUM(CASE WHEN deal_type = 'rent' AND status_tab = 'declined' THEN 1 END), 0)
+           AS declined_rent,
+       COALESCE(SUM(CASE WHEN status_tab = 'declined' THEN 1 END), 0)
+           AS declined_total
+    """)
+
+    query, params = asyncpgsa.compile_query(
+        select([raw_query])
+        .where(and_(*conditions))
+    )
+
+    result = await pg.get().fetchrow(query, *params, timeout=settings.DB_SLOW_TIMEOUT)
+
+    return entities.GetOffersCountersMobileResponseV2(
+        rent=entities.GetOffersCountersMobileCounter(
+            total=result['rent_total'],
+            flat=result['rent_flat'],
+            suburban=result['rent_suburban'],
+            commercial=result['rent_commercial'],
+        ),
+        sale=entities.GetOffersCountersMobileCounter(
+            total=result['sale_total'],
+            flat=result['sale_flat'],
+            suburban=result['sale_suburban'],
+            commercial=result['sale_commercial'],
+        ),
+        archived=entities.GetOffersCountersMobileArchivedInactiveCounter(
+            total=result['archived_total'],
+            rent=result['archived_rent'],
+            sale=result['archived_sale'],
+        ),
+        inactive=entities.GetOffersCountersMobileArchivedInactiveCounter(
+            total=result['inactive_total'],
+            rent=result['inactive_rent'],
+            sale=result['inactive_sale'],
+        ),
+        declined=entities.GetOffersCountersMobileArchivedInactiveCounter(
+            total=result['declined_total'],
+            rent=result['declined_rent'],
+            sale=result['declined_sale'],
         ),
     )
 
