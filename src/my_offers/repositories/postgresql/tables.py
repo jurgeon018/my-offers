@@ -132,3 +132,10 @@ offer_relevance_warnings = sa.Table(
     sa.Column('created_at', sa.TIMESTAMP, nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP, nullable=False),
 )
+
+moderation_alerts = sa.Table(
+    'moderation_alerts',
+    metadata,
+    sa.Column('user_id', sa.BIGINT, primary_key=True),
+    sa.Column('last_visit_date', sa.TIMESTAMP, nullable=False),
+)
