@@ -1,7 +1,7 @@
 from cian_core.degradation import get_degradation_handler
 from simple_settings import settings
 
-from my_offers.entities import AgentHierarchyData, GetOffersCountersMobileResponse
+from my_offers.entities import AgentHierarchyData, GetOffersCountersMobileResponseV1, GetOffersCountersMobileResponseV2
 from my_offers.entities.get_offers import OfferCounters
 from my_offers.repositories import postgresql
 from my_offers.repositories.auction import v1_get_announcements_info_for_mobile
@@ -13,7 +13,8 @@ from my_offers.repositories.postgresql.billing import get_offers_payed_till_excl
 from my_offers.repositories.postgresql.object_model import get_object_models_total_count
 from my_offers.repositories.postgresql.offer import (
     get_offer_counters,
-    get_offer_counters_mobile,
+    get_offer_counters_mobile_v1,
+    get_offer_counters_mobile_v2,
     get_offers_payed_by,
     get_offers_update_at,
 )
@@ -46,16 +47,29 @@ get_offer_counters_degradation_handler = get_degradation_handler(
     ),
 )
 
-get_offer_counters_mobile_degradation_handler = get_degradation_handler(
-    func=get_offer_counters_mobile,
-    key='psql.get_offer_counters_mobile',
-    default=GetOffersCountersMobileResponse(
+get_offer_counters_mobile_v1_degradation_handler = get_degradation_handler(
+    func=get_offer_counters_mobile_v1,
+    key='psql.get_offer_counters_mobile_v1',
+    default=GetOffersCountersMobileResponseV1(
         rent=None,
         sale=None,
         archived=None,
         inactive=None,
     )
 )
+
+get_offer_counters_mobile_v2_degradation_handler = get_degradation_handler(
+    func=get_offer_counters_mobile_v2,
+    key='psql.get_offer_counters_mobile_v2',
+    default=GetOffersCountersMobileResponseV2(
+        rent=None,
+        sale=None,
+        archived=None,
+        inactive=None,
+        declined=None,
+    )
+)
+
 
 get_offers_offence_degradation_handler = get_degradation_handler(
     func=get_offers_offence,

@@ -185,7 +185,18 @@ urlpatterns = base_urls.urlpatterns + [
             service=mobile_offers.v1_get_offers_counters_mobile_public,
             method='POST',
             request_schema=entities.GetOffersCountersMobileRequest,
-            response_schema=entities.GetOffersCountersMobileResponse,
+            response_schema=entities.GetOffersCountersMobileResponseV1,
+            base_handler_cls=PublicHandler,
+            tags=['mobile']
+        )
+    ),
+    url(
+        r'/public/v2/get-offers-counters-mobile/$',
+        get_handler(
+            service=mobile_offers.v2_get_offers_counters_mobile_public,
+            method='POST',
+            request_schema=entities.GetOffersCountersMobileRequest,
+            response_schema=entities.GetOffersCountersMobileResponseV2,
             base_handler_cls=PublicHandler,
             tags=['mobile']
         )
