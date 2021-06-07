@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pytz
 
 
-async def test_v1_has_unread_warnings__200__true__with_last_visit_date(http, pg):
+async def test_v1_has_unread_warnings__200__has_warnings__with_last_visit_date_in_moderation_alerts(http, pg):
     # arrange
     user_id = 29437831
     now = datetime.now(pytz.utc)
@@ -60,7 +60,7 @@ async def test_v1_has_unread_warnings__200__true__with_last_visit_date(http, pg)
     assert response.data == {'hasWarnings': True}
 
 
-async def test_v1_has_unread_warnings__200__true__without_last_visit_date(http, pg):
+async def test_v1_has_unread_warnings__200__has_warnings__without_last_visit_date_in_moderation_alerts(http, pg):
     # arrange
     user_id = 29437831
     now = datetime.now(pytz.utc)
@@ -104,7 +104,7 @@ async def test_v1_has_unread_warnings__200__true__without_last_visit_date(http, 
     assert response.data == {'hasWarnings': True}
 
 
-async def test_v1_has_unread_warnings__200__false__with_last_visit_date(http, pg):
+async def test_v1_has_unread_warnings__200__no_warnings__with_last_visit_date_in_moderation_alerts(http, pg):
     # arrange
     user_id = 29437831
     now = datetime.now(pytz.utc)
