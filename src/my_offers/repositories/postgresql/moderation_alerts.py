@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import Optional
 
 import asyncpgsa
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
@@ -29,3 +31,15 @@ async def save_moderation_alerts_last_visit_date(*, user_id: int, last_visit_dat
     await pg.get().execute(query, *params)
 
     return None
+
+
+async def get_last_visit_date(user_id: int) -> Optional[datetime]:
+    query, params = asyncpgsa.compile_query(
+        select([
+            tables.moderation_alerts.c.last_visit_date,
+        ]).where(
+            tables.moderation_alerts.c.user_id == user_id
+        )
+    )
+
+    return await pg.get().fetchval(query, *params)

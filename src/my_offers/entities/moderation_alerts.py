@@ -19,3 +19,15 @@ class TabType(StrEnum):
 @dataclass
 class HideWarningsRequest:
     tab_type: TabType
+
+
+@dataclass
+class HasUnreadWarningsRequest:
+    user_id: int
+    """ID пользователя"""
+
+
+@dataclass
+class HasUnreadWarningsResponse:
+    has_warnings: bool
+    """Наличие непросмотренных нарушений модерации"""
