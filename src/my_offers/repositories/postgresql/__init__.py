@@ -67,4 +67,5 @@ from my_offers.repositories.postgresql.offers_similars import (
     get_similars_counters_by_offer_ids,
 )
 from my_offers.repositories.postgresql.user_reindex_queue import delete_user_reindex_items, get_user_reindex_ids
-from .moderation_alerts import save_moderation_alerts_last_visit_date
+from .moderation_alerts import get_last_visit_date, save_moderation_alerts_last_visit_date
+from .offer import get_declined_count_after_last_visit_date
