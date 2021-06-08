@@ -1,5 +1,5 @@
 from operator import attrgetter
-from typing import List, Optional, Set
+from typing import List, Optional, Set, Union
 
 from my_offers import enums
 from my_offers.entities.mobile_offer import MobOffer, MobPrice, OfferStats
@@ -38,7 +38,7 @@ async def prepare_offers(
         *,
         user_id: int,
         object_models: List[ObjectModel],
-        tab_type: enums.MobTabType,
+        tab_type: Union[enums.MobTabTypeV1, enums.MobTabTypeV2],
 ) -> List[MobOffer]:
     # получение данных для обогащения
     enrich_params = prepare_enrich_params(models=object_models, user_id=user_id)

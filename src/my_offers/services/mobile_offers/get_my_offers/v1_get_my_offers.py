@@ -9,9 +9,9 @@ from ._prepare_offers import prepare_offers
 
 
 async def v1_get_my_offers_public(
-        request: entities.MobileGetMyOffersRequest,
+        request: entities.MobileGetMyOffersRequestV1,
         realty_user_id: int
-) -> entities.MobileGetMyOffersResponse:
+) -> entities.MobileGetMyOffersResponseV1:
     filters: Dict[str, Any] = await get_filters_mobile(
         filters=request.filters,
         user_id=realty_user_id,
@@ -30,7 +30,7 @@ async def v1_get_my_offers_public(
 
     offers = await prepare_offers(user_id=realty_user_id, object_models=object_models, tab_type=request.tab_type)
 
-    return entities.MobileGetMyOffersResponse(
+    return entities.MobileGetMyOffersResponseV1(
         page=MobilePageInfo(
             limit=request.limit,
             offset=request.offset,

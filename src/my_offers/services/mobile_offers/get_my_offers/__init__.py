@@ -1,1 +1,2 @@
-from .get_my_offers import v1_get_my_offers_public
+from .v1_get_my_offers import v1_get_my_offers_public
+from .v2_get_my_offers import v2_get_my_offers_public

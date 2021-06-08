@@ -24,7 +24,7 @@ class OfferStatus(StrEnum):
     """Черновик"""
 
 
-class MobTabType(StrEnum):
+class MobTabTypeV1(StrEnum):
     rent = 'rent'
     """Аренда"""
     sale = 'sale'
@@ -33,6 +33,19 @@ class MobTabType(StrEnum):
     """Архив"""
     inactive = 'inactive'
     """Неактивные (declined + not_active)"""
+
+
+class MobTabTypeV2(StrEnum):
+    rent = 'rent'
+    """Аренда"""
+    sale = 'sale'
+    """Продажа"""
+    archived = 'archived'
+    """Архив"""
+    inactive = 'inactive'
+    """Неактивные"""
+    declined = 'declined'
+    """Отклоненные модерацией"""
 
 
 # аналог src/my_offers/repositories/monolith_cian_announcementapi/entities/object_model.py

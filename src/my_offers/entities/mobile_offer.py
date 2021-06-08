@@ -149,12 +149,12 @@ class MobOffer:
 
 
 @dataclass
-class MobileGetMyOffersRequest:
+class MobileGetMyOffersRequestV1:
     limit: int
     """Лимит"""
     offset: int
     """Оффсет"""
-    tab_type: enums.MobTabType
+    tab_type: enums.MobTabTypeV1
     """Таб для офферов"""
     filters: Optional[Filters]
     """Фильтры"""
@@ -165,7 +165,31 @@ class MobileGetMyOffersRequest:
 
 
 @dataclass
-class MobileGetMyOffersResponse:
+class MobileGetMyOffersResponseV1:
+    page: MobilePageInfo
+    """Информация о странице"""
+    offers: List[MobOffer]
+    """Список объявлений"""
+
+
+@dataclass
+class MobileGetMyOffersRequestV2:
+    limit: int
+    """Лимит"""
+    offset: int
+    """Оффсет"""
+    tab_type: enums.MobTabTypeV2
+    """Таб для офферов"""
+    filters: Optional[Filters]
+    """Фильтры"""
+    search: Optional[str]
+    """Поисковая строка"""
+    sort: Optional[enums.MobOffersSortType]
+    """Сортировка"""
+
+
+@dataclass
+class MobileGetMyOffersResponseV2:
     page: MobilePageInfo
     """Информация о странице"""
     offers: List[MobOffer]

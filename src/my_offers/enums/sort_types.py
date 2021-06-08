@@ -31,3 +31,5 @@ class MobOffersSortType(StrEnum):
     """По цене по возрастанию"""
     price_desc = 'priceDesc'
     """По цене по убыванию"""
+    declined_date = 'declinedDate'
+    """Дата отклонения модерацией"""
