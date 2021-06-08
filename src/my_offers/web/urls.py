@@ -166,6 +166,16 @@ urlpatterns = base_urls.urlpatterns + [
             tags=['mobile']
         )
     ),
+    url(
+        r'/v1/has-unread-warnings/$',
+        get_handler(
+            service=moderation_alerts.v1_has_unread_warnings_private,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.HasUnreadWarningsRequest,
+            response_schema=entities.HasUnreadWarningsResponse,
+            base_handler_cls=RequestContextHandler,
+        )
+    ),
 
     # Mobile
     url(

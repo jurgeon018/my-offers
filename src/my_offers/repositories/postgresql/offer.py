@@ -574,3 +574,17 @@ async def update_offer_master_user_id_by_id(
     )
 
     await pg.get().execute(query, *params)
+
+
+async def get_declined_count_after_last_visit_date(filters: Dict[str, Any], last_visit_date: datetime) -> Optional[int]:
+    conditions = prepare_conditions(filters)
+
+    query, params = asyncpgsa.compile_query(
+        select([count()])
+        .where(and_(
+            tables.offers.c.updated_at > last_visit_date,
+            *conditions
+        ))
+    )
+
+    return await pg.get().fetchval(query, *params)
