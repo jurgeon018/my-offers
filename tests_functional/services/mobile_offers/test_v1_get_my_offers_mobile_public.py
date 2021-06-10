@@ -664,6 +664,11 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
                     'serviceType': 'auction',
                     'isAutoRestoreOnPaymentEnabled': True,
                     'auctionBet': 10
+                }, {
+                    'announcementId': 209194477,
+                    'serviceType': 'dynamic',
+                    'isAutoRestoreOnPaymentEnabled': True,
+                    'auctionBet': None
                 }],
                 'isAutoRestoreOnPaymentEnabled': True,
             }
