@@ -117,7 +117,10 @@ async def test_v1_has_unread_warnings__no_moderation_warnings_since_last_visit__
     assert response.data == {'hasWarnings': False}
 
 
-async def test_v1_has_unread_warnings__has_moderation_warnings_without_last_visit__return_warnings(http, pg):
+async def test_v1_has_unread_warnings__has_moderation_warnings_without_last_visit__return_warnings(
+        http,
+        pg,
+):
     # arrange
     user_id = 29437831
     now = datetime.now(pytz.utc)
@@ -146,7 +149,7 @@ async def test_v1_has_unread_warnings__has_moderation_warnings_without_last_visi
         """,
         [
             123, user_id, user_id, 'sale', 'flat', 'declined', [], True, False, False, 'text',
-            '{}', 1, now + timedelta(hours=1), now + timedelta(hours=1),
+            '{}', 1, now - timedelta(weeks=1000), now - timedelta(weeks=1000),
         ]
     )
 
