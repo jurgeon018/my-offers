@@ -4,6 +4,7 @@ from my_offers import enums
 from my_offers.entities import get_offers, mobile_offer
 from my_offers.mappers.get_offers_request import (
     MOBILE_TAB_TYPE_TO_STATUS_TYPE,
+    MOBILE_TAB_TYPE_TO_STATUS_TYPE_V2,
     get_offers_filters_mapper,
     get_offers_filters_mobile_mapper,
 )
@@ -29,7 +30,7 @@ async def get_filters_mobile(
         *,
         user_id: int,
         filters: mobile_offer.Filters,
-        tab_type: enums.MobTabType,
+        tab_type: enums.MobTabTypeV1,
         search_text: Optional[str],
 ) -> Dict[str, Any]:
     result: Dict[str, Any] = get_offers_filters_mobile_mapper.map_to(filters) or {}
@@ -42,6 +43,30 @@ async def get_filters_mobile(
     result.update(user_filter)
 
     result['status_tab'] = MOBILE_TAB_TYPE_TO_STATUS_TYPE[tab_type]
+
+    if search_text:
+        result['search_text'] = prepare_search_text(search_text)
+
+    return result
+
+
+async def get_filters_mobile_v2(
+        *,
+        user_id: int,
+        filters: mobile_offer.Filters,
+        tab_type: enums.MobTabTypeV2,
+        search_text: Optional[str],
+) -> Dict[str, Any]:
+    result: Dict[str, Any] = get_offers_filters_mobile_mapper.map_to(filters) or {}
+    if tab_type.is_sale:
+        result['deal_type'] = enums.DealType.sale.value
+    elif tab_type.is_rent:
+        result['deal_type'] = enums.DealType.rent.value
+
+    user_filter: Dict[str, Any] = await get_user_filter(user_id)
+    result.update(user_filter)
+
+    result['status_tab'] = MOBILE_TAB_TYPE_TO_STATUS_TYPE_V2[tab_type]
 
     if search_text:
         result['search_text'] = prepare_search_text(search_text)

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import pytz
 from cian_core.degradation import DegradationResult
@@ -65,7 +65,7 @@ logger = logging.getLogger(__name__)
 async def load_mobile_enrich_data(
         *,
         params: EnrichParams,
-        tab_type: enums.MobTabType,
+        tab_type: Union[enums.MobTabTypeV1, enums.MobTabTypeV2],
 ) -> MobileEnrichData:
     """ Загружает данные из внешних источников для разных типов вкладок. """
     offer_ids = params.get_offer_ids()

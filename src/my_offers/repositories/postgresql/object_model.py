@@ -31,6 +31,7 @@ SORT_TYPE_MAP = {
     enums.MobOffersSortType.move_to_archive_date: OFFER_TABLE.sort_date.desc(),
     enums.MobOffersSortType.price_asc: OFFER_TABLE.price,
     enums.MobOffersSortType.price_desc: OFFER_TABLE.price.desc(),
+    enums.MobOffersSortType.declined_date: OFFER_TABLE.updated_at.desc(),
 }
 
 
