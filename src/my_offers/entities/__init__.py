@@ -73,7 +73,9 @@ from .mobile_offer import (
     GetOffersCountersMobileRequest,
     GetOffersCountersMobileResponseV1,
     GetOffersCountersMobileResponseV2,
-    MobileGetMyOffersRequest,
-    MobileGetMyOffersResponse,
+    MobileGetMyOffersRequestV1,
+    MobileGetMyOffersRequestV2,
+    MobileGetMyOffersResponseV1,
+    MobileGetMyOffersResponseV2,
 )
 from .moderation_alerts import HasUnreadWarningsRequest, HasUnreadWarningsResponse, HideWarningsRequest

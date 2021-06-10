@@ -183,8 +183,19 @@ urlpatterns = base_urls.urlpatterns + [
         get_handler(
             service=mobile_offers.v1_get_my_offers_public,
             method='POST',  # pragma: no mutate
-            request_schema=entities.MobileGetMyOffersRequest,
-            response_schema=entities.MobileGetMyOffersResponse,
+            request_schema=entities.MobileGetMyOffersRequestV1,
+            response_schema=entities.MobileGetMyOffersResponseV1,
+            base_handler_cls=PublicHandler,
+            tags=['mobile']
+        )
+    ),
+    url(
+        r'/public/v2/get-my-offers-mobile/$',
+        get_handler(
+            service=mobile_offers.v2_get_my_offers_public,
+            method='POST',  # pragma: no mutate
+            request_schema=entities.MobileGetMyOffersRequestV2,
+            response_schema=entities.MobileGetMyOffersResponseV2,
             base_handler_cls=PublicHandler,
             tags=['mobile']
         )
