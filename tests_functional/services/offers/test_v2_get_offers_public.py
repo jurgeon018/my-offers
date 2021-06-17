@@ -627,3 +627,34 @@ async def test_get_active_offers_with_relevance_warnings(pg, http):
             ),
         },
     }
+
+
+async def test_v2_get_offers_public__get_removed_by_moderator__can_delete_offer(http, pg):
+    # arrange
+    expected = {
+        'canChangePublisher': False,
+        'canDelete': True,
+        'canEdit': False,
+        'canMoveToArchive': False,
+        'canRaise': False,
+        'canRaiseWithoutAddform': False,
+        'canRestore': False,
+        'canUpdateEditDate': False,
+        'canViewSimilarOffers': False
+    }
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_available_actions.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v2/get-offers/',
+        headers={
+            'X-Real-UserId': 27864412
+        },
+        json={
+            'filters': {
+                'statusTab': 'archived'
+            }
+        },
+    )
+    assert response.data['offers'][0]['availableActions'] == expected
