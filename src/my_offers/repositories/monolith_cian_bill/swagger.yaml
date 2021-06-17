@@ -48,6 +48,7 @@ definitions:
         - demand
         - demandPackage
         - cplCalltracking
+        - dynamic
         type: string
         x-BonusPaymentExpiration: Списание истекшего бонусного пополнения
         x-DebitObject: Платная публикация
@@ -69,6 +70,7 @@ definitions:
         x-cplCalltracking: Коллтрекинг по модели CPL
         x-demand: Списание за заявку на спрос
         x-demandPackage: Списание за пакет заявок на спрос
+        x-dynamic: Динамическая услуга
     required:
     - announcementId
     - serviceType
