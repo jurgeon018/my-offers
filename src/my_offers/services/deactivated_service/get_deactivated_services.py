@@ -8,6 +8,7 @@ from my_offers.repositories.monolith_cian_bill.entities import (
     GetDeactivatedAdditionalServicesResponse,
     V1TarifficationGetDeactivatedAdditionalServices,
 )
+from my_offers.repositories.monolith_cian_bill.entities.deactivated_service import ServiceType
 
 
 # Логика взята из монолита cian/my_offers/services/get_offers_deactivated_services.py
@@ -87,6 +88,9 @@ async def get_deactivated_services_for_offers(
 
     offer_id_services: Dict[int, List[DeactivatedService]] = {}
     for service in response.deactivated_services:
+        if service.service_type == ServiceType.dynamic:
+            continue
+
         if offer_id_services.get(service.announcement_id):
             offer_id_services[service.announcement_id].append(service)
         else:
