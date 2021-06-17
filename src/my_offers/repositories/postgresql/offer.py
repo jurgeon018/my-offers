@@ -583,6 +583,7 @@ async def get_declined_count_after_last_visit_date(filters: Dict[str, Any], last
         select([count()])
         .where(and_(
             tables.offers.c.updated_at > last_visit_date,
+            tables.offers.c.status_tab == OfferStatusTab.declined.value,
             *conditions
         ))
     )
