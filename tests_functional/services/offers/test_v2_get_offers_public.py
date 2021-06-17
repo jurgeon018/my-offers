@@ -629,7 +629,7 @@ async def test_get_active_offers_with_relevance_warnings(pg, http):
     }
 
 
-async def test_v2_get_offers_public__sort_by_declined_date(http, pg):
+async def test_v2_get_offers_public__sort_by_declined_date__sorted_offers_by_declined_date(http, pg):
     # arrange
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_sort.sql')
 
