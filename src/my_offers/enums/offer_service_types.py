@@ -23,3 +23,4 @@ class OfferServiceTypes(StrEnum):
     demand = 'demand'
     demand_package = 'demandPackage'
     cpl_calltracking = 'cplCalltracking'
+    dynamic = 'dynamic'

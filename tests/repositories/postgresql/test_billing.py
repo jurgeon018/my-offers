@@ -6,6 +6,7 @@ from simple_settings.utils import settings_stub
 
 from my_offers import pg
 from my_offers.entities import OfferBillingContract
+from my_offers.enums import OfferServiceTypes
 from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql.billing import (
     get_offers_payed_till,
@@ -13,7 +14,11 @@ from my_offers.repositories.postgresql.billing import (
 )
 
 
-async def test_save_offer_contract(mocker):
+@pytest.mark.parametrize('service_types', [
+    [],
+    [OfferServiceTypes.dynamic],
+])
+async def test_save_offer_contract(mocker, service_types):
     # arrange
     now = datetime(2020, 12, 12)
     offer_contract = OfferBillingContract(
@@ -28,7 +33,7 @@ async def test_save_offer_contract(mocker):
         is_deleted=False,
         created_at=now,
         updated_at=now,
-        service_types=[],
+        service_types=service_types,
     )
     pg.get().fetchrow.return_value = future({'id': 1})
 
@@ -52,7 +57,7 @@ async def test_save_offer_contract(mocker):
         offer_contract.offer_id,
         offer_contract.id,
         now,
-        offer_contract.service_types,
+        [s.value for s in offer_contract.service_types],
         offer_contract.user_id,
         offer_contract.actor_user_id,
         offer_contract.publisher_user_id,
@@ -65,7 +70,7 @@ async def test_save_offer_contract(mocker):
         offer_contract.publisher_user_id,
         offer_contract.row_version,
         offer_contract.row_version,
-        offer_contract.service_types,
+        [s.value for s in offer_contract.service_types],
         offer_contract.start_date,
         now,
         offer_contract.user_id
