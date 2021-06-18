@@ -20,7 +20,8 @@ class GetOffersSortType(StrEnum):
     """По улице"""
     by_offer_id = 'by_offer_id'
     """По ID объявления"""
-
+    declined_date = 'declined_date'
+    """Дата отклонения модерацией"""
 
 class MobOffersSortType(StrEnum):
     update_date = 'updateDate'
