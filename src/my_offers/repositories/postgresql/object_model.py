@@ -26,6 +26,7 @@ SORT_TYPE_MAP = {
     enums.GetOffersSortType.by_walk_time: OFFER_TABLE.walking_time,
     enums.GetOffersSortType.by_street: OFFER_TABLE.street_name,
     enums.GetOffersSortType.by_offer_id: OFFER_TABLE.offer_id,
+    enums.GetOffersSortType.declined_date: OFFER_TABLE.updated_at.desc(),
     # mobile
     enums.MobOffersSortType.update_date: OFFER_TABLE.sort_date.desc(),
     enums.MobOffersSortType.move_to_archive_date: OFFER_TABLE.sort_date.desc(),

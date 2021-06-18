@@ -627,3 +627,26 @@ async def test_get_active_offers_with_relevance_warnings(pg, http):
             ),
         },
     }
+
+
+async def test_v2_get_offers_public__sort_by_declined_date__sorted_offers_by_declined_date(http, pg):
+    # arrange
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_sort.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v2/get-offers/',
+        json={
+            'filters': {
+                'statusTab': 'declined',
+            },
+            'sort': 'declinedDate'
+        },
+        headers={
+            'X-Real-UserId': 29437839
+        },
+    )
+
+    # assert
+    assert [o['id'] for o in response.data['offers']] == [209194482, 209194480, 209194481]
