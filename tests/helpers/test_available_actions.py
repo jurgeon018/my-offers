@@ -123,6 +123,20 @@ from my_offers.repositories.monolith_cian_announcementapi.entities.object_model 
                                     can_view_similar_offers=False
                                 )
                             ),
+                            (
+                                True, True, True, None, Status.removed_by_moderator, True,
+                                AvailableActions(
+                                    can_update_edit_date=False,
+                                    can_move_to_archive=False,
+                                    can_delete=True,
+                                    can_edit=False,
+                                    can_restore=False,
+                                    can_raise=False,
+                                    can_raise_without_addform=False,
+                                    can_change_publisher=False,
+                                    can_view_similar_offers=False
+                                )
+                            ),
                             ])
 def test_get_available_actions(is_master_agent, is_archived, is_manual,
                                payed_by, status, can_update_edit_date,
