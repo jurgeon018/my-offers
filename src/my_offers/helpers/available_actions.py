@@ -16,8 +16,7 @@ CAN_DELETE_STATUSES = (
     Status.draft,
     Status.blocked,
     Status.deactivated,
-    Status.refused,
-    Status.removed_by_moderator
+    Status.refused
 )
 STATUSES_FOR_DISCONTINUED = (
     Status.deactivated,
@@ -112,7 +111,10 @@ def get_available_actions(
             is_published=status.is_published,
             is_in_hidden_base=is_in_hidden_base
         ),
-        can_delete=status in CAN_DELETE_STATUSES,
+        can_delete=_can_delete(
+            is_archived=is_archived,
+            status=status
+        ),
         can_restore=_can_restore(
             is_archived=is_archived,
             is_removed_by_moderator=status.is_removed_by_moderator,
@@ -123,6 +125,13 @@ def get_available_actions(
         can_change_publisher=can_change_publisher,
         can_view_similar_offers=can_view_similar_offers
     )
+
+
+def _can_delete(*, is_archived: bool, status: Status) -> bool:
+    if is_archived and status.removed_by_moderator:
+        return True
+
+    return status in CAN_DELETE_STATUSES
 
 
 def _can_restore(*, is_archived: bool, is_removed_by_moderator: bool, is_discontinued: bool) -> bool:
