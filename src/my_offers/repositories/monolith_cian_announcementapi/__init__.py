@@ -8,7 +8,10 @@ To re-generate, run `codegen generate-client monolith-cian-announcementapi`
 cian-codegen version: 1.15.0
 
 """
-from ._repo import (announcements_actions_v1_change_owner,
-                    announcements_actions_v1_get_job_status,
-                    announcements_actions_v1_restore, v1_get_announcement,
-                    v2_announcements_archive)
+from ._repo import (
+    announcements_actions_v1_change_owner,
+    announcements_actions_v1_get_job_status,
+    announcements_actions_v1_restore,
+    v1_get_announcement,
+    v2_announcements_archive,
+)

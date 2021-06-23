@@ -12,6 +12,7 @@ from cian_http.api_client import Api
 
 from . import entities
 
+
 _api = Api(microservice_name='monolith-cian-announcementapi')
 announcements_actions_v1_change_owner = _api.make_client(
     path='/announcements-actions/v1/change-owner/',
