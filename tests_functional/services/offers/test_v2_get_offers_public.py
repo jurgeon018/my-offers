@@ -652,7 +652,7 @@ async def test_v2_get_offers_public__sort_by_declined_date__sorted_offers_by_dec
     assert [o['id'] for o in response.data['offers']] == [209194482, 209194480, 209194481]
 
 
-async def test_v2_get_offers_public__get_removed_by_moderator__can_delete_offer(http, pg):
+async def test_v2_get_offers_public__get_archived_removed_by_moderator__can_delete_offer(http, pg):
     # arrange
     expected = {
         'canChangePublisher': False,
@@ -677,6 +677,37 @@ async def test_v2_get_offers_public__get_removed_by_moderator__can_delete_offer(
         json={
             'filters': {
                 'statusTab': 'archived'
+            }
+        },
+    )
+    assert response.data['offers'][0]['availableActions'] == expected
+
+
+async def test_v2_get_offers_public__get_declined_removed_by_moderator__cant_delete_offer(http, pg):
+    # arrange
+    expected = {
+        'canChangePublisher': False,
+        'canDelete': False,
+        'canEdit': False,
+        'canMoveToArchive': False,
+        'canRaise': False,
+        'canRaiseWithoutAddform': False,
+        'canRestore': False,
+        'canUpdateEditDate': False,
+        'canViewSimilarOffers': False
+    }
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_available_actions.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v2/get-offers/',
+        headers={
+            'X-Real-UserId': 27864413
+        },
+        json={
+            'filters': {
+                'statusTab': 'declined'
             }
         },
     )

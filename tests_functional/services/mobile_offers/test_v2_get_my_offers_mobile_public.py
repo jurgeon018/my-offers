@@ -934,7 +934,7 @@ async def test_v1_get_offers_mobile_public__load_rent_offers__offers_data(http, 
     assert response.data == {'offers': [], 'page': {'canLoadMore': False, 'limit': 20, 'offset': 0}}
 
 
-async def test_v2_get_offers_mobile_public__get_removed_by_moderator__can_delete_offer(http, pg):
+async def test_v2_get_offers_mobile_public__get_archived_removed_by_moderator__can_delete_offer(http, pg):
     # arrange
     expected = {
         'canChangePublisher': False,
@@ -960,6 +960,37 @@ async def test_v2_get_offers_mobile_public__get_removed_by_moderator__can_delete
             'limit': 20,
             'offset': 0,
             'tabType': 'archived',
+        }
+    )
+    assert response.data['offers'][0]['availableActions'] == expected
+
+
+async def test_v2_get_offers_mobile_public__get_declined_removed_by_moderator__cant_delete_offer(http, pg):
+    # arrange
+    expected = {
+        'canChangePublisher': False,
+        'canDelete': False,
+        'canEdit': False,
+        'canMoveToArchive': False,
+        'canRaise': False,
+        'canRaiseWithoutAddform': False,
+        'canRestore': False,
+        'canUpdateEditDate': False,
+        'canViewSimilarOffers': False
+    }
+    await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers_for_available_actions.sql')
+
+    # act
+    response = await http.request(
+        'POST',
+        '/public/v2/get-my-offers-mobile/',
+        headers={
+            'X-Real-UserId': 27864413
+        },
+        json={
+            'limit': 20,
+            'offset': 0,
+            'tabType': 'declined',
         }
     )
     assert response.data['offers'][0]['availableActions'] == expected
