@@ -154,7 +154,7 @@ async def _sync_master_agent(master_agent_user_id: int) -> None:
     request = V1GetAgentsList(
         page=1,
         page_size=20,
-        user_ids=[master_agent_user_id],
+        user_id=master_agent_user_id,
     )
     response: AgentsListResponse = await v1_get_agents_list(request)
     for sub_agent in response.agents:
@@ -167,4 +167,5 @@ async def _sync_sub_agent(master_agent_user_id: int, sub_agent: AgentResponse) -
         master_agent_user_id=master_agent_user_id,
         first_name=sub_agent.first_name,
         last_name=sub_agent.last_name,
+        updated_at=datetime.now(pytz.utc),
     )
