@@ -1,3 +1,4 @@
+from datetime import datetime
 from operator import attrgetter
 from typing import List, Optional, Set, Union
 
@@ -71,7 +72,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         price=MobPrice(value=object_model.bargain_terms.price, currency=object_model.bargain_terms.currency),
         category=object_model.category,
         status=MobStatus[object_model.status.name],
-        publish_till_date=enrich_data.get_payed_till(offer_id),
+        publish_till_date=_get_expiration_date(object_model) or enrich_data.get_payed_till(offer_id),
         complaints=enrich_data.get_offer_offence(offer_id),
         offer_type=offer_type,
         deal_type=deal_type,
@@ -118,3 +119,10 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         ),
         is_declined=object_model.status in (Status.refused, Status.removed_by_moderator)
     )
+
+
+def _get_expiration_date(object_model: ObjectModel) -> Optional[datetime]:
+    if object_model.publish_terms is not None:
+        return object_model.publish_terms.expiration_date
+
+    return None

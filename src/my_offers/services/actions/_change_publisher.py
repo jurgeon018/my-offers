@@ -4,7 +4,7 @@ from simple_settings import settings
 
 from my_offers import entities
 from my_offers.repositories import monolith_cian_announcementapi
-from my_offers.repositories.monolith_cian_announcementapi.entities import ChangeOwnerRequest
+from my_offers.repositories.monolith_cian_announcementapi.entities import PrivateChangeOwnerRequest
 from my_offers.services.actions._action import MassActions
 
 
@@ -16,7 +16,7 @@ class OffersChangePublisherAction(MassActions):
 
     async def _run_job(self) -> int:
         session = await monolith_cian_announcementapi.announcements_actions_v1_change_owner(
-            ChangeOwnerRequest(
+            PrivateChangeOwnerRequest(
                 actor_id=self.actor_id,
                 announcement_ids=self.offers_ids,
                 new_owner_id=self.new_owner_id
