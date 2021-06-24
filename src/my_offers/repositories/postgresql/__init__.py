@@ -3,6 +3,7 @@ from my_offers.repositories.postgresql.agents import (
     get_agent_by_user_id,
     get_master_user_id,
     save_agent,
+    set_agent_hierarchy_data,
 )
 from my_offers.repositories.postgresql.billing import save_offer_contract, set_offer_contract_is_deleted_status
 from my_offers.repositories.postgresql.moderation import get_offers_offence, save_offer_offence

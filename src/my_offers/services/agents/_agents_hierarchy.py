@@ -10,6 +10,12 @@ from my_offers.entities import AgentMessage
 from my_offers.entities.agents import Agent
 from my_offers.queue import producers
 from my_offers.repositories import postgresql
+from my_offers.repositories.agents import v1_get_agencies_with_activated_staff_service, v1_get_agents_list
+from my_offers.repositories.agents.entities import (
+    AgentResponse, AgentsListResponse,
+    GetAgenciesWithActivatedStaffServiceResponse,
+    V1GetAgentsList,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -132,3 +138,33 @@ async def _handle_unique_violation_conflict(
     async with pg.get().transaction():
         await postgresql.delete_agents_hierarchy(user_id=old_agent.realty_user_id)
         await postgresql.save_agent(new_agent)
+
+
+async def sync_agents() -> None:
+    response: GetAgenciesWithActivatedStaffServiceResponse = await v1_get_agencies_with_activated_staff_service()
+    master_agent_user_ids = [
+        master_agent_user_id for master_agent_user_id in response.user_ids
+        if master_agent_user_id == 15494662
+    ]
+    for master_agent_user_id in master_agent_user_ids:
+        await _sync_master_agent(master_agent_user_id)
+
+
+async def _sync_master_agent(master_agent_user_id: int) -> None:
+    request = V1GetAgentsList(
+        page=1,
+        page_size=20,
+        user_ids=[master_agent_user_id],
+    )
+    response: AgentsListResponse = await v1_get_agents_list(request)
+    for sub_agent in response.agents:
+        await _sync_sub_agent(master_agent_user_id, sub_agent)
+
+
+async def _sync_sub_agent(master_agent_user_id: int, sub_agent: AgentResponse) -> None:
+    await postgresql.set_agent_hierarchy_data(
+        realty_user_id=sub_agent.user_id,
+        master_agent_user_id=master_agent_user_id,
+        first_name=sub_agent.first_name,
+        last_name=sub_agent.last_name,
+    )

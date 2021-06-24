@@ -4,6 +4,7 @@ import click
 from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
+from my_offers.services.agents import sync_agents
 from tornado.ioloop import IOLoop
 
 from my_offers import setup
@@ -240,3 +241,11 @@ def sync_offers_command() -> None:
     """
     with new_operation_id():
         IOLoop.current().run_sync(sync_offers)
+
+
+@cli.command()
+def sync_agents_command() -> None:
+    """
+    """
+    with new_operation_id():
+        IOLoop.current().run_sync(sync_agents)
