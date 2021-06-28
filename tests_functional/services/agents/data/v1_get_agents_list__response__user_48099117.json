@@ -1,0 +1,46 @@
+{
+    "agents": [
+        {
+            "userId": 15327749,
+            "firstName": "Марина",
+            "lastName": "Морозова",
+            "phones": [
+                {
+                    "phone": "+79515956773",
+                    "isConfirmed": true,
+                    "isMain": true
+                },
+                {
+                    "phone": "+79134131218",
+                    "isConfirmed": true,
+                    "isMain": false
+                }
+            ],
+            "email": "mara-richh@yandex.ru",
+            "limits": {
+                "limit": null,
+                "remainingBalance": null,
+                "allowVas": false,
+                "servicePackagesLimits": {
+                    "top3Limit": 0,
+                    "premiumLimit": 0,
+                    "highlightLimit": 0,
+                    "paidLimit": null,
+                    "top3Count": 0,
+                    "premiumCount": 0,
+                    "highlightCount": 0,
+                    "paidCount": 0
+                }
+            },
+            "balance": {
+                "balance": 0.0,
+                "auctionPoints": 0.0
+            },
+            "state": "active"
+        }
+    ],
+    "totalCount": 1,
+    "page": 1,
+    "pagesCount": 1,
+    "pageSize": 10
+}

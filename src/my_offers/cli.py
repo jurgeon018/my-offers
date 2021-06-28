@@ -4,13 +4,13 @@ import click
 from cian_core.context import new_operation_id
 from cian_core.rabbitmq.consumer_cli import register_consumer
 from cian_core.web import Application
-from my_offers.services.agents import sync_agents
 from tornado.ioloop import IOLoop
 
 from my_offers import setup
 from my_offers.helpers.schemas import get_entity_schema
 from my_offers.queue import consumers, entities as mq_entities, queues, schemas
 from my_offers.services import realty_resender
+from my_offers.services.agents.sync_agents import sync_agents
 from my_offers.services.duplicates import sync_offer_duplicates
 from my_offers.services.offers import delete_offers_data, reindex_offers_command, sync_offers
 from my_offers.services.users import clean_users

@@ -40,6 +40,7 @@ sentry-sdk = "^0.19"
 simple-settings = "^0.19"
 sqlalchemy = "<1.4"
 tornado = "^6.0"
+backoff = "^1.10"
 
 [tool.poetry.dev-dependencies]
 automation-helpers = "*"

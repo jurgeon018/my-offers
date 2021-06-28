@@ -117,3 +117,8 @@ async def callbook_mock(http_mock_service):
 @pytest.fixture(scope='session')
 async def cassandra_statistics(cassandra_service):
     yield await cassandra_service.get_keyspace(alias='statistics', keyspace='statistics')
+
+
+@pytest.fixture(scope='session')
+async def agents_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('agents')

@@ -1,1 +1,1 @@
-from ._agents_hierarchy import sync_agents, update_agents_hierarchy
+from ._agents_hierarchy import update_agents_hierarchy

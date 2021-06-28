@@ -12,6 +12,7 @@ from cian_http.api_client import Api
 
 from . import entities
 
+
 _api = Api(microservice_name='agents')
 v1_get_agencies_with_activated_staff_service = _api.make_client(
     path='/v1/get-agencies-with-activated-staff-service/',
