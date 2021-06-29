@@ -38,10 +38,6 @@ instances = 6
 cpu = 2000
 memory = 256
 
-[job.web.beta]
-type = "web"
-memory = 512
-
 [job.process_announcement_consumer]
 type = "consumer"
 command = "process_announcement_consumer"
