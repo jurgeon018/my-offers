@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime
+from logging import getLogger
 from typing import AsyncGenerator
 
 import backoff
 import pytz
 from cian_core.runtime_settings import runtime_settings
 from cian_core.statsd import statsd
-from cian_http.exceptions import TimeoutException
-from my_offers.helpers.graphite import send_to_graphite
+from cian_http.exceptions import ApiClientException
 
 from my_offers.repositories import postgresql
 from my_offers.repositories.agents import v1_get_agencies_with_activated_staff_service, v1_get_agents_list
@@ -20,7 +20,10 @@ from my_offers.repositories.agents.entities import (
 from my_offers.repositories.agents.entities.v1_get_agents_list import Statuses
 
 
-@backoff.on_exception(backoff.expo, TimeoutException, max_tries=3)
+_logger = getLogger(__name__)
+
+
+@backoff.on_exception(backoff.expo, ApiClientException, max_tries=3)
 async def _v1_get_agents_list(request: V1GetAgentsList) -> AgentsListResponse:
     return await v1_get_agents_list(request)
 
@@ -28,7 +31,10 @@ async def _v1_get_agents_list(request: V1GetAgentsList) -> AgentsListResponse:
 async def sync_agents() -> None:
     response: GetAgenciesWithActivatedStaffServiceResponse = await v1_get_agencies_with_activated_staff_service()
     for master_agent_user_id in response.user_ids:
-        await _sync_master_agent(master_agent_user_id)
+        try:
+            await _sync_master_agent(master_agent_user_id)
+        except ApiClientException:
+            _logger.exception('cannot sync master agent')
 
 
 async def _sync_master_agent(master_agent_user_id: int) -> None:
@@ -43,14 +49,17 @@ async def _paginate_sub_agents(master_agent_user_id: int) -> AsyncGenerator[Agen
         yield agent
 
     for page in range(2, init_paging_data.pages_count + 1):
-        response: AgentsListResponse = await _v1_get_agents_list(
-            V1GetAgentsList(
-                user_id=master_agent_user_id,
-                statuses=[Statuses.active],
-                page=page,
-                page_size=init_paging_data.page_size,
-            )
+        request = V1GetAgentsList(
+            user_id=master_agent_user_id,
+            statuses=[Statuses.active],
+            page=page,
+            page_size=init_paging_data.page_size,
         )
+        try:
+            response: AgentsListResponse = await _v1_get_agents_list(request)
+        except ApiClientException:
+            _logger.exception('cannot get agents list')
+            continue
         for agent in response.agents:
             yield agent
 
