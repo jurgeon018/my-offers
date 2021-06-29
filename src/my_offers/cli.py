@@ -10,6 +10,7 @@ from my_offers import setup
 from my_offers.helpers.schemas import get_entity_schema
 from my_offers.queue import consumers, entities as mq_entities, queues, schemas
 from my_offers.services import realty_resender
+from my_offers.services.agents.sync_agents import sync_agents
 from my_offers.services.duplicates import sync_offer_duplicates
 from my_offers.services.offers import delete_offers_data, reindex_offers_command, sync_offers
 from my_offers.services.users import clean_users
@@ -240,3 +241,11 @@ def sync_offers_command() -> None:
     """
     with new_operation_id():
         IOLoop.current().run_sync(sync_offers)
+
+
+@cli.command()
+def sync_agents_command() -> None:
+    """
+    """
+    with new_operation_id():
+        IOLoop.current().run_sync(sync_agents)

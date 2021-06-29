@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import pytz
-from asyncpg import UniqueViolationError
 from cian_test_utils import future, v
 from freezegun import freeze_time
 

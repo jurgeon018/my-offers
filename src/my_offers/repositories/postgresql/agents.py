@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 import asyncpgsa
@@ -61,6 +62,34 @@ async def get_agent_hierarchy_data(user_id: int) -> AgentHierarchyData:
     params = [user_id]
     row = await pg.get().fetchrow(query, *params)
     return agent_hierarchy_data_mapper.map_from(row)
+
+
+async def set_agent_hierarchy_data(
+        realty_user_id: int,
+        master_agent_user_id: int,
+        updated_at: datetime,
+        first_name: Optional[str] = None,
+        last_name: Optional[str] = None,
+) -> Optional[int]:
+    query = """
+    UPDATE agents_hierarchy
+    SET
+        master_agent_user_id = $2,
+        first_name = $3,
+        last_name = $4,
+        updated_at = $5
+    WHERE (realty_user_id = $1 AND master_agent_user_id != $2)
+        OR (realty_user_id = $1 AND master_agent_user_id IS NULL)
+    RETURNING id
+    """
+    params = (
+        realty_user_id,
+        master_agent_user_id,
+        first_name,
+        last_name,
+        updated_at,
+    )
+    return await pg.get().fetchval(query, *params)
 
 
 async def get_agent_names(user_ids: List[int]) -> List[AgentName]:
