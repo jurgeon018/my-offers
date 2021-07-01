@@ -177,8 +177,13 @@ command = "sync-offers-command"
 [job.sync_offers_cron]
 type = "cron"
 command = "sync-offers-command"
-cron = "0 21 * * *"
+cron = "0 4 * * *"
 
 [job.sync_agents]
 type = "manage"
 command = "sync-agents-command"
+
+[job.sync_agents_cron]
+type = "cron"
+command = "sync-agents-command"
+cron = "0 0 * * *"

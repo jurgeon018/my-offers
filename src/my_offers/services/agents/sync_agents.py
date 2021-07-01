@@ -9,6 +9,7 @@ from cian_core.runtime_settings import runtime_settings
 from cian_core.statsd import statsd
 from cian_http.exceptions import ApiClientException
 
+from my_offers.helpers.graphite import send_to_graphite
 from my_offers.repositories import postgresql
 from my_offers.repositories.agents import v1_get_agencies_with_activated_staff_service, v1_get_agents_list
 from my_offers.repositories.agents.entities import (
