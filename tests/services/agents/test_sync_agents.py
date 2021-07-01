@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 import pytz
-from cian_http.exceptions import TimeoutException
+from cian_http.exceptions import ApiClientException, TimeoutException
 from cian_test_utils import future, v
 from freezegun import freeze_time
 
@@ -169,6 +169,60 @@ async def test_sync_master_agent__timeout_while_fetching_sub_agents__retry_up_to
     assert _sync_sub_agent.call_args_list == [
         mocker.call(master_agent_user_id, sub_agent_1),
     ]
+
+
+async def test_sync_master_agent__api_client_exception_while_fetching_sub_agents__skip_sub_agent(
+        patch_v1_get_agencies_with_activated_staff_service,
+        mocker,
+):
+    # arrange
+    patch_v1_get_agencies_with_activated_staff_service(user_ids=[1])
+
+    sub_agent_1 = v(
+        AgentResponse(
+            phones=[],
+            state=State.active,
+            user_id=2,
+        ),
+    )
+
+    mocker.patch.object(
+        sync_agents,
+        'v1_get_agents_list',
+        side_effect=[
+            future(
+                v(
+                    AgentsListResponse(
+                        agents=[
+                            sub_agent_1,
+                        ],
+                        page=1,
+                        page_size=1,
+                        pages_count=2,
+                        total_count=2,
+                    )
+                ),
+            ),
+            future(exception=ApiClientException(message='')),
+            future(exception=ApiClientException(message='')),
+            future(exception=ApiClientException(message='')),
+            RuntimeError,  # терминирует ситуацию, когда мок вызывается большее количество раз, чем ожидалось
+        ],
+    )
+
+    _logger = mocker.patch.object(sync_agents, '_logger')
+
+    mocker.patch.object(
+        sync_agents,
+        '_sync_sub_agent',
+        return_value=future(),
+    )
+
+    # act
+    await sync_agents.sync_agents()
+
+    # assert
+    _logger.exception.assert_called_once_with('cannot get agents list')
 
 
 async def test_sync_master_agent__multiple_pages_exist__process_all_pages(
