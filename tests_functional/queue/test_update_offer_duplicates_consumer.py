@@ -115,7 +115,10 @@ async def test_update_offer_duplicates_consumer__has_duplicate__not_message(
         offers_duplicates_mock,
 ):
     # arrange
-    await runtime_settings.set({'SEND_PUSH_ON_NEW_DUPLICATE': True})
+    await runtime_settings.set({
+        'SEND_PUSH_ON_NEW_DUPLICATE': True,
+        'DUPLICATE_CHECK_ENABLED': True,
+    })
     await queue_service.wait_consumer('my-offers.new_offer_duplicate_notification', timeout=300)
     await pg.execute_scripts(Path('tests_functional') / 'data' / 'offers.sql')
     await pg.execute('INSERT INTO offers_duplicates VALUES(209194477, 209194477, \'2020-05-13\')')
