@@ -59,7 +59,7 @@ def test_build_offer_view(enrich_data_mock):
         status=Status.published,
         bargain_terms=BargainTerms(price=123),
         publish_terms=PublishTerms(
-            expiration_date=datetime(2000, 1, 3, tzinfo=pytz.utc),
+            expiration_date=datetime(2000, 1, 3),
         ),
         category=Category.flat_rent,
         phones=[Phone(country_code='1', number='12312')]
@@ -93,10 +93,10 @@ def test_build_offer_view(enrich_data_mock):
             active_info=ActiveInfo(
                 vas=[],
                 is_from_package=False,
-                is_publication_time_ends=False,
-                publish_features=['осталось 1 д.'],
+                is_publication_time_ends=True,
+                publish_features=['осталось 21 ч.'],
                 auction=None,
-                payed_till=datetime(2000, 1, 3, tzinfo=pytz.utc),
+                payed_till=datetime(2000, 1, 3).astimezone(pytz.timezone('Europe/Moscow')),
             ),
             not_active_info=None,
             declined_info=None

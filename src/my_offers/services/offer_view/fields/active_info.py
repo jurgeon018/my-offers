@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 import pytz
+from cian_helpers.timezone import is_naive, make_aware
 
 from my_offers.entities import get_offers
 from my_offers.entities.offer_relevance_warning import OfferRelevanceWarningInfo
@@ -22,6 +23,10 @@ def get_active_info(
         offer_relevance_warning: Optional[OfferRelevanceWarningInfo],
 ) -> get_offers.ActiveInfo:
     terms = publish_terms.terms if publish_terms else None
+
+    if payed_till and is_naive(payed_till):
+        payed_till = make_aware(payed_till)
+
     payed_remain = _get_payed_remain(payed_till)
 
     is_autoprolong = bool(publish_terms and publish_terms.autoprolong)
