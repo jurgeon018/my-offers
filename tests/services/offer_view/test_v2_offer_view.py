@@ -96,7 +96,7 @@ def test_build_offer_view(enrich_data_mock):
                 is_publication_time_ends=True,
                 publish_features=['осталось 21 ч.'],
                 auction=None,
-                payed_till=datetime(2000, 1, 3).astimezone(pytz.timezone('Europe/Moscow')),
+                payed_till=pytz.timezone('Europe/Moscow').localize(datetime(2000, 1, 3)),
             ),
             not_active_info=None,
             declined_info=None
