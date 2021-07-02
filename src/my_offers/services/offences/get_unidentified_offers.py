@@ -16,6 +16,7 @@ async def get_unidentified_offers(user_id: int) -> List[int]:
 
     for r in result:
         if r.user_id == user_id:
-            return r.object_ids
+            if r.object_ids is not None:
+                return r.object_ids
 
     return []

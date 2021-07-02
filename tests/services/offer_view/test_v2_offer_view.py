@@ -1,11 +1,16 @@
+from datetime import datetime
+
 import pytest
+import pytz
+
+from freezegun import freeze_time
 
 from my_offers.entities import AgentHierarchyData
 from my_offers.entities.available_actions import AvailableActions
 from my_offers.entities.get_offers import ActiveInfo, GetOfferV2, PageSpecificInfo, Statistics
 from my_offers.entities.offer_view_model import OfferGeo, PriceInfo
 from my_offers.enums import OfferPayedByType
-from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone
+from my_offers.repositories.monolith_cian_announcementapi.entities import BargainTerms, ObjectModel, Phone, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Category, Status
 from my_offers.services.offer_view import v2_build_offer_view
 from my_offers.services.offers.enrich.enrich_data import EnrichData
@@ -53,6 +58,9 @@ def test_build_offer_view(enrich_data_mock):
         cian_id=111,
         status=Status.published,
         bargain_terms=BargainTerms(price=123),
+        publish_terms=PublishTerms(
+            expiration_date=datetime(2000, 1, 3),
+        ),
         category=Category.flat_rent,
         phones=[Phone(country_code='1', number='12312')]
     )
@@ -85,10 +93,10 @@ def test_build_offer_view(enrich_data_mock):
             active_info=ActiveInfo(
                 vas=[],
                 is_from_package=False,
-                is_publication_time_ends=False,
-                publish_features=[],
+                is_publication_time_ends=True,
+                publish_features=['осталось 21 ч.'],
                 auction=None,
-                payed_till=None,
+                payed_till=pytz.timezone('Europe/Moscow').localize(datetime(2000, 1, 3)),
             ),
             not_active_info=None,
             declined_info=None
@@ -99,10 +107,11 @@ def test_build_offer_view(enrich_data_mock):
     )
 
     # act
-    result = v2_build_offer_view(
-        object_model=raw_offer,
-        enrich_data=enrich_data_mock
-    )
+    with freeze_time(datetime(2000, 1, 2)):
+        result = v2_build_offer_view(
+            object_model=raw_offer,
+            enrich_data=enrich_data_mock
+        )
 
     # assert
     assert result == expected_result
