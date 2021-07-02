@@ -14,6 +14,7 @@ from my_offers.helpers.title import get_mobile_offer_title
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel, PublishTerms
 from my_offers.repositories.monolith_cian_announcementapi.entities.object_model import Status
 from my_offers.repositories.monolith_cian_announcementapi.entities.publish_term import Services
+from my_offers.services.offer_view.fields import get_expiration_date
 from my_offers.services.offer_view.fields.geo import get_address_for_push
 from my_offers.services.offers.enrich.enrich_data import MobileEnrichData
 from my_offers.services.offers.enrich.load_enrich_data import load_mobile_enrich_data
@@ -72,7 +73,7 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         price=MobPrice(value=object_model.bargain_terms.price, currency=object_model.bargain_terms.currency),
         category=object_model.category,
         status=MobStatus[object_model.status.name],
-        publish_till_date=_get_expiration_date(object_model) or enrich_data.get_payed_till(offer_id),
+        publish_till_date=get_expiration_date(object_model.publish_terms) or enrich_data.get_payed_till(offer_id),
         complaints=enrich_data.get_offer_offence(offer_id),
         offer_type=offer_type,
         deal_type=deal_type,
@@ -119,10 +120,3 @@ def _prepare_offer(*, object_model: ObjectModel, enrich_data: MobileEnrichData) 
         ),
         is_declined=object_model.status in (Status.refused, Status.removed_by_moderator)
     )
-
-
-def _get_expiration_date(object_model: ObjectModel) -> Optional[datetime]:
-    if object_model.publish_terms is not None:
-        return object_model.publish_terms.expiration_date
-
-    return None

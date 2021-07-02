@@ -1,4 +1,4 @@
-from typing import Set
+from typing import Set, cast
 
 from cian_cache import cached
 
@@ -21,7 +21,7 @@ async def get_region_ids() -> Set[int]:
     for region in await api_geo_get_regions():
         region_ids.add(region.id)
 
-    region_ids.add(RealtyRegions.moscow_and_area.value)
-    region_ids.add(RealtyRegions.st_petersburg_and_area.value)
+    region_ids.add(cast(int, RealtyRegions.moscow_and_area.value))
+    region_ids.add(cast(int, RealtyRegions.st_petersburg_and_area.value))
 
     return region_ids

@@ -4,7 +4,6 @@ import pytz
 from cian_core.context import get_operation_id
 from cian_core.rabbitmq.decorators import mq_producer_v2
 
-from my_offers.helpers.schemas import get_entity_schema
 from my_offers.queue.entities import (
     AnnouncementMessage,
     OfferDuplicatePriceChangedMessage,
@@ -56,21 +55,21 @@ async def _get_update_offer_master_message(
 
 
 offer_new_duplicate_producers = mq_producer_v2(
-    schema=get_entity_schema(OfferNewDuplicateMessage),
+    schema=OfferNewDuplicateMessage,
     routing_key=OfferDuplicateV1RoutingKey.new.value,
 )(_get_offer_new_duplicate_message)
 
 offer_duplicate_price_changed_producer = mq_producer_v2(
-    schema=get_entity_schema(OfferDuplicatePriceChangedMessage),
+    schema=OfferDuplicatePriceChangedMessage,
     routing_key=OfferDuplicateV1RoutingKey.price_changed.value,
 )(_get_offer_duplicate_price_changed_message)
 
 announcement_models_producer = mq_producer_v2(
-    schema=get_entity_schema(AnnouncementMessage),
+    schema=AnnouncementMessage,
     routing_key=OffersResendV1RoutingKey.new.value,
 )(_get_announcement_models)
 
 update_offer_master_producer = mq_producer_v2(
-    schema=get_entity_schema(UpdateOfferMasterUserMessage),
+    schema=UpdateOfferMasterUserMessage,
     routing_key=OfferMasterUserV1RoutingKey.update.value,
 )(_get_update_offer_master_message)

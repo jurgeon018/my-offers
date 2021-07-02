@@ -1,7 +1,7 @@
 from my_offers import enums
 from my_offers.entities import get_offers
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
-from my_offers.services.offer_view.fields import get_active_info, get_not_active_info
+from my_offers.services.offer_view.fields import get_active_info, get_expiration_date, get_not_active_info
 from my_offers.services.offer_view.fields.declined_info import get_declined_info
 from my_offers.services.offers.enrich.enrich_data import EnrichData
 
@@ -18,7 +18,7 @@ def get_page_specific_info(
     if status_tab.is_active:
         result.active_info = get_active_info(
             publish_terms=object_model.publish_terms,
-            payed_till=enrich_data.get_payed_till(offer_id),
+            payed_till=get_expiration_date(object_model.publish_terms) or enrich_data.get_payed_till(offer_id),
             duplicates_count=enrich_data.get_duplicates_counts(offer_id),
             same_building_count=enrich_data.get_same_building_counts(offer_id),
             offer_relevance_warning=enrich_data.get_offer_relevance_warning(offer_id),

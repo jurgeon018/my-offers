@@ -7,7 +7,6 @@ from cian_core.web import Application
 from tornado.ioloop import IOLoop
 
 from my_offers import setup
-from my_offers.helpers.schemas import get_entity_schema
 from my_offers.queue import consumers, entities as mq_entities, queues, schemas
 from my_offers.services import realty_resender
 from my_offers.services.agents.sync_agents import sync_agents
@@ -155,7 +154,7 @@ register_consumer(
     command=cli.command('delete_user_data_queue_consumer'),
     queue=queues.delete_user_data_queue,
     callback=consumers.delete_user_data_callback,
-    schema_cls=get_entity_schema(mq_entities.DeleteUserDataMessage),
+    schema_cls=mq_entities.DeleteUserDataMessage,
     dead_queue_enabled=True,
     default_prefetch_count=1,
 )
@@ -165,7 +164,7 @@ register_consumer(
     command=cli.command('save_offer_relevance_warning_consumer'),
     queue=queues.save_offer_relevance_warning_queue,
     callback=consumers.save_offer_relevance_warning_callback,
-    schema_cls=get_entity_schema(mq_entities.OfferRelevanceWarningMessage),
+    schema_cls=mq_entities.OfferRelevanceWarningMessage,
     dead_queue_enabled=True,
 )
 
@@ -173,7 +172,7 @@ register_consumer(
     command=cli.command('update_offer_master_user_consumer'),
     queue=queues.update_offer_master_user_queue,
     callback=consumers.update_offer_master_user_callback,
-    schema_cls=get_entity_schema(mq_entities.UpdateOfferMasterUserMessage),
+    schema_cls=mq_entities.UpdateOfferMasterUserMessage,
     dead_queue_enabled=True,
 )
 
