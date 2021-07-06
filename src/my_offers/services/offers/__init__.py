@@ -16,3 +16,4 @@ from my_offers.services.offers._update_offer_master_user import update_offer_mas
 from my_offers.services.offers._v1_get_offers_counters import v1_get_offers_counters_public
 from my_offers.services.offers._v2_get_offers import v2_get_offers_private, v2_get_offers_public
 from my_offers.services.offers._v3_get_offers import v3_get_offers_private, v3_get_offers_public
+from my_offers.services.offers._v1_get_offer_stats import v1_get_offer_stats_public
