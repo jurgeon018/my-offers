@@ -14,7 +14,7 @@ from my_offers.repositories.callbook.entities import (
 from my_offers.repositories.monolith_python import cian_api_site_v1_get_my_offer_stats
 from my_offers.repositories.monolith_python.entities import (
     CianApiSiteV1GetMyOfferStats,
-    MyOffersStatsGetMyOfferStatsResponse,
+    GetMyOfferStatsResponse, MyOffersStatsGetMyOfferStatsResponse,
     PeriodStats as MonolithPeriodStats,
 )
 
@@ -77,10 +77,11 @@ def _add_calls(
 
 
 def _map(degradation_result: DegradationResult) -> entities.GetOfferStatsV1Response:
-    result: MyOffersStatsGetMyOfferStatsResponse = degradation_result.value
+    result: GetMyOfferStatsResponse = degradation_result.value
+    data: MyOffersStatsGetMyOfferStatsResponse = result.data
 
     stats_data = {
-        field.name: _get_period_stats(getattr(result, field.name))
+        field.name: _get_period_stats(getattr(data, field.name))
         for field in fields(StatsData)
     }
 
@@ -110,7 +111,7 @@ def _get_period_stats(data: Optional[MonolithPeriodStats]) -> PeriodStats:
 _cian_api_site_v1_get_my_offer_stats_degradation_handler = get_degradation_handler(
     func=cian_api_site_v1_get_my_offer_stats,
     key='statistics.cian_api_site_v1_get_my_offer_stats',
-    default=MyOffersStatsGetMyOfferStatsResponse(),
+    default=GetMyOfferStatsResponse(),
 )
 
 _v1_get_user_calls_by_offers_totals_degradation_handler = get_degradation_handler(
