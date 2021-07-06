@@ -1,4 +1,25 @@
 definitions:
+  cian.api.site.my_offers_stats.schemas.GetMyOfferStatsResponseSchema:
+    properties:
+      day10:
+        $ref: '#/definitions/cian.search_coverage.services.get_offer_periods_stats_desktop.entities.PeriodStatsSchema'
+        description: Статистика за 10 дней
+      month:
+        $ref: '#/definitions/cian.search_coverage.services.get_offer_periods_stats_desktop.entities.PeriodStatsSchema'
+        description: Статистика за месяц
+    type: object
+  cian.api.site.my_offers_stats.schemas.GetMyOfferStatsResponseSchema223:
+    properties:
+      data:
+        $ref: '#/definitions/cian.api.site.my_offers_stats.schemas.GetMyOfferStatsResponseSchema'
+      status:
+        enum:
+        - ok
+        type: string
+    required:
+    - data
+    - status
+    type: object
   cian.internal_api.schemas.SerializeToQueryStringsRequestSchema:
     properties:
       queryParams:
@@ -19,7 +40,7 @@ definitions:
         title: query_strings
         type: array
     type: object
-  cian.internal_api.schemas.SerializeToQueryStringsResponseSchema584:
+  cian.internal_api.schemas.SerializeToQueryStringsResponseSchema593:
     properties:
       data:
         $ref: '#/definitions/cian.internal_api.schemas.SerializeToQueryStringsResponseSchema'
@@ -31,11 +52,140 @@ definitions:
     - data
     - status
     type: object
+  cian.lib.restapi.schemas.ConventionErrorResponseSchema:
+    properties:
+      errors:
+        items:
+          title: errors
+          type: object
+        title: errors
+        type: array
+      message:
+        title: message
+        type: string
+    type: object
+  cian.lib.restapi.schemas.ConventionErrorResponseSchema222:
+    properties:
+      data:
+        $ref: '#/definitions/cian.lib.restapi.schemas.ConventionErrorResponseSchema'
+      status:
+        enum:
+        - badRequest
+        type: string
+    required:
+    - data
+    - status
+    type: object
+  cian.search_coverage.entities.ChartDataSchema:
+    properties:
+      date:
+        description: Дата
+        format: date
+        title: date
+        type: string
+      value:
+        description: Значание
+        format: int64
+        title: value
+        type: integer
+    type: object
+  cian.search_coverage.services.get_offer_periods_stats_desktop.entities.PeriodStatsSchema:
+    properties:
+      avgPosition:
+        description: Средняя позициция объявления в результатах поиска за последние
+          сутки
+        format: double
+        title: avg_position
+        type: number
+      coverage:
+        description: Охват аудитории
+        format: double
+        title: coverage
+        type: number
+      favorites:
+        description: Кол-во добавлений в избранное
+        format: int64
+        title: favorites
+        type: integer
+      offerShow:
+        description: Просмотров объявления за период
+        format: int64
+        title: offer_show
+        type: integer
+      offerShowTotal:
+        description: Просмотров объявления всего
+        format: int64
+        title: offer_show_total
+        type: integer
+      phoneShow:
+        description: Просмотров телефона
+        format: int64
+        title: phone_show
+        type: integer
+      searchResultsSelectedChart:
+        items:
+          $ref: '#/definitions/cian.search_coverage.entities.ChartDataSchema'
+        type: array
+      searchResultsShow:
+        description: Показов в результатах поиска
+        format: int64
+        title: search_results_show
+        type: integer
+      searchResultsShowChart:
+        items:
+          $ref: '#/definitions/cian.search_coverage.entities.ChartDataSchema'
+        type: array
+      showChart:
+        items:
+          $ref: '#/definitions/cian.search_coverage.entities.ChartDataSchema'
+        type: array
+    type: object
 info:
   description: monolith-python swagger
   title: monolith-python
   version: 1.0.0
 paths:
+  /cian-api/site/v1/get-my-offer-stats/:
+    get:
+      parameters:
+      - description: Тип сделки
+        enum:
+        - rent
+        - sale
+        in: query
+        name: dealType
+        required: true
+        type: string
+        x-rent: Аренда
+        x-sale: Продажа
+      - description: Тип оффера
+        enum:
+        - commercial
+        - flat
+        - newobject
+        - suburban
+        in: query
+        name: offerType
+        required: true
+        type: string
+        x-commercial: коммерческая
+        x-flat: квартиры
+        x-newobject: новостройки
+        x-suburban: загородка
+      - description: Cian id объявление
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/cian.api.site.my_offers_stats.schemas.GetMyOfferStatsResponseSchema223'
+        '400':
+          schema:
+            $ref: '#/definitions/cian.lib.restapi.schemas.ConventionErrorResponseSchema222'
   /internal_api/serialize-query-params/:
     post:
       parameters:
@@ -49,6 +199,6 @@ paths:
       responses:
         '200':
           schema:
-            $ref: '#/definitions/cian.internal_api.schemas.SerializeToQueryStringsResponseSchema584'
+            $ref: '#/definitions/cian.internal_api.schemas.SerializeToQueryStringsResponseSchema593'
       tags: []
 swagger: '2.0'
