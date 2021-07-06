@@ -17,6 +17,7 @@ from my_offers.repositories.monolith_python.entities import (
     GetMyOfferStatsResponse, MyOffersStatsGetMyOfferStatsResponse,
     PeriodStats as MonolithPeriodStats,
 )
+from my_offers.repositories.monolith_python.entities.get_my_offer_stats_response import Status
 
 
 async def v1_get_offer_stats_public(
@@ -111,7 +112,10 @@ def _get_period_stats(data: Optional[MonolithPeriodStats]) -> PeriodStats:
 _cian_api_site_v1_get_my_offer_stats_degradation_handler = get_degradation_handler(
     func=cian_api_site_v1_get_my_offer_stats,
     key='statistics.cian_api_site_v1_get_my_offer_stats',
-    default=GetMyOfferStatsResponse(),
+    default=GetMyOfferStatsResponse(
+        data=MyOffersStatsGetMyOfferStatsResponse(),
+        status=Status.ok,
+    ),
 )
 
 _v1_get_user_calls_by_offers_totals_degradation_handler = get_degradation_handler(
