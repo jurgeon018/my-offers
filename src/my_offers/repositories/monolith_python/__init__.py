@@ -8,5 +8,4 @@ To re-generate, run `codegen generate-client monolith-python`
 cian-codegen version: 1.15.0
 
 """
-from ._repo import (cian_api_site_v1_get_my_offer_stats,
-                    internal_api_serialize_query_params)
+from ._repo import cian_api_site_v1_get_my_offer_stats, internal_api_serialize_query_params

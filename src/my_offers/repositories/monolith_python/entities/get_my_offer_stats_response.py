@@ -12,8 +12,7 @@ from dataclasses import dataclass
 
 from cian_enum import NoFormat, StrEnum
 
-from .my_offers_stats_get_my_offer_stats_response import \
-    MyOffersStatsGetMyOfferStatsResponse
+from .my_offers_stats_get_my_offer_stats_response import MyOffersStatsGetMyOfferStatsResponse
 
 
 class Status(StrEnum):

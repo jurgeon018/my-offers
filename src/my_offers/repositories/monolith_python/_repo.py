@@ -12,6 +12,7 @@ from cian_http.api_client import Api
 
 from . import entities
 
+
 _api = Api(microservice_name='monolith-python')
 cian_api_site_v1_get_my_offer_stats = _api.make_client(
     path='/cian-api/site/v1/get-my-offer-stats/',

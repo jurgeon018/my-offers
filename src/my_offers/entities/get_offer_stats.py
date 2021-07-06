@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date
-from typing import List, Optional, Type
+from typing import List, Optional
 
 from my_offers import enums
 
@@ -27,8 +27,8 @@ class ChartData:
 class PeriodStats:
     coverage: Optional[float] = None
     """Охват аудитории"""
-    favorites: Optional[int] = None
-    """Количество добавлений в избранное"""
+    favorites_total: Optional[int] = None
+    """Количество добавлений в избранное за все время"""
     offer_show: Optional[int] = None
     """Просмотров объявления за период"""
     offer_show_total: Optional[int] = None

@@ -122,3 +122,8 @@ async def cassandra_statistics(cassandra_service):
 @pytest.fixture(scope='session')
 async def agents_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('agents')
+
+
+@pytest.fixture(scope='session')
+async def monolith_python_mock(http_mock_service):
+    yield await http_mock_service.make_microservice_mock('monolith-python')

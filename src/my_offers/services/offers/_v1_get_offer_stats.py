@@ -1,8 +1,8 @@
 import asyncio
 from dataclasses import fields
-from typing import Optional
+from typing import Dict, Optional
 
-from cian_core.degradation import get_degradation_handler, DegradationResult
+from cian_core.degradation import DegradationResult, get_degradation_handler
 
 from my_offers import entities
 from my_offers.entities.get_offer_stats import PeriodStats, StatsData
@@ -14,50 +14,74 @@ from my_offers.repositories.callbook.entities import (
 from my_offers.repositories.monolith_python import cian_api_site_v1_get_my_offer_stats
 from my_offers.repositories.monolith_python.entities import (
     CianApiSiteV1GetMyOfferStats,
-    GetMyOfferStatsResponse, MyOffersStatsGetMyOfferStatsResponse,
+    GetMyOfferStatsResponse,
+    MyOffersStatsGetMyOfferStatsResponse,
     PeriodStats as MonolithPeriodStats,
 )
 from my_offers.repositories.monolith_python.entities.get_my_offer_stats_response import Status
+from my_offers.services.favorites import get_favorites_counts_degradation_handler
 
 
 async def v1_get_offer_stats_public(
         request: entities.GetOfferStatsV1Request,
         realty_user_id: int,
 ) -> entities.GetOfferStatsV1Response:
-
-    tasks = (
-        asyncio.create_task(
-            _cian_api_site_v1_get_my_offer_stats_degradation_handler(
-                CianApiSiteV1GetMyOfferStats(
-                    id=request.offer_id,
-                    deal_type=request.deal_type,
-                    offer_type=request.offer_type,
-                )
-            )
-        ),
-        asyncio.create_task(
-            _v1_get_user_calls_by_offers_totals_degradation_handler(
-                GetUserCallsByOffersStatsRequest(
-                    user_id=realty_user_id,
-                    offer_ids=[request.offer_id],
-                )
-            )
-        ),
-    )
-
     (
         my_offer_stats_degradation_result,
         user_calls_by_offers_totals_degradation_result,
-    ) = await asyncio.gather(*tasks)
+        favorites_degradation_result,
+    ) = await asyncio.gather(
+        _cian_api_site_v1_get_my_offer_stats_degradation_handler(
+            CianApiSiteV1GetMyOfferStats(
+                id=request.offer_id,
+                deal_type=request.deal_type,
+                offer_type=request.offer_type,
+            )
+        ),
+        _v1_get_user_calls_by_offers_totals_degradation_handler(
+            GetUserCallsByOffersStatsRequest(
+                user_id=realty_user_id,
+                offer_ids=[request.offer_id],
+            )
+        ),
+        get_favorites_counts_degradation_handler(
+            offer_ids=[request.offer_id],
+        ),
+    )
 
-    response = _map(my_offer_stats_degradation_result)
+    response = _get_response(my_offer_stats_degradation_result)
 
-    _add_calls(request.offer_id, response, user_calls_by_offers_totals_degradation_result)
+    _add_calls_to_response(
+        request.offer_id,
+        response,
+        user_calls_by_offers_totals_degradation_result,
+    )
+
+    _add_favorites_to_response(
+        request.offer_id,
+        response,
+        favorites_degradation_result,
+    )
 
     return response
 
 
-def _add_calls(
+def _add_favorites_to_response(
+        offer_id: int,
+        response: entities.GetOfferStatsV1Response,
+        degradation_result: DegradationResult,
+) -> None:
+    result: Dict[int, int] = degradation_result.value
+
+    for field in fields(StatsData):
+        setattr(
+            getattr(response.data, field.name),
+            'favorites_total',
+            result.get(offer_id)
+        )
+
+
+def _add_calls_to_response(
         offer_id: int,
         response: entities.GetOfferStatsV1Response,
         degradation_result: DegradationResult,
@@ -77,7 +101,7 @@ def _add_calls(
         )
 
 
-def _map(degradation_result: DegradationResult) -> entities.GetOfferStatsV1Response:
+def _get_response(degradation_result: DegradationResult) -> entities.GetOfferStatsV1Response:
     result: GetMyOfferStatsResponse = degradation_result.value
     data: MyOffersStatsGetMyOfferStatsResponse = result.data
 
@@ -98,7 +122,7 @@ def _get_period_stats(data: Optional[MonolithPeriodStats]) -> PeriodStats:
 
     return PeriodStats(
         coverage=data.coverage,
-        favorites=data.favorites,
+        favorites_total=data.favorites,
         offer_show=data.offer_show,
         offer_show_total=data.offer_show_total,
         phone_show=data.phone_show,

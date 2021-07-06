@@ -2,7 +2,6 @@ from datetime import datetime
 
 import pytest
 import pytz
-
 from freezegun import freeze_time
 
 from my_offers.entities import AgentHierarchyData

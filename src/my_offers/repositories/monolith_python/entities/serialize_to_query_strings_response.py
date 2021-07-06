@@ -12,8 +12,7 @@ from dataclasses import dataclass
 
 from cian_enum import NoFormat, StrEnum
 
-from .internal_api_serialize_to_query_strings_response import \
-    InternalApiSerializeToQueryStringsResponse
+from .internal_api_serialize_to_query_strings_response import InternalApiSerializeToQueryStringsResponse
 
 
 class Status(StrEnum):
