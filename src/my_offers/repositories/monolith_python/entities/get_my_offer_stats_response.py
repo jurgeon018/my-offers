@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from cian_enum import NoFormat, StrEnum
 
-from .internal_api_serialize_to_query_strings_response import InternalApiSerializeToQueryStringsResponse
+from .my_offers_stats_get_my_offer_stats_response import MyOffersStatsGetMyOfferStatsResponse
 
 
 class Status(StrEnum):
@@ -21,6 +21,6 @@ class Status(StrEnum):
 
 
 @dataclass
-class SerializeToQueryStringsResponse:
-    data: InternalApiSerializeToQueryStringsResponse
+class GetMyOfferStatsResponse:
+    data: MyOffersStatsGetMyOfferStatsResponse
     status: Status

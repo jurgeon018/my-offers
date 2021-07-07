@@ -12,6 +12,16 @@ from my_offers.web.handlers import PublicHandler
 
 urlpatterns = base_urls.urlpatterns + [
     url(
+        r'/public/v1/get-offer-stats/$',
+        get_handler(
+            service=offers.v1_get_offer_stats_public,
+            method='GET',  # pragma: no mutate
+            request_schema=entities.GetOfferStatsV1Request,
+            response_schema=entities.GetOfferStatsV1Response,
+            base_handler_cls=PublicHandler,
+        )
+    ),
+    url(
         r'/public/v2/get-offers/$',
         get_handler(
             service=offers.v2_get_offers_public,

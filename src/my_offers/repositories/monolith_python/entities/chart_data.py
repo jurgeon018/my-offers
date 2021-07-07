@@ -9,10 +9,13 @@ cian-codegen version: 1.15.0
 
 """
 from dataclasses import dataclass
-from typing import List, Optional
+from datetime import date as _date
+from typing import Optional
 
 
 @dataclass
-class InternalApiSerializeToQueryStringsResponse:
-    query_strings: Optional[List[str]] = None
-    """Список QueryString поисковых запросов"""
+class ChartData:
+    date: Optional[_date] = None
+    """Дата"""
+    value: Optional[int] = None
+    """Значание"""

@@ -14,6 +14,6 @@ async def get_favorites_counts(offer_ids: List[int]) -> Dict[int, int]:
 
 get_favorites_counts_degradation_handler = get_degradation_handler(
     func=get_favorites_counts,
-    key='cassandra.get_favorites_counts',
+    key='favorites.get_favorites_counts',
     default=dict(),
 )
