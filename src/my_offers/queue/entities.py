@@ -5,6 +5,7 @@ from typing import Optional
 from my_offers import entities
 from my_offers.enums.notifications import UserNotificationType
 from my_offers.queue import enums
+from my_offers.queue.enums import AgentRelationState
 from my_offers.repositories.monolith_cian_announcementapi.entities import ObjectModel
 
 
@@ -144,3 +145,17 @@ class UpdateOfferMasterUserMessage:
     """Operation id"""
     date: datetime
     """Время изменения"""
+
+
+@dataclass
+class AgentsRelationsReportingV1ChangedMessage:
+    """Отчетное событие об изменении состояния отношений между мастер и саб-агентом."""
+
+    operation_id: str
+    """ID операции"""
+    agent_id: int
+    """Id мастер агента"""
+    sub_agent_id: int
+    """Id саб-агента"""
+    agent_relation_state: AgentRelationState
+    """Состояние отношений между м/а и с/а"""

@@ -1,4 +1,4 @@
-from cian_enum import StrEnum
+from cian_enum import StrEnum, UpperCamelCaseFormat
 
 
 class PushType(StrEnum):
@@ -18,3 +18,20 @@ class OfferRelevanceTypeMessage(StrEnum):
     """Плашка без даты отклонения"""
     without_message = 'without_message'
     """Без плашки"""
+
+
+class AgentRelationState(StrEnum):
+    __value_format__ = UpperCamelCaseFormat
+
+    request = 'Request'
+    """Отправлена заявка на добавление агента к агентству"""
+    active = 'Active'
+    """Активный агент"""
+    processing = 'Processing'
+    """Агент в процессе активации / блокировки"""
+    blocked = 'Blocked'
+    """Заблокированный агент"""
+    deleted = 'Deleted'
+    """Удаленный агент"""
+    deleted_and_hidden = 'DeletedAndHidden'
+    """Удаленный и скрытый агент"""

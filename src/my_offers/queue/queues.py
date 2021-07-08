@@ -14,6 +14,7 @@ from my_offers.queue.routing_keys import (
     OfferMasterUserV1RoutingKey,
     OffersResendV1RoutingKey,
     ServiceContractsReportingV1RoutingKey,
+    SubAgentsV1RoutingKey,
     UnloadOrderReportingV1RoutingKey,
 )
 
@@ -193,4 +194,14 @@ save_offer_relevance_warning_queue = Queue(
             routing_key=AnnouncementsRelevanceReportingV1RoutingKey.changed.value,
         )
     ]
+)
+
+agents_relations_changed_queue = Queue(
+    name=get_modified_queue_name('agents_relations_changed'),
+    bindings=[
+        QueueBinding(
+            exchange=Exchange('sub-agents'),
+            routing_key=SubAgentsV1RoutingKey.agent_relations_reporting_changed.value,
+        ),
+    ],
 )

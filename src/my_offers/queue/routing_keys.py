@@ -106,3 +106,9 @@ class AnnouncementsRelevanceReportingV1RoutingKey(StrEnum):
     __value_format__ = NoFormat
 
     changed = 'announcements-relevance-reporting.v1.changed'
+
+
+class SubAgentsV1RoutingKey(StrEnum):
+    __value_format__ = NoFormat
+
+    agent_relations_reporting_changed = 'agents-relations-reporting.v1.changed'
