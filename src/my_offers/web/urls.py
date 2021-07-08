@@ -274,17 +274,6 @@ urlpatterns = base_urls.urlpatterns + [
             base_handler_cls=PublicHandler,
         )
     ),
-    url(
-        r'/public/v1/actions/change-offers-publisher/$',
-        get_handler(
-            service=actions.change_offers_publisher,
-            method='POST',  # pragma: no mutate
-            request_schema=entities.OffersChangePublisherRequest,
-            response_schema=entities.OffersChangePublisherResponse,
-            base_handler_cls=PublicHandler,
-        )
-    ),
-
     # calltracking
     url(
         r'/v1/get-offers-for-calltracking/$',
