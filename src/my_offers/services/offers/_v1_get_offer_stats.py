@@ -126,6 +126,7 @@ def _get_period_stats(data: Optional[MonolithPeriodStats]) -> PeriodStats:
         offer_show=data.offer_show,
         offer_show_total=data.offer_show_total,
         phone_show=data.phone_show,
+        search_results_show=data.search_results_show,
         search_results_selected_chart=data.search_results_selected_chart,
         search_results_show_chart=data.search_results_show_chart,
         show_chart=data.show_chart,
