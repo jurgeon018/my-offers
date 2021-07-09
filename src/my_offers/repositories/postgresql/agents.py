@@ -53,12 +53,12 @@ async def get_master_user_id(user_id: int) -> Optional[int]:
 
 
 async def set_master_user_id(*, user_id: int, new_master_user_id: Optional[int]) -> None:
+    query = 'UPDATE agents_hierarchy SET master_agent_user_id = $2 WHERE realty_user_id = $1'
+    params = [user_id, new_master_user_id]
+
     if new_master_user_id is None:
         query = 'UPDATE agents_hierarchy SET master_agent_user_id = NULL WHERE realty_user_id = $1'
         params = [user_id]
-    else:
-        query = 'UPDATE agents_hierarchy SET master_agent_user_id = $2 WHERE realty_user_id = $1'
-        params = [user_id, new_master_user_id]
 
     await pg.get().execute(query, *params)
 

@@ -113,13 +113,13 @@ async def callbook_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('callbook')
 
 
-@pytest.fixture(scope='session')
-async def cassandra_statistics(cassandra_service):
+@pytest.fixture(scope='session', name='cassandra_statistics')
+async def cassandra_statistics_fixture(cassandra_service):
     yield await cassandra_service.get_keyspace(alias='statistics', keyspace='statistics')
 
 
-@pytest.fixture(scope='session')
-async def cassandra_search_coverage(cassandra_service):
+@pytest.fixture(scope='session', name='cassandra_search_coverage')
+async def cassandra_search_coverage_fixture(cassandra_service):
     yield await cassandra_service.get_keyspace(alias='search_coverage', keyspace='search_coverage')
 
 
