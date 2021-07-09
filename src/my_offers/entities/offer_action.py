@@ -59,27 +59,3 @@ class OffersMassRestoreResponse:
     """Счетчики по общему прогрессу"""
     offers: List[OfferMassRestoreStatus]
     """Статусы по восстановленным объявлениям"""
-
-
-@dataclass
-class OffersChangePublisherStatus:
-    offer_id: int
-    """ID объявления"""
-    status: OffersOperationStatus
-    """Статус объявления"""
-    message: Optional[str] = None
-    """Сообщение"""
-
-
-@dataclass
-class OffersChangePublisherRequest:
-    user_id: int
-    """Пользователь на которого назвачить объявление"""
-    offers_ids: List[int]
-    """ID объявлений для которых надо сменить владельца"""
-
-
-@dataclass
-class OffersChangePublisherResponse:
-    offers: List[OffersChangePublisherStatus]
-    """Статусы по объявлениям"""
