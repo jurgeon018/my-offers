@@ -67,6 +67,7 @@ async def test_normal_flow__return_expected(http, monolith_python_mock, callbook
                 'offerShow': 58,
                 'offerShowTotal': 431,
                 'phoneShow': 2,
+                'searchResultsShow': 108,
                 'searchResultsSelectedChart': [
                     {'date': '2021-06-22', 'value': 15},
                     {'date': '2021-06-23', 'value': 53},
@@ -90,6 +91,7 @@ async def test_normal_flow__return_expected(http, monolith_python_mock, callbook
                 'offerShow': 91,
                 'offerShowTotal': 431,
                 'phoneShow': 2,
+                'searchResultsShow': 148,
                 'searchResultsSelectedChart': [
                     {'date': '2021-06-30', 'value': 33},
                     {'date': '2021-07-01', 'value': 19},
@@ -174,6 +176,7 @@ async def test_no_data_available__return_default(http, monolith_python_mock, cal
                 'offerShow': None,
                 'offerShowTotal': None,
                 'phoneShow': None,
+                'searchResultsShow': None,
                 'searchResultsSelectedChart': None,
                 'searchResultsShowChart': None,
                 'showChart': None,
@@ -185,6 +188,7 @@ async def test_no_data_available__return_default(http, monolith_python_mock, cal
                 'offerShow': 91,
                 'offerShowTotal': 431,
                 'phoneShow': 2,
+                'searchResultsShow': 148,
                 'searchResultsSelectedChart': [
                     {'date': '2021-06-30', 'value': 33},
                     {'date': '2021-07-01', 'value': 19},

@@ -37,6 +37,8 @@ class PeriodStats:
     """Просмотров телефона"""
     calls_total: Optional[int] = None
     """Количество звонков за все время"""
+    search_results_show: Optional[int] = None
+    """Показов в результатах поиска"""
     search_results_selected_chart: Optional[List[ChartData]] = None
     """График: Поиски, под которые подошел ваш объект"""
     search_results_show_chart: Optional[List[ChartData]] = None
