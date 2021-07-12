@@ -9,10 +9,6 @@ from my_offers import enums
 class GetOfferStatsV1Request:
     offer_id: int
     """Id объявления"""
-    deal_type: enums.DealType
-    """Тип сделки"""
-    offer_type: enums.OfferType
-    """Тип объекта недвижимости"""
 
 
 @dataclass
