@@ -1,7 +1,14 @@
 import asyncio
+from pathlib import Path
 
+import pytest
 from cian_functional_test_utils.data_fixtures import load_json_data
 from cian_functional_test_utils.pytest_plugin import MockResponse
+
+
+@pytest.fixture(autouse=True)
+async def _setup(pg):
+    await pg.execute_scripts(Path(__file__).parent / 'data' / 'test_v1_get_offer_stats_public_setup.sql')
 
 
 async def test_normal_flow__return_expected(http, monolith_python_mock, callbook_mock, favorites_mock):
@@ -49,8 +56,6 @@ async def test_normal_flow__return_expected(http, monolith_python_mock, callbook
         '/public/v1/get-offer-stats/',
         params={
             'offerId': 209194477,
-            'offerType': 'flat',
-            'dealType': 'rent',
         },
         headers={
             'X-Real-UserId': 15327749

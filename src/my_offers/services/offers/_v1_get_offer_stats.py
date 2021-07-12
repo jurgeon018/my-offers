@@ -19,6 +19,7 @@ from my_offers.repositories.monolith_python.entities import (
     PeriodStats as MonolithPeriodStats,
 )
 from my_offers.repositories.monolith_python.entities.get_my_offer_stats_response import Status
+from my_offers.repositories.postgresql.offer import get_offer_by_id
 from my_offers.services.favorites import get_favorites_counts_degradation_handler
 
 
@@ -26,6 +27,8 @@ async def v1_get_offer_stats_public(
         request: entities.GetOfferStatsV1Request,
         realty_user_id: int,
 ) -> entities.GetOfferStatsV1Response:
+    offer = await get_offer_by_id(request.offer_id)
+
     (
         my_offer_stats_degradation_result,
         user_calls_by_offers_totals_degradation_result,
@@ -34,8 +37,8 @@ async def v1_get_offer_stats_public(
         _cian_api_site_v1_get_my_offer_stats_degradation_handler(
             CianApiSiteV1GetMyOfferStats(
                 id=request.offer_id,
-                deal_type=request.deal_type,
-                offer_type=request.offer_type,
+                deal_type=offer.deal_type,
+                offer_type=offer.offer_type,
             )
         ),
         _v1_get_user_calls_by_offers_totals_degradation_handler(
