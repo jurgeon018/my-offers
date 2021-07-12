@@ -9,6 +9,7 @@ offer_mapper = EntityMapper(
     without_camelcase=True,
     mappers={
         'sort_date': ValueMapper(),
+        'raw_data': ValueMapper(),
     }
 )
 
