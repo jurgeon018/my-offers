@@ -173,6 +173,66 @@ definitions:
     required:
     - userIds
     type: object
+  WebApi.Models.GetAgentInfoResponse:
+    description: Модель для получения информации об агенте
+    properties:
+      agencyName:
+        description: Название агентства
+        type: string
+      agentId:
+        description: Id агента
+        format: int32
+        type: integer
+      agentType:
+        description: Тип агента
+        enum:
+        - agent
+        - agency
+        - subAgent
+        type: string
+        x-agency: Агентство
+        x-agent: Агент
+        x-subAgent: Сабагент
+      cianUserId:
+        description: CianUserId
+        format: int64
+        type: integer
+      companyId:
+        description: Id компании
+        format: int32
+        type: integer
+      contactEmail:
+        description: Почта для контактов
+        type: string
+      firstName:
+        description: Имя агента
+        type: string
+      lastName:
+        description: Фамилия агента
+        type: string
+      masterAgentId:
+        description: AgentId мастер агента (существует только у сабагентов)
+        format: int32
+        type: integer
+      masterUserId:
+        description: RealtyUserId мастер агента (существует только у сабагентов)
+        format: int64
+        type: integer
+      name:
+        description: Для агента пишется ФИО, для агентства - название агентства
+        type: string
+      userId:
+        description: UserId агента
+        format: int64
+        type: integer
+      website:
+        description: Сайт агентства
+        type: string
+    required:
+    - agentId
+    - agentType
+    - userId
+    type: object
 host: master.agents.dev3.cian.ru
 info:
   title: agents
@@ -194,6 +254,27 @@ paths:
         бы один сотрудник.
       tags:
       - Staff
+  /v1/get-agent-info-by-id/:
+    get:
+      parameters:
+      - description: ID агента
+        format: int32
+        in: query
+        name: agentId
+        type: integer
+      produces:
+      - application/msgpack
+      - text/plain
+      - application/json
+      - text/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/WebApi.Models.GetAgentInfoResponse'
+      summary: Получение информации об агенте
+      tags:
+      - Agent
   /v1/get-agents-list/:
     get:
       parameters:

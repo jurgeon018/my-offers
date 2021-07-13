@@ -4,15 +4,14 @@ import pytest
 
 
 @pytest.fixture(autouse=True, scope='session')
-async def start(runner, pg, queue_service, cassandra_service, global_runtime_settings, cassandra_statistics):
+async def start(runner, pg, queue_service, global_runtime_settings, cassandra_statistics, cassandra_search_coverage):
     await global_runtime_settings.set(
         RABBITMQ_CONNECT_TO_QUEUE_MASTER=False,
         RABBITMQ_CHECK_QUEUE_MASTER_INTERVAL=0,
     )
 
-    await cassandra_statistics.execute_scripts(Path('contrib') / 'cassandra' / 'schema_for_tests.ddl')
-
-    await cassandra_service.get_keyspace(alias='search_coverage', keyspace='search_coverage')
+    await cassandra_statistics.execute_scripts(Path('contrib') / 'cassandra' / 'statistics.cql')
+    await cassandra_search_coverage.execute_scripts(Path('contrib') / 'cassandra' / 'search_coverage.cql')
 
     await pg.execute_scripts((Path('contrib') / 'postgresql' / 'migrations').glob('*.sql'))
 
@@ -114,9 +113,14 @@ async def callbook_mock(http_mock_service):
     yield await http_mock_service.make_microservice_mock('callbook')
 
 
-@pytest.fixture(scope='session')
-async def cassandra_statistics(cassandra_service):
+@pytest.fixture(scope='session', name='cassandra_statistics')
+async def cassandra_statistics_fixture(cassandra_service):
     yield await cassandra_service.get_keyspace(alias='statistics', keyspace='statistics')
+
+
+@pytest.fixture(scope='session', name='cassandra_search_coverage')
+async def cassandra_search_coverage_fixture(cassandra_service):
+    yield await cassandra_service.get_keyspace(alias='search_coverage', keyspace='search_coverage')
 
 
 @pytest.fixture(scope='session')

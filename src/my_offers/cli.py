@@ -8,6 +8,7 @@ from tornado.ioloop import IOLoop
 
 from my_offers import setup
 from my_offers.queue import consumers, entities as mq_entities, queues, schemas
+from my_offers.queue.queues import agents_relations_changed_queue
 from my_offers.services import realty_resender
 from my_offers.services.agents.sync_agents import sync_agents
 from my_offers.services.duplicates import sync_offer_duplicates
@@ -100,6 +101,14 @@ register_consumer(
     callback=consumers.save_agent_callback,
     schema_cls=schemas.RabbitMQAgentUpdatedMessageSchema,
     dead_queue_enabled=True,
+)
+
+# [sub-agents] отслеживает информацию об изменениях в иерархии
+register_consumer(
+    command=cli.command('agents_relations_changed_consumer'),
+    callback=consumers.agents_relations_changed_callback,
+    schema_cls=mq_entities.AgentsRelationsReportingV1ChangedMessage,
+    queue=agents_relations_changed_queue,
 )
 
 # [moderation] объявление отправлено на премодерацию

@@ -11,6 +11,7 @@ from my_offers.entities import AgentMessage, ModerationOfferOffence, OfferImport
 from my_offers.entities.moderation import OfferPremoderation
 from my_offers.helpers.time import get_aware_date
 from my_offers.queue.entities import (
+    AgentsRelationsReportingV1ChangedMessage,
     AnnouncementMessage,
     AnnouncementPremoderationReportingMessage,
     DeleteUserDataMessage,
@@ -24,6 +25,7 @@ from my_offers.queue.entities import (
 )
 from my_offers.repositories.postgresql.offer_premoderation import save_offer_premoderation
 from my_offers.services.agents import update_agents_hierarchy
+from my_offers.services.agents.change_agents_relations import change_agents_relations
 from my_offers.services.announcement import process_announcement
 from my_offers.services.billing.contracts_service import (
     mark_to_delete_announcement_contract,
@@ -185,3 +187,11 @@ async def update_offer_master_user_callback(messages: List[Message[UpdateOfferMa
 
         with new_operation_id(update_offer_master_message.operation_id):
             await update_offer_master_user(update_offer_master_message)
+
+
+async def agents_relations_changed_callback(messages: List[Message[AgentsRelationsReportingV1ChangedMessage]]) -> None:
+    for message in messages:
+        data: AgentsRelationsReportingV1ChangedMessage = message.data
+
+        with new_operation_id(data.operation_id):
+            await change_agents_relations(data)
