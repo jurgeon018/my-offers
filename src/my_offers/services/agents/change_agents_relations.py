@@ -1,5 +1,7 @@
 import asyncio
 
+from cian_http.exceptions import BadRequestException
+
 from my_offers import pg
 from my_offers.queue.entities import AgentsRelationsReportingV1ChangedMessage
 from my_offers.repositories.agents import v1_get_agent_info_by_id
@@ -12,13 +14,19 @@ from my_offers.repositories.postgresql.offer import get_offer_ids_payed_by_user_
 async def change_agents_relations(message: AgentsRelationsReportingV1ChangedMessage) -> None:
     state = message.agent_relation_state
 
-    (
-        master_agent_response,
-        sub_agent_response,
-    ) = await asyncio.gather(
-        v1_get_agent_info_by_id(V1GetAgentInfoById(agent_id=message.agent_id)),
-        v1_get_agent_info_by_id(V1GetAgentInfoById(agent_id=message.sub_agent_id)),
-    )
+    if state.is_blocked:
+        return
+
+    try:
+        (
+            master_agent_response,
+            sub_agent_response,
+        ) = await asyncio.gather(
+            v1_get_agent_info_by_id(V1GetAgentInfoById(agent_id=message.agent_id)),
+            v1_get_agent_info_by_id(V1GetAgentInfoById(agent_id=message.sub_agent_id)),
+        )
+    except BadRequestException:
+        return
 
     master_agent_realty_user_id = master_agent_response.user_id
     sub_agent_realty_user_id = sub_agent_response.user_id
@@ -30,7 +38,6 @@ async def change_agents_relations(message: AgentsRelationsReportingV1ChangedMess
         )
 
     if not any([
-        state.is_blocked,
         state.is_deleted,
         state.is_deleted_and_hidden,
     ]):
