@@ -1,8 +1,10 @@
-import asyncio
-from dataclasses import fields
-from typing import Dict, Optional
+from dataclasses import dataclass, fields
+from datetime import datetime, timedelta
+from typing import Any, Awaitable, Dict, Optional
 
-from cian_core.degradation import DegradationResult, get_degradation_handler
+import pytz
+from cian_core.degradation import get_degradation_handler
+from tornado import gen
 
 from my_offers import entities
 from my_offers.entities.get_offer_stats import PeriodStats, StatsData
@@ -21,96 +23,97 @@ from my_offers.repositories.monolith_python.entities import (
 from my_offers.repositories.monolith_python.entities.get_my_offer_stats_response import Status
 from my_offers.repositories.postgresql.offer import get_offer_by_id
 from my_offers.services.favorites import get_favorites_counts_degradation_handler
+from my_offers.services.offers._degradation_handlers import (
+    get_searches_counts_degradation_handler,
+    get_views_counts_degradation_handler,
+)
 
 
 async def v1_get_offer_stats_public(
         request: entities.GetOfferStatsV1Request,
         realty_user_id: int,
 ) -> entities.GetOfferStatsV1Response:
-    offer = await get_offer_by_id(request.offer_id)
+    loaded_stats_data = await _load_stats_data(request.offer_id, realty_user_id)
+    prepared_stats_data = _prepare_stats_data(loaded_stats_data, request.offer_id)
+    return _get_response(prepared_stats_data)
 
-    (
-        my_offer_stats_degradation_result,
-        user_calls_by_offers_totals_degradation_result,
-        favorites_degradation_result,
-    ) = await asyncio.gather(
-        _cian_api_site_v1_get_my_offer_stats_degradation_handler(
-            CianApiSiteV1GetMyOfferStats(
-                id=request.offer_id,
-                deal_type=offer.deal_type,
-                offer_type=offer.offer_type,
-            )
-        ),
-        _v1_get_user_calls_by_offers_totals_degradation_handler(
-            GetUserCallsByOffersStatsRequest(
-                user_id=realty_user_id,
-                offer_ids=[request.offer_id],
-            )
-        ),
-        get_favorites_counts_degradation_handler(
-            offer_ids=[request.offer_id],
+
+@dataclass
+class _PeriodExtraStats:
+    views_counts: Optional[int]
+    searches_counts: Optional[int]
+    favorites: Optional[int]
+    calls: Optional[int]
+
+
+@dataclass
+class _ExtraStatsData:
+    day10: _PeriodExtraStats
+    month: _PeriodExtraStats
+
+
+@dataclass
+class _PreparedStatsData:
+    data: MyOffersStatsGetMyOfferStatsResponse
+    extra_data: _ExtraStatsData
+
+
+def _prepare_stats_data(loaded_stats_data: Dict[str, Any], offer_id: int) -> _PreparedStatsData:
+    return _PreparedStatsData(
+        data=loaded_stats_data['monolith_stats'].value.data,
+        extra_data=_prepare_extra_data(
+            offer_id=offer_id,
+            stats_data=loaded_stats_data['stats'],
+            favorites_data=loaded_stats_data['favorites'].value,
+            calls_data=_prepare_calls_data(loaded_stats_data['calls'].value),
         ),
     )
 
-    response = _get_response(my_offer_stats_degradation_result)
 
-    _add_calls_to_response(
-        request.offer_id,
-        response,
-        user_calls_by_offers_totals_degradation_result,
-    )
-
-    _add_favorites_to_response(
-        request.offer_id,
-        response,
-        favorites_degradation_result,
-    )
-
-    return response
-
-
-def _add_favorites_to_response(
-        offer_id: int,
-        response: entities.GetOfferStatsV1Response,
-        degradation_result: DegradationResult,
-) -> None:
-    result: Dict[int, int] = degradation_result.value
-
-    for field in fields(StatsData):
-        setattr(
-            getattr(response.data, field.name),
-            'favorites_total',
-            result.get(offer_id)
-        )
-
-
-def _add_calls_to_response(
-        offer_id: int,
-        response: entities.GetOfferStatsV1Response,
-        degradation_result: DegradationResult,
-) -> None:
-    result: GetUserCallsByOffersTotalsResponse = degradation_result.value
-
-    offer_calls = {
-        offer_call.offer_id: offer_call
-        for offer_call in result.data
+def _prepare_calls_data(response: GetUserCallsByOffersTotalsResponse) -> Dict[int, int]:
+    return {
+        offer_call.offer_id: offer_call.calls_count
+        for offer_call in response.data
     }
 
-    for field in fields(StatsData):
-        setattr(
-            getattr(response.data, field.name),
-            'calls_total',
-            offer_calls.get(offer_id) and offer_calls.get(offer_id).calls_count
-        )
+
+def _prepare_extra_data(
+        offer_id: int,
+        stats_data: Dict[str, Any],
+        favorites_data: Dict[int, int],
+        calls_data: Dict[int, int],
+) -> _ExtraStatsData:
+    # эти данные не меняются при изменении периода
+    favorites = favorites_data.get(offer_id)
+    calls = calls_data.get(offer_id)
+    # endblock
+
+    return _ExtraStatsData(
+        day10=_PeriodExtraStats(
+            views_counts=stats_data['views_counts_day10'].value.get(offer_id),
+            searches_counts=stats_data['searches_counts_day10'].value.get(offer_id),
+            favorites=favorites,
+            calls=calls,
+        ),
+        month=_PeriodExtraStats(
+            views_counts=stats_data['views_counts_month'].value.get(offer_id),
+            searches_counts=stats_data['searches_counts_month'].value.get(offer_id),
+            favorites=favorites,
+            calls=calls,
+        ),
+    )
 
 
-def _get_response(degradation_result: DegradationResult) -> entities.GetOfferStatsV1Response:
-    result: GetMyOfferStatsResponse = degradation_result.value
-    data: MyOffersStatsGetMyOfferStatsResponse = result.data
+def _get_response(prepared_stats_data: _PreparedStatsData) -> entities.GetOfferStatsV1Response:
+    data = prepared_stats_data.data
+    extra_data = prepared_stats_data.extra_data
 
     stats_data = {
-        field.name: _get_period_stats(getattr(data, field.name))
-        for field in fields(StatsData)
+        period.name: _get_period_stats(
+            period_data=getattr(data, period.name),
+            period_extra_data=getattr(extra_data, period.name),
+        )
+        for period in fields(StatsData)
     }
 
     return entities.GetOfferStatsV1Response(
@@ -119,21 +122,88 @@ def _get_response(degradation_result: DegradationResult) -> entities.GetOfferSta
     )
 
 
-def _get_period_stats(data: Optional[MonolithPeriodStats]) -> PeriodStats:
-    if data is None:
-        return PeriodStats()
+def _load_stats_data(offer_id: int, user_id: int) -> Awaitable[Dict[str, Any]]:
+    return gen.multi({
+        'monolith_stats': _load_monolith_stats(offer_id),
+        'stats': _load_stats(offer_id),
+        'favorites': _load_favorites(offer_id),
+        'calls': _load_calls(offer_id, user_id),
+    })
+
+
+async def _load_favorites(offer_id: int):
+    return await get_favorites_counts_degradation_handler(
+        offer_ids=[offer_id],
+    )
+
+
+async def _load_calls(offer_id: int, user_id: int):
+    return await _v1_get_user_calls_by_offers_totals_degradation_handler(
+        GetUserCallsByOffersStatsRequest(
+            user_id=user_id,
+            offer_ids=[offer_id],
+        )
+    )
+
+
+def _load_stats(offer_id: int) -> Awaitable[Dict[str, Any]]:
+    date_to = datetime.now(tz=pytz.utc)
+    date_from_10 = date_to - timedelta(days=10)
+    date_from_30 = date_to - timedelta(days=30)
+
+    return gen.multi({
+        'views_counts_day10': get_views_counts_degradation_handler(
+            offer_ids=[offer_id],
+            date_from=date_from_10,
+            date_to=date_to
+        ),
+        'views_counts_month': get_views_counts_degradation_handler(
+            offer_ids=[offer_id],
+            date_from=date_from_30,
+            date_to=date_to
+        ),
+        'searches_counts_day10': get_searches_counts_degradation_handler(
+            offer_ids=[offer_id],
+            date_from=date_from_10,
+            date_to=date_to
+        ),
+        'searches_counts_month': get_searches_counts_degradation_handler(
+            offer_ids=[offer_id],
+            date_from=date_from_30,
+            date_to=date_to
+        ),
+    })
+
+
+async def _load_monolith_stats(offer_id: int):
+    offer = await get_offer_by_id(offer_id)
+    return await _cian_api_site_v1_get_my_offer_stats_degradation_handler(
+        CianApiSiteV1GetMyOfferStats(
+            id=offer_id,
+            deal_type=offer.deal_type,
+            offer_type=offer.offer_type,
+        )
+    )
+
+
+def _get_period_stats(
+        period_data: Optional[MonolithPeriodStats],
+        period_extra_data: _PeriodExtraStats,
+) -> PeriodStats:
+    if period_data is None:
+        period_data = PeriodStats()
 
     return PeriodStats(
-        coverage=data.coverage,
-        favorites_total=data.favorites,
-        offer_show=data.offer_show,
-        offer_show_total=data.offer_show_total,
-        phone_show=data.phone_show,
-        search_results_show=data.search_results_show,
-        search_results_selected_chart=data.search_results_selected_chart,
-        search_results_show_chart=data.search_results_show_chart,
-        show_chart=data.show_chart,
-        calls_total=None,
+        coverage=period_data.coverage,
+        favorites_total=period_extra_data.favorites or period_data.favorites,
+        offer_show=period_extra_data.views_counts or period_data.offer_show,
+        offer_show_total=period_data.offer_show_total,
+        phone_show=period_data.phone_show,
+        search_results_show=period_extra_data.searches_counts or period_data.search_results_show,
+        search_results_selected_chart=period_data.search_results_selected_chart,
+        search_results_show_chart=period_data.search_results_show_chart,
+        show_chart=period_data.show_chart,
+        calls_total=period_extra_data.calls,
     )
 
 
