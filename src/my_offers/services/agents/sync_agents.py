@@ -19,6 +19,8 @@ from my_offers.repositories.agents.entities import (
     V1GetAgentsList,
 )
 from my_offers.repositories.agents.entities.v1_get_agents_list import Statuses
+from my_offers.repositories.postgresql.agents import get_sub_agent_ids
+from my_offers.services.agents.change_agents_relations import transfer_offers_to_sub_agent
 
 
 _logger = getLogger(__name__)
@@ -39,8 +41,18 @@ async def sync_agents() -> None:
 
 
 async def _sync_master_agent(master_agent_user_id: int) -> None:
+    seen_sub_agents = set()
     async for sub_agent in _paginate_sub_agents(master_agent_user_id):
         await _sync_sub_agent(master_agent_user_id, sub_agent)
+        seen_sub_agents.add(sub_agent.user_id)
+
+    all_sub_agents = await get_sub_agent_ids(master_agent_user_id)
+    unknown_sub_agents = set(all_sub_agents) - seen_sub_agents
+    for sub_agent_realty_user_id in unknown_sub_agents:
+        await transfer_offers_to_sub_agent(
+            master_agent_user_id,
+            sub_agent_realty_user_id,
+        )
 
 
 async def _paginate_sub_agents(master_agent_user_id: int) -> AsyncGenerator[AgentResponse, None]:
@@ -94,11 +106,14 @@ async def _sync_sub_agent(master_agent_user_id: int, sub_agent: AgentResponse) -
     if not sub_agent.state.is_active:
         statsd.incr('sync-agents.skipped')
         return
-    if await postgresql.set_agent_hierarchy_data(
+
+    is_updated = await postgresql.set_agent_hierarchy_data(
         realty_user_id=sub_agent.user_id,
         master_agent_user_id=master_agent_user_id,
         first_name=sub_agent.first_name,
         last_name=sub_agent.last_name,
         updated_at=datetime.now(pytz.utc),
-    ):
+    )
+
+    if is_updated:
         statsd.incr('sync-agents.updated')

@@ -125,3 +125,11 @@ async def delete_agents_hierarchy(user_id: int) -> None:
     query = 'delete from agents_hierarchy where realty_user_id = $1 or master_agent_user_id = $1'
 
     await pg.get().execute(query, user_id)
+
+
+async def get_sub_agent_ids(user_id: int) -> List[int]:
+    query = 'select realty_user_id from agents_hierarchy where master_agent_user_id = $1'
+
+    rows = await pg.get().fetch(query, user_id)
+
+    return [row['realty_user_id'] for row in rows]
