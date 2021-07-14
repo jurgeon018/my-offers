@@ -106,11 +106,14 @@ async def _sync_sub_agent(master_agent_user_id: int, sub_agent: AgentResponse) -
     if not sub_agent.state.is_active:
         statsd.incr('sync-agents.skipped')
         return
-    if await postgresql.set_agent_hierarchy_data(
+
+    is_updated = await postgresql.set_agent_hierarchy_data(
         realty_user_id=sub_agent.user_id,
         master_agent_user_id=master_agent_user_id,
         first_name=sub_agent.first_name,
         last_name=sub_agent.last_name,
         updated_at=datetime.now(pytz.utc),
-    ):
+    )
+
+    if is_updated:
         statsd.incr('sync-agents.updated')
