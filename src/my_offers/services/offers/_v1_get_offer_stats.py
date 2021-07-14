@@ -195,7 +195,7 @@ def _get_period_stats(
 
     return PeriodStats(
         coverage=period_data.coverage,
-        favorites_total=period_extra_data.favorites or period_data.favorites,
+        favorites_total=period_extra_data.favorites or period_data.favorites_total,
         offer_show=period_extra_data.views_counts or period_data.offer_show,
         offer_show_total=period_data.offer_show_total,
         phone_show=period_data.phone_show,
