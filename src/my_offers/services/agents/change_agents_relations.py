@@ -62,10 +62,15 @@ async def transfer_offers_to_sub_agent(
             user_id=sub_agent_realty_user_id,
             new_master_user_id=None,
         )
-        await asyncio.gather(*[
-            update_offer_master_user_id_by_id(
+        for offer_id in payed_by_sub_agent_offer_ids:
+            await update_offer_master_user_id_by_id(
                 offer_id=offer_id,
                 new_master_user_id=sub_agent_realty_user_id,
             )
-            for offer_id in payed_by_sub_agent_offer_ids
-        ])
+        # await asyncio.gather(*[
+        #     update_offer_master_user_id_by_id(
+        #         offer_id=offer_id,
+        #         new_master_user_id=sub_agent_realty_user_id,
+        #     )
+        #     for offer_id in payed_by_sub_agent_offer_ids
+        # ])
