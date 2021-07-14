@@ -43,11 +43,20 @@ async def change_agents_relations(message: AgentsRelationsReportingV1ChangedMess
     ]):
         return
 
+    await transfer_offers_to_sub_agent(
+        master_agent_realty_user_id,
+        sub_agent_realty_user_id,
+    )
+
+
+async def transfer_offers_to_sub_agent(
+        master_agent_realty_user_id: int,
+        sub_agent_realty_user_id: int,
+) -> None:
     payed_by_sub_agent_offer_ids = await get_offer_ids_payed_by_user_id(
         master_user_id=master_agent_realty_user_id,
         user_id=sub_agent_realty_user_id,
     )
-
     async with pg.get().transaction():
         await set_master_user_id(
             user_id=sub_agent_realty_user_id,
