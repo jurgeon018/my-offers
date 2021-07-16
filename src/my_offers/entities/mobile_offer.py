@@ -126,7 +126,7 @@ class MobOffer:
     """Описание"""
     available_actions: AvailableActions
     """Доступные действия оффера"""
-    services: List[Services]
+    services: List[enums.OfferServices]
     """Типы размещений оффера"""
     deactivated_service: Optional[OfferDeactivatedService]
     auction: Optional[OfferAuction]
