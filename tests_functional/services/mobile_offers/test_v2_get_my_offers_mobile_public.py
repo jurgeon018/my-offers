@@ -277,7 +277,7 @@ async def test_v1_get_offers_mobile_public__load_sale_offers__offers_data(
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
             'realtyUserId': 29437831,
-            'services': ['calltracking', 'paid'],
+            'services': ['paid'],
             'stats': {
                 'callsCount': 10,
                 'competitorsCount': None,
@@ -421,7 +421,7 @@ async def test_v1_get_offers_mobile_public__load_offers_with_search_text__offers
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
             'realtyUserId': 29437831,
-            'services': ['calltracking', 'paid'],
+            'services': ['paid'],
             'stats': {
                 'callsCount': 10,
                 'competitorsCount': None,
@@ -514,7 +514,7 @@ async def test_v1_get_offers_mobile_public__load_inactive_offers__offers_data(
                 'price': {'currency': 'rur', 'value': 2594400.0},
                 'publishTillDate': None,
                 'realtyUserId': 29437831,
-                'services': ['calltracking', 'paid'],
+                'services': ['paid'],
                 'stats': {
                     'callsCount': None,
                     'competitorsCount': None,
@@ -626,7 +626,7 @@ async def test_v1_get_offers_mobile_public__load_offers_with_degradation_integra
                 },
                 'publishTillDate': None,
                 'realtyUserId': 29437831,
-                'services': ['calltracking', 'paid'],
+                'services': ['paid'],
                 'stats': {
                     'callsCount': None,
                     'competitorsCount': None,
@@ -726,7 +726,7 @@ async def test_v1_get_offers_mobile_public__load_offers_with_pagination__offers_
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
             'realtyUserId': 29437831,
-            'services': ['calltracking', 'paid'],
+            'services': ['paid'],
             'stats': {
                 'callsCount': 10,
                 'competitorsCount': None,
@@ -893,7 +893,7 @@ async def test_v1_get_offers_mobile_public__load_offers_with_enrichment__offers_
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
             'realtyUserId': 29437831,
-            'services': ['calltracking', 'paid'],
+            'services': ['paid'],
             'stats': {
                 'callsCount': None,
                 'competitorsCount': None,

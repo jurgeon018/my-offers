@@ -21,8 +21,8 @@ from my_offers.services.offers.enrich.load_enrich_data import load_mobile_enrich
 from my_offers.services.offers.enrich.prepare_enrich_params import prepare_enrich_params
 
 
-def _parse_services(terms: Optional[PublishTerms]) -> List[Services]:
-    result: Set[Services] = set()
+def _parse_services(terms: Optional[PublishTerms]) -> List[enums.OfferServices]:
+    result: Set[enums.OfferServices] = set()
 
     if not terms or not terms.terms:
         return list(result)
@@ -31,7 +31,10 @@ def _parse_services(terms: Optional[PublishTerms]) -> List[Services]:
         if not term.services:
             continue
         for service in term.services:
-            result.add(service)
+            try:
+                result.add(enums.OfferServices[service.name])
+            except KeyError:
+                continue
 
     return sorted(list(result), key=attrgetter('name'))
 

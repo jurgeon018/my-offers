@@ -272,7 +272,7 @@ async def test_v1_get_offers_mobile_public__200(http, pg, mobile_offers_integrat
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
             'realtyUserId': 29437831,
-            'services': ['calltracking', 'paid'],
+            'services': ['paid'],
             'stats': {
                 'callsCount': 10,
                 'competitorsCount': None,
@@ -361,7 +361,7 @@ async def test_v1_get_offers_mobile_public__200_inactive(http, pg, mobile_offers
                 'price': {'currency': 'rur', 'value': 2594400.0},
                 'publishTillDate': None,
                 'realtyUserId': 29437831,
-                'services': ['calltracking', 'paid'],
+                'services': ['paid'],
                 'stats': {
                     'callsCount': None,
                     'competitorsCount': None,
@@ -473,7 +473,7 @@ async def test_v1_get_offers_mobile_public__200__degradations(http, pg):
                 },
                 'publishTillDate': None,
                 'realtyUserId': 29437831,
-                'services': ['calltracking', 'paid'],
+                'services': ['paid'],
                 'stats': {
                     'callsCount': None,
                     'competitorsCount': None,
@@ -569,7 +569,7 @@ async def test_v1_get_offers_mobile_public__200__can_load_more(http, pg, mobile_
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
             'realtyUserId': 29437831,
-            'services': ['calltracking', 'paid'],
+            'services': ['paid'],
             'stats': {
                 'callsCount': 10,
                 'competitorsCount': None,
@@ -741,7 +741,7 @@ async def test_v1_get_offers_mobile_public__200__enrichment(
             'price': {'currency': 'rur', 'value': 2594400.0},
             'publishTillDate': None,
             'realtyUserId': 29437831,
-            'services': ['calltracking', 'paid'],
+            'services': ['paid'],
             'stats': {
                 'callsCount': None,
                 'competitorsCount': None,
