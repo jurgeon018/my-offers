@@ -9,3 +9,4 @@ class OfferServices(StrEnum):
     paid = 'paid'
     free = 'free'
     auction = 'auction'
+    highlight = 'highlight'
