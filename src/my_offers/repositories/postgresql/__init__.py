@@ -22,7 +22,7 @@ from my_offers.repositories.postgresql.offer import (
     get_offers_row_version,
     save_offer,
     save_offer_archive,
-    set_offers_is_deleted,
+    set_offers_status_tab,
     update_offer,
     update_offer_has_active_relevance_warning,
     update_offer_master_user_id_and_payed_by,
@@ -55,7 +55,6 @@ from my_offers.repositories.postgresql.offers_duplicates import (
 )
 from my_offers.repositories.postgresql.offers_resender import get_last_row_version, save_cron_session, save_cron_stats
 from my_offers.repositories.postgresql.offers_row_versions import (
-    archive_missed_offers,
     clean_offer_row_versions,
     get_missed_offer_ids,
     get_offers_ids_to_archive,
