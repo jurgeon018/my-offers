@@ -139,3 +139,11 @@ moderation_alerts = sa.Table(
     sa.Column('user_id', sa.BIGINT, primary_key=True),
     sa.Column('last_visit_date', sa.TIMESTAMP, nullable=False),
 )
+
+offers_row_versions = sa.Table(
+    'offers_row_versions',
+    metadata,
+    sa.Column('offer_id', sa.BIGINT, primary_key=True),
+    sa.Column('status_tab', offer_status_tab, nullable=False),
+    sa.Column('row_version', sa.BIGINT, nullable=False),
+)

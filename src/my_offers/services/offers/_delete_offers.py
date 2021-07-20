@@ -5,10 +5,10 @@ from typing import List
 
 import pytz
 from cian_core.statsd import statsd
-from my_offers.enums import OfferStatusTab
 from simple_settings import settings
 
 from my_offers import pg
+from my_offers.enums import OfferStatusTab
 from my_offers.repositories import postgresql
 from my_offers.repositories.postgresql import tables
 from my_offers.repositories.postgresql.delete import delete_rows_by_offer_id

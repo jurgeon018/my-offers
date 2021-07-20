@@ -1,22 +1,12 @@
 from typing import Any, Dict, List
 
 import asyncpgsa
-import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import insert
 
 from my_offers import pg
 from my_offers.mappers.changed_announcement import changed_announcement_map_from
 from my_offers.repositories.monolith_cian_ms_announcements.entities import ChangedAnnouncement
-from my_offers.repositories.postgresql.tables import metadata, offer_status_tab
-
-
-offers_row_versions = sa.Table(
-    'offers_row_versions',
-    metadata,
-    sa.Column('offer_id', sa.BIGINT, primary_key=True),
-    sa.Column('status_tab', offer_status_tab, nullable=False),
-    sa.Column('row_version', sa.BIGINT, nullable=False),
-)
+from my_offers.repositories.postgresql.tables import offers_row_versions
 
 
 async def clean_offer_row_versions() -> None:
@@ -71,6 +61,33 @@ async def get_outdated_offer_ids() -> List[int]:
     result = await pg.get().fetch(query)
 
     return [item['offer_id'] for item in result]
+
+
+async def get_offer_ids(limit: int, last_offer_id: int = 0) -> List[int]:
+    """
+    Выбираем все объявления
+    пропускаем архивные и удаленные
+    """
+    query = """
+    select
+        o.offer_id
+    from
+        offers o
+        left join offers_row_versions orv on o.offer_id = orv.offer_id
+    where
+        o.offer_id > $1
+        and not (o.status_tab = 'archived' and orv.status_tab = 'archived')
+        and not (o.status_tab = 'deleted' and orv.status_tab = 'deleted')
+        and not o.is_test
+    order by
+        o.offer_id
+    limit $2
+    """
+    params = (last_offer_id, limit)
+
+    rows = await pg.get().fetch(query, *params)
+
+    return [row['offer_id'] for row in rows]
 
 
 async def get_missed_offer_ids() -> List[int]:

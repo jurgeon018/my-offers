@@ -5,9 +5,9 @@ from typing import List
 from cian_core.runtime_settings import runtime_settings
 from cian_http.exceptions import ApiClientException
 from more_itertools import grouper
-from my_offers.enums import OfferStatusTab
 from simple_settings import settings
 
+from my_offers.enums import OfferStatusTab
 from my_offers.helpers.graphite import send_to_graphite
 from my_offers.repositories.monolith_cian_ms_announcements import v2_get_changed_announcements_ids
 from my_offers.repositories.monolith_cian_ms_announcements.entities import (
@@ -22,6 +22,7 @@ from my_offers.repositories.postgresql import (
     save_offer_row_versions,
     set_offers_status_tab,
 )
+from my_offers.repositories.postgresql.offers_row_versions import get_offer_ids
 from my_offers.services.realty_resender._jobs import run_resend_task
 
 
@@ -114,4 +115,14 @@ async def _archive_offers(ids: List[int]) -> None:
         send_to_graphite(
             key='sync_offers.archived_offer_ids_progress',
             value=len(offer_ids),
+        )
+
+
+async def _resend_all_offers() -> None:
+    offer_ids = await get_offer_ids(limit=runtime_settings.get('SYNC_OFFERS_BULK_SIZE', 1000))
+    while offer_ids:
+        await run_resend_task(offer_ids)
+        offer_ids = await get_offer_ids(
+            limit=runtime_settings.get('SYNC_OFFERS_BULK_SIZE', 1000),
+            last_offer_id=offer_ids[-1],
         )
