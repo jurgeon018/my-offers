@@ -420,19 +420,14 @@ async def get_offers_ids_by_tab(filters: Dict[str, Any]) -> List[int]:
     return [row['offer_id'] for row in rows]
 
 
-async def set_offers_is_deleted(offers_ids: List[int]) -> None:
-    now = datetime.now(tz=pytz.UTC)
-    values = {
-        'status_tab': OfferStatusTab.deleted.value,
-        'updated_at': now
-    }
-
+async def set_offers_status_tab(offers_ids: List[int], status_tab: OfferStatusTab) -> None:
     query, params = asyncpgsa.compile_query(
         update(
             tables.offers
-        ).values(
-            values
-        ).where(
+        ).values({
+            'status_tab': status_tab.value,
+            'updated_at': datetime.now(tz=pytz.UTC),
+        }).where(
             and_(
                 tables.offers.c.offer_id.in_(offers_ids)
             )

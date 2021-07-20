@@ -10,7 +10,7 @@ from my_offers.repositories import postgresql
 
 
 @pytest.mark.gen_test
-async def test_set_offers_is_deleted():
+async def test_set_offers_status_tab():
     # arrange
     now = datetime.now(tz=pytz.UTC)
     offers_ids = [
@@ -21,7 +21,10 @@ async def test_set_offers_is_deleted():
 
     # act
     with freeze_time(now):
-        await postgresql.set_offers_is_deleted(offers_ids=offers_ids)
+        await postgresql.set_offers_status_tab(
+            offers_ids=offers_ids,
+            status_tab=OfferStatusTab.deleted,
+        )
 
     # assert
     pg.get().execute.assert_called_once_with(

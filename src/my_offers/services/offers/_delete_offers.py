@@ -5,6 +5,7 @@ from typing import List
 
 import pytz
 from cian_core.statsd import statsd
+from my_offers.enums import OfferStatusTab
 from simple_settings import settings
 
 from my_offers import pg
@@ -66,7 +67,7 @@ async def delete_offers_data() -> None:
 
 
 async def delete_offers(offer_ids: List[int]) -> None:
-    await postgresql.set_offers_is_deleted(offer_ids)
+    await postgresql.set_offers_status_tab(offer_ids, OfferStatusTab.deleted)
     await postgresql.add_offer_to_delete_queue(
         offer_ids=offer_ids,
         delete_at=datetime.now(tz=pytz.UTC) + timedelta(days=settings.COUNT_DAYS_HOLD_DELETED_OFFERS)

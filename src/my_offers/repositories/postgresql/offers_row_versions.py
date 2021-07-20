@@ -110,19 +110,3 @@ async def get_offers_ids_to_archive() -> List[int]:
     result = await pg.get().fetch(query)
 
     return [item['offer_id'] for item in result]
-
-
-async def archive_missed_offers(ids: List[int]):
-    """
-    Архивируем все объявления, которых нет в С# и у которых версия ниже максимальной
-    """
-    query = """
-    update
-        offers
-    set
-        status_tab = 'archived'
-    where
-        offer_id = any($1::bigint[])
-    """
-
-    await pg.get().fetch(query, ids)

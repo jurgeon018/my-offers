@@ -2,8 +2,10 @@ import asyncio
 import logging
 from typing import List
 
+from cian_core.runtime_settings import runtime_settings
 from cian_http.exceptions import ApiClientException
 from more_itertools import grouper
+from my_offers.enums import OfferStatusTab
 from simple_settings import settings
 
 from my_offers.helpers.graphite import send_to_graphite
@@ -13,12 +15,12 @@ from my_offers.repositories.monolith_cian_ms_announcements.entities import (
     V2GetChangedAnnouncementsIds,
 )
 from my_offers.repositories.postgresql import (
-    archive_missed_offers,
     clean_offer_row_versions,
     get_missed_offer_ids,
     get_offers_ids_to_archive,
     get_outdated_offer_ids,
     save_offer_row_versions,
+    set_offers_status_tab,
 )
 from my_offers.services.realty_resender._jobs import run_resend_task
 
@@ -26,7 +28,7 @@ from my_offers.services.realty_resender._jobs import run_resend_task
 logger = logging.getLogger(__name__)
 
 
-async def sync_offers(row_version: int = 0):
+async def sync_offers(row_version: int = 0) -> None:
     # очищаем таблицу с версиями объявлений
     await clean_offer_row_versions()
 
@@ -36,6 +38,10 @@ async def sync_offers(row_version: int = 0):
         key='sync_offers.total_offers_count',
         value=offers_count,
     )
+
+    if runtime_settings.get('SYNC_OFFERS_RESEND_ALL', False):
+        await _resend_all_offers()
+        return
 
     # выбираем все объявки со старыми row_version и просим С# прислать их снова
     outdated_offer_ids = await get_outdated_offer_ids()
@@ -100,7 +106,10 @@ async def _save_current_offer_row_versions(row_version: int) -> int:
 
 async def _archive_offers(ids: List[int]) -> None:
     for offer_ids in grouper(ids, 100):
-        await archive_missed_offers(list(filter(None, offer_ids)))
+        await set_offers_status_tab(
+            offers_ids=list(filter(None, offer_ids)),
+            status_tab=OfferStatusTab.archived,
+        )
         await asyncio.sleep(settings.RESEND_JOB_DELAY)
         send_to_graphite(
             key='sync_offers.archived_offer_ids_progress',
